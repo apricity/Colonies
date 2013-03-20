@@ -4,19 +4,37 @@
 
     using Colonies.Annotations;
 
-    public class Cell : INotifyPropertyChanged
+    public sealed class Cell : INotifyPropertyChanged
     {
-        private int cellID;
+        private CellType cellType;
 
-        public Cell(int cellID)
+        public Cell(CellType cellType)
         {
-            this.cellID = cellID;
+            this.cellType = cellType;
+        }
+
+        public CellType CellType
+        {
+            get
+            {
+                return this.cellType;
+            }
+            set
+            {
+                this.cellType = value;
+                this.OnPropertyChanged("CellType");
+            }
+        }
+
+        public new string ToString()
+        {
+            return this.CellType.ToString();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
             var handler = PropertyChanged;
             if (handler != null)
@@ -24,5 +42,14 @@
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+    }
+
+    public enum CellType
+    {
+        Unknown,
+        Earth,
+        Grass,
+        Water,
+        Fire
     }
 }

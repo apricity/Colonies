@@ -5,18 +5,48 @@
         Title="MainWindow" Height="350" Width="525">
 
     <Window.DataContext>
-        <Colonies:WorldViewModel />
+        <Colonies:MainWindowViewModel></Colonies:MainWindowViewModel>
     </Window.DataContext>
-    <ItemsControl ItemsSource="{Binding Cells}">
-        <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-                <UniformGrid></UniformGrid>
-            </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-    </ItemsControl>
     
-   
-    <!--<Grid>
-        <DataGrid ItemsSource="{Binding Cells}"/>
-    </Grid>-->
+    <Window.Resources>
+        <Colonies:CellTypeToBrushConverter x:Key="CellTypeToBrushConverter" />
+    </Window.Resources>
+
+    <Border BorderBrush="Gray" BorderThickness="4 4 4 4">
+        <ItemsControl ItemsSource="{Binding Cells}">
+            <!-- define the control used for the collection of collections -->
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical"></StackPanel>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        
+            <!-- define how each collection is presented - a template that is applied to each collection -->
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <ItemsControl ItemsSource="{Binding}">
+
+                        <!-- define the panel used for the collection of items -->
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"></StackPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <!-- define how each item is presented - a template that is applied to each item -->
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Black" BorderThickness="1 1 0 0">
+                                    <Rectangle Height="30" Width="30" 
+                                               Fill="{Binding CellType, Converter={StaticResource CellTypeToBrushConverter}}">
+                                    </Rectangle>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Border>
+    
 </Window>

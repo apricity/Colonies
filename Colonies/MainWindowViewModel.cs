@@ -37,7 +37,7 @@
                     CellType cellType;
 
                     var randomNumber = random.Next(0, 4);
-                    switch (randomNumber)
+                    switch (column)
                     {
                         case 0:
                             cellType = CellType.Earth;

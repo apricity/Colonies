@@ -15,16 +15,13 @@ using System.Windows.Shapes;
 namespace Colonies
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for WorldGridView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class WorldGridView : UserControl
     {
-        public MainWindow()
+        public WorldGridView()
         {
             InitializeComponent();
-
-            // add an event handler to calculate new occupant locations just before it is rendered
-            // CompositionTarget.Rendering += UpdateColor;
         }
     }
 }

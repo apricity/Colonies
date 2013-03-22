@@ -4,15 +4,12 @@
 
     using Colonies.Annotations;
 
-    public sealed class Cell : INotifyPropertyChanged
+    public sealed class Cell
     {
+        public int X { get; set; }
+        public int Y { get; set; }
+
         private CellType cellType;
-
-        public Cell(CellType cellType)
-        {
-            this.cellType = cellType;
-        }
-
         public CellType CellType
         {
             get
@@ -22,10 +19,37 @@
             set
             {
                 this.cellType = value;
-                this.OnPropertyChanged("CellType");
             }
         }
 
+        private Occupant occupant;
+        public Occupant Occupant
+        {
+            get
+            {
+                return this.occupant;
+            }
+            set
+            {
+                this.occupant = value;
+            }
+        }
+
+        public bool HasOccupant
+        {
+            get
+            {
+                return this.Occupant != null;
+            }
+        }
+
+        public Cell(CellType cellType, int x, int y)
+        {
+            this.cellType = cellType;
+            this.X = x;
+            this.Y = y;
+        }
+        
         public new string ToString()
         {
             return this.CellType.ToString();
@@ -46,7 +70,7 @@
 
     public enum CellType
     {
-        Unknown,
+        Unknown = -1,
         Earth,
         Grass,
         Water,

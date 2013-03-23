@@ -4,7 +4,7 @@
 
     using Colonies.Annotations;
 
-    public sealed class Cell
+    public sealed class Cell : INotifyPropertyChanged
     {
         public int X { get; set; }
         public int Y { get; set; }
@@ -19,6 +19,7 @@
             set
             {
                 this.cellType = value;
+                this.OnPropertyChanged("CellType");
             }
         }
 
@@ -32,6 +33,8 @@
             set
             {
                 this.occupant = value;
+                this.OnPropertyChanged("Occupant");
+                this.OnPropertyChanged("HasOccupant");
             }
         }
 
@@ -45,7 +48,7 @@
 
         public Cell(CellType cellType, int x, int y)
         {
-            this.cellType = cellType;
+            this.CellType = cellType;
             this.X = x;
             this.Y = y;
         }

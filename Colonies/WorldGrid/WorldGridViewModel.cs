@@ -9,60 +9,45 @@
 
     using Colonies.Annotations;
 
-    public sealed class WorldGridViewModel
+    public sealed class WorldGridViewModel : INotifyPropertyChanged
     {
         private readonly Timer modelTimer;
 
         private int count = 0;
 
-        private Cell[,] worldGrid;
-        public Cell[,] WorldGrid
-        {
-            get
-            {
-                return this.worldGrid;
-            }
-            set
-            {
-                this.worldGrid = value;
-            }
-        }
-
         private List<List<Cell>> cells;
-        public IEnumerable<IEnumerable<Cell>> Cells
+        public List<List<Cell>> Cells
         {
             get
             {
-                if (this.cells == null)
-                {
-                    this.cells = new List<List<Cell>>();
-                    for (var y = 0; y < this.WorldGrid.GetLength(1); y++)
-                    {
-                        var cellRow = new List<Cell>();
-
-                        for (var x = 0; x < this.WorldGrid.GetLength(0); x++)
-                        {
-                            cellRow.Add(this.WorldGrid[x, y]);
-                        }
-
-                        this.cells.Add(cellRow);
-                    } 
-                }                
-
                 return this.cells;
             }
+            set
+            {
+                this.cells = value;
+                this.OnPropertyChanged("Cells");
+            }
         }
 
-        private List<Occupant> occupants;
-        public List<Occupant> Occupants
+        private List<Occupant> Occupants { get; set; }
+
+        private List<Cell> ListOfOccupiedCells
         {
             get
             {
-                return this.occupants;
-            }
-            set
-            {
-                this.occupants = value;
+                var result = new List<Cell>();
+                foreach (var cellRow in this.Cells)
+                {
+                    foreach (var cell in cellRow)
+                    {
+                        if (cell.HasOccupant)
+                        {
+                            result.Add(cell);
+                        }
+                    } 
+                }
+
+                return result;
             }
         }
 
@@ -76,14 +61,15 @@
 
         private void InitialiseModel(int gridHeight, int gridWidth)
         {
-            this.WorldGrid = new Cell[gridWidth, gridHeight];
+            this.Cells = new List<List<Cell>>();
             this.Occupants = new List<Occupant>();
 
             var random = new Random();
 
-            for (var column = 0; column < gridWidth; column++)
+            for (var row = 0; row < gridHeight; row++)
             {
-                for (var row = 0; row < gridHeight; row++)
+                var cellRow = new List<Cell>();
+                for (var column = 0; column < gridWidth; column++)
                 {
                     CellType cellType;
 
@@ -107,22 +93,31 @@
                             break;
                     }
 
-                    this.WorldGrid[column, row] = new Cell(cellType, column, row);
+                    cellRow.Add(new Cell(cellType, column, row));
                 }
+
+                this.Cells.Add(cellRow);
             }
 
             var occupant = new Occupant("testOccupant");
-            this.WorldGrid[1, 1].Occupant = occupant;
+            this.Cells[1][1].Occupant = occupant;
         }
 
         private void UpdateModel(object state)
         {
             this.count++;
 
-            //if (this.count == 50)
-            //{
-            //    this.WorldGrid[0, 0].Occupant = new Occupant("anotherOccupant");
-            //}
+            if (this.count == 20)
+            {
+                foreach (var cell in ListOfOccupiedCells)
+                {
+                    var cellOccupant = cell.Occupant;
+                    cell.Occupant = null;
+                    this.Cells[cell.X + 1][cell.Y].Occupant = cellOccupant;
+                }
+
+                this.Cells[0][0].Occupant = new Occupant("anotherOccupant");
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

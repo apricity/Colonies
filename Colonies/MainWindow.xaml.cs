@@ -22,9 +22,6 @@ namespace Colonies
         public MainWindow()
         {
             InitializeComponent();
-
-            // add an event handler to calculate new occupant locations just before it is rendered
-            // CompositionTarget.Rendering += UpdateColor;
         }
     }
 }

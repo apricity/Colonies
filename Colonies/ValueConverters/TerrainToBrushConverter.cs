@@ -10,25 +10,25 @@ namespace Colonies
     using System.Windows.Media;
     using System.Drawing;
 
-    public class CellTypeToBrushConverter : IValueConverter
+    public class TerrainToBrushConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var cellType = (CellType)value;
+            var terrain = (Terrain)value;
             System.Drawing.Color drawingColor;
 
-            switch (cellType)
+            switch (terrain)
             {
-                case CellType.Earth:
+                case Terrain.Earth:
                     drawingColor = System.Drawing.Color.BurlyWood;
                     break;
-                case CellType.Grass:
+                case Terrain.Grass:
                     drawingColor = System.Drawing.Color.ForestGreen;
                     break;
-                case CellType.Water:
+                case Terrain.Water:
                     drawingColor = System.Drawing.Color.DeepSkyBlue;
                     break;
-                case CellType.Fire:
+                case Terrain.Fire:
                     drawingColor = System.Drawing.Color.Firebrick;
                     break;
                 default:

@@ -7,22 +7,22 @@
              mc:Ignorable="d">
     
         <UserControl.DataContext>
-            <Colonies:WorldGridViewModel />
+            <Colonies:BoardViewModel />
         </UserControl.DataContext>
 
         <UserControl.Resources>
-            <Colonies:CellTypeToBrushConverter x:Key="CellTypeToBrushConverter" />
+            <Colonies:TerrainToBrushConverter x:Key="TerrainToBrushConverter" />
             <Colonies:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         </UserControl.Resources>
 
         <Viewbox Stretch="Fill">
             <Border BorderBrush="Black" BorderThickness="0, 0, 1, 1">
                 <!-- border on right & bottom of items control -->
-                <ItemsControl ItemsSource="{Binding Cells}">
+                <ItemsControl ItemsSource="{Binding Tiles}">
                     <!-- define the control used for the collection of collections -->
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical"></StackPanel>
+                            <StackPanel Orientation="Horizontal"></StackPanel>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
@@ -34,7 +34,7 @@
                                 <!-- define the panel used for the collection of items -->
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal"></StackPanel>
+                                        <StackPanel Orientation="Vertical"></StackPanel>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
 
@@ -44,9 +44,9 @@
                                         <Border BorderBrush="Black" BorderThickness="1, 1, 0, 0">
                                             <!-- border on left & top of each item -->
                                             <Grid Height="30" Width="30">
-                                                <Rectangle Fill="{Binding CellType, Converter={StaticResource CellTypeToBrushConverter}}" />
+                                                <Rectangle Fill="{Binding Terrain, Converter={StaticResource TerrainToBrushConverter}}" />
                                                 <Rectangle Height="15" Width="15" Fill="Black"
-                                                    Visibility="{Binding HasOccupant, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                    Visibility="{Binding ContainsOrganism, Converter={StaticResource BoolToVisibilityConverter}}">
                                                 </Rectangle>
                                             </Grid>
                                         </Border>

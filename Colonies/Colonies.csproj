@@ -54,14 +54,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DomainModel\Cell.cs" />
+    <Compile Include="DomainModel\Tile.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="ValueConverters\BoolToVisibilityConverter.cs" />
-    <Compile Include="DomainModel\Occupant.cs" />
-    <Compile Include="ValueConverters\CellTypeToBrushConverter.cs" />
+    <Compile Include="DomainModel\Organism.cs" />
+    <Compile Include="ValueConverters\TerrainToBrushConverter.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="WorldGrid\WorldGridViewModel.cs" />
-    <Compile Include="WorldGrid\WorldGridView.xaml.cs">
-      <DependentUpon>WorldGridView.xaml</DependentUpon>
+    <Compile Include="Board\BoardViewModel.cs" />
+    <Compile Include="Board\BoardView.xaml.cs">
+      <DependentUpon>BoardView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -75,7 +76,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="WorldGrid\WorldGridView.xaml">
+    <Page Include="Board\BoardView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

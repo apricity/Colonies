@@ -5,18 +5,18 @@ using System.Text;
 
 namespace Colonies
 {
-    public class Occupant
+    public class Organism
     {
-        private readonly string occupantID;
+        private readonly string organismID;
 
-        public Occupant(string occupantID)
+        public Organism(string organismID)
         {
-            this.occupantID = occupantID;
+            this.organismID = organismID; 
         }
 
         public new string ToString()
         {
-            return this.occupantID;
+            return this.organismID;
         }
     }
 }

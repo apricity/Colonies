@@ -55,23 +55,23 @@
 
         public BoardViewModel()
         {
-            this.InitialiseModel(5, 5);
+            this.InitialiseModel();
 
             TimerCallback modelTimerCallback = this.UpdateModel;
-            this.modelTimer = new Timer(modelTimerCallback, null, 2000, 100);
+            this.modelTimer = new Timer(modelTimerCallback, null, 2000, Properties.Settings.Default.UpdateFrequencyInMs);
         }
 
-        private void InitialiseModel(int gridHeight, int gridWidth)
+        private void InitialiseModel()
         {
             this.Tiles = new List<List<Tile>>();
             this.Organisms = new List<Organism>();
 
             var random = new Random();
 
-            for (var column = 0; column < gridWidth; column++)
+            for (var column = 0; column < Properties.Settings.Default.BoardWidth; column++)
             {
                 var tileColumn = new List<Tile>();
-                for (var row = 0; row < gridHeight; row++)
+                for (var row = 0; row < Properties.Settings.Default.BoardHeight; row++)
                 {
                     Terrain terrain;
 

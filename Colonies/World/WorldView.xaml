@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Colonies.EcosystemView"
+﻿<UserControl x:Class="Colonies.WorldView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,7 +7,7 @@
              mc:Ignorable="d">
     
         <UserControl.DataContext>
-            <Colonies:EcosystemViewModel />
+            <Colonies:WorldViewModel />
         </UserControl.DataContext>
 
         <!-- shouldn't need these either? -->
@@ -17,6 +17,7 @@
         </UserControl.Resources>
 
         <Viewbox Stretch="Fill">
+            <!-- TODO: ECOSYSTEM VIEW -->
             <Border BorderBrush="Black" BorderThickness="0, 0, 1, 1">
                 <!-- border on right & bottom of items control -->
                 <ItemsControl ItemsSource="{Binding Ecosystem.Niches}">
@@ -42,19 +43,20 @@
                                 <!-- define how each item is presented - a template that is applied to each item -->
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <!-- use TileView... -->
-                                        <!-- <Colonies:TileView /> -->
-
-                                    <Border BorderBrush="Black" BorderThickness="1, 1, 0, 0">
-                                        <!-- border on left & top of each item -->
-                                        <Grid Height="30" Width="30">
-                                            <Rectangle Fill="{Binding Habitat.Terrain, Converter={StaticResource TerrainToBrushConverter}}" />
-                                            <Rectangle Height="15" Width="15" Fill="Black"
-                                                       Visibility="{Binding Organism, Converter={StaticResource OrganismToVisibilityConverter}}">
-                                            </Rectangle>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
+                                        <!-- TODO: NICHE VIEW -->
+                                        <Border BorderBrush="Black" BorderThickness="1, 1, 0, 0">
+                                            <!-- border on left & top of each item -->
+                                            <Grid Height="30" Width="30">
+                                                <!-- TODO: HABITAT VIEW -->
+                                                <Rectangle Fill="{Binding Habitat.Terrain, Converter={StaticResource TerrainToBrushConverter}}" />
+                                            
+                                                <!-- TODO: ORGANISM VIEW -->
+                                                <Rectangle Height="15" Width="15" Fill="Black"
+                                                           Visibility="{Binding Organism, Converter={StaticResource OrganismToVisibilityConverter}}">
+                                                </Rectangle>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
                                 </ItemsControl.ItemTemplate>
 
                             </ItemsControl>

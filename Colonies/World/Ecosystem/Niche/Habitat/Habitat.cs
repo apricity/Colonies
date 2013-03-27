@@ -7,10 +7,6 @@
 
     public sealed class Habitat : INotifyPropertyChanged
     {
-        // TODO: a Habitat should not know its own coordinates
-        public int X { get; private set; }
-        public int Y { get; private set; }
-
         private Terrain terrain;
         public Terrain Terrain
         {
@@ -25,19 +21,12 @@
             }
         }
 
-        public Habitat()
-        {
-            this.Terrain = Terrain.Unknown;
-        }
-
-        public Habitat(int x, int y, Terrain terrain)
+        public Habitat(Terrain terrain)
         {
             this.Terrain = terrain;
-            this.X = x;
-            this.Y = y;
         }
         
-        public new string ToString()
+        public override string ToString()
         {
             return this.Terrain.ToString();
         }

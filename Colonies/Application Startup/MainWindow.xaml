@@ -2,10 +2,10 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Colonies="clr-namespace:Colonies"
-        Title="Colonies" Height="350" Width="350">
+        Title="Wacton Colonies" Height="350" Width="350">
 
-    <Grid x:Name="_layoutRoot">
-        <Colonies:EcosystemView />
+    <Grid>
+        <Colonies:WorldView />
     </Grid>
     
 </Window>

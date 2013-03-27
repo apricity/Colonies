@@ -14,7 +14,7 @@ namespace Colonies
             this.organismID = organismID; 
         }
 
-        public new string ToString()
+        public override string ToString()
         {
             return this.organismID;
         }

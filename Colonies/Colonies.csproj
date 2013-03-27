@@ -50,36 +50,35 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
+    <ApplicationDefinition Include="Application Startup\App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Ecosystem.cs" />
-    <Compile Include="Niche.cs" />
-    <Compile Include="Habitat\Habitat.cs" />
+    <Compile Include="World\Ecosystem\Ecosystem.cs" />
+    <Compile Include="World\Ecosystem\Niche\Niche.cs" />
+    <Compile Include="World\Ecosystem\Niche\Habitat\Habitat.cs" />
     <Compile Include="Enums.cs" />
-    <Compile Include="Habitat\HabitatViewModel.cs" />
-    <Compile Include="Organism\Organism.cs" />
+    <Compile Include="World\Ecosystem\Niche\Organism\Organism.cs" />
     <Compile Include="ValueConverters\OrganismToVisibilityConverter.cs" />
     <Compile Include="ValueConverters\TerrainToBrushConverter.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Ecosystem\EcosystemViewModel.cs" />
-    <Compile Include="Ecosystem\EcosystemView.xaml.cs">
-      <DependentUpon>EcosystemView.xaml</DependentUpon>
+    <Compile Include="World\WorldViewModel.cs" />
+    <Compile Include="World\WorldView.xaml.cs">
+      <DependentUpon>WorldView.xaml</DependentUpon>
     </Compile>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Application Startup\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="App.xaml.cs">
+    <Compile Include="Application Startup\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Application Startup\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Ecosystem\EcosystemView.xaml">
+    <Page Include="World\WorldView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -103,6 +102,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="Application Startup\app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

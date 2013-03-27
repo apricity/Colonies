@@ -9,19 +9,19 @@ namespace Colonies
 
     using Colonies.Annotations;
 
-    public sealed class TileViewModel : INotifyPropertyChanged
+    public sealed class Niche : INotifyPropertyChanged
     {
-        private Habitat currentHabitat;
-        public Habitat CurrentHabitat
+        private Habitat habitat;
+        public Habitat Habitat
         {
             get
             {
-                return this.currentHabitat;
+                return this.habitat;
             }
             set
             {
-                this.currentHabitat = value;
-                this.OnPropertyChanged("CurrentHabitat");
+                this.habitat = value;
+                this.OnPropertyChanged("Habitat");
             }
         }
 
@@ -36,28 +36,18 @@ namespace Colonies
             {
                 this.organism = value;
                 this.OnPropertyChanged("Organism");
-
-                this.ContainsOrganism = (value != null);
             }
         }
 
-        private bool containsOrganism;
-        public bool ContainsOrganism
+        public Niche(Habitat habitat, Organism organism)
         {
-            get
-            {
-                return this.containsOrganism;
-            }
-            private set
-            {
-                this.containsOrganism = value;
-                this.OnPropertyChanged("ContainsOrganism");
-            }
+            this.Habitat = habitat;
+            this.Organism = organism;
         }
 
-        public new string ToString()
+        public override String ToString()
         {
-            return this.CurrentHabitat.ToString();
+            return String.Format("{0}, {1}", this.Habitat, this.Organism);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

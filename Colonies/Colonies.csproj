@@ -54,15 +54,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DomainModel\Tile.cs" />
+    <Compile Include="Ecosystem.cs" />
+    <Compile Include="Niche.cs" />
+    <Compile Include="Habitat\Habitat.cs" />
     <Compile Include="Enums.cs" />
-    <Compile Include="ValueConverters\BoolToVisibilityConverter.cs" />
-    <Compile Include="DomainModel\Organism.cs" />
+    <Compile Include="Habitat\HabitatViewModel.cs" />
+    <Compile Include="Organism\Organism.cs" />
+    <Compile Include="ValueConverters\OrganismToVisibilityConverter.cs" />
     <Compile Include="ValueConverters\TerrainToBrushConverter.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Board\BoardViewModel.cs" />
-    <Compile Include="Board\BoardView.xaml.cs">
-      <DependentUpon>BoardView.xaml</DependentUpon>
+    <Compile Include="Ecosystem\EcosystemViewModel.cs" />
+    <Compile Include="Ecosystem\EcosystemView.xaml.cs">
+      <DependentUpon>EcosystemView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -76,7 +79,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Board\BoardView.xaml">
+    <Page Include="Ecosystem\EcosystemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -106,6 +109,7 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

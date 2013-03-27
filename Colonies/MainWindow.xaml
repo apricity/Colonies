@@ -5,7 +5,7 @@
         Title="Colonies" Height="350" Width="350">
 
     <Grid x:Name="_layoutRoot">
-        <Colonies:WorldGridView></Colonies:WorldGridView>
+        <Colonies:EcosystemView />
     </Grid>
     
 </Window>

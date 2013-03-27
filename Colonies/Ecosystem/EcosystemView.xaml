@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Colonies.WorldGridView"
+﻿<UserControl x:Class="Colonies.EcosystemView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,18 +7,19 @@
              mc:Ignorable="d">
     
         <UserControl.DataContext>
-            <Colonies:BoardViewModel />
+            <Colonies:EcosystemViewModel />
         </UserControl.DataContext>
 
+        <!-- shouldn't need these either? -->
         <UserControl.Resources>
             <Colonies:TerrainToBrushConverter x:Key="TerrainToBrushConverter" />
-            <Colonies:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <Colonies:OrganismToVisibilityConverter x:Key="OrganismToVisibilityConverter" />
         </UserControl.Resources>
 
         <Viewbox Stretch="Fill">
             <Border BorderBrush="Black" BorderThickness="0, 0, 1, 1">
                 <!-- border on right & bottom of items control -->
-                <ItemsControl ItemsSource="{Binding Tiles}">
+                <ItemsControl ItemsSource="{Binding Ecosystem.Niches}">
                     <!-- define the control used for the collection of collections -->
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -41,16 +42,19 @@
                                 <!-- define how each item is presented - a template that is applied to each item -->
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border BorderBrush="Black" BorderThickness="1, 1, 0, 0">
-                                            <!-- border on left & top of each item -->
-                                            <Grid Height="30" Width="30">
-                                                <Rectangle Fill="{Binding Terrain, Converter={StaticResource TerrainToBrushConverter}}" />
-                                                <Rectangle Height="15" Width="15" Fill="Black"
-                                                    Visibility="{Binding ContainsOrganism, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                </Rectangle>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
+                                        <!-- use TileView... -->
+                                        <!-- <Colonies:TileView /> -->
+
+                                    <Border BorderBrush="Black" BorderThickness="1, 1, 0, 0">
+                                        <!-- border on left & top of each item -->
+                                        <Grid Height="30" Width="30">
+                                            <Rectangle Fill="{Binding Habitat.Terrain, Converter={StaticResource TerrainToBrushConverter}}" />
+                                            <Rectangle Height="15" Width="15" Fill="Black"
+                                                       Visibility="{Binding Organism, Converter={StaticResource OrganismToVisibilityConverter}}">
+                                            </Rectangle>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
                                 </ItemsControl.ItemTemplate>
 
                             </ItemsControl>

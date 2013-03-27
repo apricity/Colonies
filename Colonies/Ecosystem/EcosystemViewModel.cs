@@ -9,7 +9,7 @@
 
     using Colonies.Annotations;
 
-    public sealed class BoardViewModel : INotifyPropertyChanged
+    public sealed class EcosystemViewModel : INotifyPropertyChanged
     {
         private readonly Timer modelTimer;
 
@@ -17,43 +17,43 @@
         private bool secondOrganismAdded = false;
         private bool leftToRightMovementDirection = true;
 
-        private List<List<Tile>> tiles;
-        public List<List<Tile>> Tiles
+        private Ecosystem ecosystem;
+        public Ecosystem Ecosystem
         {
             get
             {
-                return this.tiles;
+                return this.ecosystem;
             }
             set
             {
-                this.tiles = value;
-                this.OnPropertyChanged("Tiles");
+                this.ecosystem = value;
+                this.OnPropertyChanged("Ecosystem");
             }
         }
 
-        private List<Organism> Organisms { get; set; }
-
-        private IEnumerable<Tile> ListOfOccupiedTiles
+        private IEnumerable<Niche> ListOfOccupiedNiches
         {
             get
             {
-                var result = new List<Tile>();
-                foreach (var tileRow in this.Tiles)
+                var result = new List<Niche>();
+
+                for (int x = 0; x < this.Ecosystem.Width; x++)
                 {
-                    foreach (var tile in tileRow)
+                    for (int y = 0; y < this.Ecosystem.Height; y++)
                     {
-                        if (tile.ContainsOrganism)
+                        var niche = this.Ecosystem.GetNiche(x, y);
+                        if (niche.Organism != null) // TODO: niche should have ContainsOrganism
                         {
-                            result.Add(tile);
+                            result.Add(niche);
                         }
-                    } 
+                    }
                 }
 
                 return result;
             }
         }
 
-        public BoardViewModel()
+        public EcosystemViewModel()
         {
             this.InitialiseModel();
 
@@ -63,14 +63,13 @@
 
         private void InitialiseModel()
         {
-            this.Tiles = new List<List<Tile>>();
-            this.Organisms = new List<Organism>();
+            this.Ecosystem = new Ecosystem();
 
             var random = new Random();
 
             for (var column = 0; column < Properties.Settings.Default.BoardWidth; column++)
             {
-                var tileColumn = new List<Tile>();
+                var boardColumn = new List<Niche>();
                 for (var row = 0; row < Properties.Settings.Default.BoardHeight; row++)
                 {
                     Terrain terrain;
@@ -95,14 +94,13 @@
                             break;
                     }
 
-                    tileColumn.Add(new Tile(column, row, terrain));
+                    this.Ecosystem.SetNiche(column, row, new Niche(new Habitat(column, row, terrain), null));
                 }
-
-                this.Tiles.Add(tileColumn);
             }
 
-            var occupant = new Organism("testOrganism");
-            this.Tiles[1][1].Organism = occupant;
+            var organism = new Organism("testOrganism");
+            var oldNiche = this.Ecosystem.GetNiche(1, 1);
+            this.Ecosystem.SetNiche(1, 1, new Niche(oldNiche.Habitat, organism));;
         }
 
         private void UpdateModel(object state)
@@ -110,37 +108,45 @@
             // TODO: don't actually do anything this stupid...
             // TODO: how should I handle updating the model?
 
-            foreach (var tile in this.ListOfOccupiedTiles)
+            foreach (var boardElement in this.ListOfOccupiedNiches)
             {
-                // temporarily store the tile Organism
-                var tileOccupant = tile.Organism;
+                // temporarily store the Habitat Organism
+                var habitat = boardElement.Habitat;
+                var organism = boardElement.Organism;
                 
-                // remove Organism from this tile
-                // and move it to a different tile
-                tile.Organism = null;
+                // remove Organism from this Habitat
+                // and move it to a different Habitat
+                // boardElement = null;
 
                 if (this.leftToRightMovementDirection)
                 {
-                    if (tile.X + 1 >= this.Tiles.Count)
+                    if (habitat.X + 1 >= this.Ecosystem.Width)
                     {
                         this.leftToRightMovementDirection = false;
-                        this.Tiles[tile.X - 1][tile.Y].Organism = tileOccupant;
+
+                        var targetHabitat = this.Ecosystem.GetNiche(habitat.X - 1, habitat.Y).Habitat;
+                        this.Ecosystem.SetNiche(habitat.X - 1, habitat.Y, new Niche(targetHabitat, organism));
+
                     }
                     else
                     {
-                        this.Tiles[tile.X + 1][tile.Y].Organism = tileOccupant;
+                        var targetHabitat = this.Ecosystem.GetNiche(habitat.X + 1, habitat.Y).Habitat;
+                        this.Ecosystem.SetNiche(habitat.X + 1, habitat.Y, new Niche(targetHabitat, organism));
                     }
                 }
                 else
                 {
-                    if (tile.X - 1 < 0)
+                    if (habitat.X - 1 < 0)
                     {
                         this.leftToRightMovementDirection = true;
-                        this.Tiles[tile.X + 1][tile.Y].Organism = tileOccupant;
+
+                        var targetHabitat = this.Ecosystem.GetNiche(habitat.X + 1, habitat.Y).Habitat;
+                        this.Ecosystem.SetNiche(habitat.X + 1, habitat.Y, new Niche(targetHabitat, organism));
                     }
                     else
                     {
-                        this.Tiles[tile.X - 1][tile.Y].Organism = tileOccupant;
+                        var targetHabitat = this.Ecosystem.GetNiche(habitat.X - 1, habitat.Y).Habitat;
+                        this.Ecosystem.SetNiche(habitat.X - 1, habitat.Y, new Niche(targetHabitat, organism));
                     }
                 }
 
@@ -149,7 +155,8 @@
 
             if (!this.secondOrganismAdded)
             {
-                this.Tiles[0][0].Organism = new Organism("anotherOrganism");
+                var targetHabitat = this.Ecosystem.GetNiche(0, 0).Habitat;
+                this.Ecosystem.SetNiche(0, 0, new Niche(targetHabitat, new Organism("anotherOrganism")));
                 this.secondOrganismAdded = true;
             }
         }

@@ -5,9 +5,9 @@
 
     using Colonies.Annotations;
 
-    public sealed class Tile : INotifyPropertyChanged
+    public sealed class Habitat : INotifyPropertyChanged
     {
-        // TODO: a tile should not know its own coordinates
+        // TODO: a Habitat should not know its own coordinates
         public int X { get; private set; }
         public int Y { get; private set; }
 
@@ -25,30 +25,12 @@
             }
         }
 
-        private Organism organism;
-        public Organism Organism
+        public Habitat()
         {
-            get
-            {
-                return this.organism;
-            }
-            set
-            {
-                this.organism = value;
-                this.OnPropertyChanged("Organism");
-                this.OnPropertyChanged("ContainsOrganism");
-            }
+            this.Terrain = Terrain.Unknown;
         }
 
-        public bool ContainsOrganism
-        {
-            get
-            {
-                return this.Organism != null;
-            }
-        }
-
-        public Tile(int x, int y, Terrain terrain)
+        public Habitat(int x, int y, Terrain terrain)
         {
             this.Terrain = terrain;
             this.X = x;

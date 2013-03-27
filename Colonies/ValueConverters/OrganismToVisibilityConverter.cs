@@ -7,11 +7,11 @@ namespace Colonies
     using System.Windows.Data;
     using System.Windows.Media;
 
-    public class BoolToVisibilityConverter : IValueConverter
+    public class OrganismToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if ((bool)value)
+            if ((Organism)value != null)
             {
                 return Visibility.Visible;
             }

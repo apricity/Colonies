@@ -55,13 +55,29 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="World\Ecosystem\Ecosystem.cs" />
+    <Compile Include="World\Ecosystem\EcosystemViewModel.cs" />
+    <Compile Include="World\Ecosystem\EcosystemView.xaml.cs">
+      <DependentUpon>EcosystemView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="World\Ecosystem\Niche\NicheView.xaml.cs">
+      <DependentUpon>NicheView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="World\Ecosystem\Niche\NicheViewModel.cs" />
+    <Compile Include="World\Ecosystem\Niche\Habitat\HabitatView.xaml.cs">
+      <DependentUpon>HabitatView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="World\Ecosystem\Niche\Habitat\HabitatViewModel.cs" />
     <Compile Include="World\Ecosystem\Niche\Niche.cs" />
     <Compile Include="World\Ecosystem\Niche\Habitat\Habitat.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="World\Ecosystem\Niche\Organism\OrganismViewModel.cs" />
     <Compile Include="World\Ecosystem\Niche\Organism\Organism.cs" />
     <Compile Include="ValueConverters\OrganismToVisibilityConverter.cs" />
     <Compile Include="ValueConverters\TerrainToBrushConverter.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="World\Ecosystem\Niche\Organism\OrganismView.xaml.cs">
+      <DependentUpon>OrganismView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="World\WorldViewModel.cs" />
     <Compile Include="World\WorldView.xaml.cs">
       <DependentUpon>WorldView.xaml</DependentUpon>
@@ -78,6 +94,22 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="World\Ecosystem\EcosystemView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="World\Ecosystem\Niche\NicheView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="World\Ecosystem\Niche\Habitat\HabitatView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="World\Ecosystem\Niche\Organism\OrganismView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="World\WorldView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

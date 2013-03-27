@@ -6,64 +6,12 @@
              xmlns:Colonies="clr-namespace:Colonies"
              mc:Ignorable="d">
     
-        <UserControl.DataContext>
-            <Colonies:WorldViewModel />
-        </UserControl.DataContext>
+    <!-- initialises the world view model... move this to Application Startup event? -->
+    <UserControl.DataContext>
+        <Colonies:WorldViewModel />
+    </UserControl.DataContext>
 
-        <!-- shouldn't need these either? -->
-        <UserControl.Resources>
-            <Colonies:TerrainToBrushConverter x:Key="TerrainToBrushConverter" />
-            <Colonies:OrganismToVisibilityConverter x:Key="OrganismToVisibilityConverter" />
-        </UserControl.Resources>
-
-        <Viewbox Stretch="Fill">
-            <!-- TODO: ECOSYSTEM VIEW -->
-            <Border BorderBrush="Black" BorderThickness="0, 0, 1, 1">
-                <!-- border on right & bottom of items control -->
-                <ItemsControl ItemsSource="{Binding Ecosystem.Niches}">
-                    <!-- define the control used for the collection of collections -->
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal"></StackPanel>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-
-                    <!-- define how each collection is presented - a template that is applied to each collection -->
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <ItemsControl ItemsSource="{Binding}">
-
-                                <!-- define the panel used for the collection of items -->
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Vertical"></StackPanel>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-
-                                <!-- define how each item is presented - a template that is applied to each item -->
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <!-- TODO: NICHE VIEW -->
-                                        <Border BorderBrush="Black" BorderThickness="1, 1, 0, 0">
-                                            <!-- border on left & top of each item -->
-                                            <Grid Height="30" Width="30">
-                                                <!-- TODO: HABITAT VIEW -->
-                                                <Rectangle Fill="{Binding Habitat.Terrain, Converter={StaticResource TerrainToBrushConverter}}" />
-                                            
-                                                <!-- TODO: ORGANISM VIEW -->
-                                                <Rectangle Height="15" Width="15" Fill="Black"
-                                                           Visibility="{Binding Organism, Converter={StaticResource OrganismToVisibilityConverter}}">
-                                                </Rectangle>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-
-                            </ItemsControl>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-
-                </ItemsControl>
-            </Border>
-        </Viewbox>
+    <Viewbox Stretch="Fill">
+        <Colonies:EcosystemView DataContext="{Binding Ecosystem}"/>
+    </Viewbox>
 </UserControl>

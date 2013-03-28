@@ -5,20 +5,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:Colonies="clr-namespace:Colonies"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance Colonies:Niche}">
-
-    <UserControl.Resources>
-        <Colonies:OrganismToVisibilityConverter x:Key="OrganismToVisibilityConverter" />
-    </UserControl.Resources>
+             d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance Colonies:NicheViewModel}">
 
     <Border BorderBrush="Black" BorderThickness="1, 1, 0, 0">
         <!-- border on left & top of each item -->
         <Grid Height="30" Width="30">
             <!-- TODO: HABITAT VIEW -->
-            <Colonies:HabitatView DataContext="{Binding Habitat}"/>
+            <Colonies:HabitatView DataContext="{Binding HabitatViewModel}"/>
 
             <!-- TODO: ORGANISM VIEW -->
-            <Colonies:OrganismView Visibility="{Binding Organism, Converter={StaticResource OrganismToVisibilityConverter}}" />
+            <Colonies:OrganismView DataContext="{Binding OrganismViewModel}" />
         </Grid>
     </Border>
     

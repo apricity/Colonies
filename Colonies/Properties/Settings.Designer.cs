@@ -26,30 +26,30 @@ namespace Colonies.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public int BoardWidth {
+        public int EcosystemWidth {
             get {
-                return ((int)(this["BoardWidth"]));
+                return ((int)(this["EcosystemWidth"]));
             }
             set {
-                this["BoardWidth"] = value;
+                this["EcosystemWidth"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public int BoardHeight {
+        public int EcosystemHeight {
             get {
-                return ((int)(this["BoardHeight"]));
+                return ((int)(this["EcosystemHeight"]));
             }
             set {
-                this["BoardHeight"] = value;
+                this["EcosystemHeight"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
         public int UpdateFrequencyInMs {
             get {
                 return ((int)(this["UpdateFrequencyInMs"]));

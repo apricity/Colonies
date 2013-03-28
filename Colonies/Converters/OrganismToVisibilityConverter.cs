@@ -11,7 +11,8 @@ namespace Colonies
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if ((Organism)value != null)
+            var organism = (Organism)value;
+            if (organism != null)
             {
                 return Visibility.Visible;
             }

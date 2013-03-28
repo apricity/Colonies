@@ -9,32 +9,31 @@ namespace Colonies
 
     using Colonies.Annotations;
 
-    public class EcosystemViewModel : INotifyPropertyChanged
+    public sealed class OrganismViewModel : INotifyPropertyChanged
     {
-        private readonly Ecosystem model;
-
-        public List<List<Niche>> Niches
+        private Organism organismModel;
+        public Organism OrganismModel
         {
             get
             {
-                return this.model.Niches;
+                return this.organismModel;
             }
             set
             {
-                this.model.Niches = value;
-                this.OnPropertyChanged("Niches");
+                this.organismModel = value;
+                this.OnPropertyChanged("OrganismModel");
             }
         }
 
-        public EcosystemViewModel(Ecosystem model)
+        public OrganismViewModel(Organism organismModel)
         {
-            this.model = model;
+            this.OrganismModel = organismModel;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
             var handler = PropertyChanged;
             if (handler != null)

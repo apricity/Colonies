@@ -50,67 +50,60 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="Application Startup\App.xaml">
+    <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="World\Ecosystem\Ecosystem.cs" />
-    <Compile Include="World\Ecosystem\EcosystemViewModel.cs" />
-    <Compile Include="World\Ecosystem\EcosystemView.xaml.cs">
+    <Compile Include="Models\Ecosystem.cs" />
+    <Compile Include="ViewModels\EcosystemViewModel.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="Views\EcosystemView.xaml.cs">
       <DependentUpon>EcosystemView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="World\Ecosystem\Niche\NicheView.xaml.cs">
+    <Compile Include="Views\NicheView.xaml.cs">
       <DependentUpon>NicheView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="World\Ecosystem\Niche\NicheViewModel.cs" />
-    <Compile Include="World\Ecosystem\Niche\Habitat\HabitatView.xaml.cs">
+    <Compile Include="ViewModels\NicheViewModel.cs" />
+    <Compile Include="Views\HabitatView.xaml.cs">
       <DependentUpon>HabitatView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="World\Ecosystem\Niche\Habitat\HabitatViewModel.cs" />
-    <Compile Include="World\Ecosystem\Niche\Niche.cs" />
-    <Compile Include="World\Ecosystem\Niche\Habitat\Habitat.cs" />
+    <Compile Include="ViewModels\HabitatViewModel.cs" />
+    <Compile Include="Models\Niche.cs" />
+    <Compile Include="Models\Habitat.cs" />
     <Compile Include="Enums.cs" />
-    <Compile Include="World\Ecosystem\Niche\Organism\OrganismViewModel.cs" />
-    <Compile Include="World\Ecosystem\Niche\Organism\Organism.cs" />
-    <Compile Include="ValueConverters\OrganismToVisibilityConverter.cs" />
-    <Compile Include="ValueConverters\TerrainToBrushConverter.cs" />
+    <Compile Include="ViewModels\OrganismViewModel.cs" />
+    <Compile Include="Models\Organism.cs" />
+    <Compile Include="Converters\OrganismToVisibilityConverter.cs" />
+    <Compile Include="Converters\TerrainToBrushConverter.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="World\Ecosystem\Niche\Organism\OrganismView.xaml.cs">
+    <Compile Include="Views\OrganismView.xaml.cs">
       <DependentUpon>OrganismView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="World\WorldViewModel.cs" />
-    <Compile Include="World\WorldView.xaml.cs">
-      <DependentUpon>WorldView.xaml</DependentUpon>
-    </Compile>
-    <Page Include="Application Startup\MainWindow.xaml">
+    <Page Include="Views\MainWindowView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Application Startup\App.xaml.cs">
+    <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Application Startup\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="Views\MainWindowView.xaml.cs">
+      <DependentUpon>MainWindowView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="World\Ecosystem\EcosystemView.xaml">
+    <Page Include="Views\EcosystemView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="World\Ecosystem\Niche\NicheView.xaml">
+    <Page Include="Views\NicheView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="World\Ecosystem\Niche\Habitat\HabitatView.xaml">
+    <Page Include="Views\HabitatView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="World\Ecosystem\Niche\Organism\OrganismView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="World\WorldView.xaml">
+    <Page Include="Views\OrganismView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -134,7 +127,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="Application Startup\app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

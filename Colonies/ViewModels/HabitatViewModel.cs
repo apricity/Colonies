@@ -9,45 +9,44 @@ namespace Colonies
 
     using Colonies.Annotations;
 
-    public class NicheViewModel : INotifyPropertyChanged
+    public sealed class HabitatViewModel : INotifyPropertyChanged
     {
-        private readonly Niche model;
-
-        public Habitat Habitat
+        private Habitat habitatModel;
+        public Habitat HabitatModel
         {
             get
             {
-                return this.model.Habitat;
+                return this.habitatModel;
             }
             set
             {
-                this.model.Habitat = value;
-                this.OnPropertyChanged("Habitat");
+                this.habitatModel = value;
+                this.OnPropertyChanged("HabitatModel");
             }
         }
 
-        public Organism Organism
+        public Terrain Terrain
         {
             get
             {
-                return this.model.Organism;
+                return this.HabitatModel.Terrain;
             }
             set
             {
-                this.model.Organism = value;
-                this.OnPropertyChanged("Organism");
+                this.HabitatModel.Terrain = value;
+                this.OnPropertyChanged("Terrain");
             }
         }
 
-        public NicheViewModel(Niche model)
+        public HabitatViewModel(Habitat model)
         {
-            this.model = model;
+            this.HabitatModel = model;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
             var handler = PropertyChanged;
             if (handler != null)

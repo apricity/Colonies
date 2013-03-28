@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace Colonies
 {
     /// <summary>
-    /// Interaction logic for WorldView.xaml
+    /// Interaction logic for MainWindowView.xaml
     /// </summary>
-    public partial class WorldView : UserControl
+    public partial class MainWindowView : Window
     {
-        public WorldView()
+        public MainWindowView()
         {
             InitializeComponent();
         }

@@ -2,14 +2,14 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Colonies.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="BoardWidth" Type="System.Int32" Scope="User">
+    <Setting Name="EcosystemWidth" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
     </Setting>
-    <Setting Name="BoardHeight" Type="System.Int32" Scope="User">
+    <Setting Name="EcosystemHeight" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="UpdateFrequencyInMs" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1000</Value>
+      <Value Profile="(Default)">2000</Value>
     </Setting>
   </Settings>
 </SettingsFile>

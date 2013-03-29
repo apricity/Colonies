@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Colonies
+﻿namespace Colonies.Models
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public sealed class Ecosystem
     {
-        public List<List<Niche>> Niches { get; set; }
+        public List<List<Habitat>> Habitats { get; set; }
 
         // TODO: are height and width the right way round?
         public int Height
         {
             get
             {
-                return this.Niches.Count;
+                return this.Habitats.Count;
             }
         }
 
@@ -21,13 +21,13 @@ namespace Colonies
         {
             get
             {
-                return this.Niches.First().Count;
+                return this.Habitats.First().Count;
             }
         }
 
-        public Ecosystem(List<List<Niche>> niches)
+        public Ecosystem(List<List<Habitat>> habitats)
         {
-            this.Niches = niches;
+            this.Habitats = habitats;
         }
 
         public override String ToString()

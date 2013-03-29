@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Colonies
+﻿namespace Colonies.ViewModels
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.ComponentModel;
     using System.Threading;
 
     using Colonies.Annotations;
+    using Colonies.Models;
 
     public sealed class EcosystemViewModel : INotifyPropertyChanged
     {
@@ -28,17 +27,17 @@ namespace Colonies
             }
         }
 
-        private List<List<NicheViewModel>> nicheViewModels;
-        public List<List<NicheViewModel>> NicheViewModels
+        private List<List<HabitatViewModel>> habitatViewModels;
+        public List<List<HabitatViewModel>> HabitatViewModels
         {
             get
             {
-                return this.nicheViewModels;
+                return this.habitatViewModels;
             }
             set
             {
-                this.nicheViewModels = value;
-                this.OnPropertyChanged("NicheViewModels");
+                this.habitatViewModels = value;
+                this.OnPropertyChanged("HabitatViewModels");
             }
         }
 
@@ -46,13 +45,13 @@ namespace Colonies
         {
             this.EcosystemModel = model;
 
-            this.NicheViewModels = new List<List<NicheViewModel>>();
+            this.HabitatViewModels = new List<List<HabitatViewModel>>();
             for (int x = 0; x < this.EcosystemModel.Width; x++)
             {
-                nicheViewModels.Add(new List<NicheViewModel>());
+                this.habitatViewModels.Add(new List<HabitatViewModel>());
                 for (int y = 0; y < this.EcosystemModel.Height; y++)
                 {
-                    this.NicheViewModels[x].Add(new NicheViewModel(this.EcosystemModel.Niches[x][y]));
+                    this.HabitatViewModels[x].Add(new HabitatViewModel(this.EcosystemModel.Habitats[x][y]));
                 }
             }
         }
@@ -65,34 +64,34 @@ namespace Colonies
 
         private void UpdateModel(object state)
         {
-            var organismViewModels = this.GetOrganisms();
+            var organismViewModels = this.GetOrganismViewmodels();
             foreach (var organismViewModel in organismViewModels)
             {
-                this.MoveOrganismToRandomAvailableNiche(organismViewModel.OrganismModel);
+                this.MoveOrganismToRandomAvailableHabitat(organismViewModel.OrganismModel);
             }
         }
 
-        public void AddOrganism(int x, int y, Organism organism)
+        private void AddOrganism(int x, int y, Organism organism)
         {
             if (this.ContainsOrganism(x, y))
             {
                 throw new Exception(String.Format("Organism already occupies coordinates ({0}, {1})", x, y));
             }
 
-            this.NicheViewModels[x][y].OrganismViewModel.OrganismModel = organism;
+            this.HabitatViewModels[x][y].OrganismViewModel.OrganismModel = organism;
         }
 
-        public void RemoveOrganism(int x, int y)
+        private void RemoveOrganism(int x, int y)
         {
             if (!this.ContainsOrganism(x, y))
             {
                 throw new Exception(String.Format("No organism exists at coordinates ({0}, {1})", x, y));
             }
 
-            this.NicheViewModels[x][y].OrganismViewModel.OrganismModel = null;
+            this.HabitatViewModels[x][y].OrganismViewModel.OrganismModel = null;
         }
 
-        public List<OrganismViewModel> GetOrganisms()
+        private IEnumerable<OrganismViewModel> GetOrganismViewmodels()
         {
             var organisms = new List<OrganismViewModel>();
 
@@ -102,7 +101,7 @@ namespace Colonies
                 {
                     if (this.ContainsOrganism(x, y))
                     {
-                        organisms.Add(this.NicheViewModels[x][y].OrganismViewModel);
+                        organisms.Add(this.HabitatViewModels[x][y].OrganismViewModel);
                     }
                 }
             }
@@ -110,58 +109,30 @@ namespace Colonies
             return organisms;
         }
 
-        public bool ContainsOrganism(int x, int y)
+        private bool ContainsOrganism(int x, int y)
         {
-            return this.NicheViewModels[x][y].OrganismViewModel.OrganismModel != null;
+            return this.HabitatViewModels[x][y].OrganismViewModel.OrganismModel != null;
         }
 
-        public NicheViewModel GetNiche(int x, int y)
+        private HabitatViewModel GetHabitatOfOrganism(Organism organism)
         {
-            return this.NicheViewModels[x][y];
-        }
-
-        public void SetNiche(int x, int y, Niche niche)
-        {
-            this.NicheViewModels[x][y].NicheModel = niche;
-        }
-
-        public List<NicheViewModel> GetOccupiedNiches()
-        {
-            var occupiedNiches = new List<NicheViewModel>();
+            var habitatsOfOrganism = new List<HabitatViewModel>();
 
             for (int x = 0; x < this.EcosystemModel.Width; x++)
             {
                 for (int y = 0; y < this.EcosystemModel.Height; y++)
                 {
-                    if (this.ContainsOrganism(x, y))
+                    if (this.ContainsOrganism(x, y) && this.HabitatViewModels[x][y].OrganismViewModel.OrganismModel.Equals(organism))
                     {
-                        occupiedNiches.Add(this.GetNiche(x, y));
+                        habitatsOfOrganism.Add(this.HabitatViewModels[x][y]);
                     }
                 }
             }
 
-            return occupiedNiches;
+            return habitatsOfOrganism.Single();
         }
 
-        private NicheViewModel GetNicheOfOrganism(Organism organism)
-        {
-            var nichesOfOrganism = new List<NicheViewModel>();
-
-            for (int x = 0; x < this.EcosystemModel.Width; x++)
-            {
-                for (int y = 0; y < this.EcosystemModel.Height; y++)
-                {
-                    if (this.ContainsOrganism(x, y))
-                    {
-                        nichesOfOrganism.Add(this.NicheViewModels[x][y]);
-                    }
-                }
-            }
-
-            return nichesOfOrganism.Single();
-        }
-
-        public void MoveOrganismToRandomAvailableNiche(Organism organism)
+        private void MoveOrganismToRandomAvailableHabitat(Organism organism)
         {
             var random = new Random();
             var targetColumn = random.Next(5);
@@ -169,8 +140,8 @@ namespace Colonies
 
             if (!this.ContainsOrganism(targetColumn, targetRow))
             {
-                var currentOrganismNiche = this.GetNicheOfOrganism(organism);
-                currentOrganismNiche.OrganismViewModel.OrganismModel = null;
+                var currentOrganismHabitat = this.GetHabitatOfOrganism(organism);
+                currentOrganismHabitat.OrganismViewModel.OrganismModel = null;
 
                 this.AddOrganism(targetColumn, targetRow, organism);
             }
@@ -181,7 +152,7 @@ namespace Colonies
         [NotifyPropertyChangedInvocator]
         private void OnPropertyChanged(string propertyName)
         {
-            var handler = PropertyChanged;
+            var handler = this.PropertyChanged;
             if (handler != null)
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));

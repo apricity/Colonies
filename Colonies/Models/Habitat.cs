@@ -1,17 +1,21 @@
-﻿namespace Colonies
+﻿namespace Colonies.Models
 {
+    using System;
+
     public sealed class Habitat
     {
-        public Terrain Terrain { get; set; }
+        public Environment Environment { get; set; }
+        public Organism Organism { get; set; }
 
-        public Habitat(Terrain terrain)
+        public Habitat(Environment environment, Organism organism)
         {
-            this.Terrain = terrain;
+            this.Environment = environment;
+            this.Organism = organism;
         }
-        
-        public override string ToString()
+
+        public override String ToString()
         {
-            return this.Terrain.ToString();
+            return String.Format("{0}, {1}", this.Environment, this.Organism);
         }
     }
 }

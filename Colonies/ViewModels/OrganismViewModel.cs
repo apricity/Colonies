@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Colonies
+﻿namespace Colonies.ViewModels
 {
     using System.ComponentModel;
 
     using Colonies.Annotations;
+    using Colonies.Models;
 
     public sealed class OrganismViewModel : INotifyPropertyChanged
     {
@@ -35,7 +31,7 @@ namespace Colonies
         [NotifyPropertyChangedInvocator]
         private void OnPropertyChanged(string propertyName)
         {
-            var handler = PropertyChanged;
+            var handler = this.PropertyChanged;
             if (handler != null)
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));

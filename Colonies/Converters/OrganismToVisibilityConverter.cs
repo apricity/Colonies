@@ -7,6 +7,8 @@ namespace Colonies
     using System.Windows.Data;
     using System.Windows.Media;
 
+    using Colonies.Models;
+
     public class OrganismToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

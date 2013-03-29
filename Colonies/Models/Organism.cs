@@ -1,4 +1,4 @@
-﻿namespace Colonies
+﻿namespace Colonies.Models
 {
     public class Organism
     {

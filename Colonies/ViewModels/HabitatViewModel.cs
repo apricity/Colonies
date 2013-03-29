@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Colonies
+﻿namespace Colonies.ViewModels
 {
     using System.ComponentModel;
 
     using Colonies.Annotations;
+    using Colonies.Models;
 
     public sealed class HabitatViewModel : INotifyPropertyChanged
     {
@@ -25,22 +21,40 @@ namespace Colonies
             }
         }
 
-        public Terrain Terrain
+        private EnvironmentViewModel environmentViewModel;
+        public EnvironmentViewModel EnvironmentViewModel
         {
             get
             {
-                return this.HabitatModel.Terrain;
+                return this.environmentViewModel;
             }
             set
             {
-                this.HabitatModel.Terrain = value;
-                this.OnPropertyChanged("Terrain");
+                this.environmentViewModel = value;
+                this.OnPropertyChanged("EnvironmentViewModel");
+            }
+        }
+
+        private OrganismViewModel organismViewModel;
+        public OrganismViewModel OrganismViewModel
+        {
+            get
+            {
+                return this.organismViewModel;
+            }
+            set
+            {
+                this.organismViewModel = value;
+                this.OnPropertyChanged("OrganismViewModel");
             }
         }
 
         public HabitatViewModel(Habitat model)
         {
             this.HabitatModel = model;
+
+            this.EnvironmentViewModel = new EnvironmentViewModel(this.HabitatModel.Environment);
+            this.OrganismViewModel = new OrganismViewModel(this.HabitatModel.Organism);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -48,7 +62,7 @@ namespace Colonies
         [NotifyPropertyChangedInvocator]
         private void OnPropertyChanged(string propertyName)
         {
-            var handler = PropertyChanged;
+            var handler = this.PropertyChanged;
             if (handler != null)
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));

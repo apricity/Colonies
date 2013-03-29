@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Colonies
+﻿namespace Colonies.ViewModels
 {
+    using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Threading;
 
     using Colonies.Annotations;
+    using Colonies.Models;
 
     public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
@@ -29,16 +25,16 @@ namespace Colonies
         public MainWindowViewModel()
         {
             // first: build an initial underlying ecosystem model consisting of nothing
-            var initialEcosystem = this.InitialiseEcosystem(
+            var initialEcosystem = this.InitialiseBaseEcosystem(
                 Properties.Settings.Default.EcosystemHeight, Properties.Settings.Default.EcosystemWidth);
 
             // second: add terrain and organisms to the ecosystem
-            this.RegenerateTerrain(initialEcosystem);
-            this.RegenerateOrganisms(initialEcosystem);
+            this.InitialiseTerrain(initialEcosystem);
+            this.InitialiseOrganisms(initialEcosystem);
 
-            // third: generate a new ecosystem view-model with the ecosystem
+            // third: generate a new ecosystem view-model with the initial ecosystem
             // (this will propogate downwards, generating the full view-model tree
-            //  - EcosystemViewModel will create NicheViewModels from the Ecosystem that it's given, and so on)
+            //  - EcosystemViewModel will create HabitatViewModels from the Ecosystem that it's given, and so on)
             // this will fire off OnPropertyChanged events, causing the UI to update with the new ecosystem model
             this.EcosystemViewModel = new EcosystemViewModel(initialEcosystem);
 
@@ -46,28 +42,28 @@ namespace Colonies
             this.EcosystemViewModel.StartEcosystem();
         }
 
-        private Ecosystem InitialiseEcosystem(int height, int width)
+        private Ecosystem InitialiseBaseEcosystem(int height, int width)
         {
-            // create a 2D array of niches, which will represent the ecosystem
-            var niches = new List<List<Niche>>();
+            // create a 2D array of habitats, which will represent the ecosystem
+            var habitats = new List<List<Habitat>>();
             for (var x = 0; x < width; x++)
             {
-                niches.Add(new List<Niche>());
+                habitats.Add(new List<Habitat>());
                 for (var y = 0; y < width; y++)
                 {
-                    // initially set each niche to have an unknown habitat and no organism
-                    var habitat = new Habitat(Terrain.Unknown);
-                    var niche = new Niche(habitat, null);
-                    niches[x].Add(niche);
+                    // initially set each habitat to have an unknown environment and no organism
+                    var environment = new Environment(Terrain.Unknown);
+                    var habitat = new Habitat(environment, null);
+                    habitats[x].Add(habitat);
                 }
             }
 
-            return new Ecosystem(niches);
+            return new Ecosystem(habitats);
         }
 
-        private void RegenerateTerrain(Ecosystem ecosystem)
+        private void InitialiseTerrain(Ecosystem ecosystem)
         {
-            // apply a terrain for every niche
+            // apply a terrain for every habitat
             for (var x = 0; x < ecosystem.Width; x++)
             {
                 for (var y = 0; y < ecosystem.Height; y++)
@@ -93,12 +89,12 @@ namespace Colonies
                             break;
                     }
 
-                    ecosystem.Niches[x][y].Habitat.Terrain = terrain;
+                    ecosystem.Habitats[x][y].Environment.Terrain = terrain;
                 }
             }
         }
 
-        private void RegenerateOrganisms(Ecosystem ecosystem)
+        private void InitialiseOrganisms(Ecosystem ecosystem)
         {
             // place some organisms in the ecosystem
             // nothing clever yet, just removing all organisms and adding one in a starting position
@@ -106,11 +102,11 @@ namespace Colonies
             {
                 for (var y = 0; y < ecosystem.Height; y++)
                 {
-                    ecosystem.Niches[x][y].Organism = null;
+                    ecosystem.Habitats[x][y].Organism = null;
                 }
             }
 
-            ecosystem.Niches[0][0].Organism = new Organism("Wacton");
+            ecosystem.Habitats[0][0].Organism = new Organism("Wacton");
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -118,7 +114,7 @@ namespace Colonies
         [NotifyPropertyChangedInvocator]
         private void OnPropertyChanged(string propertyName)
         {
-            var handler = PropertyChanged;
+            var handler = this.PropertyChanged;
             if (handler != null)
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));

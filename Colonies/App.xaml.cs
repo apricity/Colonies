@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Windows;
-
-namespace Colonies
+﻿namespace Colonies
 {
-    using System.Threading;
+    using System;
+    using System.Windows;
+
+    using Colonies.ViewModels;
+    using Colonies.Views;
 
     /// <summary>
     /// Interaction logic for App.xaml
@@ -17,7 +14,7 @@ namespace Colonies
         private void ApplicationStartup(object sender, StartupEventArgs e)
         {
             // hook up unhandled exception handling
-            AppDomain.CurrentDomain.UnhandledException += App.OnUnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
             // create a view model for the main window
             // this will create the entire view-model tree and the underlying model

@@ -3,11 +3,11 @@
     using System.Windows.Controls;
 
     /// <summary>
-    /// Interaction logic for OrganismView.xaml
+    /// Interaction logic for EnvironmentView.xaml
     /// </summary>
-    public partial class OrganismView : UserControl
+    public partial class EnvironmentView : UserControl
     {
-        public OrganismView()
+        public EnvironmentView()
         {
             this.InitializeComponent();
         }

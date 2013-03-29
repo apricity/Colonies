@@ -56,20 +56,20 @@
     </ApplicationDefinition>
     <Compile Include="Models\Ecosystem.cs" />
     <Compile Include="ViewModels\EcosystemViewModel.cs" />
+    <Compile Include="ViewModels\EnvironmentViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\EcosystemView.xaml.cs">
       <DependentUpon>EcosystemView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\NicheView.xaml.cs">
-      <DependentUpon>NicheView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ViewModels\NicheViewModel.cs" />
     <Compile Include="Views\HabitatView.xaml.cs">
       <DependentUpon>HabitatView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\HabitatViewModel.cs" />
-    <Compile Include="Models\Niche.cs" />
+    <Compile Include="Views\EnvironmentView.xaml.cs">
+      <DependentUpon>EnvironmentView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Models\Habitat.cs" />
+    <Compile Include="Models\Environment.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="ViewModels\OrganismViewModel.cs" />
     <Compile Include="Models\Organism.cs" />
@@ -95,11 +95,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\NicheView.xaml">
+    <Page Include="Views\HabitatView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\HabitatView.xaml">
+    <Page Include="Views\EnvironmentView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

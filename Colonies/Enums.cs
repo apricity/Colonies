@@ -13,4 +13,9 @@ namespace Colonies
         Water,
         Fire
     }
+
+    public enum ViewModelMessage
+    {
+        CheckIfModelHasChanged
+    }
 }

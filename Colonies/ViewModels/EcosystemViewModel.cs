@@ -9,24 +9,10 @@
     using Colonies.Annotations;
     using Colonies.Models;
 
-    public sealed class EcosystemViewModel : INotifyPropertyChanged
+    using Microsoft.Practices.Prism.Events;
+
+    public sealed class EcosystemViewModel : ViewModelBase<Ecosystem>
     {
-        private Timer ecosystemTimer;
-
-        private Ecosystem ecosystemModel;
-        public Ecosystem EcosystemModel
-        {
-            get
-            {
-                return this.ecosystemModel;
-            }
-            set
-            {
-                this.ecosystemModel = value;
-                this.OnPropertyChanged("EcosystemModel");
-            }
-        }
-
         private List<List<HabitatViewModel>> habitatViewModels;
         public List<List<HabitatViewModel>> HabitatViewModels
         {
@@ -41,122 +27,110 @@
             }
         }
 
-        public EcosystemViewModel(Ecosystem model)
+        public EcosystemViewModel(Ecosystem model, List<List<HabitatViewModel>> habitatViewModels, IEventAggregator eventAggregator)
+            : base(model, eventAggregator)
         {
-            this.EcosystemModel = model;
+            this.HabitatViewModels = habitatViewModels;
 
-            this.HabitatViewModels = new List<List<HabitatViewModel>>();
-            for (int x = 0; x < this.EcosystemModel.Width; x++)
-            {
-                this.habitatViewModels.Add(new List<HabitatViewModel>());
-                for (int y = 0; y < this.EcosystemModel.Height; y++)
-                {
-                    this.HabitatViewModels[x].Add(new HabitatViewModel(this.EcosystemModel.Habitats[x][y]));
-                }
-            }
+            //// TODO: make ecosystem model enumerable, with iteration of left-to-right, top-to-bottom (x then y)
+            //this.HabitatViewModels = new List<List<HabitatViewModel>>();
+            //for (var x = 0; x < this.EcosystemModel.Width; x++)
+            //{
+            //    this.habitatViewModels.Add(new List<HabitatViewModel>());
+            //    for (var y = 0; y < this.EcosystemModel.Height; y++)
+            //    {
+            //        this.HabitatViewModels[x].Add(new HabitatViewModel(this.EcosystemModel.Habitats[x][y]));
+            //    }
+            //}
         }
 
-        public void StartEcosystem()
-        {
-            TimerCallback modelTimerCallback = this.UpdateModel;
-            this.ecosystemTimer = new Timer(modelTimerCallback, null, 2000, 1000);
-        }
+        //public void StartEcosystem()
+        //{
+        //    this.ecosystemTimer = new Timer(this.Update, null, 2000, Properties.Settings.Default.UpdateFrequencyInMs);
+        //}
 
-        private void UpdateModel(object state)
-        {
-            var organismViewModels = this.GetOrganismViewmodels();
-            foreach (var organismViewModel in organismViewModels)
-            {
-                this.MoveOrganismToRandomAvailableHabitat(organismViewModel.OrganismModel);
-            }
-        }
+        //private void Update(object state)
+        //{
+        //    this.DomainModel.Update();
+        //}
 
-        private void AddOrganism(int x, int y, Organism organism)
-        {
-            if (this.ContainsOrganism(x, y))
-            {
-                throw new Exception(String.Format("Organism already occupies coordinates ({0}, {1})", x, y));
-            }
+        //public void Update(object state)
+        //{
+        //    // currently, updating the ecosystem simply means
+        //    // randomly moving all organisms to a different habitat
+        //    var random = new Random();
 
-            this.HabitatViewModels[x][y].OrganismViewModel.OrganismModel = organism;
-        }
+        //    var occupiedHabitats = this.GetOccupiedHabitats();
+        //    foreach (var occupiedHabitat in occupiedHabitats)
+        //    {
+        //        var destinationX = random.Next(this.EcosystemModel.Width);
+        //        var destinationY = random.Next(this.EcosystemModel.Height);
+        //        var destinationHabitat = this.HabitatViewModels[destinationX][destinationY];
 
-        private void RemoveOrganism(int x, int y)
-        {
-            if (!this.ContainsOrganism(x, y))
-            {
-                throw new Exception(String.Format("No organism exists at coordinates ({0}, {1})", x, y));
-            }
+        //        if (!destinationHabitat.Equals(occupiedHabitat))
+        //        {
+        //            this.MoveOrganism(occupiedHabitat, destinationHabitat);
+        //        }
+        //    }
+        //}
 
-            this.HabitatViewModels[x][y].OrganismViewModel.OrganismModel = null;
-        }
+        //private void MoveOrganism(HabitatViewModel sourceHabitat, HabitatViewModel destinationHabitat)
+        //{
+        //    if (!sourceHabitat.HabitatModel.ContainsOrganism())
+        //    {
+        //        throw new ArgumentException(String.Format("Source habitat {0} does not contain an organism", sourceHabitat), "sourceHabitat");
+        //    }
 
-        private IEnumerable<OrganismViewModel> GetOrganismViewmodels()
-        {
-            var organisms = new List<OrganismViewModel>();
+        //    if (destinationHabitat.HabitatModel.ContainsOrganism())
+        //    {
+        //        throw new ArgumentException(String.Format("Desyination habitat {0} already contains an organism", destinationHabitat), "destinationHabitat");
+        //    }
 
-            for (int x = 0; x < this.EcosystemModel.Width; x++)
-            {
-                for (int y = 0; y < this.EcosystemModel.Height; y++)
-                {
-                    if (this.ContainsOrganism(x, y))
-                    {
-                        organisms.Add(this.HabitatViewModels[x][y].OrganismViewModel);
-                    }
-                }
-            }
+        //    var organismToMove = sourceHabitat.OrganismViewModel.OrganismModel;
+        //    this.RemoveOrganism(sourceHabitat);
+        //    this.AddOrganism(destinationHabitat, organismToMove);
+        //}
 
-            return organisms;
-        }
+        //private bool ContainsOrganism(int x, int y)
+        //{
+        //    return this.HabitatViewModels[x][y].HabitatModel.ContainsOrganism();
+        //}
 
-        private bool ContainsOrganism(int x, int y)
-        {
-            return this.HabitatViewModels[x][y].OrganismViewModel.OrganismModel != null;
-        }
+        //private void AddOrganism(HabitatViewModel habitat, Organism organism)
+        //{
+        //    if (habitat.HabitatModel.ContainsOrganism())
+        //    {
+        //        throw new ArgumentException(String.Format("Organism already exists at habitat {0}", habitat), "habitat");
+        //    }
 
-        private HabitatViewModel GetHabitatOfOrganism(Organism organism)
-        {
-            var habitatsOfOrganism = new List<HabitatViewModel>();
+        //    habitat.OrganismViewModel.OrganismModel = organism;
+        //}
 
-            for (int x = 0; x < this.EcosystemModel.Width; x++)
-            {
-                for (int y = 0; y < this.EcosystemModel.Height; y++)
-                {
-                    if (this.ContainsOrganism(x, y) && this.HabitatViewModels[x][y].OrganismViewModel.OrganismModel.Equals(organism))
-                    {
-                        habitatsOfOrganism.Add(this.HabitatViewModels[x][y]);
-                    }
-                }
-            }
+        //private void RemoveOrganism(HabitatViewModel habitat)
+        //{
+        //    if (!habitat.HabitatModel.ContainsOrganism())
+        //    {
+        //        throw new ArgumentException(String.Format("No organism exists at habitat {0}", habitat), "habitat");
+        //    }
 
-            return habitatsOfOrganism.Single();
-        }
+        //    habitat.OrganismViewModel.OrganismModel = null;
+        //}
 
-        private void MoveOrganismToRandomAvailableHabitat(Organism organism)
-        {
-            var random = new Random();
-            var targetColumn = random.Next(5);
-            var targetRow = random.Next(5);
+        //private IEnumerable<HabitatViewModel> GetOccupiedHabitats()
+        //{
+        //    var occupiedHabitats = new List<HabitatViewModel>();
+        //    foreach (var habitatList in this.HabitatViewModels)
+        //    {
+        //        foreach (var habitat in habitatList)
+        //        {
+        //            if (habitat.HabitatModel.ContainsOrganism())
+        //            {
+        //                occupiedHabitats.Add(habitat);
+        //            }
+        //        }
+        //    }
 
-            if (!this.ContainsOrganism(targetColumn, targetRow))
-            {
-                var currentOrganismHabitat = this.GetHabitatOfOrganism(organism);
-                currentOrganismHabitat.OrganismViewModel.OrganismModel = null;
-
-                this.AddOrganism(targetColumn, targetRow, organism);
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        private void OnPropertyChanged(string propertyName)
-        {
-            var handler = this.PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
+        //    return occupiedHabitats;
+        //}
     }
 }

@@ -8,14 +8,15 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance ViewModels:HabitatViewModel}">
 
+    <UserControl.Resources>
+        <Colonies:OrganismToVisibilityConverter x:Key="OrganismToVisibilityConverter" />
+    </UserControl.Resources>
+    
     <Border BorderBrush="Black" BorderThickness="1, 1, 0, 0">
         <!-- border on left & top of each item -->
         <Grid Height="30" Width="30">
-            <!-- TODO: HABITAT VIEW -->
             <Views:EnvironmentView DataContext="{Binding EnvironmentViewModel}"/>
-
-            <!-- TODO: ORGANISM VIEW -->
-            <Views:OrganismView DataContext="{Binding OrganismViewModel}" />
+            <Views:OrganismView  Visibility="{Binding OrganismVisibility}"/>
         </Grid>
     </Border>
     

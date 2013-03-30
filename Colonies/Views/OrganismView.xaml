@@ -6,12 +6,7 @@
              xmlns:Colonies="clr-namespace:Colonies" xmlns:ViewModels="clr-namespace:Colonies.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance ViewModels:OrganismViewModel}">
+    
+    <Rectangle Height="15" Width="15" Fill="Black" />
 
-    <UserControl.Resources>
-        <Colonies:OrganismToVisibilityConverter x:Key="OrganismToVisibilityConverter" />
-    </UserControl.Resources>
-    
-    <Rectangle Height="15" Width="15" Fill="Black"
-               Visibility="{Binding OrganismModel, Converter={StaticResource OrganismToVisibilityConverter}}"/>
-    
 </UserControl>

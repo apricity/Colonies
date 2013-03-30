@@ -1,26 +1,15 @@
 ﻿namespace Colonies.ViewModels
 {
     using System.ComponentModel;
+    using System.Windows;
 
     using Colonies.Annotations;
     using Colonies.Models;
 
-    public sealed class HabitatViewModel : INotifyPropertyChanged
-    {
-        private Habitat habitatModel;
-        public Habitat HabitatModel
-        {
-            get
-            {
-                return this.habitatModel;
-            }
-            set
-            {
-                this.habitatModel = value;
-                this.OnPropertyChanged("HabitatModel");
-            }
-        }
+    using Microsoft.Practices.Prism.Events;
 
+    public sealed class HabitatViewModel : ViewModelBase<Habitat>
+    {
         private EnvironmentViewModel environmentViewModel;
         public EnvironmentViewModel EnvironmentViewModel
         {
@@ -35,37 +24,40 @@
             }
         }
 
-        private OrganismViewModel organismViewModel;
-        public OrganismViewModel OrganismViewModel
+        private OrganismViewModel OrganismViewModel { get; set; }
+
+        private Visibility organismVisibility;
+        public Visibility OrganismVisibility
         {
             get
             {
-                return this.organismViewModel;
+                return this.organismVisibility;
             }
             set
             {
-                this.organismViewModel = value;
-                this.OnPropertyChanged("OrganismViewModel");
+                this.organismVisibility = value;
+                this.OnPropertyChanged("OrganismVisibility");
             }
         }
 
-        public HabitatViewModel(Habitat model)
+        public HabitatViewModel(Habitat model, EnvironmentViewModel environmentViewModel, OrganismViewModel organismViewModel, IEventAggregator eventAggregator)
+            : base(model, eventAggregator)
         {
-            this.HabitatModel = model;
+            this.EventAggregator.GetEvent<OrganismMovedEvent>().Subscribe(this.UpdateVisibility);
 
-            this.EnvironmentViewModel = new EnvironmentViewModel(this.HabitatModel.Environment);
-            this.OrganismViewModel = new OrganismViewModel(this.HabitatModel.Organism);
+            this.EnvironmentViewModel = environmentViewModel;
+            this.OrganismViewModel = organismViewModel;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        private void OnPropertyChanged(string propertyName)
+        private void UpdateVisibility(string s)
         {
-            var handler = this.PropertyChanged;
-            if (handler != null)
+            if (this.DomainModel.ContainsOrganism())
             {
-                handler(this, new PropertyChangedEventArgs(propertyName));
+                this.OrganismVisibility = Visibility.Visible;
+            }
+            else
+            {
+                this.OrganismVisibility = Visibility.Hidden;
             }
         }
     }

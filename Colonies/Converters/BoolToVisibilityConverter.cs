@@ -9,11 +9,11 @@ namespace Colonies
 
     using Colonies.Models;
 
-    public class OrganismToVisibilityConverter : IValueConverter
+    public class BoolToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null)
+            if ((bool)value)
             {
                 return Visibility.Visible;
             }

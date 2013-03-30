@@ -12,4 +12,5 @@
     </UserControl.Resources>
 
     <Rectangle Fill="{Binding Terrain, Converter={StaticResource TerrainToBrushConverter}}" />
+    
 </UserControl>

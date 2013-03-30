@@ -1,41 +1,28 @@
 ﻿namespace Colonies.ViewModels
 {
     using System.ComponentModel;
+    using System.Windows.Media;
 
     using Colonies.Annotations;
     using Colonies.Models;
 
-    public sealed class OrganismViewModel : INotifyPropertyChanged
+    using Microsoft.Practices.Prism.Events;
+
+    public sealed class OrganismViewModel : ViewModelBase<Organism>
     {
-        private Organism organismModel;
-        public Organism OrganismModel
+        public SolidColorBrush OrganismBrush
         {
             get
             {
-                return this.organismModel;
-            }
-            set
-            {
-                this.organismModel = value;
-                this.OnPropertyChanged("OrganismModel");
+                var mediaColor = System.Windows.Media.Color.FromRgb(this.DomainModel.Color.R, this.DomainModel.Color.G, this.DomainModel.Color.B);
+                return new SolidColorBrush(mediaColor);
             }
         }
 
-        public OrganismViewModel(Organism organismModel)
+        public OrganismViewModel(Organism model, IEventAggregator eventAggregator)
+            : base(model, eventAggregator)
         {
-            this.OrganismModel = organismModel;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        private void OnPropertyChanged(string propertyName)
-        {
-            var handler = this.PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
+            
         }
     }
 }

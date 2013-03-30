@@ -5,50 +5,27 @@
     using Colonies.Annotations;
     using Colonies.Models;
 
-    public sealed class EnvironmentViewModel : INotifyPropertyChanged
-    {
-        private Environment environmentModel;
-        public Environment EnvironmentModel
-        {
-            get
-            {
-                return this.environmentModel;
-            }
-            set
-            {
-                this.environmentModel = value;
-                this.OnPropertyChanged("EnvironmentModel");
-            }
-        }
+    using Microsoft.Practices.Prism.Events;
 
+    public sealed class EnvironmentViewModel : ViewModelBase<Environment>
+    {
         public Terrain Terrain
         {
             get
             {
-                return this.EnvironmentModel.Terrain;
+                return this.DomainModel.Terrain;
             }
             set
             {
-                this.EnvironmentModel.Terrain = value;
+                this.DomainModel.Terrain = value;
                 this.OnPropertyChanged("Terrain");
             }
         }
 
-        public EnvironmentViewModel(Environment model)
+        public EnvironmentViewModel(Environment model, IEventAggregator eventAggregator)
+            : base(model, eventAggregator)
         {
-            this.EnvironmentModel = model;
-        }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        private void OnPropertyChanged(string propertyName)
-        {
-            var handler = this.PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
         }
     }
 }

@@ -9,7 +9,7 @@
       <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="UpdateFrequencyInMs" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">2000</Value>
+      <Value Profile="(Default)">500</Value>
     </Setting>
   </Settings>
 </SettingsFile>

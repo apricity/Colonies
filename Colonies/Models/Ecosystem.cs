@@ -2,26 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Linq;
-
-    using Colonies.Annotations;
-    using Colonies.ViewModels;
 
     public sealed class Ecosystem
     {
-        private List<List<Habitat>> habitats;
-        public List<List<Habitat>> Habitats
-        {
-            get
-            {
-                return this.habitats;
-            }
-            set
-            {
-                this.habitats = value;
-            }
-        }
+        public List<List<Habitat>> Habitats { get; private set; }
 
         // TODO: are height and width the right way round?
         public int Height

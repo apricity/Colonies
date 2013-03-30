@@ -3,9 +3,6 @@
     using System;
     using System.Windows;
 
-    using Colonies.ViewModels;
-    using Colonies.Views;
-
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>

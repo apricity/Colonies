@@ -46,8 +46,7 @@
                 for (var y = 0; y < 5; y++)
                 {
                     var environmentViewModel = new EnvironmentViewModel(habitats[x][y].Environment, eventaggregator);
-                    var organismViewModel = new OrganismViewModel(habitats[x][y].Organism, eventaggregator);
-                    var habitatViewModel = new HabitatViewModel(habitats[x][y], environmentViewModel, organismViewModel, eventaggregator);
+                    var habitatViewModel = new HabitatViewModel(habitats[x][y], environmentViewModel, eventaggregator);
                     habitatViewModels[x].Add(habitatViewModel);
                 }
             }

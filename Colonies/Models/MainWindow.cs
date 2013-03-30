@@ -1,29 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Colonies.Models
+﻿namespace Colonies.Models
 {
     using System.Drawing;
-    using System.Threading;
 
     public class MainWindow
     {
-        private Timer ecosystemTimer;
-
-        private Ecosystem ecosytem;
-        public Ecosystem Ecosystem
-        {
-            get
-            {
-                return this.ecosytem;
-            }
-            set
-            {
-                this.ecosytem = value;
-            }
-        }
+        public Ecosystem Ecosystem { get; private set; }
 
         public MainWindow(Ecosystem ecosystem)
         {

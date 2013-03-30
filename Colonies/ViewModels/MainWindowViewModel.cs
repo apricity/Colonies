@@ -1,11 +1,8 @@
 ﻿namespace Colonies.ViewModels
 {
     using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Threading;
 
-    using Colonies.Annotations;
     using Colonies.Models;
 
     using Microsoft.Practices.Prism.Events;

@@ -1,40 +1,11 @@
 ﻿namespace Colonies.Models
 {
     using System;
-    using System.ComponentModel;
-
-    using Colonies.Annotations;
-    using Colonies.ViewModels;
-
-    using Microsoft.Practices.Prism.Events;
 
     public sealed class Habitat
     {
-        private Environment environment;
-        public Environment Environment
-        {
-            get
-            {
-                return this.environment;
-            }
-            set
-            {
-                this.environment = value;
-            }
-        }
-
-        private Organism organism;
-        public Organism Organism
-        {
-            get
-            {
-                return this.organism;
-            }
-            set
-            {
-                this.organism = value;
-            }
-        }
+        public Environment Environment { get; private set; }
+        public Organism Organism { get; set; }
 
         public Habitat(Environment environment, Organism organism)
         {

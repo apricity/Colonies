@@ -1,9 +1,7 @@
 ﻿namespace Colonies.ViewModels
 {
-    using System.ComponentModel;
-    using System.Windows;
+    using System.Drawing;
 
-    using Colonies.Annotations;
     using Colonies.Models;
 
     using Microsoft.Practices.Prism.Events;
@@ -24,40 +22,56 @@
             }
         }
 
-        private OrganismViewModel OrganismViewModel { get; set; }
-
-        private Visibility organismVisibility;
-        public Visibility OrganismVisibility
+        private Color organismColor;
+        public Color OrganismColor
         {
             get
             {
-                return this.organismVisibility;
+                return this.organismColor;
             }
             set
             {
-                this.organismVisibility = value;
-                this.OnPropertyChanged("OrganismVisibility");
+                this.organismColor = value;
+                this.OnPropertyChanged("OrganismColor");
             }
         }
 
-        public HabitatViewModel(Habitat model, EnvironmentViewModel environmentViewModel, OrganismViewModel organismViewModel, IEventAggregator eventAggregator)
-            : base(model, eventAggregator)
+        private double organismOpacity;
+        public double OrganismOpacity
         {
-            this.EventAggregator.GetEvent<OrganismMovedEvent>().Subscribe(this.UpdateVisibility);
-
-            this.EnvironmentViewModel = environmentViewModel;
-            this.OrganismViewModel = organismViewModel;
+            get
+            {
+                return this.organismOpacity;
+            }
+            set
+            {
+                this.organismOpacity = value;
+                this.OnPropertyChanged("OrganismOpacity");
+            }
         }
 
-        private void UpdateVisibility(string s)
+        public HabitatViewModel(Habitat model, EnvironmentViewModel environmentViewModel, IEventAggregator eventAggregator)
+            : base(model, eventAggregator)
         {
+            this.EventAggregator.GetEvent<OrganismMovedEvent>().Subscribe(this.UpdateOrganism);
+
+            this.EnvironmentViewModel = environmentViewModel;
+        }
+
+        private void UpdateOrganism(string s)
+        {
+            // when the event aggregator informs us that an organism has moved
+            // update organism display values accordingly
+            // TODO: pass the habitats that have been moved from and to, so we only update habitats that have been modified
             if (this.DomainModel.ContainsOrganism())
             {
-                this.OrganismVisibility = Visibility.Visible;
+                this.OrganismColor = this.DomainModel.Organism.Color;
+                this.OrganismOpacity = 1;
             }
             else
             {
-                this.OrganismVisibility = Visibility.Hidden;
+                this.OrganismColor = Color.Empty;
+                this.OrganismOpacity = 0;
             }
         }
     }

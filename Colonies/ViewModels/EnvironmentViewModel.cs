@@ -1,8 +1,5 @@
 ﻿namespace Colonies.ViewModels
 {
-    using System.ComponentModel;
-
-    using Colonies.Annotations;
     using Colonies.Models;
 
     using Microsoft.Practices.Prism.Events;

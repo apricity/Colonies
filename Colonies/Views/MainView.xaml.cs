@@ -3,11 +3,11 @@
     using System.Windows;
 
     /// <summary>
-    /// Interaction logic for MainWindowView.xaml
+    /// Interaction logic for MainView.xaml
     /// </summary>
-    public partial class MainWindowView : Window
+    public partial class MainView : Window
     {
-        public MainWindowView()
+        public MainView()
         {
             this.InitializeComponent();
         }

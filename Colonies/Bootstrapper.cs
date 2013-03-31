@@ -1,7 +1,9 @@
 ﻿namespace Colonies
 {
     using System.Collections.Generic;
+    using System.Drawing;
 
+    using Colonies.Events;
     using Colonies.Models;
     using Colonies.ViewModels;
     using Colonies.Views;
@@ -17,56 +19,99 @@
 
         public void Run()
         {
+            // create the view to display to the user
+            // the data context is the view model tree that contains the model
+            var mainViewModel = this.BuildMainDataContext();
+            var mainView = new MainView { DataContext = mainViewModel };
+
+            // display the window to the user!
+            mainView.Show();
+
+            // automatically start the ecosystem
+            mainViewModel.StartEcosystem();
+        }
+
+        private MainViewModel BuildMainDataContext()
+        {
+            // the event aggregator is going to be used by view models to inform of changes
             var eventaggregator = new EventAggregator();
 
-            /* generate model tree */
             var habitats = new List<List<Habitat>>();
-            for (var x = 0; x < 5; x++) // TODO: not hardcode
+            var habitatViewModels = new List<List<HabitatViewModel>>();
+
+            for (var x = 0; x < Properties.Settings.Default.EcosystemWidth; x++)
             {
                 habitats.Add(new List<Habitat>());
-                for (var y = 0; y < 5; y++)
+                habitatViewModels.Add(new List<HabitatViewModel>());
+
+                for (var y = 0; y < Properties.Settings.Default.EcosystemHeight; y++)
                 {
                     // initially set each habitat to have an unknown environment and no organism
                     var environment = new Environment(Terrain.Unknown);
+                    var environmentViewModel = new EnvironmentViewModel(environment, eventaggregator);
+
                     var habitat = new Habitat(environment, null);
+                    var habitatViewModel = new HabitatViewModel(habitat, environmentViewModel, eventaggregator);
+
                     habitats[x].Add(habitat);
-                }
-            }
-
-            var ecosystem = new Ecosystem(habitats);
-            var mainWindow = new MainWindow(ecosystem);
-
-
-            /* generate viewmodel tree */
-
-            var habitatViewModels = new List<List<HabitatViewModel>>();
-            for (var x = 0; x < 5; x++) // TODO: not hardcode
-            {
-                habitatViewModels.Add(new List<HabitatViewModel>());
-                for (var y = 0; y < 5; y++)
-                {
-                    var environmentViewModel = new EnvironmentViewModel(habitats[x][y].Environment, eventaggregator);
-                    var habitatViewModel = new HabitatViewModel(habitats[x][y], environmentViewModel, eventaggregator);
                     habitatViewModels[x].Add(habitatViewModel);
                 }
             }
 
+            var ecosystem = new Ecosystem(habitats);
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
+            this.InitialiseTerrain(ecosystem);
+            this.InitialiseOrganisms(ecosystem, eventaggregator);
 
-            // create a view model for the main window
-            // this will create the entire view-model tree and the underlying model
-            var mainWindowViewModel = new MainWindowViewModel(mainWindow, ecosystemViewModel, eventaggregator);
+            var main = new Main(ecosystem);
+            var mainViewModel = new MainViewModel(main, ecosystemViewModel, eventaggregator);
 
-            // create the view to display to the user
-            // its data context is the view-model that has just been instantiated
-            var mainWindowView = new MainWindowView { DataContext = mainWindowViewModel };
+            return mainViewModel;
+        }
 
-            // now that the view model tree and the underlying model are ready
-            // display the window to the user!
-            mainWindowView.Show();
+        private void InitialiseTerrain(Ecosystem ecosystem)
+        {
+            // apply a terrain for every habitat
+            for (var x = 0; x < ecosystem.Width; x++)
+            {
+                for (var y = 0; y < ecosystem.Height; y++)
+                {
+                    Terrain terrain;
+                    switch (x)
+                    {
+                        case 0:
+                            terrain = Terrain.Earth;
+                            break;
+                        case 1:
+                            terrain = Terrain.Grass;
+                            break;
+                        case 2:
+                            terrain = Terrain.Water;
+                            break;
+                        case 3:
+                            terrain = Terrain.Fire;
+                            break;
+                        default:
+                            terrain = Terrain.Unknown;
+                            break;
+                    }
 
-            mainWindowViewModel.StartEcosystem();
+                    ecosystem.Habitats[x][y].Environment.Terrain = terrain;
+                }
+            }
+        }
+
+        private void InitialiseOrganisms(Ecosystem ecosystem, EventAggregator eventaggregator)
+        {
+            // place some organisms in the ecosystem
+            ecosystem.Habitats[0][0].Organism = new Organism("Waffle", Color.White);
+            ecosystem.Habitats[1][1].Organism = new Organism("Wacton", Color.Black);
+            ecosystem.Habitats[0][4].Organism = new Organism("Lotty", Color.Lime);
+            ecosystem.Habitats[4][2].Organism = new Organism("Louise", Color.Orange);
+
+            // TODO: should this event be published by the model itself
+            eventaggregator.GetEvent<OrganismsUpdatedEvent>().Publish(null);
         }
     }
 }

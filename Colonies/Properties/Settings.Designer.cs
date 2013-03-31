@@ -49,7 +49,7 @@ namespace Colonies.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        [global::System.Configuration.DefaultSettingValueAttribute("75")]
         public int UpdateFrequencyInMs {
             get {
                 return ((int)(this["UpdateFrequencyInMs"]));

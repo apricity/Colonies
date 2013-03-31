@@ -4,8 +4,8 @@
 
     public sealed class Organism
     {
-        public string OrganismID { get; private set; }
-        public Color Color { get; private set; }
+        public string OrganismID { get; set; }
+        public Color Color { get; set; }
 
         public Organism(string organismID)
         {
@@ -21,7 +21,7 @@
 
         public override string ToString()
         {
-            return this.OrganismID;
+            return string.Format("{0} ({1})", this.OrganismID, this.Color);
         }
     }
 }

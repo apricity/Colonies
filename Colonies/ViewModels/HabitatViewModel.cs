@@ -2,6 +2,7 @@
 {
     using System.Drawing;
 
+    using Colonies.Events;
     using Colonies.Models;
 
     using Microsoft.Practices.Prism.Events;
@@ -53,16 +54,16 @@
         public HabitatViewModel(Habitat model, EnvironmentViewModel environmentViewModel, IEventAggregator eventAggregator)
             : base(model, eventAggregator)
         {
-            this.EventAggregator.GetEvent<OrganismMovedEvent>().Subscribe(this.UpdateOrganism);
+            this.EventAggregator.GetEvent<OrganismsUpdatedEvent>().Subscribe(this.UpdateOrganism);
 
             this.EnvironmentViewModel = environmentViewModel;
         }
 
-        private void UpdateOrganism(string s)
+        private void UpdateOrganism(object payload)
         {
+            // TODO: pass the habitats that have been moved from and to, so we only update habitats that have been modified
             // when the event aggregator informs us that an organism has moved
             // update organism display values accordingly
-            // TODO: pass the habitats that have been moved from and to, so we only update habitats that have been modified
             if (this.DomainModel.ContainsOrganism())
             {
                 this.OrganismColor = this.DomainModel.Organism.Color;

@@ -27,5 +27,13 @@
         {
             this.HabitatViewModels = habitatViewModels;
         }
+
+        public void UpdateEcosystem(int turns)
+        {
+            for (var i = 0; i < turns; i++)
+            {
+                this.DomainModel.Update();
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@
 
     public sealed class Ecosystem
     {
-        public List<List<Habitat>> Habitats { get; private set; }
+        public List<List<Habitat>> Habitats { get; set; }
 
         // TODO: are height and width the right way round?
         public int Height
@@ -95,14 +95,11 @@
         private IEnumerable<Habitat> GetOccupiedHabitats()
         {
             var occupiedHabitats = new List<Habitat>();
-            foreach (var habitatList in this.Habitats)
+            foreach (var habitat in Habitats.SelectMany(item => item))
             {
-                foreach (var habitat in habitatList)
+                if (habitat.ContainsOrganism())
                 {
-                    if (habitat.ContainsOrganism())
-                    {
-                        occupiedHabitats.Add(habitat);
-                    }
+                    occupiedHabitats.Add(habitat);
                 }
             }
 
@@ -111,7 +108,7 @@
 
         public override String ToString()
         {
-            return this.Width + " x " + this.Height;
+            return string.Format("{0}x{1}", this.Width, this.Height);
         }
     }
 }

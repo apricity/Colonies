@@ -4,7 +4,7 @@
 
     public sealed class Habitat
     {
-        public Environment Environment { get; private set; }
+        public Environment Environment { get; set; }
         public Organism Organism { get; set; }
 
         public Habitat(Environment environment, Organism organism)

@@ -32,6 +32,7 @@
 
         public void Update()
         {
+            // TODO: WAFFLE
             // currently, updating the ecosystem simply means
             // randomly moving all organisms to a different habitat
             var random = new Random();

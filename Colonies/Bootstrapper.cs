@@ -50,8 +50,10 @@
                     var environment = new Environment(Terrain.Unknown);
                     var environmentViewModel = new EnvironmentViewModel(environment, eventaggregator);
 
+                    var organismViewModel = new OrganismViewModel(null, eventaggregator);
+
                     var habitat = new Habitat(environment, null);
-                    var habitatViewModel = new HabitatViewModel(habitat, environmentViewModel, eventaggregator);
+                    var habitatViewModel = new HabitatViewModel(habitat, environmentViewModel, organismViewModel, eventaggregator);
 
                     habitats[x].Add(habitat);
                     habitatViewModels[x].Add(habitatViewModel);
@@ -110,8 +112,8 @@
             ecosystem.Habitats[0][4].Organism = new Organism("Lotty", Color.Lime);
             ecosystem.Habitats[4][2].Organism = new Organism("Louise", Color.Orange);
 
-            // TODO: should this event be published by the model itself
-            eventaggregator.GetEvent<OrganismsUpdatedEvent>().Publish(null);
+            // TODO: should this event be published by the model itself (and reference a specific habitat model)?
+            eventaggregator.GetEvent<EcosystemTickEvent>().Publish(null);
         }
     }
 }

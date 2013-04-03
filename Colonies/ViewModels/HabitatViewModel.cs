@@ -1,5 +1,6 @@
 ﻿namespace Colonies.ViewModels
 {
+    using System;
     using System.Drawing;
 
     using Colonies.Events;
@@ -23,57 +24,37 @@
             }
         }
 
-        private Color organismColor;
-        public Color OrganismColor
+        private OrganismViewModel organismViewModel;
+        public OrganismViewModel OrganismViewModel
         {
             get
             {
-                return this.organismColor;
+                return this.organismViewModel;
             }
             set
             {
-                this.organismColor = value;
-                this.OnPropertyChanged("OrganismColor");
+                this.organismViewModel = value;
+                this.OnPropertyChanged("OrganismViewModel");
             }
         }
-
-        private double organismOpacity;
-        public double OrganismOpacity
-        {
-            get
-            {
-                return this.organismOpacity;
-            }
-            set
-            {
-                this.organismOpacity = value;
-                this.OnPropertyChanged("OrganismOpacity");
-            }
-        }
-
-        public HabitatViewModel(Habitat model, EnvironmentViewModel environmentViewModel, IEventAggregator eventAggregator)
+        
+        public HabitatViewModel(Habitat model, EnvironmentViewModel environmentViewModel, OrganismViewModel organismViewModel, IEventAggregator eventAggregator)
             : base(model, eventAggregator)
         {
-            this.EventAggregator.GetEvent<OrganismsUpdatedEvent>().Subscribe(this.UpdateOrganism);
-
             this.EnvironmentViewModel = environmentViewModel;
+            this.OrganismViewModel = organismViewModel;
+
+            // subscribe to the ecosystem tick event, so the habitat can refresh its view of the organism each turn
+            this.EventAggregator.GetEvent<EcosystemTickEvent>().Subscribe(this.RefreshOrganismViewModel);
         }
 
-        private void UpdateOrganism(object payload)
+        private void RefreshOrganismViewModel(object payload)
         {
-            // TODO: pass the habitats that have been moved from and to, so we only update habitats that have been modified
-            // when the event aggregator informs us that an organism has moved
-            // update organism display values accordingly
-            if (this.DomainModel.ContainsOrganism())
-            {
-                this.OrganismColor = this.DomainModel.Organism.Color;
-                this.OrganismOpacity = 1;
-            }
-            else
-            {
-                this.OrganismColor = Color.Empty;
-                this.OrganismOpacity = 0;
-            }
+            // TODO: should the event aggregator inform only the habitat view models with organism changes
+            // TODO: or is forcing ALL the habitat view models to update an acceptable thing to do?
+            // when the event aggregator informs us that organism have changed habitats
+            // renew the organism view model (in case the model for this habitat is one that has changed)
+            this.OrganismViewModel = new OrganismViewModel(this.DomainModel.Organism, this.EventAggregator);
         }
     }
 }

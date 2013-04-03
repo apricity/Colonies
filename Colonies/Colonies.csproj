@@ -66,13 +66,17 @@
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
-    <Compile Include="Events\OrganismsUpdatedEvent.cs" />
+    <Compile Include="Events\EcosystemTickEvent.cs" />
     <Compile Include="Models\Ecosystem.cs" />
     <Compile Include="Models\Main.cs" />
+    <Compile Include="ViewModels\OrganismViewModel.cs" />
     <Compile Include="ViewModels\EcosystemViewModel.cs" />
     <Compile Include="ViewModels\EnvironmentViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\OrganismView.xaml.cs">
+      <DependentUpon>OrganismView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\EcosystemView.xaml.cs">
       <DependentUpon>EcosystemView.xaml</DependentUpon>
     </Compile>
@@ -89,6 +93,10 @@
     <Compile Include="Models\Organism.cs" />
     <Compile Include="Converters\TerrainToBrushConverter.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Page Include="Views\OrganismView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\MainView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

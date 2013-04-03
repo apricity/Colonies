@@ -4,7 +4,7 @@
 
     using Microsoft.Practices.Prism.Events;
 
-    public class OrganismsUpdatedEvent : CompositePresentationEvent<object>
+    public class EcosystemTickEvent : CompositePresentationEvent<object>
     {
     }
 }

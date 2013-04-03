@@ -1,5 +1,6 @@
 ﻿namespace Colonies.ViewModels
 {
+    using System;
     using System.ComponentModel;
 
     using Colonies.Annotations;
@@ -19,7 +20,7 @@
 
         public override string ToString()
         {
-            return string.Format("[VM] {0}", this.DomainModel);
+            return string.Format("VM: {0}", this.DomainModel);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

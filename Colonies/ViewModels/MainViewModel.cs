@@ -48,7 +48,7 @@
                 // update the ecosystem
                 var turns = Convert.ToInt32(state);
                 this.EcosystemViewModel.UpdateEcosystem(turns);
-                this.EventAggregator.GetEvent<OrganismsUpdatedEvent>().Publish(null); 
+                this.EventAggregator.GetEvent<EcosystemTickEvent>().Publish(null); 
             }
         }
     }

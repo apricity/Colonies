@@ -8,7 +8,8 @@
         xmlns:Views="clr-namespace:Colonies.Views"
         mc:Ignorable="d" 
         Title="Wacton Colonies" Height="350" Width="350"
-        d:DataContext="{d:DesignInstance ViewModels:MainViewModel}">
+        d:DataContext="{d:DesignInstance ViewModels:MainViewModel}"
+        ShowTitleBar="True" ShowIconOnTitleBar="True">
 
     <Window.Resources>
         <ResourceDictionary>

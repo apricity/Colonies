@@ -8,6 +8,8 @@
 
     public sealed class OrganismViewModel : ViewModelBase<Organism>
     {
+        // do not set domain model properties through the view model
+        // use events to tell view models the model has changed
         public Color Color
         {
             get

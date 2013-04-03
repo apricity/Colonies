@@ -6,16 +6,13 @@
 
     public sealed class EnvironmentViewModel : ViewModelBase<Environment>
     {
+        // do not set domain model properties through the view model
+        // use events to tell view models the model has changed
         public Terrain Terrain
         {
             get
             {
                 return this.DomainModel.Terrain;
-            }
-            set
-            {
-                this.DomainModel.Terrain = value;
-                this.OnPropertyChanged("Terrain");
             }
         }
 

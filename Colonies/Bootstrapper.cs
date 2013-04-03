@@ -26,9 +26,6 @@
 
             // display the window to the user!
             mainView.Show();
-
-            // automatically start the ecosystem
-            mainViewModel.StartEcosystem();
         }
 
         private MainViewModel BuildMainDataContext()

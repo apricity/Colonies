@@ -7,7 +7,7 @@
         xmlns:ViewModels="clr-namespace:Colonies.ViewModels"
         xmlns:Views="clr-namespace:Colonies.Views"
         mc:Ignorable="d" 
-        Title="Wacton Colonies" Height="350" Width="350"
+        Title="Wacton Colonies" Height="350" Width="300"
         d:DataContext="{d:DesignInstance ViewModels:MainViewModel}"
         ShowTitleBar="True" ShowIconOnTitleBar="True">
 
@@ -24,9 +24,23 @@
     </Window.Resources>
 
     <Grid>
-        <Viewbox Stretch="Fill">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Viewbox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Stretch="Fill">
             <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>
         </Viewbox>
+
+        <Button Grid.Row="1" Grid.Column="0" Command="{Binding StartEcosystemCommand}" 
+                Content="Start Ecosystem" />
+        
+        <Slider Grid.Row="1" Grid.Column="1"/>
     </Grid>
     
 </Controls:MetroWindow>

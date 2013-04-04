@@ -37,10 +37,12 @@
             <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>
         </Viewbox>
 
-        <Button Grid.Row="1" Grid.Column="0" Command="{Binding StartEcosystemCommand}" 
-                Content="Start Ecosystem" />
-        
-        <Slider Grid.Row="1" Grid.Column="1"/>
+        <!--<Controls:ToggleSwitchButton Grid.Row="1" Grid.Column="0" Command="{Binding ToggleEcosystemCommand}" />-->
+        <Controls:ToggleSwitch Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsEcosystemRunning}"
+                               Margin="5, 5, 5, 5" />
+
+        <Slider Grid.Row="1" Grid.Column="1" Value="{Binding EcosystemFrequency}" AutoToolTipPlacement="BottomRight" 
+                Margin="5, 5, 5, 5"/>
     </Grid>
     
 </Controls:MetroWindow>

@@ -2,6 +2,8 @@
 {
     using System.Windows;
 
+    using Colonies.ViewModels;
+
     using MahApps.Metro.Controls;
 
     /// <summary>

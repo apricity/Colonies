@@ -18,7 +18,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -37,7 +37,7 @@
             <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>
         </Viewbox>-->
 
-        <ScrollViewer Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Background="#555555"
+        <ScrollViewer Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                       HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Viewbox Stretch="Uniform">
                 <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>

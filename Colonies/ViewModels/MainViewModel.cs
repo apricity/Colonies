@@ -15,7 +15,6 @@
         // so use a lock to ensure the model isn't updated while it's updating...
         // (volatile because, if interval update is too small, lock will be accessed by multiple threads simultaneously)
         private readonly Timer ecosystemTimer;
-        private readonly TimeSpan infiniteTimeSpan = TimeSpan.FromMilliseconds(-1);
         private volatile object updateLock = new object();
 
         private EcosystemViewModel ecosystemViewModel;
@@ -32,77 +31,75 @@
             }
         }
 
-        private bool isEcosystemRunning;
-        public bool IsEcosystemRunning
+        private bool isEcosystemActive;
+        public bool IsEcosystemActive
         {
             get
             {
-                return this.isEcosystemRunning;
+                return this.isEcosystemActive;
             }
             set
             {
-                this.isEcosystemRunning = value;
-                this.OnPropertyChanged("IsEcosystemRunning");
+                this.isEcosystemActive = value;
+                this.OnPropertyChanged("IsEcosystemActive");
 
-                if (this.isEcosystemRunning)
-                {
-                    this.UpdateEcosystemTurnInterval(true);
-                }
-                else
-                {
-                    this.UpdateEcosystemTurnInterval(false);
-                }
+                // if the ecosystem turns on/off the timer needs to start/stop 
+                this.ChangeEcosystemTimer();
             }
         }
 
-        private double currentEcosystemFrequency;
-        private double ecosystemFrequency;
-        public double EcosystemFrequency
+        // TODO: should the slider go from "slow (1) -> fast (100)", and that value be converted in this view model to a ms value?
+        // turn interval is in ms
+        private int ecosystemTurnInterval;
+        public int EcosystemTurnInterval
         {
             get
             {
-                return this.ecosystemFrequency;
+                return this.ecosystemTurnInterval;
             }
             set
             {
-                this.ecosystemFrequency = value;
-                this.OnPropertyChanged("EcosystemFrequency");
+                this.ecosystemTurnInterval = value;
+                this.OnPropertyChanged("EcosystemTurnInterval");
             }
         }
 
-        public MainViewModel(Main model, EcosystemViewModel ecosystemViewModel, IEventAggregator eventAggregator)
-            : base(model, eventAggregator)
+        private int lastUsedTurnInterval;
+
+        public MainViewModel(Main domainModel, EcosystemViewModel ecosystemViewModel, IEventAggregator eventAggregator)
+            : base(domainModel, eventAggregator)
         {
             this.EcosystemViewModel = ecosystemViewModel;
-            this.isEcosystemRunning = false;
 
-            this.ecosystemFrequency = Properties.Settings.Default.UpdateFrequencyInMs;
-            const int ecosystemTurnsPerTick = 1;
-
-            this.ecosystemTimer = new Timer(this.OnEcosystemTimerTick, ecosystemTurnsPerTick, this.infiniteTimeSpan, this.infiniteTimeSpan);
+            // initally set the ecosystem up to be not running
+            this.ecosystemTimer = new Timer(this.OnEcosystemTimerTick);
+            this.IsEcosystemActive = false;
+            var initialUpdateInterval = Properties.Settings.Default.UpdateFrequencyInMs;
+            this.EcosystemTurnInterval = initialUpdateInterval;
+            this.lastUsedTurnInterval = initialUpdateInterval;
         }
 
-        private void UpdateEcosystemTurnInterval(bool isActive)
+        private void ChangeEcosystemTimer()
         {
             const int immediateStart = 0;
             const int preventStart = Timeout.Infinite;
 
-            this.ecosystemTimer.Change(isActive ? immediateStart : preventStart, (int)(this.EcosystemFrequency + 1) * 10);
-            this.currentEcosystemFrequency = this.EcosystemFrequency;
+            this.ecosystemTimer.Change(this.IsEcosystemActive ? immediateStart : preventStart, this.EcosystemTurnInterval);
+            this.lastUsedTurnInterval = this.EcosystemTurnInterval;
         }
 
         private void OnEcosystemTimerTick(object state)
         {
             lock (this.updateLock)
             {
-                // update the ecosystem
-                var turns = Convert.ToInt32(state);
-                this.EcosystemViewModel.UpdateEcosystem(turns);
+                this.EcosystemViewModel.ProgressEcosystemOneTurn();
                 this.EventAggregator.GetEvent<EcosystemTickEvent>().Publish(null);
 
-                if (this.currentEcosystemFrequency != this.EcosystemFrequency)
+                // if there's been a change in the turn interval while the previous turn was processed
+                // update the interval of the ecosystem timer
+                if (this.EcosystemTurnInterval != this.lastUsedTurnInterval)
                 {
-                    this.UpdateEcosystemTurnInterval(true);
+                    this.ChangeEcosystemTimer();
                 }
             }
         }

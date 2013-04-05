@@ -36,8 +36,8 @@
             }
         }
 
-        public OrganismViewModel(Organism model, IEventAggregator eventAggregator)
-            : base(model, eventAggregator)
+        public OrganismViewModel(Organism domainModel, IEventAggregator eventAggregator)
+            : base(domainModel, eventAggregator)
         {
 
         }

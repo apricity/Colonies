@@ -38,11 +38,11 @@
         </Viewbox>
 
         <!--<Controls:ToggleSwitchButton Grid.Row="1" Grid.Column="0" Command="{Binding ToggleEcosystemCommand}" />-->
-        <Controls:ToggleSwitch Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsEcosystemRunning}"
+        <Controls:ToggleSwitch Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsEcosystemActive}"
                                Margin="5, 5, 5, 5" />
 
-        <Slider Grid.Row="1" Grid.Column="1" Value="{Binding EcosystemFrequency}" AutoToolTipPlacement="BottomRight" 
-                Margin="5, 5, 5, 5"/>
+        <Slider Grid.Row="1" Grid.Column="1" Value="{Binding EcosystemTurnInterval}" AutoToolTipPlacement="BottomRight" 
+                Minimum="1" Maximum="2000" Margin="5, 5, 5, 5"/>
     </Grid>
     
 </Controls:MetroWindow>

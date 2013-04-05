@@ -37,9 +37,9 @@
                 this.OnPropertyChanged("OrganismViewModel");
             }
         }
-        
-        public HabitatViewModel(Habitat model, EnvironmentViewModel environmentViewModel, OrganismViewModel organismViewModel, IEventAggregator eventAggregator)
-            : base(model, eventAggregator)
+
+        public HabitatViewModel(Habitat domainModel, EnvironmentViewModel environmentViewModel, OrganismViewModel organismViewModel, IEventAggregator eventAggregator)
+            : base(domainModel, eventAggregator)
         {
             this.EnvironmentViewModel = environmentViewModel;
             this.OrganismViewModel = organismViewModel;

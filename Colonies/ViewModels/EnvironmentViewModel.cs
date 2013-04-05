@@ -16,8 +16,8 @@
             }
         }
 
-        public EnvironmentViewModel(Environment model, IEventAggregator eventAggregator)
-            : base(model, eventAggregator)
+        public EnvironmentViewModel(Environment domainModel, IEventAggregator eventAggregator)
+            : base(domainModel, eventAggregator)
         {
 
         }

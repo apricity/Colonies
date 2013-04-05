@@ -22,18 +22,15 @@
             }
         }
 
-        public EcosystemViewModel(Ecosystem model, List<List<HabitatViewModel>> habitatViewModels, IEventAggregator eventAggregator)
-            : base(model, eventAggregator)
+        public EcosystemViewModel(Ecosystem domainModel, List<List<HabitatViewModel>> habitatViewModels, IEventAggregator eventAggregator)
+            : base(domainModel, eventAggregator)
         {
             this.HabitatViewModels = habitatViewModels;
         }
 
-        public void UpdateEcosystem(int turns)
+        public void ProgressEcosystemOneTurn()
         {
-            for (var i = 0; i < turns; i++)
-            {
-                this.DomainModel.Update();
-            }
+            this.DomainModel.Update();
         }
     }
 }

@@ -8,12 +8,11 @@
     {
         public List<List<Habitat>> Habitats { get; set; }
 
-        // TODO: are height and width the right way round?
         public int Height
         {
             get
             {
-                return this.Habitats.Count;
+                return this.Habitats.First().Count;
             }
         }
 
@@ -21,7 +20,7 @@
         {
             get
             {
-                return this.Habitats.First().Count;
+                return this.Habitats.Count;
             }
         }
 

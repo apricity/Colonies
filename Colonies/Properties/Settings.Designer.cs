@@ -25,7 +25,7 @@ namespace Colonies.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
         public int EcosystemWidth {
             get {
                 return ((int)(this["EcosystemWidth"]));
@@ -37,7 +37,7 @@ namespace Colonies.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
         public int EcosystemHeight {
             get {
                 return ((int)(this["EcosystemHeight"]));

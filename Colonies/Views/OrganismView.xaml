@@ -12,8 +12,7 @@
         <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
     </UserControl.Resources>
     
-    <Rectangle Height="15" Width="15" 
-               Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}" 
+    <Rectangle Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}" 
                Opacity="{Binding Opacity}"/>
     
 </UserControl>

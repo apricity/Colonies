@@ -9,11 +9,11 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance ViewModels:HabitatViewModel}">
     
-    <Border BorderBrush="Black" BorderThickness="1, 1, 0, 0">
+    <Border BorderBrush="#111111" BorderThickness="1, 1, 0, 0">
         <!-- border on left & top of each item -->
-        <Grid Height="30" Width="30">
+        <Grid Height="20" Width="20">
             <Views:EnvironmentView DataContext="{Binding EnvironmentViewModel}"/>
-            <Views:OrganismView DataContext="{Binding OrganismViewModel}"/>
+            <Views:OrganismView DataContext="{Binding OrganismViewModel}" Height="10" Width="10"/>
         </Grid>
     </Border>
     

@@ -67,6 +67,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Events\EcosystemTickEvent.cs" />
+    <Compile Include="LocalArea.cs" />
     <Compile Include="Models\Ecosystem.cs" />
     <Compile Include="Models\Main.cs" />
     <Compile Include="RelayCommand.cs" />

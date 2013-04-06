@@ -36,16 +36,15 @@
             // randomly moving all organisms to a different habitat
             var random = new Random();
 
-            var occupiedHabitats = this.GetOccupiedHabitats();
-            foreach (var occupiedHabitat in occupiedHabitats)
+            var localAreas = this.GetLocalAreaOfOccupiedHabitats();
+            foreach (var localArea in localAreas)
             {
-                var destinationX = random.Next(this.Width);
-                var destinationY = random.Next(this.Height);
-                var destinationHabitat = this.Habitats[destinationX][destinationY];
+                var destination = random.Next(localArea.Size());
+                var destinationHabitat = localArea.LocalHabitats[destination];
 
-                if (!destinationHabitat.Equals(occupiedHabitat) && !destinationHabitat.ContainsOrganism())
+                if (!destinationHabitat.Equals(localArea.HabitatOfFocus) && !destinationHabitat.ContainsOrganism())
                 {
-                    this.MoveOrganism(occupiedHabitat, destinationHabitat);
+                    this.MoveOrganism(localArea.HabitatOfFocus, destinationHabitat);
                 }
             }
         }
@@ -104,6 +103,41 @@
             }
 
             return occupiedHabitats;
+        }
+
+        private IEnumerable<LocalArea> GetLocalAreaOfOccupiedHabitats()
+        {
+            var localAreaOfOccupiedHabitats = new List<LocalArea>();
+            for (int x = 0; x < this.Width; x++)
+            {
+                for (int y = 0; y < this.Height; y++)
+                {
+                    if (this.Habitats[x][y].ContainsOrganism())
+                    {
+                        var localAreaOfHabitat = new List<Habitat>();
+                        for (int i = x - 1; i <= x + 1; i++)
+                        {
+                            if (i < 0 || i >= this.Width)
+                            {
+                                continue;
+                            }
+                            for (int j = y - 1; j <= y + 1; j++)
+                            {
+                                if (j < 0 || j >= this.Height)
+                                {
+                                    continue;
+                                }
+
+                                localAreaOfHabitat.Add(Habitats[i][j]);
+                            }
+                        }
+                        var localArea = new LocalArea(localAreaOfHabitat,this.Habitats[x][y]);
+                        localAreaOfOccupiedHabitats.Add(localArea);
+                    }
+                }
+            }
+
+            return localAreaOfOccupiedHabitats;
         }
 
         public override String ToString()

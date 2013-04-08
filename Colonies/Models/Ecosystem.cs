@@ -31,20 +31,19 @@
 
         public void Update()
         {
-            // TODO: WAFFLE
-            // currently, updating the ecosystem simply means
-            // randomly moving all organisms to a different habitat
-            var random = new Random();
-
-            var localAreas = this.GetLocalAreaOfOccupiedHabitats();
-            foreach (var localArea in localAreas)
+            // organisms are now the things that make the decisions about where to move
+            // TODO: maybe organisms should have a reference to adjacent habitats...?
+            // TODO: an organism needs a notion of what it can detect around it - is that done by passing in the local area?
+            var habitatsAndLocalAreas = this.GetLocalAreasOfOrganisms();
+            foreach (var habitatAndLocalArea in habitatsAndLocalAreas)
             {
-                var destination = random.Next(localArea.Size());
-                var destinationHabitat = localArea.LocalHabitats[destination];
-
-                if (!destinationHabitat.Equals(localArea.HabitatOfFocus) && !destinationHabitat.ContainsOrganism())
+                var currentHabitat = habitatAndLocalArea.Key;
+                var currentLocalArea = habitatAndLocalArea.Value;
+                
+                var destinationHabitat = currentHabitat.Organism.TakeTurn(currentLocalArea);
+                if (!destinationHabitat.ContainsOrganism())
                 {
-                    this.MoveOrganism(localArea.HabitatOfFocus, destinationHabitat);
+                    this.MoveOrganism(currentHabitat, destinationHabitat);
                 }
             }
         }
@@ -64,11 +63,6 @@
             var organismToMove = sourceHabitat.Organism;
             this.RemoveOrganism(sourceHabitat);
             this.AddOrganism(destinationHabitat, organismToMove);
-        }
-
-        private bool ContainsOrganism(int x, int y)
-        {
-            return this.Habitats[x][y].ContainsOrganism();
         }
 
         private void AddOrganism(Habitat habitat, Organism organism)
@@ -105,6 +99,46 @@
             return occupiedHabitats;
         }
 
+
+        // TODO: holy hells, this needs some thought...
+        private Dictionary<Habitat, List<Habitat>> GetLocalAreasOfOrganisms()
+        {
+            var localAreaOfOrganisms = new Dictionary<Habitat, List<Habitat>>();
+            for (int x = 0; x < this.Width; x++)
+            {
+                for (int y = 0; y < this.Height; y++)
+                {
+                    if (this.Habitats[x][y].ContainsOrganism())
+                    {
+                        var currentHabitat = this.Habitats[x][y];
+
+                        // TODO [Waff]: refactor this into its own method
+                        var localAreaOfHabitat = new List<Habitat>();
+                        for (int i = x - 1; i <= x + 1; i++)
+                        {
+                            if (i < 0 || i >= this.Width)
+                            {
+                                continue;
+                            }
+                            for (int j = y - 1; j <= y + 1; j++)
+                            {
+                                if (j < 0 || j >= this.Height)
+                                {
+                                    continue;
+                                }
+
+                                localAreaOfHabitat.Add(Habitats[i][j]);
+                            }
+                        }
+                        var localArea = new LocalArea(localAreaOfHabitat, this.Habitats[x][y]);
+                        localAreaOfOrganisms.Add(currentHabitat, localArea.LocalHabitats);
+                    }
+                }
+            }
+
+            return localAreaOfOrganisms;
+        }
+
         private IEnumerable<LocalArea> GetLocalAreaOfOccupiedHabitats()
         {
             var localAreaOfOccupiedHabitats = new List<LocalArea>();
@@ -114,6 +148,7 @@
                 {
                     if (this.Habitats[x][y].ContainsOrganism())
                     {
+                        // TODO [Waff]: refactor this into its own method
                         var localAreaOfHabitat = new List<Habitat>();
                         for (int i = x - 1; i <= x + 1; i++)
                         {

@@ -3,10 +3,24 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Windows;
 
     public sealed class Ecosystem
     {
+        // TODO: blitz the current notion of "Habitat"
         public List<List<Habitat>> Habitats { get; set; }
+
+        // TODO: probably want something like...
+        // TODO: also wrap this bloody List<List<>> so it can be handled more neatly?
+        public List<List<Environment>> Environments { get; set; }
+        public List<Organism> organisms { get; set; } 
+        // note that the above things are the things that Habitat used to know about
+        private Dictionary<Organism, Point> OrganismLocations { get; set; }
+        // since the dictionary knows about the organisms anyway, probably remove the List<Organism> and just have...
+        private Dictionary<Organism, Point> Organisms { get; set; }
+        // organism's environment: 
+        // var currentEnvironment = this.Environments[this.Organisms[currentOrganism].Value.X][this.Organisms[currentOrganism].Value.y];
+        // we'll tidy it up!
 
         public int Height
         {
@@ -32,8 +46,8 @@
         public void Update()
         {
             // organisms are now the things that make the decisions about where to move
-            // TODO: maybe organisms should have a reference to adjacent habitats...?
-            // TODO: an organism needs a notion of what it can detect around it - is that done by passing in the local area?
+            // TODO: all organisms should return an INTENTION of what they would like to do
+            // TODO: then we should check for clashes before proceeding with the movement/action
             var habitatsAndLocalAreas = this.GetLocalAreasOfOrganisms();
             foreach (var habitatAndLocalArea in habitatsAndLocalAreas)
             {
@@ -83,20 +97,6 @@
             }
 
             habitat.Organism = null;
-        }
-
-        private IEnumerable<Habitat> GetOccupiedHabitats()
-        {
-            var occupiedHabitats = new List<Habitat>();
-            foreach (var habitat in Habitats.SelectMany(item => item))
-            {
-                if (habitat.ContainsOrganism())
-                {
-                    occupiedHabitats.Add(habitat);
-                }
-            }
-
-            return occupiedHabitats;
         }
 
 

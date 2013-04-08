@@ -15,6 +15,7 @@
             this.Color = color;
         }
 
+        // TODO: this should be a method that calculates an INTENTION based on what it knows (from parameters)
         public Habitat TakeTurn(List<Habitat> nearbyHabitats)
         {
             var destinationIndex = new Random().Next(nearbyHabitats.Count);

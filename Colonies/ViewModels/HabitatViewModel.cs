@@ -45,10 +45,10 @@
             this.OrganismViewModel = organismViewModel;
 
             // subscribe to the ecosystem tick event, so the habitat can refresh its view of the organism each turn
-            this.EventAggregator.GetEvent<EcosystemTickEvent>().Subscribe(this.RefreshOrganismViewModel);
+            this.EventAggregator.GetEvent<OrganismsUpdatedEvent>().Subscribe(this.RefreshOrganismViewModel);
         }
 
-        private void RefreshOrganismViewModel(object payload)
+        public void RefreshOrganismViewModel(object payload)
         {
             // TODO: should the event aggregator inform only the habitat view models with organism changes
             // TODO: or is forcing ALL the habitat view models to update an acceptable thing to do?

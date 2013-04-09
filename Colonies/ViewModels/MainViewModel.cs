@@ -93,8 +93,7 @@
             lock (this.updateLock)
             {
                 this.EcosystemViewModel.ProgressEcosystemOneTurn();
-                this.EventAggregator.GetEvent<EcosystemTickEvent>().Publish(null);
-
+                
                 // if there's been a change in the turn interval while the previous turn was processed
                 // update the interval of the ecosystem timer
                 if (this.EcosystemTurnInterval != this.lastUsedTurnInterval)

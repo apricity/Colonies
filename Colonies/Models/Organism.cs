@@ -6,7 +6,7 @@
 
     public sealed class Organism
     {
-        public string Name { get; set; }
+        private string Name { get; set; }
         public Color Color { get; set; }
 
         public Organism(string name, Color color)

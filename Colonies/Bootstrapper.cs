@@ -11,8 +11,6 @@
 
     using Microsoft.Practices.Prism.Events;
 
-    using Point = System.Windows.Point;
-
     public class Bootstrapper
     {
         public Bootstrapper()
@@ -33,18 +31,20 @@
 
         private MainViewModel BuildMainDataContext()
         {
+            var width = Properties.Settings.Default.EcosystemWidth;
+            var height = Properties.Settings.Default.EcosystemHeight;
+
             // the event aggregator is going to be used by view models to inform of changes
             var eventaggregator = new EventAggregator();
 
-            var habitats = new List<List<Habitat>>();
+            var habitats = new Habitat[width, height];
             var habitatViewModels = new List<List<HabitatViewModel>>();
-
-            for (var x = 0; x < Properties.Settings.Default.EcosystemWidth; x++)
+            
+            for (var x = 0; x < width; x++)
             {
-                habitats.Add(new List<Habitat>());
                 habitatViewModels.Add(new List<HabitatViewModel>());
 
-                for (var y = 0; y < Properties.Settings.Default.EcosystemHeight; y++)
+                for (var y = 0; y < height; y++)
                 {
                     // initially set each habitat to have an unknown environment and no organism
                     var environment = new Environment(Terrain.Unknown);
@@ -55,12 +55,12 @@
                     var habitat = new Habitat(environment, null);
                     var habitatViewModel = new HabitatViewModel(habitat, environmentViewModel, organismViewModel, eventaggregator);
 
-                    habitats[x].Add(habitat);
+                    habitats[x, y] = habitat;
                     habitatViewModels[x].Add(habitatViewModel);
                 }
             }
 
-            var ecosystem = new Ecosystem(habitats, new Dictionary<Organism, Point>());
+            var ecosystem = new Ecosystem(habitats, new Dictionary<Organism, System.Windows.Point>());
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
@@ -99,7 +99,7 @@
                             break;
                     }
 
-                    ecosystem.Habitats[x][y].Environment.Terrain = terrain;
+                    ecosystem.SetTerrain(x, y, terrain);
                 }
             }
         }
@@ -113,7 +113,7 @@
             ecosystem.AddOrganism(new Organism("Dr. Louise", Color.Orange), new System.Windows.Point(4, 2));
 
             // TODO: should this event be published by the model itself (and reference a specific habitat model)?
-            eventaggregator.GetEvent<EcosystemTickEvent>().Publish(null);
+            eventaggregator.GetEvent<OrganismsUpdatedEvent>().Publish(null);
         }
     }
 }

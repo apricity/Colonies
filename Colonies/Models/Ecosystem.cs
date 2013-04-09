@@ -7,7 +7,7 @@
     public sealed class Ecosystem
     {
         private Habitat[,] Habitats { get; set; }
-        private Dictionary<Organism, Coordinates> OrganismCoordinates { get; set; } 
+        private Dictionary<Organism, Coordinates> OrganismCoordinates { get; set; }
 
         public int Width
         {
@@ -25,28 +25,32 @@
             }
         }
 
+        private readonly Random randomNumberGenerator;
+
         public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismCoordinates)
         {
             this.Habitats = habitats;
             this.OrganismCoordinates = organismCoordinates;
+
+            this.randomNumberGenerator = new Random();
         }
 
+        // TODO: return a summary of what has happened so we know which habitat view models to update
         public void Update()
         {
             // TODO: all organisms should return an INTENTION of what they would like to do
             // TODO: then we should check for clashes before proceeding with the movement/action
-
-            var random = new Random();
-            foreach (var organismsAndLocation in this.OrganismCoordinates.ToList())
+            foreach (var organismCoordinates in this.OrganismCoordinates.ToList())
             {
+                /* get nearby habitat features */
+                var nearbyHabitatFeatures = this.GetNearbyHabitatFeatures(organismCoordinates.Value);
+
                 /* decide what to do */
-                var decision = organismsAndLocation.Key.TakeTurn(null);
+                var chosenFeature = organismCoordinates.Key.TakeTurn(nearbyHabitatFeatures.Keys.ToList(), this.randomNumberGenerator);
+                var destinationCoordinates = nearbyHabitatFeatures[chosenFeature];
 
-                var randomX = random.Next(this.Width);
-                var randomY = random.Next(this.Height);
-                var destination = new Coordinates(randomX, randomY);
-
-                this.MoveOrganism(organismsAndLocation.Key, destination);
+                /* take action based on decision */
+                this.MoveOrganism(organismCoordinates.Key, destinationCoordinates);
             }
         }
 
@@ -72,43 +76,41 @@
             this.OrganismCoordinates.Remove(organism);
         }
 
-        public void SetTerrain(int x, int y, Terrain terrain)
+        public void SetTerrain(Coordinates coordinates, Terrain terrain)
         {
-            this.Habitats[x, y].Environment.Terrain = terrain;
+            this.Habitats[coordinates.X, coordinates.Y].Environment.Terrain = terrain;
         }
 
-        // TODO: decide what this needs to return, that can be given to organisms for them to make decisions
-        private IEnumerable<LocalArea> GetLocalAreaOfOccupiedHabitats()
+        private Dictionary<Features, Coordinates> GetNearbyHabitatFeatures(Coordinates coordinates)
         {
-            var localAreaOfOccupiedHabitats = new List<LocalArea>();
-            foreach (var organismsAndLocation in this.OrganismCoordinates.ToList())
+            var nearbyHabitatFeatures = new Dictionary<Features, Coordinates>();
+            for (var x = coordinates.X - 1; x <= coordinates.X + 1; x++)
             {
-                var xLocation = organismsAndLocation.Value.X;
-                var yLocation = organismsAndLocation.Value.Y;
-
-                var localAreaOfHabitat = new List<Habitat>();
-                for (var x = xLocation - 1; x <= xLocation + 1; x++)
+                // do not carry on if x is out-of-bounds
+                if (x < 0 || x >= this.Width)
                 {
-                    if (x < 0 || x >= this.Width)
+                    continue;
+                }
+
+                for (var y = coordinates.Y - 1; y <= coordinates.Y + 1; y++)
+                {
+                    // do not carry on if y is out-of-bounds
+                    if (y < 0 || y >= this.Height)
                     {
                         continue;
                     }
-                    for (var y = yLocation - 1; y <= yLocation + 1; y++)
-                    {
-                        if (y < 0 || y >= this.Height)
-                        {
-                            continue;
-                        }
 
-                        localAreaOfHabitat.Add(this.Habitats[x, y]);
-                    }
+                    var currentCoordinates = new Coordinates(x, y);
+                    nearbyHabitatFeatures.Add(this.GetHabitatFeatures(currentCoordinates), currentCoordinates);
                 }
-
-                var localArea = new LocalArea(localAreaOfHabitat, this.Habitats[xLocation, yLocation]);
-                localAreaOfOccupiedHabitats.Add(localArea);
             }
 
-            return localAreaOfOccupiedHabitats;
+            return nearbyHabitatFeatures;
+        }
+
+        private Features GetHabitatFeatures(Coordinates coordinates)
+        {
+            return this.Habitats[coordinates.X, coordinates.Y].GetFeatures();
         }
 
         public override String ToString()

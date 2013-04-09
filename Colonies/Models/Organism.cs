@@ -15,10 +15,24 @@
             this.Color = color;
         }
 
-        // TODO: this should be a method that calculates an INTENTION based on what it knows (from parameters)
-        public Habitat TakeTurn(List<Habitat> nearbyHabitats)
+        // TODO: this should be a method that calculates an INTENTION based on features (does not necessarily choose a feature to move to)
+        public Features TakeTurn(IEnumerable<Features> nearbyFeatures, Random random)
         {
-            return null;
+            // something like this - more desirable features will have greater weightings
+            // except will be using 0.0 -> 1.0 range for strengths/levels
+            var weightings = new List<Features>();
+            foreach (var features in nearbyFeatures)
+            {
+                for (int i = 0; i < features.Strength; i++)
+                {
+                    weightings.Add(features);
+                }
+            }
+
+            var decisionIndex = random.Next(weightings.Count);
+            var chosenFeature = weightings[decisionIndex];
+
+            return chosenFeature;
         }
 
         public override string ToString()

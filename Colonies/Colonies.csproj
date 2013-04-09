@@ -67,11 +67,10 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Coordinates.cs" />
-    <Compile Include="CustomControl1.cs" />
-    <Compile Include="CustomControl2.cs" />
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="LocalArea.cs" />
     <Compile Include="Models\Ecosystem.cs" />
+    <Compile Include="Models\Features.cs" />
     <Compile Include="Models\Main.cs" />
     <Compile Include="RelayCommand.cs" />
     <Compile Include="ViewModels\OrganismViewModel.cs" />
@@ -144,6 +143,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="packages.config" />

@@ -78,27 +78,27 @@
             {
                 for (var y = 0; y < ecosystem.Height; y++)
                 {
-                    Terrain terrain;
-                    switch (x)
-                    {
-                        case 0:
-                            terrain = Terrain.Earth;
-                            break;
-                        case 1:
-                            terrain = Terrain.Grass;
-                            break;
-                        case 2:
-                            terrain = Terrain.Water;
-                            break;
-                        case 3:
-                            terrain = Terrain.Fire;
-                            break;
-                        default:
-                            terrain = Terrain.Unknown;
-                            break;
-                    }
+                    //Terrain terrain;
+                    //switch (x)
+                    //{
+                    //    case 0:
+                    //        terrain = Terrain.Earth;
+                    //        break;
+                    //    case 1:
+                    //        terrain = Terrain.Grass;
+                    //        break;
+                    //    case 2:
+                    //        terrain = Terrain.Water;
+                    //        break;
+                    //    case 3:
+                    //        terrain = Terrain.Fire;
+                    //        break;
+                    //    default:
+                    //        terrain = Terrain.Unknown;
+                    //        break;
+                    //}
 
-                    ecosystem.SetTerrain(x, y, terrain);
+                    ecosystem.SetTerrain(new Coordinates(x, y), Terrain.Earth);
                 }
             }
         }

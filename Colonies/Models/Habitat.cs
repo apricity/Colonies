@@ -18,6 +18,11 @@
             return this.Organism != null;
         }
 
+        public Features GetFeatures()
+        {
+            return new Features(1);
+        }
+
         public override String ToString()
         {
             return String.Format("{0}, {1}", this.Environment, this.Organism);

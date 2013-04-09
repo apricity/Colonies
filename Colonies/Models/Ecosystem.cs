@@ -3,12 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Windows;
 
     public sealed class Ecosystem
     {
         private Habitat[,] Habitats { get; set; }
-        private Dictionary<Organism, Point> OrganismsAndLocations { get; set; } 
+        private Dictionary<Organism, Coordinates> OrganismCoordinates { get; set; } 
 
         public int Width
         {
@@ -26,10 +25,10 @@
             }
         }
 
-        public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Point> organismsAndLocations)
+        public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismCoordinates)
         {
             this.Habitats = habitats;
-            this.OrganismsAndLocations = organismsAndLocations;
+            this.OrganismCoordinates = organismCoordinates;
         }
 
         public void Update()
@@ -38,39 +37,39 @@
             // TODO: then we should check for clashes before proceeding with the movement/action
 
             var random = new Random();
-            foreach (var organismsAndLocation in this.OrganismsAndLocations.ToList())
+            foreach (var organismsAndLocation in this.OrganismCoordinates.ToList())
             {
                 /* decide what to do */
                 var decision = organismsAndLocation.Key.TakeTurn(null);
 
                 var randomX = random.Next(this.Width);
                 var randomY = random.Next(this.Height);
-                var destination = new Point(randomX, randomY);
+                var destination = new Coordinates(randomX, randomY);
 
                 this.MoveOrganism(organismsAndLocation.Key, destination);
             }
         }
 
-        private void MoveOrganism(Organism organism, Point destination)
+        private void MoveOrganism(Organism organism, Coordinates destination)
         {
             // use Add and Remove methods?
-            var source = this.OrganismsAndLocations[organism];
-            this.Habitats[(int)source.X, (int)source.Y].Organism = null;
-            this.Habitats[(int)destination.X, (int)destination.Y].Organism = organism;
-            this.OrganismsAndLocations[organism] = destination;
+            var source = this.OrganismCoordinates[organism];
+            this.Habitats[source.X, source.Y].Organism = null;
+            this.Habitats[destination.X, destination.Y].Organism = organism;
+            this.OrganismCoordinates[organism] = destination;
         }
 
-        public void AddOrganism(Organism organism, Point point)
+        public void AddOrganism(Organism organism, Coordinates coordinates)
         {
-            this.Habitats[(int)point.X, (int)point.Y].Organism = organism;
-            this.OrganismsAndLocations.Add(organism, point);
+            this.Habitats[coordinates.X, coordinates.Y].Organism = organism;
+            this.OrganismCoordinates.Add(organism, coordinates);
         }
 
         public void RemoveOrganism(Organism organism)
         {
-            var location = this.OrganismsAndLocations[organism];
-            this.Habitats[(int)location.X, (int)location.Y].Organism = null;
-            this.OrganismsAndLocations.Remove(organism);
+            var location = this.OrganismCoordinates[organism];
+            this.Habitats[location.X, location.Y].Organism = null;
+            this.OrganismCoordinates.Remove(organism);
         }
 
         public void SetTerrain(int x, int y, Terrain terrain)
@@ -82,10 +81,10 @@
         private IEnumerable<LocalArea> GetLocalAreaOfOccupiedHabitats()
         {
             var localAreaOfOccupiedHabitats = new List<LocalArea>();
-            foreach (var organismsAndLocation in this.OrganismsAndLocations.ToList())
+            foreach (var organismsAndLocation in this.OrganismCoordinates.ToList())
             {
-                var xLocation = (int)organismsAndLocation.Value.X;
-                var yLocation = (int)organismsAndLocation.Value.Y;
+                var xLocation = organismsAndLocation.Value.X;
+                var yLocation = organismsAndLocation.Value.Y;
 
                 var localAreaOfHabitat = new List<Habitat>();
                 for (var x = xLocation - 1; x <= xLocation + 1; x++)

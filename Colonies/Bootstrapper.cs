@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using System.Drawing;
-    using System.Windows;
 
     using Colonies.Events;
     using Colonies.Models;
@@ -60,7 +59,7 @@
                 }
             }
 
-            var ecosystem = new Ecosystem(habitats, new Dictionary<Organism, System.Windows.Point>());
+            var ecosystem = new Ecosystem(habitats, new Dictionary<Organism, Coordinates>());
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
@@ -107,10 +106,10 @@
         private void InitialiseOrganisms(Ecosystem ecosystem, EventAggregator eventaggregator)
         {
             // place some organisms in the ecosystem
-            ecosystem.AddOrganism(new Organism("Waffle", Color.White), new System.Windows.Point(0, 0));
-            ecosystem.AddOrganism(new Organism("Wilber", Color.Black), new System.Windows.Point(1, 1));
-            ecosystem.AddOrganism(new Organism("Lotty", Color.Lime), new System.Windows.Point(0, 4));
-            ecosystem.AddOrganism(new Organism("Dr. Louise", Color.Orange), new System.Windows.Point(4, 2));
+            ecosystem.AddOrganism(new Organism("Waffle", Color.White), new Coordinates(0, 0));
+            ecosystem.AddOrganism(new Organism("Wilber", Color.Black), new Coordinates(1, 1));
+            ecosystem.AddOrganism(new Organism("Lotty", Color.Lime), new Coordinates(0, 4));
+            ecosystem.AddOrganism(new Organism("Dr. Louise", Color.Orange), new Coordinates(4, 2));
 
             // TODO: should this event be published by the model itself (and reference a specific habitat model)?
             eventaggregator.GetEvent<OrganismsUpdatedEvent>().Publish(null);

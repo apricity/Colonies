@@ -66,6 +66,9 @@
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
+    <Compile Include="Coordinates.cs" />
+    <Compile Include="CustomControl1.cs" />
+    <Compile Include="CustomControl2.cs" />
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="LocalArea.cs" />
     <Compile Include="Models\Ecosystem.cs" />

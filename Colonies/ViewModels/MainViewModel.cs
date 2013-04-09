@@ -1,10 +1,7 @@
 ﻿namespace Colonies.ViewModels
 {
-    using System;
     using System.Threading;
-    using System.Windows.Input;
 
-    using Colonies.Events;
     using Colonies.Models;
 
     using Microsoft.Practices.Prism.Events;

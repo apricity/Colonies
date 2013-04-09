@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Drawing;
+    using System.Windows;
 
     using Colonies.Events;
     using Colonies.Models;
@@ -9,6 +10,8 @@
     using Colonies.Views;
 
     using Microsoft.Practices.Prism.Events;
+
+    using Point = System.Windows.Point;
 
     public class Bootstrapper
     {
@@ -57,7 +60,7 @@
                 }
             }
 
-            var ecosystem = new Ecosystem(habitats);
+            var ecosystem = new Ecosystem(habitats, new Dictionary<Organism, Point>());
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
@@ -104,10 +107,10 @@
         private void InitialiseOrganisms(Ecosystem ecosystem, EventAggregator eventaggregator)
         {
             // place some organisms in the ecosystem
-            ecosystem.Habitats[0][0].Organism = new Organism("Waffle", Color.White);
-            ecosystem.Habitats[1][1].Organism = new Organism("Wacton", Color.Black);
-            ecosystem.Habitats[0][4].Organism = new Organism("Lotty", Color.Lime);
-            ecosystem.Habitats[4][2].Organism = new Organism("Louise", Color.Orange);
+            ecosystem.AddOrganism(new Organism("Waffle", Color.White), new System.Windows.Point(0, 0));
+            ecosystem.AddOrganism(new Organism("Wilber", Color.Black), new System.Windows.Point(1, 1));
+            ecosystem.AddOrganism(new Organism("Lotty", Color.Lime), new System.Windows.Point(0, 4));
+            ecosystem.AddOrganism(new Organism("Dr. Louise", Color.Orange), new System.Windows.Point(4, 2));
 
             // TODO: should this event be published by the model itself (and reference a specific habitat model)?
             eventaggregator.GetEvent<EcosystemTickEvent>().Publish(null);

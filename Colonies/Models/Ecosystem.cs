@@ -7,20 +7,8 @@
 
     public sealed class Ecosystem
     {
-        // TODO: blitz the current notion of "Habitat"
         public List<List<Habitat>> Habitats { get; set; }
-
-        // TODO: probably want something like...
-        // TODO: also wrap this bloody List<List<>> so it can be handled more neatly?
-        public List<List<Environment>> Environments { get; set; }
-        public List<Organism> organisms { get; set; } 
-        // note that the above things are the things that Habitat used to know about
-        private Dictionary<Organism, Point> OrganismLocations { get; set; }
-        // since the dictionary knows about the organisms anyway, probably remove the List<Organism> and just have...
-        private Dictionary<Organism, Point> Organisms { get; set; }
-        // organism's environment: 
-        // var currentEnvironment = this.Environments[this.Organisms[currentOrganism].Value.X][this.Organisms[currentOrganism].Value.y];
-        // we'll tidy it up!
+        private Dictionary<Organism, Point> OrganismsAndLocations { get; set; } 
 
         public int Height
         {
@@ -38,9 +26,10 @@
             }
         }
 
-        public Ecosystem(List<List<Habitat>> habitats)
+        public Ecosystem(List<List<Habitat>> habitats, Dictionary<Organism, Point> organismsAndLocations)
         {
             this.Habitats = habitats;
+            this.OrganismsAndLocations = organismsAndLocations;
         }
 
         public void Update()
@@ -48,56 +37,44 @@
             // organisms are now the things that make the decisions about where to move
             // TODO: all organisms should return an INTENTION of what they would like to do
             // TODO: then we should check for clashes before proceeding with the movement/action
-            var habitatsAndLocalAreas = this.GetLocalAreasOfOrganisms();
-            foreach (var habitatAndLocalArea in habitatsAndLocalAreas)
+
+            var random = new Random();
+            foreach (var organismsAndLocation in OrganismsAndLocations.ToList())
             {
-                var currentHabitat = habitatAndLocalArea.Key;
-                var currentLocalArea = habitatAndLocalArea.Value;
-                
-                var destinationHabitat = currentHabitat.Organism.TakeTurn(currentLocalArea);
-                if (!destinationHabitat.ContainsOrganism())
-                {
-                    this.MoveOrganism(currentHabitat, destinationHabitat);
-                }
+                /* decide what to do */
+                var decision = organismsAndLocation.Key.TakeTurn(null);
+
+                var randomX = random.Next(this.Width);
+                var randomY = random.Next(this.Height);
+                var destination = new Point(randomX, randomY);
+
+                this.MoveOrganism(organismsAndLocation.Key, destination);
             }
         }
 
-        private void MoveOrganism(Habitat sourceHabitat, Habitat destinationHabitat)
+        private void MoveOrganism(Organism organism, Point destination)
         {
-            if (!sourceHabitat.ContainsOrganism())
-            {
-                throw new ArgumentException(String.Format("Source habitat {0} does not contain an organism", sourceHabitat), "sourceHabitat");
-            }
-
-            if (destinationHabitat.ContainsOrganism())
-            {
-                throw new ArgumentException(String.Format("Destination habitat {0} already contains an organism", destinationHabitat), "destinationHabitat");
-            }
-
-            var organismToMove = sourceHabitat.Organism;
-            this.RemoveOrganism(sourceHabitat);
-            this.AddOrganism(destinationHabitat, organismToMove);
+            // use Add and Remove methods?
+            var source = this.OrganismsAndLocations[organism];
+            this.Habitats[(int)source.X][(int)source.Y].Organism = null;
+            this.Habitats[(int)destination.X][(int)destination.Y].Organism = organism;
+            this.OrganismsAndLocations[organism] = destination;
         }
 
-        private void AddOrganism(Habitat habitat, Organism organism)
+        public void AddOrganism(Organism organism, Point point)
         {
-            if (habitat.ContainsOrganism())
-            {
-                throw new ArgumentException(String.Format("Organism already exists at habitat {0}", habitat), "habitat");
-            }
-
-            habitat.Organism = organism;
+            this.Habitats[(int)point.X][(int)point.Y].Organism = organism;
+            this.OrganismsAndLocations.Add(organism, point);
         }
 
-        private void RemoveOrganism(Habitat habitat)
+        public void RemoveOrganism(Organism organism)
         {
-            if (!habitat.ContainsOrganism())
-            {
-                throw new ArgumentException(String.Format("No organism exists at habitat {0}", habitat), "habitat");
-            }
-
-            habitat.Organism = null;
+            var location = this.OrganismsAndLocations[organism];
+            this.Habitats[(int)location.X][(int)location.Y].Organism = null;
+            this.OrganismsAndLocations.Remove(organism);
         }
+
+        // TODO: modify environments
 
 
         // TODO: holy hells, this needs some thought...

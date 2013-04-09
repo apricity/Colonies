@@ -8,139 +8,172 @@
     public sealed class Ecosystem
     {
         // TODO: blitz the current notion of "Habitat"
-        // public List<List<Habitat>> Habitats { get; set; }
-        public Environment[,] Environments { get; set; }
-        public Dictionary<Organism, Point> Organisms { get; set; }
+        public List<List<Habitat>> Habitats { get; set; }
 
-        public int Width
-        {
-            get
-            {
-                return this.Environments.GetLength(0);
-            }
-        }
+        // TODO: probably want something like...
+        // TODO: also wrap this bloody List<List<>> so it can be handled more neatly?
+        public List<List<Environment>> Environments { get; set; }
+        public List<Organism> organisms { get; set; } 
+        // note that the above things are the things that Habitat used to know about
+        private Dictionary<Organism, Point> OrganismLocations { get; set; }
+        // since the dictionary knows about the organisms anyway, probably remove the List<Organism> and just have...
+        private Dictionary<Organism, Point> Organisms { get; set; }
+        // organism's environment: 
+        // var currentEnvironment = this.Environments[this.Organisms[currentOrganism].Value.X][this.Organisms[currentOrganism].Value.y];
+        // we'll tidy it up!
 
         public int Height
         {
             get
             {
-                return this.Environments.GetLength(1);
+                return this.Habitats.First().Count;
             }
         }
-        
-        public Ecosystem(Environment[,] environments, Dictionary<Organism, Point> organisms)
+
+        public int Width
         {
-            this.Environments = environments;
-            this.Organisms = organisms;
+            get
+            {
+                return this.Habitats.Count;
+            }
+        }
+
+        public Ecosystem(List<List<Habitat>> habitats)
+        {
+            this.Habitats = habitats;
         }
 
         public void Update()
         {
-            var random = new Random();
-
             // organisms are now the things that make the decisions about where to move
             // TODO: all organisms should return an INTENTION of what they would like to do
             // TODO: then we should check for clashes before proceeding with the movement/action
-            foreach (var organism in Organisms.ToList())
+            var habitatsAndLocalAreas = this.GetLocalAreasOfOrganisms();
+            foreach (var habitatAndLocalArea in habitatsAndLocalAreas)
             {
-                var intendedDestination = organism.Key.TakeTurn(null);
-                var randomPoint = new Point(random.Next(this.Width), random.Next(this.Height));
-
-                // if (!this.ContainsOrganism(x, y))
-                this.MoveOrganism(organism.Key, randomPoint);
+                var currentHabitat = habitatAndLocalArea.Key;
+                var currentLocalArea = habitatAndLocalArea.Value;
+                
+                var destinationHabitat = currentHabitat.Organism.TakeTurn(currentLocalArea);
+                if (!destinationHabitat.ContainsOrganism())
+                {
+                    this.MoveOrganism(currentHabitat, destinationHabitat);
+                }
             }
         }
 
-        private void MoveOrganism(Organism organism, Point destination)
+        private void MoveOrganism(Habitat sourceHabitat, Habitat destinationHabitat)
         {
-            this.Organisms[organism] = destination;
+            if (!sourceHabitat.ContainsOrganism())
+            {
+                throw new ArgumentException(String.Format("Source habitat {0} does not contain an organism", sourceHabitat), "sourceHabitat");
+            }
+
+            if (destinationHabitat.ContainsOrganism())
+            {
+                throw new ArgumentException(String.Format("Destination habitat {0} already contains an organism", destinationHabitat), "destinationHabitat");
+            }
+
+            var organismToMove = sourceHabitat.Organism;
+            this.RemoveOrganism(sourceHabitat);
+            this.AddOrganism(destinationHabitat, organismToMove);
         }
 
-        public void AddOrganism(Organism organism, Point point)
+        private void AddOrganism(Habitat habitat, Organism organism)
         {
-            this.Organisms.Add(organism, point);
+            if (habitat.ContainsOrganism())
+            {
+                throw new ArgumentException(String.Format("Organism already exists at habitat {0}", habitat), "habitat");
+            }
+
+            habitat.Organism = organism;
         }
 
-        private void RemoveOrganism(Organism organism)
+        private void RemoveOrganism(Habitat habitat)
         {
-            this.Organisms.Remove(organism);
+            if (!habitat.ContainsOrganism())
+            {
+                throw new ArgumentException(String.Format("No organism exists at habitat {0}", habitat), "habitat");
+            }
+
+            habitat.Organism = null;
         }
 
 
         // TODO: holy hells, this needs some thought...
-        //private Dictionary<Habitat, List<Habitat>> GetLocalAreasOfOrganisms()
-        //{
-        //    var localAreaOfOrganisms = new Dictionary<Habitat, List<Habitat>>();
-        //    for (int x = 0; x < this.Width; x++)
-        //    {
-        //        for (int y = 0; y < this.Height; y++)
-        //        {
-        //            if (this.Habitats[x][y].ContainsOrganism())
-        //            {
-        //                var currentHabitat = this.Habitats[x][y];
+        private Dictionary<Habitat, List<Habitat>> GetLocalAreasOfOrganisms()
+        {
+            var localAreaOfOrganisms = new Dictionary<Habitat, List<Habitat>>();
+            for (int x = 0; x < this.Width; x++)
+            {
+                for (int y = 0; y < this.Height; y++)
+                {
+                    if (this.Habitats[x][y].ContainsOrganism())
+                    {
+                        var currentHabitat = this.Habitats[x][y];
 
-        //                // TODO [Waff]: refactor this into its own method
-        //                var localAreaOfHabitat = new List<Habitat>();
-        //                for (int i = x - 1; i <= x + 1; i++)
-        //                {
-        //                    if (i < 0 || i >= this.Width)
-        //                    {
-        //                        continue;
-        //                    }
-        //                    for (int j = y - 1; j <= y + 1; j++)
-        //                    {
-        //                        if (j < 0 || j >= this.Height)
-        //                        {
-        //                            continue;
-        //                        }
+                        // TODO [Waff]: refactor this into its own method
+                        var localAreaOfHabitat = new List<Habitat>();
+                        for (int i = x - 1; i <= x + 1; i++)
+                        {
+                            if (i < 0 || i >= this.Width)
+                            {
+                                continue;
+                            }
+                            for (int j = y - 1; j <= y + 1; j++)
+                            {
+                                if (j < 0 || j >= this.Height)
+                                {
+                                    continue;
+                                }
 
-        //                        localAreaOfHabitat.Add(Habitats[i][j]);
-        //                    }
-        //                }
-        //                var localArea = new LocalArea(localAreaOfHabitat, this.Habitats[x][y]);
-        //                localAreaOfOrganisms.Add(currentHabitat, localArea.LocalHabitats);
-        //            }
-        //        }
-        //    }
+                                localAreaOfHabitat.Add(Habitats[i][j]);
+                            }
+                        }
+                        var localArea = new LocalArea(localAreaOfHabitat, this.Habitats[x][y]);
+                        localAreaOfOrganisms.Add(currentHabitat, localArea.LocalHabitats);
+                    }
+                }
+            }
 
-        //    return localAreaOfOrganisms;
-        //}
+            return localAreaOfOrganisms;
+        }
 
-        //private IEnumerable<LocalArea> GetLocalAreaOfOccupiedHabitats()
-        //{
-        //    var localAreaOfOccupiedHabitats = new List<LocalArea>();
-        //    for (int x = 0; x < this.Width; x++)
-        //    {
-        //        for (int y = 0; y < this.Height; y++)
-        //        {
-        //            if (this.Habitats[x][y].ContainsOrganism())
-        //            {
-        //                // TODO [Waff]: refactor this into its own method
-        //                var localAreaOfHabitat = new List<Habitat>();
-        //                for (int i = x - 1; i <= x + 1; i++)
-        //                {
-        //                    if (i < 0 || i >= this.Width)
-        //                    {
-        //                        continue;
-        //                    }
-        //                    for (int j = y - 1; j <= y + 1; j++)
-        //                    {
-        //                        if (j < 0 || j >= this.Height)
-        //                        {
-        //                            continue;
-        //                        }
+        private IEnumerable<LocalArea> GetLocalAreaOfOccupiedHabitats()
+        {
+            var localAreaOfOccupiedHabitats = new List<LocalArea>();
+            for (int x = 0; x < this.Width; x++)
+            {
+                for (int y = 0; y < this.Height; y++)
+                {
+                    if (this.Habitats[x][y].ContainsOrganism())
+                    {
+                        // TODO [Waff]: refactor this into its own method
+                        var localAreaOfHabitat = new List<Habitat>();
+                        for (int i = x - 1; i <= x + 1; i++)
+                        {
+                            if (i < 0 || i >= this.Width)
+                            {
+                                continue;
+                            }
+                            for (int j = y - 1; j <= y + 1; j++)
+                            {
+                                if (j < 0 || j >= this.Height)
+                                {
+                                    continue;
+                                }
 
-        //                        localAreaOfHabitat.Add(Habitats[i][j]);
-        //                    }
-        //                }
-        //                var localArea = new LocalArea(localAreaOfHabitat,this.Habitats[x][y]);
-        //                localAreaOfOccupiedHabitats.Add(localArea);
-        //            }
-        //        }
-        //    }
+                                localAreaOfHabitat.Add(Habitats[i][j]);
+                            }
+                        }
+                        var localArea = new LocalArea(localAreaOfHabitat,this.Habitats[x][y]);
+                        localAreaOfOccupiedHabitats.Add(localArea);
+                    }
+                }
+            }
 
-        //    return localAreaOfOccupiedHabitats;
-        //}
+            return localAreaOfOccupiedHabitats;
+        }
 
         public override String ToString()
         {

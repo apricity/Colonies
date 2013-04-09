@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using System.Drawing;
-    using System.Windows;
 
     using Colonies.Events;
     using Colonies.Models;
@@ -31,29 +30,35 @@
 
         private MainViewModel BuildMainDataContext()
         {
-            var width = Properties.Settings.Default.EcosystemWidth;
-            var height = Properties.Settings.Default.EcosystemHeight;
-
             // the event aggregator is going to be used by view models to inform of changes
             var eventaggregator = new EventAggregator();
 
-            var environments = new Environment[width, height];
-            var environmentViewModels = new EnvironmentViewModel[width,height];
+            var habitats = new List<List<Habitat>>();
+            var habitatViewModels = new List<List<HabitatViewModel>>();
 
-            var organisms = new Dictionary<Organism, System.Windows.Point>();
-            var organismViewModels = new Dictionary<OrganismViewModel, System.Windows.Point>();
-
-            for (var x = 0; x < width; x++)
+            for (var x = 0; x < Properties.Settings.Default.EcosystemWidth; x++)
             {
-                for (var y = 0; y < height; y++)
+                habitats.Add(new List<Habitat>());
+                habitatViewModels.Add(new List<HabitatViewModel>());
+
+                for (var y = 0; y < Properties.Settings.Default.EcosystemHeight; y++)
                 {
-                    environments[x, y] = new Environment(Terrain.Unknown);
-                    environmentViewModels[x, y] = new EnvironmentViewModel(environments[x, y], eventaggregator);
+                    // initially set each habitat to have an unknown environment and no organism
+                    var environment = new Environment(Terrain.Unknown);
+                    var environmentViewModel = new EnvironmentViewModel(environment, eventaggregator);
+
+                    var organismViewModel = new OrganismViewModel(null, eventaggregator);
+
+                    var habitat = new Habitat(environment, null);
+                    var habitatViewModel = new HabitatViewModel(habitat, environmentViewModel, organismViewModel, eventaggregator);
+
+                    habitats[x].Add(habitat);
+                    habitatViewModels[x].Add(habitatViewModel);
                 }
             }
 
-            var ecosystem = new Ecosystem(environments, new Dictionary<Organism, System.Windows.Point>());
-            var ecosystemViewModel = new EcosystemViewModel(ecosystem, environmentViewModels, organismViewModels, eventaggregator);
+            var ecosystem = new Ecosystem(habitats);
+            var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
             this.InitialiseOrganisms(ecosystem, eventaggregator);
@@ -91,7 +96,7 @@
                             break;
                     }
 
-                    ecosystem.Environments[x, y].Terrain = terrain;
+                    ecosystem.Habitats[x][y].Environment.Terrain = terrain;
                 }
             }
         }
@@ -99,10 +104,10 @@
         private void InitialiseOrganisms(Ecosystem ecosystem, EventAggregator eventaggregator)
         {
             // place some organisms in the ecosystem
-            //ecosystem.AddOrganism(new Organism("Waffle", Color.White), new System.Windows.Point(0, 0));
-            ecosystem.AddOrganism(new Organism("Wilber", Color.Black), new System.Windows.Point(1, 1));
-            //ecosystem.AddOrganism(new Organism("Lotty", Color.Lime), new System.Windows.Point(0, 4));
-            //ecosystem.AddOrganism(new Organism("Dr. Louise", Color.Orange), new System.Windows.Point(4, 2));
+            ecosystem.Habitats[0][0].Organism = new Organism("Waffle", Color.White);
+            ecosystem.Habitats[1][1].Organism = new Organism("Wacton", Color.Black);
+            ecosystem.Habitats[0][4].Organism = new Organism("Lotty", Color.Lime);
+            ecosystem.Habitats[4][2].Organism = new Organism("Louise", Color.Orange);
 
             // TODO: should this event be published by the model itself (and reference a specific habitat model)?
             eventaggregator.GetEvent<EcosystemTickEvent>().Publish(null);

@@ -18,9 +18,9 @@
             return this.Organism != null;
         }
 
-        public HabitatFactorSet GetFactorSet()
+        public HabitatCondition GetCondition()
         {
-            return new HabitatFactorSet(1);
+            return new HabitatCondition(1);
         }
 
         public override String ToString()

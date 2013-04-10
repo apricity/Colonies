@@ -51,12 +51,12 @@
                 /* record the pre-update location */
                 preUpdate.Add(organism.ToString(), location);
 
-                /* get nearby habitat factor sets */
-                var adjacentHabitatFactorSets = this.GetAdjacentHabitatFactorSets(location);
+                /* get nearby habitat conditions */
+                var adjacentHabitatConditions = this.GetAdjacentHabitatConditions(location);
 
                 /* decide what to do */
-                var chosenFactorSet = organism.TakeTurn(adjacentHabitatFactorSets.Keys.ToList(), this.randomNumberGenerator);
-                var destination = adjacentHabitatFactorSets[chosenFactorSet];
+                var chosenHabitatCondition = organism.TakeTurn(adjacentHabitatConditions.Keys.ToList(), this.randomNumberGenerator);
+                var destination = adjacentHabitatConditions[chosenHabitatCondition];
 
                 /* take action based on decision */
                 this.MoveOrganism(organism, destination);
@@ -95,9 +95,9 @@
             this.Habitats[coordinates.X, coordinates.Y].Environment.Terrain = terrain;
         }
 
-        private Dictionary<HabitatFactorSet, Coordinates> GetAdjacentHabitatFactorSets(Coordinates coordinates)
+        private Dictionary<HabitatCondition, Coordinates> GetAdjacentHabitatConditions(Coordinates coordinates)
         {
-            var habitatFactorSets = new Dictionary<HabitatFactorSet, Coordinates>();
+            var habitatConditions = new Dictionary<HabitatCondition, Coordinates>();
             for (var x = coordinates.X - 1; x <= coordinates.X + 1; x++)
             {
                 // do not carry on if x is out-of-bounds
@@ -115,16 +115,16 @@
                     }
 
                     var currentCoordinates = new Coordinates(x, y);
-                    habitatFactorSets.Add(this.GetHabitatFactorSet(currentCoordinates), currentCoordinates);
+                    habitatConditions.Add(this.GetHabitatCondition(currentCoordinates), currentCoordinates);
                 }
             }
 
-            return habitatFactorSets;
+            return habitatConditions;
         }
 
-        private HabitatFactorSet GetHabitatFactorSet(Coordinates coordinates)
+        private HabitatCondition GetHabitatCondition(Coordinates coordinates)
         {
-            return this.Habitats[coordinates.X, coordinates.Y].GetFactorSet();
+            return this.Habitats[coordinates.X, coordinates.Y].GetCondition();
         }
 
         public override String ToString()

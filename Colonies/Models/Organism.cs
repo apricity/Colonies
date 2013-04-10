@@ -15,24 +15,24 @@
             this.Color = color;
         }
 
-        // TODO: this should be a method that calculates an INTENTION based on features (does not necessarily choose a feature to move to)
-        public Features TakeTurn(IEnumerable<Features> nearbyFeatures, Random random)
+        // TODO: this should be a method that calculates an INTENTION based on factors (does not necessarily choose a feature to move to)
+        public HabitatFactorSet TakeTurn(IEnumerable<HabitatFactorSet> possibleFactorSets, Random random)
         {
             // something like this - more desirable features will have greater weightings
             // except will be using 0.0 -> 1.0 range for strengths/levels
-            var weightings = new List<Features>();
-            foreach (var features in nearbyFeatures)
+            var weightings = new List<HabitatFactorSet>();
+            foreach (var factorSet in possibleFactorSets)
             {
-                for (int i = 0; i < features.Strength; i++)
+                for (int i = 0; i < factorSet.Strength; i++)
                 {
-                    weightings.Add(features);
+                    weightings.Add(factorSet);
                 }
             }
 
             var decisionIndex = random.Next(weightings.Count);
-            var chosenFeature = weightings[decisionIndex];
+            var chosenFactorSet = weightings[decisionIndex];
 
-            return chosenFeature;
+            return chosenFactorSet;
         }
 
         public override string ToString()

@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using System.Drawing;
 
-    using Colonies.Events;
     using Colonies.Models;
     using Colonies.ViewModels;
     using Colonies.Views;
@@ -33,7 +32,7 @@
             var width = Properties.Settings.Default.EcosystemWidth;
             var height = Properties.Settings.Default.EcosystemHeight;
 
-            // the event aggregator is going to be used by view models to inform of changes
+            // the event aggregator might be used by view models to inform of changes
             var eventaggregator = new EventAggregator();
 
             var habitats = new Habitat[width, height];
@@ -110,9 +109,6 @@
             ecosystem.AddOrganism(new Organism("Wilber", Color.Black), new Coordinates(1, 1));
             ecosystem.AddOrganism(new Organism("Lotty", Color.Lime), new Coordinates(0, 4));
             ecosystem.AddOrganism(new Organism("Dr. Louise", Color.Orange), new Coordinates(4, 2));
-
-            // TODO: should this event be published by the model itself (and reference a specific habitat model)?
-            eventaggregator.GetEvent<OrganismsUpdatedEvent>().Publish(null);
         }
     }
 }

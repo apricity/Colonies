@@ -1,10 +1,10 @@
 ﻿namespace Colonies.Models
 {
-    public class Features
+    public class HabitatFactorSet
     {
         public readonly int Strength;
 
-        public Features(int strength)
+        public HabitatFactorSet(int strength)
         {
             this.Strength = strength;
         }

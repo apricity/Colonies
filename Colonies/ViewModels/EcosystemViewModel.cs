@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
 
-    using Colonies.Events;
     using Colonies.Models;
 
     using Microsoft.Practices.Prism.Events;
@@ -31,12 +30,24 @@
 
         public void ProgressEcosystemOneTurn()
         {
-            // TODO: Update() to return a list of changes?  Then we don't have to be using message passing yet and can update ONLY the necessary habitats?
-            // TODO: like this: this.HabitatViewModels[0][0].RefreshOrganismViewModel();
-            this.DomainModel.Update();
-            
-            // spread the word that some organisms (might) have moved
-            this.EventAggregator.GetEvent<OrganismsUpdatedEvent>().Publish(null);
+            var updateSummary = this.DomainModel.Update();
+
+            // TODO: have a more 'standard' usage of the update summary
+            foreach (var summary in updateSummary.PreUpdateSummary)
+            {
+                var x = summary.Value.X;
+                var y = summary.Value.Y;
+
+                this.HabitatViewModels[x][y].RefreshOrganismViewModel();
+            }
+
+            foreach (var summary in updateSummary.PostUpdateSummary)
+            {
+                var x = summary.Value.X;
+                var y = summary.Value.Y;
+
+                this.HabitatViewModels[x][y].RefreshOrganismViewModel();
+            }
         }
     }
 }

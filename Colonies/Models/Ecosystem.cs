@@ -36,22 +36,36 @@
         }
 
         // TODO: return a summary of what has happened so we know which habitat view models to update
-        public void Update()
+        public UpdateSummary Update()
         {
+            var preUpdate = new Dictionary<string, Coordinates>();
+            var postUpdate = new Dictionary<string, Coordinates>();
+
             // TODO: all organisms should return an INTENTION of what they would like to do
             // TODO: then we should check for clashes before proceeding with the movement/action
             foreach (var organismCoordinates in this.OrganismCoordinates.ToList())
             {
-                /* get nearby habitat features */
-                var nearbyHabitatFeatures = this.GetNearbyHabitatFeatures(organismCoordinates.Value);
+                var organism = organismCoordinates.Key;
+                var location = organismCoordinates.Value;
+
+                /* record the pre-update location */
+                preUpdate.Add(organism.ToString(), location);
+
+                /* get nearby habitat factor sets */
+                var adjacentHabitatFactorSets = this.GetAdjacentHabitatFactorSets(location);
 
                 /* decide what to do */
-                var chosenFeature = organismCoordinates.Key.TakeTurn(nearbyHabitatFeatures.Keys.ToList(), this.randomNumberGenerator);
-                var destinationCoordinates = nearbyHabitatFeatures[chosenFeature];
+                var chosenFactorSet = organism.TakeTurn(adjacentHabitatFactorSets.Keys.ToList(), this.randomNumberGenerator);
+                var destination = adjacentHabitatFactorSets[chosenFactorSet];
 
                 /* take action based on decision */
-                this.MoveOrganism(organismCoordinates.Key, destinationCoordinates);
+                this.MoveOrganism(organism, destination);
+
+                /* record the post-update location */
+                postUpdate.Add(organism.ToString(), destination);
             }
+
+            return new UpdateSummary(preUpdate, postUpdate);
         }
 
         private void MoveOrganism(Organism organism, Coordinates destination)
@@ -81,9 +95,9 @@
             this.Habitats[coordinates.X, coordinates.Y].Environment.Terrain = terrain;
         }
 
-        private Dictionary<Features, Coordinates> GetNearbyHabitatFeatures(Coordinates coordinates)
+        private Dictionary<HabitatFactorSet, Coordinates> GetAdjacentHabitatFactorSets(Coordinates coordinates)
         {
-            var nearbyHabitatFeatures = new Dictionary<Features, Coordinates>();
+            var habitatFactorSets = new Dictionary<HabitatFactorSet, Coordinates>();
             for (var x = coordinates.X - 1; x <= coordinates.X + 1; x++)
             {
                 // do not carry on if x is out-of-bounds
@@ -101,16 +115,16 @@
                     }
 
                     var currentCoordinates = new Coordinates(x, y);
-                    nearbyHabitatFeatures.Add(this.GetHabitatFeatures(currentCoordinates), currentCoordinates);
+                    habitatFactorSets.Add(this.GetHabitatFactorSet(currentCoordinates), currentCoordinates);
                 }
             }
 
-            return nearbyHabitatFeatures;
+            return habitatFactorSets;
         }
 
-        private Features GetHabitatFeatures(Coordinates coordinates)
+        private HabitatFactorSet GetHabitatFactorSet(Coordinates coordinates)
         {
-            return this.Habitats[coordinates.X, coordinates.Y].GetFeatures();
+            return this.Habitats[coordinates.X, coordinates.Y].GetFactorSet();
         }
 
         public override String ToString()

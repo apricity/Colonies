@@ -1,9 +1,5 @@
 ﻿namespace Colonies.ViewModels
 {
-    using System;
-    using System.Drawing;
-
-    using Colonies.Events;
     using Colonies.Models;
 
     using Microsoft.Practices.Prism.Events;
@@ -43,16 +39,10 @@
         {
             this.EnvironmentViewModel = environmentViewModel;
             this.OrganismViewModel = organismViewModel;
-
-            // subscribe to the ecosystem tick event, so the habitat can refresh its view of the organism each turn
-            this.EventAggregator.GetEvent<OrganismsUpdatedEvent>().Subscribe(this.RefreshOrganismViewModel);
         }
 
-        public void RefreshOrganismViewModel(object payload)
+        public void RefreshOrganismViewModel()
         {
-            // TODO: should the event aggregator inform only the habitat view models with organism changes
-            // TODO: or is forcing ALL the habitat view models to update an acceptable thing to do?
-            // when the event aggregator informs us that organism have changed habitats
             // renew the organism view model (in case the model for this habitat is one that has changed)
             this.OrganismViewModel = new OrganismViewModel(this.DomainModel.Organism, this.EventAggregator);
         }

@@ -62,7 +62,7 @@
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
-            this.InitialiseOrganisms(ecosystem, eventaggregator);
+            this.InitialiseOrganisms(ecosystem);
 
             var main = new Main(ecosystem);
             var mainViewModel = new MainViewModel(main, ecosystemViewModel, eventaggregator);
@@ -77,32 +77,19 @@
             {
                 for (var y = 0; y < ecosystem.Height; y++)
                 {
-                    //Terrain terrain;
-                    //switch (x)
-                    //{
-                    //    case 0:
-                    //        terrain = Terrain.Earth;
-                    //        break;
-                    //    case 1:
-                    //        terrain = Terrain.Grass;
-                    //        break;
-                    //    case 2:
-                    //        terrain = Terrain.Water;
-                    //        break;
-                    //    case 3:
-                    //        terrain = Terrain.Fire;
-                    //        break;
-                    //    default:
-                    //        terrain = Terrain.Unknown;
-                    //        break;
-                    //}
-
-                    ecosystem.SetTerrain(new Coordinates(x, y), Terrain.Earth);
+                    // ecosystem.SetTerrain(new Coordinates(x, y), Terrain.Earth);
                 }
             }
+
+            // testing drawing of pheromones
+            ecosystem.IncreasePheromoneLevel(new Coordinates(5, 0), 1);
+            ecosystem.IncreasePheromoneLevel(new Coordinates(5, 1), 0.75);
+            ecosystem.IncreasePheromoneLevel(new Coordinates(5, 2), 0.5);
+            ecosystem.IncreasePheromoneLevel(new Coordinates(5, 3), 0.25);
+            ecosystem.IncreasePheromoneLevel(new Coordinates(5, 4), 0);
         }
 
-        private void InitialiseOrganisms(Ecosystem ecosystem, EventAggregator eventaggregator)
+        private void InitialiseOrganisms(Ecosystem ecosystem)
         {
             // place some organisms in the ecosystem
             ecosystem.AddOrganism(new Organism("Waffle", Color.White), new Coordinates(0, 0));

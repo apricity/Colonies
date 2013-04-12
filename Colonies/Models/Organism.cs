@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Drawing;
+    using System.Linq;
 
     public sealed class Organism
     {
@@ -18,26 +19,50 @@
         // TODO: this should be a method that calculates an INTENTION based on conditions (does not necessarily choose a condition to move to)
         public HabitatCondition TakeTurn(IEnumerable<HabitatCondition> possibleHabitatConditions, Random random)
         {
-            // something like this - more desirable features will have greater weightings
-            // except will be using 0.0 -> 1.0 range for strengths/levels
-            var weightedHabitatConditions = new List<HabitatCondition>();
-            foreach (var habitatCondition in possibleHabitatConditions)
+            HabitatCondition selectedHabitat = null;
+
+            var weightedHabitatConditions = WeightHabitatConditions(possibleHabitatConditions);
+            var sumOfWeights = weightedHabitatConditions.Values.Sum(weight => weight);
+
+            var randomNumber = random.NextDouble() * sumOfWeights;
+            foreach (var weightedHabitatCondition in weightedHabitatConditions)
             {
-                for (int i = 0; i < habitatCondition.Strength; i++)
+                if (randomNumber < weightedHabitatCondition.Value)
                 {
-                    weightedHabitatConditions.Add(habitatCondition);
+                    selectedHabitat = weightedHabitatCondition.Key;
+                    break;
                 }
+
+                randomNumber -= weightedHabitatCondition.Value;
             }
 
-            var decisionIndex = random.Next(weightedHabitatConditions.Count);
-            var chosenHabitatCondition = weightedHabitatConditions[decisionIndex];
+            if (selectedHabitat == null)
+            {
+                throw new NullReferenceException("A habitat has not been selected");
+            }
 
-            return chosenHabitatCondition;
+            return selectedHabitat;
+        }
+
+        private static Dictionary<HabitatCondition, double> WeightHabitatConditions(IEnumerable<HabitatCondition> possibleHabitatConditions)
+        {
+            var weightedHabitatConditions = new Dictionary<HabitatCondition, double>();
+            foreach (var habitatCondition in possibleHabitatConditions)
+            {
+                // each habitat initially has a '1' rating
+                // add further weighting according to strength of condition
+                var currentWeight = 1.0;
+                currentWeight += 10 * habitatCondition.Strength;
+
+                weightedHabitatConditions.Add(habitatCondition, currentWeight);
+            }
+
+            return weightedHabitatConditions;
         }
 
         public override string ToString()
         {
-            return string.Format("{0} ({1})", this.Name, this.Color);
+            return string.Format("{0} <{1}>", this.Name, this.Color);
         }
     }
 }

@@ -95,6 +95,16 @@
             this.Habitats[coordinates.X, coordinates.Y].Environment.Terrain = terrain;
         }
 
+        public void IncreasePheromoneLevel(Coordinates coordinates, double levelIncrease)
+        {
+            this.Habitats[coordinates.X, coordinates.Y].Environment.IncreasePheromoneLevel(levelIncrease);
+        }
+
+        public void DecreasePheromoneLevel(Coordinates coordinates, double levelDecrease)
+        {
+            this.Habitats[coordinates.X, coordinates.Y].Environment.IncreasePheromoneLevel(levelDecrease);
+        }
+
         private Dictionary<HabitatCondition, Coordinates> GetAdjacentHabitatConditions(Coordinates coordinates)
         {
             var habitatConditions = new Dictionary<HabitatCondition, Coordinates>();
@@ -129,7 +139,7 @@
 
         public override String ToString()
         {
-            return string.Format("{0}x{1}", this.Width, this.Height);
+            return string.Format("{0}x{1} : {2} organisms", this.Width, this.Height, this.OrganismCoordinates.Count);
         }
     }
 }

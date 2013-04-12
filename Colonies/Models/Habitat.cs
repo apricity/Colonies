@@ -20,7 +20,7 @@
 
         public HabitatCondition GetCondition()
         {
-            return new HabitatCondition(1);
+            return new HabitatCondition(this.Environment.PheromoneLevel);
         }
 
         public override String ToString()

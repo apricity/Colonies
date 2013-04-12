@@ -12,6 +12,10 @@
         <Converters:TerrainToBrushConverter x:Key="TerrainToBrushConverter" />
     </UserControl.Resources>
 
-    <Rectangle Fill="{Binding Terrain, Converter={StaticResource TerrainToBrushConverter}}" />
+    <Grid>
+        <Rectangle Fill="{Binding Terrain, Converter={StaticResource TerrainToBrushConverter}}" />
+        <Rectangle Fill="OrangeRed" Opacity="{Binding PheromoneOpacity}"/>
+    </Grid>
+    
     
 </UserControl>

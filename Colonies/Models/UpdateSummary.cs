@@ -13,5 +13,10 @@
             this.PreUpdateSummary = preUpdateSummary;
             this.PostUpdateSummary = postUpdateSummary;
         }
+
+        public override string ToString()
+        {
+            return string.Format("Pre: {0}, Post: {1}", this.PreUpdateSummary.Count, this.PostUpdateSummary.Count);
+        }
     }
 }

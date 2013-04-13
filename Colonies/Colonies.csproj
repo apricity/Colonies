@@ -69,7 +69,7 @@
     <Compile Include="Coordinates.cs" />
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="Models\Ecosystem.cs" />
-    <Compile Include="Models\HabitatCondition.cs" />
+    <Compile Include="Models\Stimulus.cs" />
     <Compile Include="Models\Main.cs" />
     <Compile Include="Models\UpdateSummary.cs" />
     <Compile Include="RelayCommand.cs" />

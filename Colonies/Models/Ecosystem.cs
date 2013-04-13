@@ -6,8 +6,8 @@
 
     public sealed class Ecosystem
     {
-        private Habitat[,] Habitats { get; set; }
-        private Dictionary<Organism, Coordinates> OrganismCoordinates { get; set; }
+        public Habitat[,] Habitats { get; private set; }
+        public Dictionary<Organism, Coordinates> OrganismCoordinates { get; private set; }
 
         public int Width
         {
@@ -25,14 +25,14 @@
             }
         }
 
-        private readonly Random randomNumberGenerator;
-
+        private readonly Random random;
+        
         public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismCoordinates)
         {
             this.Habitats = habitats;
             this.OrganismCoordinates = organismCoordinates;
 
-            this.randomNumberGenerator = new Random();
+            this.random = new Random();
         }
 
         // TODO: return a summary of what has happened so we know which habitat view models to update
@@ -51,12 +51,12 @@
                 /* record the pre-update location */
                 preUpdate.Add(organism.ToString(), location);
 
-                /* get nearby habitat conditions */
-                var adjacentHabitatConditions = this.GetAdjacentHabitatConditions(location);
+                /* get nearby stimuli */
+                var neighbourhoodStimuli = this.GetNeighbourhoodStimuli(location);
 
                 /* decide what to do */
-                var chosenHabitatCondition = organism.TakeTurn(adjacentHabitatConditions.Keys.ToList(), this.randomNumberGenerator);
-                var destination = adjacentHabitatConditions[chosenHabitatCondition];
+                var chosenStimulus = organism.ProcessStimuli(neighbourhoodStimuli.Keys.ToList(), this.random);
+                var destination = neighbourhoodStimuli[chosenStimulus];
 
                 /* take action based on decision */
                 this.MoveOrganism(organism, destination);
@@ -69,30 +69,29 @@
         }
 
         private void MoveOrganism(Organism organism, Coordinates destination)
-        {
-            // use Add and Remove methods?
+        {           
             var source = this.OrganismCoordinates[organism];
-            this.Habitats[source.X, source.Y].Organism = null;
-            this.Habitats[destination.X, destination.Y].Organism = organism;
+            this.Habitats[source.X, source.Y].RemoveOrganism();
+            this.Habitats[destination.X, destination.Y].AddOrganism(organism);
             this.OrganismCoordinates[organism] = destination;
         }
 
         public void AddOrganism(Organism organism, Coordinates coordinates)
         {
-            this.Habitats[coordinates.X, coordinates.Y].Organism = organism;
+            this.Habitats[coordinates.X, coordinates.Y].AddOrganism(organism);
             this.OrganismCoordinates.Add(organism, coordinates);
         }
 
         public void RemoveOrganism(Organism organism)
         {
             var location = this.OrganismCoordinates[organism];
-            this.Habitats[location.X, location.Y].Organism = null;
+            this.Habitats[location.X, location.Y].RemoveOrganism();
             this.OrganismCoordinates.Remove(organism);
         }
 
         public void SetTerrain(Coordinates coordinates, Terrain terrain)
         {
-            this.Habitats[coordinates.X, coordinates.Y].Environment.Terrain = terrain;
+            this.Habitats[coordinates.X, coordinates.Y].Environment.SetTerrain(terrain);
         }
 
         public void IncreasePheromoneLevel(Coordinates coordinates, double levelIncrease)
@@ -102,12 +101,12 @@
 
         public void DecreasePheromoneLevel(Coordinates coordinates, double levelDecrease)
         {
-            this.Habitats[coordinates.X, coordinates.Y].Environment.IncreasePheromoneLevel(levelDecrease);
+            this.Habitats[coordinates.X, coordinates.Y].Environment.DecreasePheromoneLevel(levelDecrease);
         }
 
-        private Dictionary<HabitatCondition, Coordinates> GetAdjacentHabitatConditions(Coordinates coordinates)
+        private Dictionary<Stimulus, Coordinates> GetNeighbourhoodStimuli(Coordinates coordinates)
         {
-            var habitatConditions = new Dictionary<HabitatCondition, Coordinates>();
+            var neighbourhoodStimuli = new Dictionary<Stimulus, Coordinates>();
             for (var x = coordinates.X - 1; x <= coordinates.X + 1; x++)
             {
                 // do not carry on if x is out-of-bounds
@@ -125,16 +124,16 @@
                     }
 
                     var currentCoordinates = new Coordinates(x, y);
-                    habitatConditions.Add(this.GetHabitatCondition(currentCoordinates), currentCoordinates);
+                    neighbourhoodStimuli.Add(this.GetStimulus(currentCoordinates), currentCoordinates);
                 }
             }
 
-            return habitatConditions;
+            return neighbourhoodStimuli;
         }
 
-        private HabitatCondition GetHabitatCondition(Coordinates coordinates)
+        private Stimulus GetStimulus(Coordinates coordinates)
         {
-            return this.Habitats[coordinates.X, coordinates.Y].GetCondition();
+            return this.Habitats[coordinates.X, coordinates.Y].GetStimulus();
         }
 
         public override String ToString()

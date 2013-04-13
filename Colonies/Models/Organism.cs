@@ -7,8 +7,10 @@
 
     public sealed class Organism
     {
-        private string Name { get; set; }
-        public Color Color { get; set; }
+        private const int PheromoneMultiplier = 10;
+
+        public string Name { get; private set; }
+        public Color Color { get; private set; }
 
         public Organism(string name, Color color)
         {
@@ -17,47 +19,53 @@
         }
 
         // TODO: this should be a method that calculates an INTENTION based on conditions (does not necessarily choose a condition to move to)
-        public HabitatCondition TakeTurn(IEnumerable<HabitatCondition> possibleHabitatConditions, Random random)
+        public Stimulus ProcessStimuli(IEnumerable<Stimulus> stimuli, Random random)
         {
-            HabitatCondition selectedHabitat = null;
+            var weightedStimuli = WeightStimuli(stimuli);
 
-            var weightedHabitatConditions = WeightHabitatConditions(possibleHabitatConditions);
-            var sumOfWeights = weightedHabitatConditions.Values.Sum(weight => weight);
-
-            var randomNumber = random.NextDouble() * sumOfWeights;
-            foreach (var weightedHabitatCondition in weightedHabitatConditions)
-            {
-                if (randomNumber < weightedHabitatCondition.Value)
-                {
-                    selectedHabitat = weightedHabitatCondition.Key;
-                    break;
-                }
-
-                randomNumber -= weightedHabitatCondition.Value;
-            }
-
-            if (selectedHabitat == null)
+            var chosenStimulus = ChooseRandomStimulus(weightedStimuli, random);
+            if (chosenStimulus == null)
             {
                 throw new NullReferenceException("A habitat has not been selected");
             }
 
-            return selectedHabitat;
+            return chosenStimulus;
         }
 
-        private static Dictionary<HabitatCondition, double> WeightHabitatConditions(IEnumerable<HabitatCondition> possibleHabitatConditions)
+        private static Stimulus ChooseRandomStimulus(Dictionary<Stimulus, double> weightedStimuli, Random random)
         {
-            var weightedHabitatConditions = new Dictionary<HabitatCondition, double>();
-            foreach (var habitatCondition in possibleHabitatConditions)
+            Stimulus chosenStimulus = null;
+            var totalWeight = weightedStimuli.Values.Sum(weight => weight);
+
+            var randomNumber = random.NextDouble() * totalWeight;
+            foreach (var weightedStimulus in weightedStimuli)
+            {
+                if (randomNumber < weightedStimulus.Value)
+                {
+                    chosenStimulus = weightedStimulus.Key;
+                    break;
+                }
+
+                randomNumber -= weightedStimulus.Value;
+            }
+
+            return chosenStimulus;
+        }
+
+        private static Dictionary<Stimulus, double> WeightStimuli(IEnumerable<Stimulus> habitatStates)
+        {
+            var weightedHabitatStates = new Dictionary<Stimulus, double>();
+            foreach (var habitatState in habitatStates)
             {
                 // each habitat initially has a '1' rating
                 // add further weighting according to strength of condition
                 var currentWeight = 1.0;
-                currentWeight += 10 * habitatCondition.Strength;
+                currentWeight += habitatState.PheromoneLevel * PheromoneMultiplier;
 
-                weightedHabitatConditions.Add(habitatCondition, currentWeight);
+                weightedHabitatStates.Add(habitatState, currentWeight);
             }
 
-            return weightedHabitatConditions;
+            return weightedHabitatStates;
         }
 
         public override string ToString()

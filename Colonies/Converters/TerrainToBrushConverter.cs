@@ -33,6 +33,9 @@
                     case Terrain.Fire:
                         drawingColor = System.Drawing.Color.Firebrick;
                         break;
+                    case Terrain.Impassable:
+                        drawingColor = System.Drawing.Color.Brown;
+                        break;
                     default:
                         drawingColor = System.Drawing.Color.Gray;
                         break;

@@ -6,6 +6,7 @@
         Earth,
         Grass,
         Water,
-        Fire
+        Fire,
+        Impassable
     }
 }

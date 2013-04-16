@@ -28,6 +28,11 @@
             return this.Organism != null;
         }
 
+        public bool ContainsImpassable()
+        {
+            return this.Environment.Terrain == Terrain.Impassable;
+        }
+
         public Stimulus GetStimulus()
         {
             // TODO: take into account organisms before return the stimulus

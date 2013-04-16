@@ -129,7 +129,14 @@
                     }
 
                     var currentCoordinates = new Coordinates(x, y);
-                    neighbourhoodStimuli.Add(this.GetStimulus(currentCoordinates), currentCoordinates);
+                    if (Habitats[x, y].ContainsImpassable())
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        neighbourhoodStimuli.Add(this.GetStimulus(currentCoordinates), currentCoordinates);
+                    }
                 }
             }
 

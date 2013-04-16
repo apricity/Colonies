@@ -82,11 +82,26 @@
             // apply a terrain for every habitat
             for (var x = 0; x < ecosystem.Width; x++)
             {
+                //ecosystem.SetTerrain(new Coordinates(x, 0), Terrain.Impassable);
                 for (var y = 0; y < ecosystem.Height; y++)
                 {
-                    //ecosystem.SetTerrain(new Coordinates(x, y), Terrain.Earth);
+                    //ecosystem.SetTerrain(new Coordinates(0, y), Terrain.Impassable);
                 }
             }
+
+            ecosystem.SetTerrain(new Coordinates(0, 0), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(0, 1), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(0, 2), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(0, 3), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(0, 4), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(0, 5), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(0, 6), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(1, 6), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(2, 6), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(3, 6), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(4, 6), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(5, 6), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(6, 6), Terrain.Impassable);
 
             // testing drawing of pheromones
             //ecosystem.IncreasePheromoneLevel(new Coordinates(5, 0), 1);
@@ -98,9 +113,9 @@
 
         private IEnumerable<Coordinates> InitialiseOrganisms(Ecosystem ecosystem)
         {
-            var waffleCoords = new Coordinates(0, 0);
+            var waffleCoords = new Coordinates(4, 4);
             var wilberCoords = new Coordinates(1, 1);
-            var lottyCoords = new Coordinates(0, 4);
+            var lottyCoords = new Coordinates(1, 4);
             var louiseCoords = new Coordinates(4, 2);
 
             // place some organisms in the ecosystem

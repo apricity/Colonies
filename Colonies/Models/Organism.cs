@@ -11,11 +11,13 @@
 
         public string Name { get; private set; }
         public Color Color { get; private set; }
+        public bool IsDepositingPheromones { get; private set; }
 
-        public Organism(string name, Color color)
+        public Organism(string name, Color color, bool isDepostingPheromones)
         {
             this.Name = name;
             this.Color = color;
+            this.IsDepositingPheromones = isDepostingPheromones;
         }
 
         // TODO: this should be a method that calculates an INTENTION based on conditions (does not necessarily choose a condition to move to)

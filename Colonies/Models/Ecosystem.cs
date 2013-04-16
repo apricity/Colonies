@@ -71,6 +71,11 @@
         private void MoveOrganism(Organism organism, Coordinates destination)
         {           
             var source = this.OrganismCoordinates[organism];
+            if (organism.IsDepositingPheromones)
+            {
+                this.Habitats[source.X, source.Y].Environment.IncreasePheromoneLevel(0.01);
+            }
+
             this.Habitats[source.X, source.Y].RemoveOrganism();
             this.Habitats[destination.X, destination.Y].AddOrganism(organism);
             this.OrganismCoordinates[organism] = destination;

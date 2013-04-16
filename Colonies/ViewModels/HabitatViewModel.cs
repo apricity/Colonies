@@ -41,6 +41,16 @@
             this.OrganismViewModel = organismViewModel;
         }
 
+        public void RefreshEnvironmentViewModel()
+        {
+            // TODO: this is MASSIVE overkill, surely...
+            this.EnvironmentViewModel = new EnvironmentViewModel(this.DomainModel.Environment, this.EventAggregator);
+            
+            // this.EnvironmentViewModel = this.environmentViewModel;
+            //this.OnPropertyChanged("PheromoneLevel");
+            //this.OnPropertyChanged("EnvironmentViewModel");
+        }
+
         public void RefreshOrganismViewModel()
         {
             // renew the organism view model (in case the model for this habitat is one that has changed)

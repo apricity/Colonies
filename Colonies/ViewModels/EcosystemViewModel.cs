@@ -38,6 +38,9 @@
                 var x = summary.Value.X;
                 var y = summary.Value.Y;
 
+                // TODO: not all previous environments will need updated
+                // TODO: as some organisms might not be depositing pheromones
+                this.HabitatViewModels[x][y].RefreshEnvironmentViewModel();
                 this.HabitatViewModels[x][y].RefreshOrganismViewModel();
             }
 

@@ -62,7 +62,14 @@
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
-            this.InitialiseOrganisms(ecosystem);
+            var initialOrganismCoordinates = this.InitialiseOrganisms(ecosystem);
+
+            // TODO: do this in InitialiseOrganisms
+            // boshed together so the organisms are visible before ecosystem is switched on the first time
+            foreach (var organismCoordinate in initialOrganismCoordinates)
+            {
+                habitatViewModels[organismCoordinate.X][organismCoordinate.Y].RefreshOrganismViewModel();
+            }
 
             var main = new Main(ecosystem);
             var mainViewModel = new MainViewModel(main, ecosystemViewModel, eventaggregator);
@@ -77,25 +84,32 @@
             {
                 for (var y = 0; y < ecosystem.Height; y++)
                 {
-                    // ecosystem.SetTerrain(new Coordinates(x, y), Terrain.Earth);
+                    //ecosystem.SetTerrain(new Coordinates(x, y), Terrain.Earth);
                 }
             }
 
             // testing drawing of pheromones
-            ecosystem.IncreasePheromoneLevel(new Coordinates(5, 0), 1);
-            ecosystem.IncreasePheromoneLevel(new Coordinates(5, 1), 0.75);
-            ecosystem.IncreasePheromoneLevel(new Coordinates(5, 2), 0.5);
-            ecosystem.IncreasePheromoneLevel(new Coordinates(5, 3), 0.25);
-            ecosystem.IncreasePheromoneLevel(new Coordinates(5, 4), 0);
+            //ecosystem.IncreasePheromoneLevel(new Coordinates(5, 0), 1);
+            //ecosystem.IncreasePheromoneLevel(new Coordinates(5, 1), 0.75);
+            //ecosystem.IncreasePheromoneLevel(new Coordinates(5, 2), 0.5);
+            //ecosystem.IncreasePheromoneLevel(new Coordinates(5, 3), 0.25);
+            //ecosystem.IncreasePheromoneLevel(new Coordinates(5, 4), 0);
         }
 
-        private void InitialiseOrganisms(Ecosystem ecosystem)
+        private IEnumerable<Coordinates> InitialiseOrganisms(Ecosystem ecosystem)
         {
+            var waffleCoords = new Coordinates(0, 0);
+            var wilberCoords = new Coordinates(1, 1);
+            var lottyCoords = new Coordinates(0, 4);
+            var louiseCoords = new Coordinates(4, 2);
+
             // place some organisms in the ecosystem
-            ecosystem.AddOrganism(new Organism("Waffle", Color.White), new Coordinates(0, 0));
-            ecosystem.AddOrganism(new Organism("Wilber", Color.Black), new Coordinates(1, 1));
-            ecosystem.AddOrganism(new Organism("Lotty", Color.Lime), new Coordinates(0, 4));
-            ecosystem.AddOrganism(new Organism("Dr. Louise", Color.Orange), new Coordinates(4, 2));
+            ecosystem.AddOrganism(new Organism("Waffle", Color.White, true), waffleCoords);
+            ecosystem.AddOrganism(new Organism("Wilber", Color.Black, true), wilberCoords);
+            ecosystem.AddOrganism(new Organism("Lotty", Color.Lime, true), lottyCoords);
+            ecosystem.AddOrganism(new Organism("Dr. Louise", Color.Orange, false), louiseCoords);
+
+            return new List<Coordinates> { waffleCoords, wilberCoords, lottyCoords, louiseCoords };
         }
     }
 }

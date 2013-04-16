@@ -1,5 +1,7 @@
 ﻿namespace Colonies.Views
 {
+    using System.Windows;
+
     using MahApps.Metro.Controls;
 
     /// <summary>
@@ -10,6 +12,11 @@
         public MainView()
         {
             this.InitializeComponent();
+        }
+
+        private void ShowSettings(object sender, RoutedEventArgs e)
+        {
+            this.Flyouts[0].IsOpen = !this.Flyouts[0].IsOpen;
         }
     }
 }

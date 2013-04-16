@@ -19,25 +19,42 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
+
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
+                <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro.Resources;component/Icons.xaml" />-->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
 
+    <Controls:MetroWindow.WindowCommands>
+        <Controls:WindowCommands>
+            <Button Content="Settings" Click="ShowSettings" />
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.WindowCommands>
+
+    <Controls:MetroWindow.Flyouts>
+        <Controls:Flyout Header="Settings" Position="Right">
+            <StackPanel Orientation="Vertical">
+                <!--<Controls:ToggleSwitchButton Grid.Row="1" Grid.Column="0" Command="{Binding ToggleEcosystemCommand}" />-->
+                <Controls:ToggleSwitch Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsEcosystemActive}"
+                               Margin="5, 5, 5, 5" />
+
+                <Slider Grid.Row="1" Grid.Column="1" Value="{Binding EcosystemTurnInterval}" AutoToolTipPlacement="BottomRight" 
+                Minimum="1" Maximum="2000" Margin="5, 5, 5, 5"/>
+            </StackPanel>
+        </Controls:Flyout>
+    </Controls:MetroWindow.Flyouts>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!--<Viewbox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Stretch="Fill">
-            <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>
-        </Viewbox>-->
-
-        <ScrollViewer Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+        <ScrollViewer Grid.Row="0"
                       HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Viewbox Stretch="Uniform">
                 <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>
@@ -46,11 +63,6 @@
         
 
         <!--<Controls:ToggleSwitchButton Grid.Row="1" Grid.Column="0" Command="{Binding ToggleEcosystemCommand}" />-->
-        <Controls:ToggleSwitch Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsEcosystemActive}"
-                               Margin="5, 5, 5, 5" />
-
-        <Slider Grid.Row="1" Grid.Column="1" Value="{Binding EcosystemTurnInterval}" AutoToolTipPlacement="BottomRight" 
-                Minimum="1" Maximum="2000" Margin="5, 5, 5, 5"/>
     </Grid>
     
 </Controls:MetroWindow>

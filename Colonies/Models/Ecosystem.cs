@@ -138,11 +138,7 @@
                     }
 
                     var currentCoordinates = new Coordinates(x, y);
-                    if (Habitats[x, y].ContainsImpassable())
-                    {
-                        break;
-                    }
-                    else
+                    if (!Habitats[x, y].ContainsImpassable())
                     {
                         neighbourhoodStimuli.Add(this.GetStimulus(currentCoordinates), currentCoordinates);
                     }

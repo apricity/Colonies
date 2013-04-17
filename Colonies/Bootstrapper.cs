@@ -8,6 +8,7 @@
     using Colonies.Views;
 
     using Microsoft.Practices.Prism.Events;
+    using System;
 
     public class Bootstrapper
     {
@@ -45,7 +46,7 @@
                 for (var y = 0; y < height; y++)
                 {
                     // initially set each habitat to have an unknown environment and no organism
-                    var environment = new Environment(Terrain.Unknown);
+                    var environment = new Colonies.Models.Environment(Terrain.Unknown);
                     var environmentViewModel = new EnvironmentViewModel(environment, eventaggregator);
 
                     var organismViewModel = new OrganismViewModel(null, eventaggregator);
@@ -89,20 +90,18 @@
                 }
             }
 
-            ecosystem.SetTerrain(new Coordinates(0, 0), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(0, 1), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(0, 2), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(0, 3), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(0, 4), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(0, 5), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(0, 6), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(1, 6), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(2, 6), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(3, 6), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(4, 6), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(5, 6), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(6, 6), Terrain.Impassable);
-
+            ecosystem.SetTerrain(new Coordinates(1, 1), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(1, 2), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(2, 1), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(2, 2), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(5, 3), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(5, 4), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(6, 3), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(6, 4), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(14, 5), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(14, 6), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(15, 5), Terrain.Impassable);
+            ecosystem.SetTerrain(new Coordinates(15, 6), Terrain.Impassable);
             // testing drawing of pheromones
             //ecosystem.IncreasePheromoneLevel(new Coordinates(5, 0), 1);
             //ecosystem.IncreasePheromoneLevel(new Coordinates(5, 1), 0.75);
@@ -114,7 +113,7 @@
         private IEnumerable<Coordinates> InitialiseOrganisms(Ecosystem ecosystem)
         {
             var waffleCoords = new Coordinates(4, 4);
-            var wilberCoords = new Coordinates(1, 1);
+            var wilberCoords = new Coordinates(0, 0);
             var lottyCoords = new Coordinates(1, 4);
             var louiseCoords = new Coordinates(4, 2);
 

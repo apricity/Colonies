@@ -48,6 +48,15 @@
                 var organism = organismCoordinates.Key;
                 var location = organismCoordinates.Value;
 
+                /* reduce pheromone level in all environments */
+                foreach (var habitat in this.Habitats)
+                {
+                    if (habitat.Environment.PheromoneLevel > 0)
+                    {
+                        habitat.Environment.DecreasePheromoneLevel(0.0001);
+                    }
+                }
+
                 /* record the pre-update location */
                 preUpdate.Add(organism.ToString(), location);
 

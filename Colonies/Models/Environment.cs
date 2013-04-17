@@ -22,7 +22,14 @@
 
         public void DecreasePheromoneLevel(double levelDecrease)
         {
-            this.PheromoneLevel -= levelDecrease;
+            if (this.PheromoneLevel - levelDecrease < 0)
+            {
+                this.PheromoneLevel = 0;
+            }
+            else
+            {
+                this.PheromoneLevel -= levelDecrease; 
+            }
         }
 
         public Stimulus GetStimulus()

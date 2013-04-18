@@ -80,14 +80,19 @@
         private void MoveOrganism(Organism organism, Coordinates destination)
         {           
             var source = this.OrganismCoordinates[organism];
+
             if (organism.IsDepositingPheromones)
             {
                 this.Habitats[source.X, source.Y].Environment.IncreasePheromoneLevel(0.01);
             }
 
-            this.Habitats[source.X, source.Y].RemoveOrganism();
-            this.Habitats[destination.X, destination.Y].AddOrganism(organism);
-            this.OrganismCoordinates[organism] = destination;
+            // the organism can only move to the destination if it does not already contain an organism
+            if (!this.Habitats[destination.X, destination.Y].ContainsOrganism())
+            {
+                this.Habitats[source.X, source.Y].RemoveOrganism();
+                this.Habitats[destination.X, destination.Y].AddOrganism(organism);
+                this.OrganismCoordinates[organism] = destination;
+            }
         }
 
         public void AddOrganism(Organism organism, Coordinates coordinates)
@@ -137,9 +142,9 @@
                         continue;
                     }
 
-                    var currentCoordinates = new Coordinates(x, y);
-                    if (!Habitats[x, y].ContainsImpassable())
+                    if (!this.Habitats[x, y].ContainsImpassable())
                     {
+                        var currentCoordinates = new Coordinates(x, y);
                         neighbourhoodStimuli.Add(this.GetStimulus(currentCoordinates), currentCoordinates);
                     }
                 }

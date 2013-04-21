@@ -1,6 +1,7 @@
 ﻿namespace Colonies.ViewModels
 {
     using System.Threading;
+    using System.Windows.Input;
 
     using Colonies.Models;
 
@@ -13,6 +14,8 @@
         // (volatile because, if interval update is too small, lock will be accessed by multiple threads simultaneously)
         private readonly Timer ecosystemTimer;
         private volatile object updateLock = new object();
+
+        public ICommand ToggleEcosystemCommand { get; set; }
 
         private EcosystemViewModel ecosystemViewModel;
         public EcosystemViewModel EcosystemViewModel
@@ -74,6 +77,15 @@
             var initialUpdateInterval = Properties.Settings.Default.UpdateFrequencyInMs;
             this.EcosystemTurnInterval = initialUpdateInterval;
             this.lastUsedTurnInterval = initialUpdateInterval;
+
+            // hook up a toggle ecosystem command so a keyboard shortcut can be used to toggle the ecosystem on/off
+            this.ToggleEcosystemCommand = new RelayCommand(this.ToggleEcosystem);
+
+        }
+
+        private void ToggleEcosystem(object obj)
+        {
+            this.IsEcosystemActive = !this.IsEcosystemActive;
         }
 
         private void ChangeEcosystemTimer()

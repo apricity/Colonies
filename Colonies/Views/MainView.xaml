@@ -5,11 +5,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:ViewModels="clr-namespace:Colonies.ViewModels"
-        xmlns:Views="clr-namespace:Colonies.Views"
+        xmlns:Views="clr-namespace:Colonies.Views" 
+        xmlns:Converters="clr-namespace:Colonies.Converters"
         mc:Ignorable="d" 
         Title="Wacton Colonies" Height="350" Width="600"
-        d:DataContext="{d:DesignInstance ViewModels:MainViewModel}"
-        ShowTitleBar="True" ShowIconOnTitleBar="True">
+        Icon="../Resources/Icon.ico" ShowTitleBar="True" ShowIconOnTitleBar="True"
+        d:DataContext="{d:DesignInstance ViewModels:MainViewModel}">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -20,49 +21,58 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
 
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
-                <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro.Resources;component/Icons.xaml" />-->
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+                <ResourceDictionary Source="/Resources/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
 
     <Controls:MetroWindow.WindowCommands>
         <Controls:WindowCommands>
-            <Button Content="Settings" Click="ShowSettings" />
+            <Button Content="Settings" Click="ShowSettings"/>
+            <Button Content="Debug" IsEnabled="False"/>
+            <Button Content="God Mode" IsEnabled="False"/>
         </Controls:WindowCommands>
     </Controls:MetroWindow.WindowCommands>
 
     <Controls:MetroWindow.Flyouts>
-        <Controls:Flyout Header="Settings" Position="Right">
-            <StackPanel Orientation="Vertical">
-                <!--<Controls:ToggleSwitchButton Grid.Row="1" Grid.Column="0" Command="{Binding ToggleEcosystemCommand}" />-->
-                <Controls:ToggleSwitch Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsEcosystemActive}"
-                               Margin="5, 5, 5, 5" />
+        <Controls:Flyout Header="Settings" Position="Top">
+            <Grid Margin="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
 
-                <Slider Grid.Row="1" Grid.Column="1" Value="{Binding EcosystemTurnInterval}" AutoToolTipPlacement="BottomRight" 
-                Minimum="1" Maximum="2000" Margin="5, 5, 5, 5"/>
-            </StackPanel>
+                <Grid.Resources>
+                    <Converters:ActiveBoolToStringConverter x:Key="ActiveBoolToStringConverter" />
+                    
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Margin" Value="3,3,3,3"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                    </Style>   
+                </Grid.Resources>
+
+                <!--<Grid.ShowGridLines>True</Grid.ShowGridLines>-->
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="State:"/>
+                <ToggleButton Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsEcosystemActive}"
+                              Content="{Binding IsEcosystemActive, Converter={StaticResource ActiveBoolToStringConverter}}" Margin="3"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Interval:"/>
+                <Slider Grid.Row="1" Grid.Column="1" Value="{Binding EcosystemTurnInterval}" 
+                        Minimum="1" Maximum="2000" AutoToolTipPlacement="BottomRight" FlowDirection="RightToLeft" Margin="3"/>
+            </Grid>    
         </Controls:Flyout>
     </Controls:MetroWindow.Flyouts>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <Viewbox Stretch="Uniform">
+            <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>
+        </Viewbox>
+    </ScrollViewer>
 
-        <ScrollViewer Grid.Row="0"
-                      HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <Viewbox Stretch="Uniform">
-                <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>
-            </Viewbox>
-        </ScrollViewer>
-        
-
-        <!--<Controls:ToggleSwitchButton Grid.Row="1" Grid.Column="0" Command="{Binding ToggleEcosystemCommand}" />-->
-    </Grid>
-    
 </Controls:MetroWindow>

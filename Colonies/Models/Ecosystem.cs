@@ -41,24 +41,32 @@
             var preUpdate = new Dictionary<string, Coordinates>();
             var postUpdate = new Dictionary<string, Coordinates>();
 
+            /* reduce pheromone level in all environments */
+            foreach (var habitat in this.Habitats)
+            {
+                if (habitat.Environment.PheromoneLevel > 0)
+                {
+                    habitat.Environment.DecreasePheromoneLevel(0.001);
+                }
+            }
+
             // TODO: all organisms should return an INTENTION of what they would like to do
             // TODO: then we should check for clashes before proceeding with the movement/action
             foreach (var organismCoordinates in this.OrganismCoordinates.ToList())
             {
                 var organism = organismCoordinates.Key;
                 var location = organismCoordinates.Value;
-
-                /* reduce pheromone level in all environments */
-                foreach (var habitat in this.Habitats)
-                {
-                    if (habitat.Environment.PheromoneLevel > 0)
-                    {
-                        habitat.Environment.DecreasePheromoneLevel(0.0001);
-                    }
-                }
-
+                
                 /* record the pre-update location */
                 preUpdate.Add(organism.ToString(), location);
+
+                /* reduce the organism's health / check if it is dead */
+                organism.DecreaseHealth(0.01);
+
+                if (organism.Health.Equals(0))
+                {
+                    break;
+                }
 
                 /* get nearby stimuli */
                 var neighbourhoodStimuli = this.GetNeighbourhoodStimuli(location);

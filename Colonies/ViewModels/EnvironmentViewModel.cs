@@ -1,7 +1,5 @@
 ﻿namespace Colonies.ViewModels
 {
-    using System.Windows.Media;
-
     using Colonies.Models;
 
     using Microsoft.Practices.Prism.Events;

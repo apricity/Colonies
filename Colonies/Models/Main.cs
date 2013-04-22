@@ -2,7 +2,7 @@
 {
     public class Main
     {
-        public Ecosystem Ecosystem { get; set; }
+        public Ecosystem Ecosystem { get; private set; }
 
         public Main(Ecosystem ecosystem)
         {

@@ -14,12 +14,7 @@
         {
             get
             {
-                if (!this.HasOrganism())
-                {
-                    return Color.Empty;
-                }
-
-                return this.DomainModel.Color;
+                return !this.HasOrganism() ? Color.Empty : this.DomainModel.Color;
             }
         }
 
@@ -27,12 +22,7 @@
         {
             get
             {
-                if (!this.HasOrganism())
-                {
-                    return 0;
-                }
-
-                return 1;
+                return !this.HasOrganism() ? 0 : 1;
             }
         }
 
@@ -42,7 +32,7 @@
 
         }
 
-        public bool HasOrganism()
+        private bool HasOrganism()
         {
             return this.DomainModel != null;
         }

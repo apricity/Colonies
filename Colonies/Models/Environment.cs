@@ -22,13 +22,11 @@
 
         public void DecreasePheromoneLevel(double levelDecrease)
         {
-            if (this.PheromoneLevel - levelDecrease < 0)
+            // TODO: a similar thing with level increase > 1?
+            this.PheromoneLevel -= levelDecrease;
+            if (this.PheromoneLevel < 0)
             {
                 this.PheromoneLevel = 0;
-            }
-            else
-            {
-                this.PheromoneLevel -= levelDecrease; 
             }
         }
 

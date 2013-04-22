@@ -11,13 +11,24 @@
 
         public string Name { get; private set; }
         public Color Color { get; private set; }
+        public double Health { get; private set; }
         public bool IsDepositingPheromones { get; private set; }
 
         public Organism(string name, Color color, bool isDepostingPheromones)
         {
             this.Name = name;
             this.Color = color;
+            this.Health = 1.0;
             this.IsDepositingPheromones = isDepostingPheromones;
+        }
+
+        public void DecreaseHealth(double decreaseLevel)
+        {
+            this.Health -= decreaseLevel;
+            if (this.Health < 0)
+            {
+                this.Health = 0;
+            }
         }
 
         // TODO: this should be a method that calculates an INTENTION based on conditions (does not necessarily choose a condition to move to)
@@ -34,6 +45,7 @@
             return chosenStimulus;
         }
 
+        // TODO: move organism logic out into another class?
         private static Stimulus ChooseRandomStimulus(Dictionary<Stimulus, double> weightedStimuli, Random random)
         {
             Stimulus chosenStimulus = null;
@@ -72,7 +84,7 @@
 
         public override string ToString()
         {
-            return string.Format("{0} <{1}>", this.Name, this.Color);
+            return string.Format("{0}-{1} {2}", this.Name, this.Health * 100, this.Color);
         }
     }
 }

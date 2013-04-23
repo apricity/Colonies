@@ -52,14 +52,14 @@
              * then analyse them to decide where the organisms will actually move to 
              * and to resolve any conflicting intentions */
             var intendedOrganismDestinations = this.GetIntendedOrganismDestinations();
-            var resolvedOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations);
+            var actualOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations);
 
             /* perform in-situ actions e.g. take food, eat food, attack */
 
             /* perform ex-situ actions e.g. move any organisms that can after resolving conflicting intentions */
-            foreach (var actualMovement in resolvedOrganismDestinations)
+            foreach (var actualOrganismDestination in actualOrganismDestinations)
             {
-                this.MoveOrganism(actualMovement.Key, actualMovement.Value);
+                this.MoveOrganism(actualOrganismDestination.Key, actualOrganismDestination.Value);
             }
 
             /* record the post-update locations */

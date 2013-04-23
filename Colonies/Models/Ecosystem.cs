@@ -7,7 +7,7 @@
     public sealed class Ecosystem
     {
         public Habitat[,] Habitats { get; private set; }
-        public Dictionary<Organism, Coordinates> OrganismCoordinates { get; private set; }
+        public Dictionary<Organism, Coordinates> OrganismLocations { get; private set; }
 
         public int Width
         {
@@ -27,24 +27,20 @@
 
         private readonly Random random;
         
-        public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismCoordinates)
+        public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismLocations)
         {
             this.Habitats = habitats;
-            this.OrganismCoordinates = organismCoordinates;
+            this.OrganismLocations = organismLocations;
 
             this.random = new Random();
         }
 
         public UpdateSummary Update()
         {
-            var preUpdate = new Dictionary<string, Coordinates>();
-            var postUpdate = new Dictionary<string, Coordinates>();
-
-            foreach (var organismCoordinate in OrganismCoordinates)
-            {
-                // record the pre-update location
-                preUpdate.Add(organismCoordinate.Key.ToString(), organismCoordinate.Value);
-            }
+            /* record the pre-update locations */
+            var preUpdate = this.OrganismLocations.ToDictionary(
+                organismLocation => organismLocation.Key.ToString(), 
+                organismLocation => organismLocation.Value);
 
             /* reduce pheromone level in all environments */
             this.DecreaseGlobalPheromoneLevel();
@@ -52,94 +48,26 @@
             /* reduce all organism's health */
             this.DecreaseAllOrganismHealth();
 
-            /* get organisms intentions */
-            var intendedMovements = this.GetIntendedOrganismMovements();
-
-            /* resolve clashing intentions */
-            var actualMovements = this.GetActualMovements(intendedMovements);
+            /* find out where each organism would like to move to
+             * then analyse them to decide where the organisms will actually move to 
+             * and to resolve any conflicting intentions */
+            var intendedOrganismDestinations = this.GetIntendedOrganismDestinations();
+            var resolvedOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations);
 
             /* perform in-situ actions e.g. take food, eat food, attack */
 
-            /* perform ex-situ actions e.g. move any organisms that can after resolving clashing intentions */
-            foreach (var actualMovement in actualMovements)
+            /* perform ex-situ actions e.g. move any organisms that can after resolving conflicting intentions */
+            foreach (var actualMovement in resolvedOrganismDestinations)
             {
                 this.MoveOrganism(actualMovement.Key, actualMovement.Value);
-
-                // record the pre-update location
-                postUpdate.Add(actualMovement.Key.ToString(), actualMovement.Value);
             }
+
+            /* record the post-update locations */
+            var postUpdate = this.OrganismLocations.ToDictionary(
+                organismLocation => organismLocation.Key.ToString(), 
+                organismLocation => organismLocation.Value);
 
             return new UpdateSummary(preUpdate, postUpdate);
-        }
-
-        private Dictionary<Organism, Coordinates> GetActualMovements(Dictionary<Organism, Coordinates> intendedMovements)
-        {
-            var availableDestinations = intendedMovements.Values.Except(this.OrganismCoordinates.Values).ToList();
-            if (availableDestinations.Count == 0)
-            {
-                return null;
-            }
-
-            var actualMovements = new Dictionary<Organism, Coordinates>();
-
-            foreach (var availableDestination in availableDestinations)
-            {
-                var destination = availableDestination;
-                var organismsWantingDestination = intendedMovements.Where(item => item.Value.Equals(destination)).ToList();
-
-                KeyValuePair<Organism, Coordinates> organismToMove;
-                if (intendedMovements.Values.Count(value => value.Equals(availableDestination)) > 1)
-                {
-                    // work out who will win
-                    organismToMove = organismsWantingDestination.First();
-
-                    // losers now intend to move nowhere
-                    organismsWantingDestination.Remove(organismToMove);
-                    foreach (var remainingOrganism in organismsWantingDestination)
-                    {
-                        intendedMovements[remainingOrganism.Key] = this.OrganismCoordinates[remainingOrganism.Key];
-                    }
-                }
-                else
-                {
-                    organismToMove = organismsWantingDestination.Single();
-                }
-                
-                // intended movement becomes an actual movement
-                actualMovements.Add(organismToMove.Key, intendedMovements[organismToMove.Key]);
-                intendedMovements.Remove(organismToMove.Key);
-            }
-
-            var childMovements = this.GetActualMovements(intendedMovements);
-            if (childMovements != null)
-            {
-                foreach (var childMovement in childMovements)
-                {
-                    actualMovements.Add(childMovement.Key, childMovement.Value);
-                }
-            }
-
-            return actualMovements;
-        }
-
-        private Dictionary<Organism, Coordinates> GetIntendedOrganismMovements()
-        {
-            var intendedMovements = new Dictionary<Organism, Coordinates>();
-            foreach (var organismCoordinates in this.OrganismCoordinates.ToList())
-            {
-                var organism = organismCoordinates.Key;
-                var location = organismCoordinates.Value;
-
-                // get nearby stimuli
-                var neighbourhoodStimuli = this.GetNeighbourhoodStimuli(location);
-
-                // determine organism's intentions
-                var chosenStimulus = organism.ProcessStimuli(neighbourhoodStimuli.Keys.ToList(), this.random);
-                var destination = neighbourhoodStimuli[chosenStimulus];
-                intendedMovements.Add(organism, destination);
-            }
-
-            return intendedMovements;
         }
 
         private void DecreaseGlobalPheromoneLevel()
@@ -155,9 +83,9 @@
 
         private void DecreaseAllOrganismHealth()
         {
-            foreach (var organismCoordinates in this.OrganismCoordinates.ToList())
+            foreach (var organismLocation in this.OrganismLocations.ToList())
             {
-                var organism = organismCoordinates.Key;
+                var organism = organismLocation.Key;
 
                 // reduce the organism's health / check if it is dead
                 organism.DecreaseHealth(0.01);
@@ -168,9 +96,85 @@
             }
         }
 
+        private Dictionary<Organism, Coordinates> GetIntendedOrganismDestinations()
+        {
+            var intendedOrganismDestinations = new Dictionary<Organism, Coordinates>();
+            foreach (var organismCoordinates in this.OrganismLocations.ToList())
+            {
+                var organism = organismCoordinates.Key;
+                var location = organismCoordinates.Value;
+
+                // get nearby stimuli
+                var neighbourhoodStimuli = this.GetNeighbourhoodStimuli(location);
+
+                // determine organism's intentions
+                var chosenStimulus = organism.ProcessStimuli(neighbourhoodStimuli.Keys.ToList(), this.random);
+                var intendedDestination = neighbourhoodStimuli[chosenStimulus];
+                intendedOrganismDestinations.Add(organism, intendedDestination);
+            }
+
+            return intendedOrganismDestinations;
+        }
+
+        private Dictionary<Organism, Coordinates> ResolveOrganismDestinations(Dictionary<Organism, Coordinates> intendedOrganismDestinations)
+        {
+            var intendedDestinations = intendedOrganismDestinations.Values.ToList();
+            var currentLocations = this.OrganismLocations.Values.ToList();
+
+            // if there are no vacant destinations, this is our base case
+            // return an empty list - none of the intended movements will become real movements
+            var vacantDestinations = intendedDestinations.Except(currentLocations).ToList();
+            if (vacantDestinations.Count == 0)
+            {
+                return new Dictionary<Organism, Coordinates>();
+            }
+
+            var resolvedOrganismDestinations = new Dictionary<Organism, Coordinates>();
+
+            foreach (var destination in vacantDestinations)
+            {
+                // do not want LINQ expression to have foreach variable access, so copy to local variable
+                var vacantDestination = destination;
+                var conflictingOrganisms = intendedOrganismDestinations
+                    .Where(intendedOrganismDestination => intendedOrganismDestination.Value.Equals(vacantDestination))
+                    .Select(intendedOrganismDestination => intendedOrganismDestination.Key)
+                    .ToList();
+
+                Organism organismToMove;
+                if (conflictingOrganisms.Count > 1)
+                {
+                    // TODO: some logic to decide who will win the conflict
+                    organismToMove = conflictingOrganisms.First();
+
+                    // losers now intend to move nowhere
+                    conflictingOrganisms.Remove(organismToMove);
+                    foreach (var remainingOrganism in conflictingOrganisms)
+                    {
+                        intendedOrganismDestinations[remainingOrganism] = this.OrganismLocations[remainingOrganism];
+                    }
+                }
+                else
+                {
+                    organismToMove = conflictingOrganisms.Single();
+                }
+                
+                // intended movement becomes an actual movement
+                resolvedOrganismDestinations.Add(organismToMove, intendedOrganismDestinations[organismToMove]);
+                intendedOrganismDestinations.Remove(organismToMove);
+            }
+
+            var trailingOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations);
+            foreach (var trailingOrganismDestination in trailingOrganismDestinations)
+            {
+                resolvedOrganismDestinations.Add(trailingOrganismDestination.Key, trailingOrganismDestination.Value);
+            }
+
+            return resolvedOrganismDestinations;
+        }
+
         private void MoveOrganism(Organism organism, Coordinates destination)
         {           
-            var source = this.OrganismCoordinates[organism];
+            var source = this.OrganismLocations[organism];
 
             if (organism.IsDepositingPheromones)
             {
@@ -182,42 +186,42 @@
             {
                 this.Habitats[source.X, source.Y].RemoveOrganism();
                 this.Habitats[destination.X, destination.Y].AddOrganism(organism);
-                this.OrganismCoordinates[organism] = destination;
+                this.OrganismLocations[organism] = destination;
             }
         }
 
-        public void AddOrganism(Organism organism, Coordinates coordinates)
+        public void AddOrganism(Organism organism, Coordinates location)
         {
-            this.Habitats[coordinates.X, coordinates.Y].AddOrganism(organism);
-            this.OrganismCoordinates.Add(organism, coordinates);
+            this.Habitats[location.X, location.Y].AddOrganism(organism);
+            this.OrganismLocations.Add(organism, location);
         }
 
         public void RemoveOrganism(Organism organism)
         {
-            var location = this.OrganismCoordinates[organism];
+            var location = this.OrganismLocations[organism];
             this.Habitats[location.X, location.Y].RemoveOrganism();
-            this.OrganismCoordinates.Remove(organism);
+            this.OrganismLocations.Remove(organism);
         }
 
-        public void SetTerrain(Coordinates coordinates, Terrain terrain)
+        public void SetTerrain(Coordinates location, Terrain terrain)
         {
-            this.Habitats[coordinates.X, coordinates.Y].Environment.SetTerrain(terrain);
+            this.Habitats[location.X, location.Y].Environment.SetTerrain(terrain);
         }
 
-        public void IncreasePheromoneLevel(Coordinates coordinates, double levelIncrease)
+        public void IncreasePheromoneLevel(Coordinates location, double levelIncrease)
         {
-            this.Habitats[coordinates.X, coordinates.Y].Environment.IncreasePheromoneLevel(levelIncrease);
+            this.Habitats[location.X, location.Y].Environment.IncreasePheromoneLevel(levelIncrease);
         }
 
-        public void DecreasePheromoneLevel(Coordinates coordinates, double levelDecrease)
+        public void DecreasePheromoneLevel(Coordinates location, double levelDecrease)
         {
-            this.Habitats[coordinates.X, coordinates.Y].Environment.DecreasePheromoneLevel(levelDecrease);
+            this.Habitats[location.X, location.Y].Environment.DecreasePheromoneLevel(levelDecrease);
         }
 
-        private Dictionary<Stimulus, Coordinates> GetNeighbourhoodStimuli(Coordinates coordinates)
+        private Dictionary<Stimulus, Coordinates> GetNeighbourhoodStimuli(Coordinates location)
         {
             var neighbourhoodStimuli = new Dictionary<Stimulus, Coordinates>();
-            for (var x = coordinates.X - 1; x <= coordinates.X + 1; x++)
+            for (var x = location.X - 1; x <= location.X + 1; x++)
             {
                 // do not carry on if x is out-of-bounds
                 if (x < 0 || x >= this.Width)
@@ -225,7 +229,7 @@
                     continue;
                 }
 
-                for (var y = coordinates.Y - 1; y <= coordinates.Y + 1; y++)
+                for (var y = location.Y - 1; y <= location.Y + 1; y++)
                 {
                     // do not carry on if y is out-of-bounds
                     if (y < 0 || y >= this.Height)
@@ -235,8 +239,8 @@
 
                     if (!this.Habitats[x, y].ContainsImpassable())
                     {
-                        var currentCoordinates = new Coordinates(x, y);
-                        neighbourhoodStimuli.Add(this.GetStimulus(currentCoordinates), currentCoordinates);
+                        var currentLocation = new Coordinates(x, y);
+                        neighbourhoodStimuli.Add(this.GetStimulus(currentLocation), currentLocation);
                     }
                 }
             }
@@ -244,14 +248,14 @@
             return neighbourhoodStimuli;
         }
 
-        private Stimulus GetStimulus(Coordinates coordinates)
+        private Stimulus GetStimulus(Coordinates location)
         {
-            return this.Habitats[coordinates.X, coordinates.Y].GetStimulus();
+            return this.Habitats[location.X, location.Y].GetStimulus();
         }
 
         public override String ToString()
         {
-            return string.Format("{0}x{1} : {2} organisms", this.Width, this.Height, this.OrganismCoordinates.Count);
+            return string.Format("{0}x{1} : {2} organisms", this.Width, this.Height, this.OrganismLocations.Count);
         }
     }
 }

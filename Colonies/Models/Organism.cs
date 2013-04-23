@@ -31,7 +31,6 @@
             }
         }
 
-        // TODO: this should be a method that calculates an INTENTION based on conditions (does not necessarily choose a condition to move to)
         public Stimulus ProcessStimuli(IEnumerable<Stimulus> stimuli, Random random)
         {
             var weightedStimuli = WeightStimuli(stimuli);

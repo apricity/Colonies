@@ -35,13 +35,115 @@
             this.random = new Random();
         }
 
-        // TODO: return a summary of what has happened so we know which habitat view models to update
         public UpdateSummary Update()
         {
             var preUpdate = new Dictionary<string, Coordinates>();
             var postUpdate = new Dictionary<string, Coordinates>();
 
+            foreach (var organismCoordinate in OrganismCoordinates)
+            {
+                // record the pre-update location
+                preUpdate.Add(organismCoordinate.Key.ToString(), organismCoordinate.Value);
+            }
+
             /* reduce pheromone level in all environments */
+            this.DecreaseGlobalPheromoneLevel();
+
+            /* reduce all organism's health */
+            this.DecreaseAllOrganismHealth();
+
+            /* get organisms intentions */
+            var intendedMovements = this.GetIntendedOrganismMovements();
+
+            /* resolve clashing intentions */
+            var actualMovements = this.GetActualMovements(intendedMovements);
+
+            /* perform in-situ actions e.g. take food, eat food, attack */
+
+            /* perform ex-situ actions e.g. move any organisms that can after resolving clashing intentions */
+            foreach (var actualMovement in actualMovements)
+            {
+                this.MoveOrganism(actualMovement.Key, actualMovement.Value);
+
+                // record the pre-update location
+                postUpdate.Add(actualMovement.Key.ToString(), actualMovement.Value);
+            }
+
+            return new UpdateSummary(preUpdate, postUpdate);
+        }
+
+        private Dictionary<Organism, Coordinates> GetActualMovements(Dictionary<Organism, Coordinates> intendedMovements)
+        {
+            var availableDestinations = intendedMovements.Values.Except(this.OrganismCoordinates.Values).ToList();
+            if (availableDestinations.Count == 0)
+            {
+                return null;
+            }
+
+            var actualMovements = new Dictionary<Organism, Coordinates>();
+
+            foreach (var availableDestination in availableDestinations)
+            {
+                var destination = availableDestination;
+                var organismsWantingDestination = intendedMovements.Where(item => item.Value.Equals(destination)).ToList();
+
+                KeyValuePair<Organism, Coordinates> organismToMove;
+                if (intendedMovements.Values.Count(value => value.Equals(availableDestination)) > 1)
+                {
+                    // work out who will win
+                    organismToMove = organismsWantingDestination.First();
+
+                    // losers now intend to move nowhere
+                    organismsWantingDestination.Remove(organismToMove);
+                    foreach (var remainingOrganism in organismsWantingDestination)
+                    {
+                        intendedMovements[remainingOrganism.Key] = this.OrganismCoordinates[remainingOrganism.Key];
+                    }
+                }
+                else
+                {
+                    organismToMove = organismsWantingDestination.Single();
+                }
+                
+                // intended movement becomes an actual movement
+                actualMovements.Add(organismToMove.Key, intendedMovements[organismToMove.Key]);
+                intendedMovements.Remove(organismToMove.Key);
+            }
+
+            var childMovements = this.GetActualMovements(intendedMovements);
+            if (childMovements != null)
+            {
+                foreach (var childMovement in childMovements)
+                {
+                    actualMovements.Add(childMovement.Key, childMovement.Value);
+                }
+            }
+
+            return actualMovements;
+        }
+
+        private Dictionary<Organism, Coordinates> GetIntendedOrganismMovements()
+        {
+            var intendedMovements = new Dictionary<Organism, Coordinates>();
+            foreach (var organismCoordinates in this.OrganismCoordinates.ToList())
+            {
+                var organism = organismCoordinates.Key;
+                var location = organismCoordinates.Value;
+
+                // get nearby stimuli
+                var neighbourhoodStimuli = this.GetNeighbourhoodStimuli(location);
+
+                // determine organism's intentions
+                var chosenStimulus = organism.ProcessStimuli(neighbourhoodStimuli.Keys.ToList(), this.random);
+                var destination = neighbourhoodStimuli[chosenStimulus];
+                intendedMovements.Add(organism, destination);
+            }
+
+            return intendedMovements;
+        }
+
+        private void DecreaseGlobalPheromoneLevel()
+        {
             foreach (var habitat in this.Habitats)
             {
                 if (habitat.Environment.PheromoneLevel > 0)
@@ -49,40 +151,21 @@
                     habitat.Environment.DecreasePheromoneLevel(0.001);
                 }
             }
+        }
 
-            // TODO: all organisms should return an INTENTION of what they would like to do
-            // TODO: then we should check for clashes before proceeding with the movement/action
+        private void DecreaseAllOrganismHealth()
+        {
             foreach (var organismCoordinates in this.OrganismCoordinates.ToList())
             {
                 var organism = organismCoordinates.Key;
-                var location = organismCoordinates.Value;
-                
-                /* record the pre-update location */
-                preUpdate.Add(organism.ToString(), location);
 
-                /* reduce the organism's health / check if it is dead */
+                // reduce the organism's health / check if it is dead
                 organism.DecreaseHealth(0.01);
-
                 if (organism.Health.Equals(0))
                 {
-                    break;
+                    // it is dead!
                 }
-
-                /* get nearby stimuli */
-                var neighbourhoodStimuli = this.GetNeighbourhoodStimuli(location);
-
-                /* decide what to do */
-                var chosenStimulus = organism.ProcessStimuli(neighbourhoodStimuli.Keys.ToList(), this.random);
-                var destination = neighbourhoodStimuli[chosenStimulus];
-
-                /* take action based on decision */
-                this.MoveOrganism(organism, destination);
-
-                /* record the post-update location */
-                postUpdate.Add(organism.ToString(), destination);
             }
-
-            return new UpdateSummary(preUpdate, postUpdate);
         }
 
         private void MoveOrganism(Organism organism, Coordinates destination)

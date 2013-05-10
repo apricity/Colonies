@@ -3,12 +3,12 @@
     using System.Collections.Generic;
     using System.Drawing;
 
+    using Colonies.Logic;
     using Colonies.Models;
     using Colonies.ViewModels;
     using Colonies.Views;
 
     using Microsoft.Practices.Prism.Events;
-    using System;
 
     public class Bootstrapper
     {
@@ -46,7 +46,7 @@
                 for (var y = 0; y < height; y++)
                 {
                     // initially set each habitat to have an unknown environment and no organism
-                    var environment = new Colonies.Models.Environment(Terrain.Unknown);
+                    var environment = new Environment(Terrain.Unknown);
                     var environmentViewModel = new EnvironmentViewModel(environment, eventaggregator);
 
                     var organismViewModel = new OrganismViewModel(null, eventaggregator);
@@ -59,7 +59,8 @@
                 }
             }
 
-            var ecosystem = new Ecosystem(habitats, new Dictionary<Organism, Coordinates>());
+            var conflictingMovementLogic = new ConflictingMovementLogic();
+            var ecosystem = new Ecosystem(habitats, new Dictionary<Organism, Coordinates>(), conflictingMovementLogic);
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
@@ -117,11 +118,13 @@
             var lottyCoords = new Coordinates(1, 4);
             var louiseCoords = new Coordinates(4, 2);
 
+            var stimuliProcessingLogic = new StimuliProcessingLogic();
+
             // place some organisms in the ecosystem
-            ecosystem.AddOrganism(new Organism("Waffle", Color.White, true), waffleCoords);
-            ecosystem.AddOrganism(new Organism("Wilber", Color.Black, true), wilberCoords);
-            ecosystem.AddOrganism(new Organism("Lotty", Color.Lime, true), lottyCoords);
-            ecosystem.AddOrganism(new Organism("Dr. Louise", Color.Orange, false), louiseCoords);
+            ecosystem.AddOrganism(new Organism("Waffle", Color.White, stimuliProcessingLogic, true), waffleCoords);
+            ecosystem.AddOrganism(new Organism("Wilber", Color.Black, stimuliProcessingLogic, true), wilberCoords);
+            ecosystem.AddOrganism(new Organism("Lotty", Color.Lime, stimuliProcessingLogic, true), lottyCoords);
+            ecosystem.AddOrganism(new Organism("Dr. Louise", Color.Orange, stimuliProcessingLogic, true), louiseCoords);
 
             return new List<Coordinates> { waffleCoords, wilberCoords, lottyCoords, louiseCoords };
         }

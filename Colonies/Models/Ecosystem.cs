@@ -4,10 +4,14 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Colonies.Logic;
+
     public sealed class Ecosystem
     {
         public Habitat[,] Habitats { get; private set; }
         public Dictionary<Organism, Coordinates> OrganismLocations { get; private set; }
+
+        private readonly IConflictingMovementLogic conflictingMovementLogic;
 
         public int Width
         {
@@ -27,10 +31,11 @@
 
         private readonly Random random;
         
-        public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismLocations)
+        public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismLocations, IConflictingMovementLogic conflictingMovementLogic)
         {
             this.Habitats = habitats;
             this.OrganismLocations = organismLocations;
+            this.conflictingMovementLogic = conflictingMovementLogic;
 
             this.random = new Random();
         }
@@ -51,8 +56,9 @@
             /* find out where each organism would like to move to
              * then analyse them to decide where the organisms will actually move to 
              * and to resolve any conflicting intentions */
+            // TODO: should there be another layer of logic - organism movement logic (which contains conflict movement logic)?
             var intendedOrganismDestinations = this.GetIntendedOrganismDestinations();
-            var actualOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations);
+            var actualOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations, new List<Organism>());
 
             /* perform in-situ actions e.g. take food, eat food, attack */
 
@@ -116,20 +122,28 @@
             return intendedOrganismDestinations;
         }
 
-        private Dictionary<Organism, Coordinates> ResolveOrganismDestinations(Dictionary<Organism, Coordinates> intendedOrganismDestinations)
+        private Dictionary<Organism, Coordinates> ResolveOrganismDestinations(Dictionary<Organism, Coordinates> intendedOrganismDestinations, IEnumerable<Organism> alreadyResolvedOrganisms)
         {
+            var currentOrganismLocations = this.OrganismLocations.ToDictionary(
+                organismLocation => organismLocation.Key,
+                organismLocation => organismLocation.Value);
+
+            foreach (var alreadyResolvedOrganism in alreadyResolvedOrganisms)
+            {
+                currentOrganismLocations.Remove(alreadyResolvedOrganism);
+            }
+
+            var currentLocations = currentOrganismLocations.Values.ToList();
             var intendedDestinations = intendedOrganismDestinations.Values.ToList();
-            var currentLocations = this.OrganismLocations.Values.ToList();
+            var resolvedOrganismDestinations = new Dictionary<Organism, Coordinates>();
 
             // if there are no vacant destinations, this is our base case
             // return an empty list - none of the intended movements will become real movements
             var vacantDestinations = intendedDestinations.Except(currentLocations).ToList();
             if (vacantDestinations.Count == 0)
             {
-                return new Dictionary<Organism, Coordinates>();
+                return resolvedOrganismDestinations;
             }
-
-            var resolvedOrganismDestinations = new Dictionary<Organism, Coordinates>();
 
             foreach (var destination in vacantDestinations)
             {
@@ -143,8 +157,7 @@
                 Organism organismToMove;
                 if (conflictingOrganisms.Count > 1)
                 {
-                    // TODO: some logic to decide who will win the conflict
-                    organismToMove = conflictingOrganisms.First();
+                    organismToMove = this.conflictingMovementLogic.DecideOrganism(conflictingOrganisms);
 
                     // losers now intend to move nowhere
                     conflictingOrganisms.Remove(organismToMove);
@@ -163,7 +176,9 @@
                 intendedOrganismDestinations.Remove(organismToMove);
             }
 
-            var trailingOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations);
+            // need to recursively call resolve organism destinations with the knowledge of what has been resolved so far
+            // so those resolved can be taken into consideration when calculating which destinations are now vacant
+            var trailingOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations, resolvedOrganismDestinations.Keys.ToList());
             foreach (var trailingOrganismDestination in trailingOrganismDestinations)
             {
                 resolvedOrganismDestinations.Add(trailingOrganismDestination.Key, trailingOrganismDestination.Value);

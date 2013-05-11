@@ -7,6 +7,6 @@
 
     public interface IStimuliProcessingLogic
     {
-        Stimulus ProcessStimuli(IEnumerable<Stimulus> stimuli, double pheromoneWeighting, Random random);
+        List<Stimulus> ProcessStimuli(List<List<Stimulus>> biasedStimuli, Random random);
     }
 }

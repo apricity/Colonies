@@ -33,12 +33,12 @@
             // these are used by organisms to make decisions about what stimuli to follow
             // (stimuli are generated left-to-right, top-to-bottom => left is first, right is last)
             this.rightmostStimulusLogic = new Mock<IStimuliProcessingLogic>();
-            this.rightmostStimulusLogic.Setup(logic => logic.ProcessStimuli(It.IsAny<IEnumerable<Stimulus>>(), It.IsAny<double>(), It.IsAny<Random>()))
-                                       .Returns((IEnumerable<Stimulus> stimuli, double pheromoneWeighting, Random random) => stimuli.Last());
+            this.rightmostStimulusLogic.Setup(logic => logic.ProcessStimuli(It.IsAny<List<List<Stimulus>>>(), It.IsAny<Random>()))
+                                       .Returns((List<List<Stimulus>> stimuli, Random random) => stimuli.Last());
 
             this.leftmostStimulusLogic = new Mock<IStimuliProcessingLogic>();
-            this.leftmostStimulusLogic.Setup(logic => logic.ProcessStimuli(It.IsAny<IEnumerable<Stimulus>>(), It.IsAny<double>(), It.IsAny<Random>()))
-                                      .Returns((IEnumerable<Stimulus> stimuli, double pheromoneWeighting, Random random) => stimuli.First());
+            this.leftmostStimulusLogic.Setup(logic => logic.ProcessStimuli(It.IsAny<List<List<Stimulus>>>(), It.IsAny<Random>()))
+                                      .Returns((List<List<Stimulus>> stimuli, Random random) => stimuli.First());
         }
 
         [Test]

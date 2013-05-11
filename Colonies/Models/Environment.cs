@@ -1,5 +1,7 @@
 ﻿namespace Colonies.Models
 {
+    using System.Collections.Generic;
+
     public sealed class Environment
     {
         public Terrain Terrain { get; private set; }
@@ -30,9 +32,9 @@
             }
         }
 
-        public Stimulus GetStimulus()
+        public List<Stimulus> GetStimulus()
         {
-            return new Stimulus(this.PheromoneLevel);
+            return new List<Stimulus> { new Stimulus(Factor.Pheromone, this.PheromoneLevel) };
         }
         
         public override string ToString()

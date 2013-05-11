@@ -1,6 +1,7 @@
 ﻿namespace Colonies.Models
 {
     using System;
+    using System.Collections.Generic;
 
     public sealed class Habitat
     {
@@ -33,12 +34,11 @@
             return this.Environment.Terrain == Terrain.Impassable;
         }
 
-        public Stimulus GetStimulus()
+        public List<Stimulus> GetStimulus()
         {
             // TODO: take into account organisms before return the stimulus
             // e.g. stimulus.Add(organismStimulus)
-            var stimulus = this.Environment.GetStimulus();
-            return stimulus;
+            return this.Environment.GetStimulus();
         }
 
         public override String ToString()

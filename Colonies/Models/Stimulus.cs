@@ -2,16 +2,20 @@
 {
     public class Stimulus
     {
-        public readonly double PheromoneLevel;
+        public readonly Factor Factor;
+        public readonly double Level;
+        public double Bias;
 
-        public Stimulus(double pheromoneLevel)
+        public Stimulus(Factor factor, double level)
         {
-            this.PheromoneLevel = pheromoneLevel;
+            this.Factor = factor;
+            this.Level = level;
+            this.Bias = 0;
         }
 
-        public override string ToString()
+        public void SetBias(double bias)
         {
-            return string.Format("{0}", this.PheromoneLevel);
+            this.Bias = bias;
         }
     }
 }

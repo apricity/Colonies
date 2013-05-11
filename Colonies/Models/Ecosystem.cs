@@ -237,9 +237,9 @@
             this.Habitats[location.X, location.Y].Environment.DecreasePheromoneLevel(levelDecrease);
         }
 
-        private Dictionary<Stimulus, Coordinates> GetNeighbourhoodStimuli(Coordinates location)
+        private Dictionary<List<Stimulus>, Coordinates> GetNeighbourhoodStimuli(Coordinates location)
         {
-            var neighbourhoodStimuli = new Dictionary<Stimulus, Coordinates>();
+            var neighbourhoodStimuli = new Dictionary<List<Stimulus>, Coordinates>();
             for (var x = location.X - 1; x <= location.X + 1; x++)
             {
                 // do not carry on if x is out-of-bounds
@@ -267,7 +267,7 @@
             return neighbourhoodStimuli;
         }
 
-        private Stimulus GetStimulus(Coordinates location)
+        private List<Stimulus> GetStimulus(Coordinates location)
         {
             return this.Habitats[location.X, location.Y].GetStimulus();
         }

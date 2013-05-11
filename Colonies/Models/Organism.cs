@@ -39,9 +39,15 @@
             }
         }
 
-        public Stimulus ProcessStimuli(IEnumerable<Stimulus> stimuli, Random random)
+        public List<Stimulus> ProcessStimuli(List<List<Stimulus>> stimuli, Random random)
         {
-            return this.stimuliProcessingLogic.ProcessStimuli(stimuli, PheromoneWeighting, random);
+            foreach (var stimulus in stimuli.SelectMany(stimulusSet => stimulusSet))
+            {
+                stimulus.SetBias(PheromoneWeighting);
+            }
+
+            var chosenBiasedStimulus = this.stimuliProcessingLogic.ProcessStimuli(stimuli, random);
+            return chosenBiasedStimulus;
         }
 
         public override string ToString()

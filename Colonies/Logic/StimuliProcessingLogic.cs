@@ -9,10 +9,9 @@
 
     public class StimuliProcessingLogic : IStimuliProcessingLogic
     {
-        public Stimulus ProcessStimuli(IEnumerable<Stimulus> stimuli, double pheromoneWeighting, Random random)
+        public List<Stimulus> ProcessStimuli(List<List<Stimulus>> stimuli, Random random)
         {
-            var weightedStimuli = WeightStimuli(stimuli, pheromoneWeighting);
-
+            var weightedStimuli = WeightStimuli(stimuli);
             var chosenStimulus = ChooseRandomStimulus(weightedStimuli, random);
             if (chosenStimulus == null)
             {
@@ -22,25 +21,29 @@
             return chosenStimulus;
         }
 
-        private static Dictionary<Stimulus, double> WeightStimuli(IEnumerable<Stimulus> stimuli, double pheromoneWeighting)
+        private static Dictionary<List<Stimulus>, double> WeightStimuli(List<List<Stimulus>> stimuli)
         {
-            var weightedStimuli = new Dictionary<Stimulus, double>();
-            foreach (var stimulus in stimuli)
+            var weightedStimuli = new Dictionary<List<Stimulus>, double>();
+            foreach (var stimulusSet in stimuli)
             {
                 // each stimulus initially has a '1' rating
                 // add further weighting according to strength of measurement
                 var currentWeight = 1.0;
-                currentWeight += stimulus.PheromoneLevel * pheromoneWeighting;
 
-                weightedStimuli.Add(stimulus, currentWeight);
+                foreach (var stimulus in stimulusSet)
+                {
+                    currentWeight += stimulus.Level * stimulus.Bias;
+                }
+
+                weightedStimuli.Add(stimulusSet, currentWeight);
             }
 
             return weightedStimuli;
         }
 
-        private static Stimulus ChooseRandomStimulus(Dictionary<Stimulus, double> weightedStimuli, Random random)
+        private static List<Stimulus> ChooseRandomStimulus(Dictionary<List<Stimulus>, double> weightedStimuli, Random random)
         {
-            Stimulus chosenStimulus = null;
+            List<Stimulus> chosenStimulus = null;
             var totalWeight = weightedStimuli.Values.Sum(weight => weight);
 
             var randomNumber = random.NextDouble() * totalWeight;

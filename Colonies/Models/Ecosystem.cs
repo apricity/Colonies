@@ -8,6 +8,9 @@
 
     public sealed class Ecosystem
     {
+        // TODO: where to hold this?  will it ever change like pheromone weighting might? (probably not)
+        private const int OrganismHealthWeighting = 1;
+
         public Habitat[,] Habitats { get; private set; }
         public Dictionary<Organism, Coordinates> OrganismLocations { get; private set; }
 
@@ -157,7 +160,8 @@
                 Organism organismToMove;
                 if (conflictingOrganisms.Count > 1)
                 {
-                    organismToMove = this.conflictingMovementLogic.DecideOrganism(conflictingOrganisms);
+                    // TODO: actual number used will not have much affect until more measurements are taken into consideration
+                    organismToMove = this.conflictingMovementLogic.DecideOrganism(conflictingOrganisms, OrganismHealthWeighting, this.random);
 
                     // losers now intend to move nowhere
                     conflictingOrganisms.Remove(organismToMove);

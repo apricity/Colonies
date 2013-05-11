@@ -292,8 +292,8 @@
             // mock conflicting movement logic that awards the desired space to the first organism in the list
             // the ecosystem's lists of organisms are kept in order of creation, so the earliest-created organisms will win
             var conflictingMovementLogic = new Mock<IConflictingMovementLogic>();
-            conflictingMovementLogic.Setup(logic => logic.DecideOrganism(It.IsAny<List<Organism>>()))
-                                    .Returns((List<Organism> organisms) => organisms.First());
+            conflictingMovementLogic.Setup(logic => logic.DecideOrganism(It.IsAny<List<Organism>>(), It.IsAny<double>(), It.IsAny<Random>()))
+                                    .Returns((List<Organism> organisms, double healthWeighting, Random random) => organisms.First());
 
             var ecosystem = new Ecosystem(habitats, organismLocations, conflictingMovementLogic.Object);
             return ecosystem.Update();

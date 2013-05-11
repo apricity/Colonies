@@ -9,11 +9,6 @@
 
     public class StimuliProcessingLogic : IStimuliProcessingLogic
     {
-        public StimuliProcessingLogic()
-        {
-            
-        }
-
         public Stimulus ProcessStimuli(IEnumerable<Stimulus> stimuli, double pheromoneWeighting, Random random)
         {
             var weightedStimuli = WeightStimuli(stimuli, pheromoneWeighting);
@@ -25,6 +20,22 @@
             }
 
             return chosenStimulus;
+        }
+
+        private static Dictionary<Stimulus, double> WeightStimuli(IEnumerable<Stimulus> stimuli, double pheromoneWeighting)
+        {
+            var weightedStimuli = new Dictionary<Stimulus, double>();
+            foreach (var stimulus in stimuli)
+            {
+                // each stimulus initially has a '1' rating
+                // add further weighting according to strength of measurement
+                var currentWeight = 1.0;
+                currentWeight += stimulus.PheromoneLevel * pheromoneWeighting;
+
+                weightedStimuli.Add(stimulus, currentWeight);
+            }
+
+            return weightedStimuli;
         }
 
         private static Stimulus ChooseRandomStimulus(Dictionary<Stimulus, double> weightedStimuli, Random random)
@@ -45,22 +56,6 @@
             }
 
             return chosenStimulus;
-        }
-
-        private static Dictionary<Stimulus, double> WeightStimuli(IEnumerable<Stimulus> habitatStates, double pheromoneWeighting)
-        {
-            var weightedHabitatStates = new Dictionary<Stimulus, double>();
-            foreach (var habitatState in habitatStates)
-            {
-                // each habitat initially has a '1' rating
-                // add further weighting according to strength of condition
-                var currentWeight = 1.0;
-                currentWeight += habitatState.PheromoneLevel * pheromoneWeighting;
-
-                weightedHabitatStates.Add(habitatState, currentWeight);
-            }
-
-            return weightedHabitatStates;
         }
     }
 }

@@ -9,4 +9,10 @@
         Fire,
         Impassable
     }
+
+    public enum Measurement
+    {
+        Pheromone,
+        Health
+    }
 }

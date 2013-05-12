@@ -10,7 +10,7 @@
         Impassable
     }
 
-    public enum Factor
+    public enum Measure
     {
         Pheromone,
         Health

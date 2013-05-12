@@ -78,7 +78,8 @@
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="Logic\IDecisionLogic.cs" />
     <Compile Include="Logic\DecisionLogic.cs" />
-    <Compile Include="Models\Condition.cs" />
+    <Compile Include="Models\IMeasurable.cs" />
+    <Compile Include="Models\Measurement.cs" />
     <Compile Include="Models\Ecosystem.cs" />
     <Compile Include="Models\Stimulus.cs" />
     <Compile Include="Models\Main.cs" />

@@ -20,7 +20,7 @@
         {
             get
             {
-                return this.DomainModel.PheromoneLevel;
+                return this.DomainModel.Pheromone.Level;
             }
         }
 

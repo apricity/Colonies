@@ -7,16 +7,15 @@
 
     using Colonies.Logic;
 
-    public sealed class Organism
+    public sealed class Organism : IMeasurable
     {
         // TODO: this should not be hard-coded, perhaps
         private const int PheromoneWeighting = 10;
 
         public string Name { get; private set; }
         public Color Color { get; private set; }
-        public double Health { get; private set; }
+        public Measurement Health { get; private set; }
         public bool IsDepositingPheromones { get; private set; }
-
         private readonly IDecisionLogic decisionLogic;
 
         public Organism(string name, Color color, IDecisionLogic decisionLogic, bool isDepostingPheromones)
@@ -24,40 +23,39 @@
             this.Name = name;
             this.Color = color;
             this.decisionLogic = decisionLogic;
-            this.Health = 1.0;
+
+            this.Health = new Measurement(Measure.Health, 1.0);
 
             // TODO: depositing pheromones should probably not be something that is handled through construction (it will probably be very dynamic)
             this.IsDepositingPheromones = isDepostingPheromones;
         }
 
+        public List<Measurement> GetMeasurements()
+        {
+            return new List<Measurement> { this.Health };
+        }
+
         public void DecreaseHealth(double decreaseLevel)
         {
-            this.Health -= decreaseLevel;
-            if (this.Health < 0)
-            {
-                this.Health = 0;
-            }
+            this.Health.DecreaseLevel(decreaseLevel);
         }
 
-        public List<Stimulus> ProcessStimuli(List<List<Stimulus>> stimuli, Random random)
+        // TODO: encapsulate "List<Measurement>" in a "Measurements" class?
+        public List<Measurement> ProcessEnvironmentMeasurements(List<List<Measurement>> environmentMeasurements, Random random)
         {
-            foreach (var stimulus in stimuli.SelectMany(stimulusSet => stimulusSet))
+            // add bias to the measurements, according to how the organism weights each measure
+            foreach (var environmentMeasurement in environmentMeasurements.SelectMany(measurements => measurements))
             {
-                stimulus.SetBias(PheromoneWeighting);
+                environmentMeasurement.SetBias(PheromoneWeighting);
             }
 
-            var chosenBiasedStimulus = this.decisionLogic.MakeDecision(stimuli, random);
-            return chosenBiasedStimulus;
-        }
-
-        public List<Stimulus> GetStimulus()
-        {
-            return new List<Stimulus> { new Stimulus(Factor.Health, this.Health) };
+            var chosenMeasurements = this.decisionLogic.MakeDecision(environmentMeasurements, random);
+            return chosenMeasurements;
         }
 
         public override string ToString()
         {
-            return string.Format("{0}-{1} {2}", this.Name, this.Health * 100, this.Color);
+            return string.Format("{0}-{1} {2}", this.Name, this.Health.Level * 100, this.Color);
         }
     }
 }

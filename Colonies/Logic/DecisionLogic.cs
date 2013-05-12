@@ -9,56 +9,56 @@
 
     public class DecisionLogic : IDecisionLogic
     {
-        public List<Stimulus> MakeDecision(List<List<Stimulus>> stimuli, Random random)
+        public List<Measurement> MakeDecision(List<List<Measurement>> measurementsCollection, Random random)
         {
-            var weightedStimuli = WeightStimuli(stimuli);
-            var chosenStimulus = ChooseRandomStimulus(weightedStimuli, random);
-            if (chosenStimulus == null)
+            var weightedMeasurementsCollection = this.WeightMeasurementsCollection(measurementsCollection);
+            var chosenMeasurements = this.ChooseRandomMeasurements(weightedMeasurementsCollection, random);
+            if (chosenMeasurements == null)
             {
-                throw new NullReferenceException("A stimulus has not been chosen");
+                throw new NullReferenceException("A set of measurements has not been chosen");
             }
 
-            return chosenStimulus;
+            return chosenMeasurements;
         }
 
-        private Dictionary<List<Stimulus>, double> WeightStimuli(List<List<Stimulus>> stimuli)
+        private Dictionary<List<Measurement>, double> WeightMeasurementsCollection(List<List<Measurement>> measurementsCollection)
         {
-            var weightedStimuli = new Dictionary<List<Stimulus>, double>();
-            foreach (var stimulusSet in stimuli)
+            var weightedMeasurementsCollection = new Dictionary<List<Measurement>, double>();
+            foreach (var measurements in measurementsCollection)
             {
                 // each stimulus initially has a '1' rating
                 // add further weighting according to strength of measurement
                 var currentWeight = 1.0;
 
-                foreach (var stimulus in stimulusSet)
+                foreach (var measurement in measurements)
                 {
-                    currentWeight += stimulus.Level * stimulus.Bias;
+                    currentWeight += measurement.Level * measurement.Bias;
                 }
 
-                weightedStimuli.Add(stimulusSet, currentWeight);
+                weightedMeasurementsCollection.Add(measurements, currentWeight);
             }
 
-            return weightedStimuli;
+            return weightedMeasurementsCollection;
         }
 
-        private List<Stimulus> ChooseRandomStimulus(Dictionary<List<Stimulus>, double> weightedStimuli, Random random)
+        private List<Measurement> ChooseRandomMeasurements(Dictionary<List<Measurement>, double> weightedMeasurementsCollection, Random random)
         {
-            List<Stimulus> chosenStimulus = null;
-            var totalWeight = weightedStimuli.Values.Sum(weight => weight);
+            List<Measurement> chosenMeasurements = null;
+            var totalWeight = weightedMeasurementsCollection.Values.Sum(weight => weight);
 
             var randomNumber = random.NextDouble() * totalWeight;
-            foreach (var weightedStimulus in weightedStimuli)
+            foreach (var weightedMeasurements in weightedMeasurementsCollection)
             {
-                if (randomNumber < weightedStimulus.Value)
+                if (randomNumber < weightedMeasurements.Value)
                 {
-                    chosenStimulus = weightedStimulus.Key;
+                    chosenMeasurements = weightedMeasurements.Key;
                     break;
                 }
 
-                randomNumber -= weightedStimulus.Value;
+                randomNumber -= weightedMeasurements.Value;
             }
 
-            return chosenStimulus;
+            return chosenMeasurements;
         }
     }
 }

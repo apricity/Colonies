@@ -34,11 +34,12 @@
             return this.Environment.Terrain == Terrain.Impassable;
         }
 
-        public List<Stimulus> GetStimulus()
+        // TODO: is this necessary?
+        public List<Measurement> GetEnvironmentMeasurements()
         {
             // TODO: take into account organisms before return the stimulus
             // e.g. stimulus.Add(organismStimulus)
-            return this.Environment.GetStimulus();
+            return this.Environment.GetMeasurements();
         }
 
         public override String ToString()

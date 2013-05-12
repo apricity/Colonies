@@ -33,12 +33,12 @@
             // these are used by organisms to make decisions about what stimuli to follow
             // (stimuli are generated left-to-right, top-to-bottom => left is first, right is last)
             this.rightmostStimulusLogic = new Mock<IDecisionLogic>();
-            this.rightmostStimulusLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<List<Stimulus>>>(), It.IsAny<Random>()))
-                                       .Returns((List<List<Stimulus>> stimuli, Random random) => stimuli.Last());
+            this.rightmostStimulusLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<List<Measurement>>>(), It.IsAny<Random>()))
+                                       .Returns((List<List<Measurement>> measurement, Random random) => measurement.Last());
 
             this.leftmostStimulusLogic = new Mock<IDecisionLogic>();
-            this.leftmostStimulusLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<List<Stimulus>>>(), It.IsAny<Random>()))
-                                      .Returns((List<List<Stimulus>> stimuli, Random random) => stimuli.First());
+            this.leftmostStimulusLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<List<Measurement>>>(), It.IsAny<Random>()))
+                                      .Returns((List<List<Measurement>> measurement, Random random) => measurement.First());
         }
 
         [Test]
@@ -292,12 +292,12 @@
             // mock conflicting movement logic that awards the desired space to the first organism in the list
             // the ecosystem's lists of organisms are kept in order of creation, so the earliest-created organisms will win
             this.leftmostStimulusLogic = new Mock<IDecisionLogic>();
-            this.leftmostStimulusLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<List<Stimulus>>>(), It.IsAny<Random>()))
-                                      .Returns((List<List<Stimulus>> stimuli, Random random) => stimuli.First());
+            this.leftmostStimulusLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<List<Measurement>>>(), It.IsAny<Random>()))
+                                      .Returns((List<List<Measurement>> measurement, Random random) => measurement.First());
 
             var conflictingMovementLogic = new Mock<IDecisionLogic>();
-            conflictingMovementLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<List<Stimulus>>>(), It.IsAny<Random>()))
-                                    .Returns((List<List<Stimulus>> stimuli, Random random) => stimuli.First());
+            conflictingMovementLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<List<Measurement>>>(), It.IsAny<Random>()))
+                                    .Returns((List<List<Measurement>> measurement, Random random) => measurement.First());
 
             var ecosystem = new Ecosystem(habitats, organismLocations, conflictingMovementLogic.Object);
             return ecosystem.Update();

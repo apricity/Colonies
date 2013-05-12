@@ -19,8 +19,8 @@
     public class OrganismMovementTests
     {
         private Habitat[,] habitats;
-        private Mock<IStimuliProcessingLogic> rightmostStimulusLogic;
-        private Mock<IStimuliProcessingLogic> leftmostStimulusLogic;
+        private Mock<IDecisionLogic> rightmostStimulusLogic;
+        private Mock<IDecisionLogic> leftmostStimulusLogic;
 
         [SetUp]
         public void SetupTest()
@@ -32,12 +32,12 @@
             // mock stimuli processing logic; one returns the rightmost stimulus, the other returns the leftmost stimulus
             // these are used by organisms to make decisions about what stimuli to follow
             // (stimuli are generated left-to-right, top-to-bottom => left is first, right is last)
-            this.rightmostStimulusLogic = new Mock<IStimuliProcessingLogic>();
-            this.rightmostStimulusLogic.Setup(logic => logic.ProcessStimuli(It.IsAny<List<List<Stimulus>>>(), It.IsAny<Random>()))
+            this.rightmostStimulusLogic = new Mock<IDecisionLogic>();
+            this.rightmostStimulusLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<List<Stimulus>>>(), It.IsAny<Random>()))
                                        .Returns((List<List<Stimulus>> stimuli, Random random) => stimuli.Last());
 
-            this.leftmostStimulusLogic = new Mock<IStimuliProcessingLogic>();
-            this.leftmostStimulusLogic.Setup(logic => logic.ProcessStimuli(It.IsAny<List<List<Stimulus>>>(), It.IsAny<Random>()))
+            this.leftmostStimulusLogic = new Mock<IDecisionLogic>();
+            this.leftmostStimulusLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<List<Stimulus>>>(), It.IsAny<Random>()))
                                       .Returns((List<List<Stimulus>> stimuli, Random random) => stimuli.First());
         }
 
@@ -291,9 +291,13 @@
 
             // mock conflicting movement logic that awards the desired space to the first organism in the list
             // the ecosystem's lists of organisms are kept in order of creation, so the earliest-created organisms will win
-            var conflictingMovementLogic = new Mock<IConflictingMovementLogic>();
-            conflictingMovementLogic.Setup(logic => logic.DecideOrganism(It.IsAny<List<Organism>>(), It.IsAny<double>(), It.IsAny<Random>()))
-                                    .Returns((List<Organism> organisms, double healthWeighting, Random random) => organisms.First());
+            this.leftmostStimulusLogic = new Mock<IDecisionLogic>();
+            this.leftmostStimulusLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<List<Stimulus>>>(), It.IsAny<Random>()))
+                                      .Returns((List<List<Stimulus>> stimuli, Random random) => stimuli.First());
+
+            var conflictingMovementLogic = new Mock<IDecisionLogic>();
+            conflictingMovementLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<List<Stimulus>>>(), It.IsAny<Random>()))
+                                    .Returns((List<List<Stimulus>> stimuli, Random random) => stimuli.First());
 
             var ecosystem = new Ecosystem(habitats, organismLocations, conflictingMovementLogic.Object);
             return ecosystem.Update();

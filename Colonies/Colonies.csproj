@@ -76,10 +76,9 @@
     <Compile Include="Converters\ActiveBoolToStringConverter.cs" />
     <Compile Include="Coordinates.cs" />
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
-    <Compile Include="Logic\ConflictingMovementLogic.cs" />
-    <Compile Include="Logic\IStimuliProcessingLogic.cs" />
-    <Compile Include="Logic\IConflictingMovementLogic.cs" />
-    <Compile Include="Logic\StimuliProcessingLogic.cs" />
+    <Compile Include="Logic\IDecisionLogic.cs" />
+    <Compile Include="Logic\DecisionLogic.cs" />
+    <Compile Include="Models\Condition.cs" />
     <Compile Include="Models\Ecosystem.cs" />
     <Compile Include="Models\Stimulus.cs" />
     <Compile Include="Models\Main.cs" />

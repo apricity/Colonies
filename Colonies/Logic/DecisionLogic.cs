@@ -7,9 +7,9 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class StimuliProcessingLogic : IStimuliProcessingLogic
+    public class DecisionLogic : IDecisionLogic
     {
-        public List<Stimulus> ProcessStimuli(List<List<Stimulus>> stimuli, Random random)
+        public List<Stimulus> MakeDecision(List<List<Stimulus>> stimuli, Random random)
         {
             var weightedStimuli = WeightStimuli(stimuli);
             var chosenStimulus = ChooseRandomStimulus(weightedStimuli, random);
@@ -21,7 +21,7 @@
             return chosenStimulus;
         }
 
-        private static Dictionary<List<Stimulus>, double> WeightStimuli(List<List<Stimulus>> stimuli)
+        private Dictionary<List<Stimulus>, double> WeightStimuli(List<List<Stimulus>> stimuli)
         {
             var weightedStimuli = new Dictionary<List<Stimulus>, double>();
             foreach (var stimulusSet in stimuli)
@@ -41,7 +41,7 @@
             return weightedStimuli;
         }
 
-        private static List<Stimulus> ChooseRandomStimulus(Dictionary<List<Stimulus>, double> weightedStimuli, Random random)
+        private List<Stimulus> ChooseRandomStimulus(Dictionary<List<Stimulus>, double> weightedStimuli, Random random)
         {
             List<Stimulus> chosenStimulus = null;
             var totalWeight = weightedStimuli.Values.Sum(weight => weight);

@@ -14,7 +14,7 @@
         public Habitat[,] Habitats { get; private set; }
         public Dictionary<Organism, Coordinates> OrganismLocations { get; private set; }
 
-        private readonly IConflictingMovementLogic conflictingMovementLogic;
+        private readonly IDecisionLogic conflictingMovementLogic;
 
         public int Width
         {
@@ -34,7 +34,7 @@
 
         private readonly Random random;
         
-        public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismLocations, IConflictingMovementLogic conflictingMovementLogic)
+        public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismLocations, IDecisionLogic conflictingMovementLogic)
         {
             this.Habitats = habitats;
             this.OrganismLocations = organismLocations;
@@ -160,8 +160,15 @@
                 Organism organismToMove;
                 if (conflictingOrganisms.Count > 1)
                 {
-                    // TODO: actual number used will not have much affect until more measurements are taken into consideration
-                    organismToMove = this.conflictingMovementLogic.DecideOrganism(conflictingOrganisms, OrganismHealthWeighting, this.random);
+                    // TODO: rename stimulus/stimuli + tidy up/make generic this KVP of List<Stimulus> -> thing to choose
+                    var stimuli = new Dictionary<List<Stimulus>, Organism>();
+                    foreach (var conflictingOrganism in conflictingOrganisms)
+                    {
+                        stimuli.Add(conflictingOrganism.GetStimulus(), conflictingOrganism);
+                    }
+
+                    var chosenStimulus = this.conflictingMovementLogic.MakeDecision(stimuli.Keys.ToList(), this.random);
+                    organismToMove = stimuli[chosenStimulus];
 
                     // losers now intend to move nowhere
                     conflictingOrganisms.Remove(organismToMove);

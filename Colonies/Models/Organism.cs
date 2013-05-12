@@ -17,13 +17,13 @@
         public double Health { get; private set; }
         public bool IsDepositingPheromones { get; private set; }
 
-        private readonly IStimuliProcessingLogic stimuliProcessingLogic;
+        private readonly IDecisionLogic decisionLogic;
 
-        public Organism(string name, Color color, IStimuliProcessingLogic stimuliProcessingLogic, bool isDepostingPheromones)
+        public Organism(string name, Color color, IDecisionLogic decisionLogic, bool isDepostingPheromones)
         {
             this.Name = name;
             this.Color = color;
-            this.stimuliProcessingLogic = stimuliProcessingLogic;
+            this.decisionLogic = decisionLogic;
             this.Health = 1.0;
 
             // TODO: depositing pheromones should probably not be something that is handled through construction (it will probably be very dynamic)
@@ -46,8 +46,13 @@
                 stimulus.SetBias(PheromoneWeighting);
             }
 
-            var chosenBiasedStimulus = this.stimuliProcessingLogic.ProcessStimuli(stimuli, random);
+            var chosenBiasedStimulus = this.decisionLogic.MakeDecision(stimuli, random);
             return chosenBiasedStimulus;
+        }
+
+        public List<Stimulus> GetStimulus()
+        {
+            return new List<Stimulus> { new Stimulus(Factor.Health, this.Health) };
         }
 
         public override string ToString()

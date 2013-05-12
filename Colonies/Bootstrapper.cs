@@ -59,7 +59,7 @@
                 }
             }
 
-            var conflictingMovementLogic = new ConflictingMovementLogic();
+            var conflictingMovementLogic = new DecisionLogic();
             var ecosystem = new Ecosystem(habitats, new Dictionary<Organism, Coordinates>(), conflictingMovementLogic);
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
@@ -118,7 +118,7 @@
             var lottyCoords = new Coordinates(1, 4);
             var louiseCoords = new Coordinates(4, 2);
 
-            var stimuliProcessingLogic = new StimuliProcessingLogic();
+            var stimuliProcessingLogic = new DecisionLogic();
 
             // place some organisms in the ecosystem
             ecosystem.AddOrganism(new Organism("Waffle", Color.White, stimuliProcessingLogic, true), waffleCoords);

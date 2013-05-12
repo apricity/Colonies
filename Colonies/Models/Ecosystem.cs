@@ -161,23 +161,14 @@
                 Organism organismToMove;
                 if (conflictingOrganisms.Count > 1)
                 {
-                    // TODO: tidy up/make generic this KVP of List<Stimulus> -> thing to choose
+                    // TODO: tidy up/make generic this KVP of <Measurement, thing to choose>
                     var conflictingOrganismMeasurements = new Dictionary<Measurement, Organism>();
                     foreach (var conflictingOrganism in conflictingOrganisms)
                     {
                         conflictingOrganismMeasurements.Add(conflictingOrganism.GetMeasurement(), conflictingOrganism);
                     }
 
-                    // add bias to the measurements, according to how the organism weights each measure
-                    foreach (var conflictingOrganismMeasurement in conflictingOrganismMeasurements.Keys.ToList())
-                    {
-                        foreach (var condition in conflictingOrganismMeasurement.Conditions)
-                        {
-                            condition.SetBias(this.MeasureBiases[condition.Measure]);
-                        }
-                    }
-
-                    var chosenStimulus = this.conflictingMovementLogic.MakeDecision(conflictingOrganismMeasurements.Keys.ToList(), this.random);
+                    var chosenStimulus = this.ProcessOrganismMeasurements(conflictingOrganismMeasurements, this.random);
                     organismToMove = conflictingOrganismMeasurements[chosenStimulus];
 
                     // losers now intend to move nowhere
@@ -206,6 +197,22 @@
             }
 
             return resolvedOrganismDestinations;
+        }
+
+        // TODO: extract "ProcessXxxMeasurements" (here and in Organism - IBiased classes)
+        private Measurement ProcessOrganismMeasurements(Dictionary<Measurement, Organism> conflictingOrganismMeasurements, Random random)
+        {
+            // add bias to the measurements, according to how the organism weights each measure
+            foreach (var conflictingOrganismMeasurement in conflictingOrganismMeasurements.Keys.ToList())
+            {
+                foreach (var condition in conflictingOrganismMeasurement.Conditions)
+                {
+                    condition.SetBias(this.MeasureBiases[condition.Measure]);
+                }
+            }
+
+            var chosenMeasurement = this.conflictingMovementLogic.MakeDecision(conflictingOrganismMeasurements.Keys.ToList(), random);
+            return chosenMeasurement;
         }
 
         private void MoveOrganism(Organism organism, Coordinates destination)

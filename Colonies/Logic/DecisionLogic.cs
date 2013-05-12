@@ -9,56 +9,50 @@
 
     public class DecisionLogic : IDecisionLogic
     {
-        public List<Measurement> MakeDecision(List<List<Measurement>> measurementsCollection, Random random)
+        public Measurement MakeDecision(List<Measurement> measurements, Random random)
         {
-            var weightedMeasurementsCollection = this.WeightMeasurementsCollection(measurementsCollection);
-            var chosenMeasurements = this.ChooseRandomMeasurements(weightedMeasurementsCollection, random);
-            if (chosenMeasurements == null)
+            var weightedMeasurements = this.WeightMeasurements(measurements);
+            var chosenMeasurement = this.ChooseRandomMeasurement(weightedMeasurements, random);
+            if (chosenMeasurement == null)
             {
-                throw new NullReferenceException("A set of measurements has not been chosen");
+                throw new NullReferenceException("A measurement has not been chosen");
             }
 
-            return chosenMeasurements;
+            return chosenMeasurement;
         }
 
-        private Dictionary<List<Measurement>, double> WeightMeasurementsCollection(List<List<Measurement>> measurementsCollection)
+        private Dictionary<Measurement, double> WeightMeasurements(List<Measurement> measurements)
         {
-            var weightedMeasurementsCollection = new Dictionary<List<Measurement>, double>();
-            foreach (var measurements in measurementsCollection)
+            var weightedMeasurements = new Dictionary<Measurement, double>();
+            foreach (var measurement in measurements)
             {
-                // each stimulus initially has a '1' rating
-                // add further weighting according to strength of measurement
-                var currentWeight = 1.0;
-
-                foreach (var measurement in measurements)
-                {
-                    currentWeight += measurement.Level * measurement.Bias;
-                }
-
-                weightedMeasurementsCollection.Add(measurements, currentWeight);
+                // each measurement initially has a '1' rating
+                // add further weighting according to strength of measurement with bias applied
+                var currentWeighting = 1.0 + measurement.Conditions.Sum(condition => condition.Level * condition.Bias);
+                weightedMeasurements.Add(measurement, currentWeighting);
             }
 
-            return weightedMeasurementsCollection;
+            return weightedMeasurements;
         }
 
-        private List<Measurement> ChooseRandomMeasurements(Dictionary<List<Measurement>, double> weightedMeasurementsCollection, Random random)
+        private Measurement ChooseRandomMeasurement(Dictionary<Measurement, double> weightedMeasurements, Random random)
         {
-            List<Measurement> chosenMeasurements = null;
-            var totalWeight = weightedMeasurementsCollection.Values.Sum(weight => weight);
+            Measurement chosenMeasurement = null;
+            var totalWeight = weightedMeasurements.Values.Sum(weight => weight);
 
             var randomNumber = random.NextDouble() * totalWeight;
-            foreach (var weightedMeasurements in weightedMeasurementsCollection)
+            foreach (var weightedMeasurement in weightedMeasurements)
             {
-                if (randomNumber < weightedMeasurements.Value)
+                if (randomNumber < weightedMeasurement.Value)
                 {
-                    chosenMeasurements = weightedMeasurements.Key;
+                    chosenMeasurement = weightedMeasurement.Key;
                     break;
                 }
 
-                randomNumber -= weightedMeasurements.Value;
+                randomNumber -= weightedMeasurement.Value;
             }
 
-            return chosenMeasurements;
+            return chosenMeasurement;
         }
     }
 }

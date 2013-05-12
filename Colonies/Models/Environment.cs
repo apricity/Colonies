@@ -5,17 +5,12 @@
     public sealed class Environment : IMeasurable
     {
         public Terrain Terrain { get; private set; }
-        public Measurement Pheromone { get; private set; }
+        public Condition Pheromone { get; private set; }
 
         public Environment(Terrain terrain)
         {
             this.Terrain = terrain;
-            this.Pheromone = new Measurement(Measure.Pheromone, 0);
-        }
-
-        public List<Measurement> GetMeasurements()
-        {
-            return new List<Measurement> { this.Pheromone };
+            this.Pheromone = new Condition(Measure.Pheromone, 0);
         }
 
         public void SetTerrain(Terrain terrain)
@@ -31,6 +26,11 @@
         public void DecreasePheromoneLevel(double levelDecrease)
         {
             this.Pheromone.DecreaseLevel(levelDecrease);
+        }
+
+        public Measurement GetMeasurement()
+        {
+            return new Measurement( new List<Condition> { this.Pheromone });
         }
         
         public override string ToString()

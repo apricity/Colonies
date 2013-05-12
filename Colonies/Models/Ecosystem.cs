@@ -6,11 +6,8 @@
 
     using Colonies.Logic;
 
-    public sealed class Ecosystem
+    public sealed class Ecosystem : IBiased
     {
-        // TODO: where to hold this?  will it ever change like pheromone weighting might? (probably not)
-        private const int OrganismHealthWeighting = 1;
-
         public Habitat[,] Habitats { get; private set; }
         public Dictionary<Organism, Coordinates> OrganismLocations { get; private set; }
 
@@ -33,6 +30,8 @@
         }
 
         private readonly Random random;
+
+        public Dictionary<Measure, double> MeasureBiases { get; private set; }
         
         public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismLocations, IDecisionLogic conflictingMovementLogic)
         {
@@ -41,6 +40,8 @@
             this.conflictingMovementLogic = conflictingMovementLogic;
 
             this.random = new Random();
+
+            this.MeasureBiases = new Dictionary<Measure, double> { { Measure.Health, 1 } };
         }
 
         public UpdateSummary Update()
@@ -117,8 +118,8 @@
                 var neighbourhoodEnvironmentMeasurements = this.GetNeighbourhoodEnvironmentMeasurements(location);
 
                 // determine organism's intentions based on the measurements
-                var chosenMeasurements = organism.ProcessEnvironmentMeasurements(neighbourhoodEnvironmentMeasurements.Keys.ToList(), this.random);
-                var intendedDestination = neighbourhoodEnvironmentMeasurements[chosenMeasurements];
+                var chosenMeasurement = organism.ProcessEnvironmentMeasurements(neighbourhoodEnvironmentMeasurements.Keys.ToList(), this.random);
+                var intendedDestination = neighbourhoodEnvironmentMeasurements[chosenMeasurement];
                 intendedOrganismDestinations.Add(organism, intendedDestination);
             }
 
@@ -161,16 +162,19 @@
                 if (conflictingOrganisms.Count > 1)
                 {
                     // TODO: tidy up/make generic this KVP of List<Stimulus> -> thing to choose
-                    var conflictingOrganismMeasurements = new Dictionary<List<Measurement>, Organism>();
+                    var conflictingOrganismMeasurements = new Dictionary<Measurement, Organism>();
                     foreach (var conflictingOrganism in conflictingOrganisms)
                     {
-                        conflictingOrganismMeasurements.Add(conflictingOrganism.GetMeasurements(), conflictingOrganism);
+                        conflictingOrganismMeasurements.Add(conflictingOrganism.GetMeasurement(), conflictingOrganism);
                     }
 
                     // add bias to the measurements, according to how the organism weights each measure
-                    foreach (var conflictingOrganismMeasurement in conflictingOrganismMeasurements.Keys.SelectMany(measurements => measurements))
+                    foreach (var conflictingOrganismMeasurement in conflictingOrganismMeasurements.Keys.ToList())
                     {
-                        conflictingOrganismMeasurement.SetBias(OrganismHealthWeighting);
+                        foreach (var condition in conflictingOrganismMeasurement.Conditions)
+                        {
+                            condition.SetBias(this.MeasureBiases[condition.Measure]);
+                        }
                     }
 
                     var chosenStimulus = this.conflictingMovementLogic.MakeDecision(conflictingOrganismMeasurements.Keys.ToList(), this.random);
@@ -250,9 +254,9 @@
             this.Habitats[location.X, location.Y].Environment.DecreasePheromoneLevel(levelDecrease);
         }
 
-        private Dictionary<List<Measurement>, Coordinates> GetNeighbourhoodEnvironmentMeasurements(Coordinates location)
+        private Dictionary<Measurement, Coordinates> GetNeighbourhoodEnvironmentMeasurements(Coordinates location)
         {
-            var neighbourhoodStimuli = new Dictionary<List<Measurement>, Coordinates>();
+            var neighbourhoodMeasurements = new Dictionary<Measurement, Coordinates>();
             for (var x = location.X - 1; x <= location.X + 1; x++)
             {
                 // do not carry on if x is out-of-bounds
@@ -272,17 +276,17 @@
                     if (!this.Habitats[x, y].ContainsImpassable())
                     {
                         var currentLocation = new Coordinates(x, y);
-                        neighbourhoodStimuli.Add(this.GetEnvironmentMeasurements(currentLocation), currentLocation);
+                        neighbourhoodMeasurements.Add(this.GetEnvironmentMeasurement(currentLocation), currentLocation);
                     }
                 }
             }
 
-            return neighbourhoodStimuli;
+            return neighbourhoodMeasurements;
         }
 
-        private List<Measurement> GetEnvironmentMeasurements(Coordinates location)
+        private Measurement GetEnvironmentMeasurement(Coordinates location)
         {
-            return this.Habitats[location.X, location.Y].GetEnvironmentMeasurements();
+            return this.Habitats[location.X, location.Y].GetEnvironmentMeasurement();
         }
 
         public override String ToString()

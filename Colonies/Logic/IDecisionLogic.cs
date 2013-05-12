@@ -7,6 +7,6 @@
 
     public interface IDecisionLogic
     {
-        List<Measurement> MakeDecision(List<List<Measurement>> measurementsCollection, Random random);
+        Measurement MakeDecision(List<Measurement> measurements, Random random);
     }
 }

@@ -4,29 +4,11 @@
 
     public class Measurement
     {
-        public Measure Measure { get; private set; }
-        public double Level { get; private set; }
-        public double Bias { get; private set; }
+        public List<Condition> Conditions { get; private set; }
 
-        public Measurement(Measure measure, double level)
+        public Measurement(List<Condition> conditions)
         {
-            this.Measure = measure;
-            this.Level = level;
-        }
-
-        public void IncreaseLevel(double value)
-        {
-            this.Level += value;
-        }
-
-        public void DecreaseLevel(double value)
-        {
-            this.Level -= value;
-        }
-
-        public void SetBias(double bias)
-        {
-            this.Bias = bias;
+            this.Conditions = conditions;
         }
     }
 }

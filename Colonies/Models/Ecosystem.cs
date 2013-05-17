@@ -11,8 +11,6 @@
         public Habitat[,] Habitats { get; private set; }
         public Dictionary<Organism, Coordinates> OrganismLocations { get; private set; }
 
-        private readonly IDecisionLogic conflictingMovementLogic;
-
         public int Width
         {
             get
@@ -29,17 +27,12 @@
             }
         }
 
-        private readonly Random random;
-
         public Dictionary<Measure, double> MeasureBiases { get; private set; }
         
-        public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismLocations, IDecisionLogic conflictingMovementLogic)
+        public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismLocations)
         {
             this.Habitats = habitats;
             this.OrganismLocations = organismLocations;
-            this.conflictingMovementLogic = conflictingMovementLogic;
-
-            this.random = new Random();
 
             this.MeasureBiases = new Dictionary<Measure, double> { { Measure.Health, 1 } };
         }
@@ -118,9 +111,10 @@
                 var neighbourhoodEnvironmentMeasurements = this.GetNeighbourhoodEnvironmentMeasurements(location);
 
                 // determine organism's intentions based on the measurements
-                var chosenMeasurement = organism.ProcessEnvironmentMeasurements(neighbourhoodEnvironmentMeasurements.Keys.ToList(), this.random);
-                var intendedDestination = neighbourhoodEnvironmentMeasurements[chosenMeasurement];
-                intendedOrganismDestinations.Add(organism, intendedDestination);
+                var chosenCoordinate = DecisionLogic.MakeDecision(neighbourhoodEnvironmentMeasurements, this.MeasureBiases);
+
+                // var intendedDestination = neighbourhoodEnvironmentMeasurements[chosenMeasurement];
+                intendedOrganismDestinations.Add(organism, chosenCoordinate);
             }
 
             return intendedOrganismDestinations;
@@ -161,15 +155,11 @@
                 Organism organismToMove;
                 if (conflictingOrganisms.Count > 1)
                 {
-                    // TODO: tidy up/make generic this KVP of <Measurement, thing to choose>
-                    var conflictingOrganismMeasurements = new Dictionary<Measurement, Organism>();
-                    foreach (var conflictingOrganism in conflictingOrganisms)
-                    {
-                        conflictingOrganismMeasurements.Add(conflictingOrganism.GetMeasurement(), conflictingOrganism);
-                    }
+                    var conflictingOrganismMeasurements = 
+                        conflictingOrganisms.ToDictionary(conflictingOrganism => conflictingOrganism, 
+                                                          conflictingOrganism => conflictingOrganism.GetMeasurement());
 
-                    var chosenStimulus = this.ProcessOrganismMeasurements(conflictingOrganismMeasurements, this.random);
-                    organismToMove = conflictingOrganismMeasurements[chosenStimulus];
+                    organismToMove = DecisionLogic.MakeDecision(conflictingOrganismMeasurements, this.MeasureBiases);
 
                     // losers now intend to move nowhere
                     conflictingOrganisms.Remove(organismToMove);
@@ -197,22 +187,6 @@
             }
 
             return resolvedOrganismDestinations;
-        }
-
-        // TODO: extract "ProcessXxxMeasurements" (here and in Organism - IBiased classes)
-        private Measurement ProcessOrganismMeasurements(Dictionary<Measurement, Organism> conflictingOrganismMeasurements, Random random)
-        {
-            // add bias to the measurements, according to how the organism weights each measure
-            foreach (var conflictingOrganismMeasurement in conflictingOrganismMeasurements.Keys.ToList())
-            {
-                foreach (var condition in conflictingOrganismMeasurement.Conditions)
-                {
-                    condition.SetBias(this.MeasureBiases[condition.Measure]);
-                }
-            }
-
-            var chosenMeasurement = this.conflictingMovementLogic.MakeDecision(conflictingOrganismMeasurements.Keys.ToList(), random);
-            return chosenMeasurement;
         }
 
         private void MoveOrganism(Organism organism, Coordinates destination)
@@ -261,9 +235,9 @@
             this.Habitats[location.X, location.Y].Environment.DecreasePheromoneLevel(levelDecrease);
         }
 
-        private Dictionary<Measurement, Coordinates> GetNeighbourhoodEnvironmentMeasurements(Coordinates location)
+        private Dictionary<Coordinates, Measurement> GetNeighbourhoodEnvironmentMeasurements(Coordinates location)
         {
-            var neighbourhoodMeasurements = new Dictionary<Measurement, Coordinates>();
+            var neighbourhoodMeasurements = new Dictionary<Coordinates, Measurement>();
             for (var x = location.X - 1; x <= location.X + 1; x++)
             {
                 // do not carry on if x is out-of-bounds
@@ -283,7 +257,7 @@
                     if (!this.Habitats[x, y].ContainsImpassable())
                     {
                         var currentLocation = new Coordinates(x, y);
-                        neighbourhoodMeasurements.Add(this.GetEnvironmentMeasurement(currentLocation), currentLocation);
+                        neighbourhoodMeasurements.Add(currentLocation, this.GetEnvironmentMeasurement(currentLocation));
                     }
                 }
             }
@@ -294,6 +268,17 @@
         private Measurement GetEnvironmentMeasurement(Coordinates location)
         {
             return this.Habitats[location.X, location.Y].GetEnvironmentMeasurement();
+        }
+
+        public void ApplyBiasToMeasurements(IEnumerable<Measurement> measurements)
+        {
+            foreach (var measurement in measurements)
+            {
+                foreach (var condition in measurement.Conditions)
+                {
+                    condition.SetBias(this.MeasureBiases[condition.Measure]);
+                }
+            }
         }
 
         public override String ToString()

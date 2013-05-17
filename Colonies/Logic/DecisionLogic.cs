@@ -7,52 +7,63 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class DecisionLogic : IDecisionLogic
+    public static class DecisionLogic
     {
-        public Measurement MakeDecision(List<Measurement> measurements, Random random)
+        private static readonly Random Random = new Random();
+
+        public static T MakeDecision<T>(Dictionary<T, Measurement> measuredItems, Dictionary<Measure, double> biases)
         {
-            var weightedMeasurements = this.WeightMeasurements(measurements);
-            var chosenMeasurement = this.ChooseRandomMeasurement(weightedMeasurements, random);
-            if (chosenMeasurement == null)
+            ApplyMeasurementBias(measuredItems, biases);
+            WeightMeasuredItems(measuredItems);
+            var chosenItem = ChooseRandomItem(measuredItems);
+            if (chosenItem == null)
             {
                 throw new NullReferenceException("A measurement has not been chosen");
             }
 
-            return chosenMeasurement;
+            return chosenItem;
         }
 
-        private Dictionary<Measurement, double> WeightMeasurements(List<Measurement> measurements)
+        private static void ApplyMeasurementBias<T>(Dictionary<T, Measurement> measuredItems, Dictionary<Measure, double> biases)
         {
-            var weightedMeasurements = new Dictionary<Measurement, double>();
-            foreach (var measurement in measurements)
+            foreach (var measurement in measuredItems.Values)
+            {
+                foreach (var condition in measurement.Conditions)
+                {
+                    condition.SetBias(biases[condition.Measure]);
+                }
+            }
+        }
+
+        private static void WeightMeasuredItems<T>(Dictionary<T, Measurement> measuredItems)
+        {
+            foreach (var measurement in measuredItems)
             {
                 // each measurement initially has a '1' rating
                 // add further weighting according to strength of measurement with bias applied
-                var currentWeighting = 1.0 + measurement.Conditions.Sum(condition => condition.Level * condition.Bias);
-                weightedMeasurements.Add(measurement, currentWeighting);
+                var weighting = 1.0 + measurement.Value.Conditions.Sum(condition => condition.Level * condition.Bias);
+                measurement.Value.SetWeighting(weighting);
             }
-
-            return weightedMeasurements;
         }
 
-        private Measurement ChooseRandomMeasurement(Dictionary<Measurement, double> weightedMeasurements, Random random)
+        private static T ChooseRandomItem<T>(Dictionary<T, Measurement> weightedMeasuredItems)
         {
-            Measurement chosenMeasurement = null;
-            var totalWeight = weightedMeasurements.Values.Sum(weight => weight);
+            T chosenItem = default(T);
+            var totalWeight = weightedMeasuredItems.Values.Sum(measurement => measurement.Weighting);
 
-            var randomNumber = random.NextDouble() * totalWeight;
-            foreach (var weightedMeasurement in weightedMeasurements)
+            var randomNumber = Random.NextDouble() * totalWeight;
+            foreach (var weightedMeasuredItem in weightedMeasuredItems)
             {
-                if (randomNumber < weightedMeasurement.Value)
+                if (randomNumber < weightedMeasuredItem.Value.Weighting)
                 {
-                    chosenMeasurement = weightedMeasurement.Key;
+                    chosenItem = weightedMeasuredItem.Key;
                     break;
                 }
 
-                randomNumber -= weightedMeasurement.Value;
+                randomNumber -= weightedMeasuredItem.Value.Weighting;
             }
 
-            return chosenMeasurement;
+            return chosenItem;
         }
     }
 }

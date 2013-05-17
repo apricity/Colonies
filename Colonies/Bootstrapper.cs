@@ -59,8 +59,7 @@
                 }
             }
 
-            var conflictingMovementLogic = new DecisionLogic();
-            var ecosystem = new Ecosystem(habitats, new Dictionary<Organism, Coordinates>(), conflictingMovementLogic);
+            var ecosystem = new Ecosystem(habitats, new Dictionary<Organism, Coordinates>());
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
@@ -118,13 +117,11 @@
             var lottyCoords = new Coordinates(1, 4);
             var louiseCoords = new Coordinates(4, 2);
 
-            var stimuliProcessingLogic = new DecisionLogic();
-
             // place some organisms in the ecosystem
-            ecosystem.AddOrganism(new Organism("Waffle", Color.White, stimuliProcessingLogic, true), waffleCoords);
-            ecosystem.AddOrganism(new Organism("Wilber", Color.Black, stimuliProcessingLogic, true), wilberCoords);
-            ecosystem.AddOrganism(new Organism("Lotty", Color.Lime, stimuliProcessingLogic, true), lottyCoords);
-            ecosystem.AddOrganism(new Organism("Dr. Louise", Color.Orange, stimuliProcessingLogic, true), louiseCoords);
+            ecosystem.AddOrganism(new Organism("Waffle", Color.White, true), waffleCoords);
+            ecosystem.AddOrganism(new Organism("Wilber", Color.Black, true), wilberCoords);
+            ecosystem.AddOrganism(new Organism("Lotty", Color.Lime, true), lottyCoords);
+            ecosystem.AddOrganism(new Organism("Dr. Louise", Color.Orange, true), louiseCoords);
 
             return new List<Coordinates> { waffleCoords, wilberCoords, lottyCoords, louiseCoords };
         }

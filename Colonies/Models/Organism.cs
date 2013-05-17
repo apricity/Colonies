@@ -13,15 +13,13 @@
         public Color Color { get; private set; }
         public Condition Health { get; private set; }
         public bool IsDepositingPheromones { get; private set; }
-        private readonly IDecisionLogic decisionLogic;
 
         public Dictionary<Measure, double> MeasureBiases { get; private set; }
 
-        public Organism(string name, Color color, IDecisionLogic decisionLogic, bool isDepostingPheromones)
+        public Organism(string name, Color color, bool isDepostingPheromones)
         {
             this.Name = name;
             this.Color = color;
-            this.decisionLogic = decisionLogic;
 
             this.Health = new Condition(Measure.Health, 1.0);
             this.MeasureBiases = new Dictionary<Measure, double> { { Measure.Pheromone, 10 } };
@@ -37,21 +35,6 @@
             {
                 this.Health.SetLevel(0.0);
             }
-        }
-
-        public Measurement ProcessEnvironmentMeasurements(List<Measurement> environmentMeasurements, Random random)
-        {
-            // add bias to the measurements, according to how the organism weights each measure
-            foreach (var environmentMeasurement in environmentMeasurements)
-            {
-                foreach (var condition in environmentMeasurement.Conditions)
-                {
-                    condition.SetBias(this.MeasureBiases[condition.Measure]);
-                }
-            }
-
-            var chosenMeasurement = this.decisionLogic.MakeDecision(environmentMeasurements, random);
-            return chosenMeasurement;
         }
 
         public Measurement GetMeasurement()

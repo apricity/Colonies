@@ -277,7 +277,7 @@
 
         public Dictionary<Measure, double> GetMeasureBiases()
         {
-            return new Dictionary<Measure, double> { { Measure.Pheromone, this.HealthBias } };
+            return new Dictionary<Measure, double> { { Measure.Health, this.HealthBias } };
         }
 
         public override String ToString()

@@ -4,6 +4,6 @@ namespace Colonies.Models
 {
     public interface IBiased
     {
-        Dictionary<Measure, double> MeasureBiases { get; }
+        Dictionary<Measure, double> GetMeasureBiases();
     }
 }

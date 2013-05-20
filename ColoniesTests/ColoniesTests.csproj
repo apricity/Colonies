@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="OrganismMovementTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestEcosystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ExternalDependencies\Moq.dll" />

@@ -13,8 +13,7 @@
         public Color Color { get; private set; }
         public Condition Health { get; private set; }
         public bool IsDepositingPheromones { get; private set; }
-
-        public Dictionary<Measure, double> MeasureBiases { get; private set; }
+        public double PheromoneBias { get; private set; }
 
         public Organism(string name, Color color, bool isDepostingPheromones)
         {
@@ -22,7 +21,8 @@
             this.Color = color;
 
             this.Health = new Condition(Measure.Health, 1.0);
-            this.MeasureBiases = new Dictionary<Measure, double> { { Measure.Pheromone, 10 } };
+
+            this.PheromoneBias = 10;
 
             // TODO: depositing pheromones should probably not be something that is handled through construction (it will probably be very dynamic)
             this.IsDepositingPheromones = isDepostingPheromones;
@@ -40,6 +40,17 @@
         public Measurement GetMeasurement()
         {
             return new Measurement(new List<Condition> { this.Health });
+        }
+
+        public Dictionary<Measure, double> GetMeasureBiases()
+        {
+            return new Dictionary<Measure, double> { { Measure.Pheromone, this.PheromoneBias } };
+        }
+
+        // TODO: take Measure as another parameter, and update a dictionary of Measure -> bias accordingly
+        public void SetPheromoneBias(double bias)
+        {
+            this.PheromoneBias = bias;
         }
 
         public override string ToString()

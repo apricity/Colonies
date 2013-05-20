@@ -6,10 +6,11 @@
 
     using Colonies.Logic;
 
-    public sealed class Ecosystem : IBiased
+    public class Ecosystem : IBiased
     {
         public Habitat[,] Habitats { get; private set; }
         public Dictionary<Organism, Coordinates> OrganismLocations { get; private set; }
+        public double HealthBias { get; private set; }
 
         public int Width
         {
@@ -27,14 +28,12 @@
             }
         }
 
-        public Dictionary<Measure, double> MeasureBiases { get; private set; }
-        
         public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismLocations)
         {
             this.Habitats = habitats;
             this.OrganismLocations = organismLocations;
 
-            this.MeasureBiases = new Dictionary<Measure, double> { { Measure.Health, 1 } };
+            this.HealthBias = 1;
         }
 
         public UpdateSummary Update()
@@ -99,7 +98,7 @@
             }
         }
 
-        private Dictionary<Organism, Coordinates> GetIntendedOrganismDestinations()
+        protected virtual Dictionary<Organism, Coordinates> GetIntendedOrganismDestinations()
         {
             var intendedOrganismDestinations = new Dictionary<Organism, Coordinates>();
             foreach (var organismCoordinates in this.OrganismLocations.ToList())
@@ -111,7 +110,7 @@
                 var neighbourhoodEnvironmentMeasurements = this.GetNeighbourhoodEnvironmentMeasurements(location);
 
                 // determine organism's intentions based on the measurements
-                var chosenCoordinate = DecisionLogic.MakeDecision(neighbourhoodEnvironmentMeasurements, this.MeasureBiases);
+                var chosenCoordinate = DecisionLogic.MakeDecision(neighbourhoodEnvironmentMeasurements, organism.GetMeasureBiases());
 
                 // var intendedDestination = neighbourhoodEnvironmentMeasurements[chosenMeasurement];
                 intendedOrganismDestinations.Add(organism, chosenCoordinate);
@@ -155,11 +154,7 @@
                 Organism organismToMove;
                 if (conflictingOrganisms.Count > 1)
                 {
-                    var conflictingOrganismMeasurements = 
-                        conflictingOrganisms.ToDictionary(conflictingOrganism => conflictingOrganism, 
-                                                          conflictingOrganism => conflictingOrganism.GetMeasurement());
-
-                    organismToMove = DecisionLogic.MakeDecision(conflictingOrganismMeasurements, this.MeasureBiases);
+                    organismToMove = this.ChooseOrganism(conflictingOrganisms);
 
                     // losers now intend to move nowhere
                     conflictingOrganisms.Remove(organismToMove);
@@ -187,6 +182,16 @@
             }
 
             return resolvedOrganismDestinations;
+        }
+
+        protected virtual Organism ChooseOrganism(List<Organism> conflictingOrganisms)
+        {
+            var conflictingOrganismMeasurements = conflictingOrganisms.ToDictionary(
+                conflictingOrganism => conflictingOrganism, 
+                conflictingOrganism => conflictingOrganism.GetMeasurement());
+
+            var organismToMove = DecisionLogic.MakeDecision(conflictingOrganismMeasurements, this.GetMeasureBiases());
+            return organismToMove;
         }
 
         private void MoveOrganism(Organism organism, Coordinates destination)
@@ -270,15 +275,9 @@
             return this.Habitats[location.X, location.Y].GetEnvironmentMeasurement();
         }
 
-        public void ApplyBiasToMeasurements(IEnumerable<Measurement> measurements)
+        public Dictionary<Measure, double> GetMeasureBiases()
         {
-            foreach (var measurement in measurements)
-            {
-                foreach (var condition in measurement.Conditions)
-                {
-                    condition.SetBias(this.MeasureBiases[condition.Measure]);
-                }
-            }
+            return new Dictionary<Measure, double> { { Measure.Pheromone, this.HealthBias } };
         }
 
         public override String ToString()

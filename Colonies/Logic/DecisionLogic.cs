@@ -16,6 +16,7 @@
             ApplyMeasurementBias(measuredItems, biases);
             WeightMeasuredItems(measuredItems);
             var chosenItem = ChooseRandomItem(measuredItems);
+
             if (chosenItem == null)
             {
                 throw new NullReferenceException("A measurement has not been chosen");

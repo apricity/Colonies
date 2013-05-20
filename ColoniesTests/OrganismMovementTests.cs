@@ -19,8 +19,6 @@
     public class OrganismMovementTests
     {
         private Habitat[,] habitats;
-        private Mock<IDecisionLogic> rightmostStimulusLogic;
-        private Mock<IDecisionLogic> leftmostStimulusLogic;
 
         [SetUp]
         public void SetupTest()
@@ -28,17 +26,6 @@
             const int width = 10;
             const int height = 1;
             this.habitats = GenerateBaseHabitats(width, height);
-
-            // mock stimuli processing logic; one returns the rightmost stimulus, the other returns the leftmost stimulus
-            // these are used by organisms to make decisions about what stimuli to follow
-            // (stimuli are generated left-to-right, top-to-bottom => left is first, right is last)
-            this.rightmostStimulusLogic = new Mock<IDecisionLogic>();
-            this.rightmostStimulusLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<Measurement>>(), It.IsAny<Random>()))
-                                       .Returns((List<Measurement> measurements, Random random) => measurements.Last());
-
-            this.leftmostStimulusLogic = new Mock<IDecisionLogic>();
-            this.leftmostStimulusLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<Measurement>>(), It.IsAny<Random>()))
-                                      .Returns((List<Measurement> measurements, Random random) => measurements.First());
         }
 
         [Test]
@@ -49,13 +36,22 @@
              * no conflict, both organisms should move where they chose to go
              * result of test:                          |_A_|___|___|___|_B_|___|___|___|___|___| */
 
+            var organismA = new Organism("A", Color.Black, false);
+            var organismB = new Organism("B", Color.Black, false);
+
             var organismLocations = new Dictionary<Organism, Coordinates>
                                         {
-                                            { new Organism("A", Color.Black, this.leftmostStimulusLogic.Object, false), new Coordinates(1, 0) },
-                                            { new Organism("B", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(3, 0) }
+                                            { organismA, new Coordinates(1, 0) },
+                                            { organismB, new Coordinates(3, 0) }
                                         };
 
-            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations);
+            var organismDestinations = new Dictionary<Organism, Coordinates>
+                                        {
+                                            { organismA, new Coordinates(0, 0) },
+                                            { organismB, new Coordinates(4, 0) }
+                                        };
+
+            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations, organismDestinations);
             var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
             var expectedCoordinates = new List<Coordinates>
                                           {
@@ -75,13 +71,22 @@
              * (therefore, when A wants to move left and B wants to move right, A will win)
              * result of test:                          |___|_B_|_A_|___|___|___|___|___|___|___| */
 
+            var organismA = new Organism("A", Color.Black, false);
+            var organismB = new Organism("B", Color.Black, false);
+
             var organismLocations = new Dictionary<Organism, Coordinates>
                                         {
-                                            { new Organism("A", Color.Black, this.leftmostStimulusLogic.Object, false), new Coordinates(3, 0) },
-                                            { new Organism("B", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(1, 0) }
+                                            { organismA, new Coordinates(3, 0) },
+                                            { organismB, new Coordinates(1, 0) }
                                         };
 
-            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations);
+            var organismDestinations = new Dictionary<Organism, Coordinates>
+                                        {
+                                            { organismA, new Coordinates(2, 0) },
+                                            { organismB, new Coordinates(2, 0) }
+                                        };
+
+            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations, organismDestinations);
             var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
             var expectedCoordinates = new List<Coordinates>
                                           {
@@ -103,15 +108,28 @@
              * (therefore, when Y wants to move right and Z wants to move left, Y will win)
              * result of test:                          |___|_B_|_A_|___|___|___|___|_Y_|_Z_|___| */
 
+            var organismA = new Organism("A", Color.Black, false);
+            var organismB = new Organism("B", Color.Black, false);
+            var organismY = new Organism("Y", Color.Black, false);
+            var organismZ = new Organism("Z", Color.Black, false);
+
             var organismLocations = new Dictionary<Organism, Coordinates>
                                         {
-                                            { new Organism("A", Color.Black, this.leftmostStimulusLogic.Object, false), new Coordinates(3, 0) },
-                                            { new Organism("B", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(1, 0) },
-                                            { new Organism("Y", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(6, 0) },
-                                            { new Organism("Z", Color.Black, this.leftmostStimulusLogic.Object, false), new Coordinates(8, 0) }
+                                            { organismA, new Coordinates(3, 0) },
+                                            { organismB, new Coordinates(1, 0) },
+                                            { organismY, new Coordinates(6, 0) },
+                                            { organismZ, new Coordinates(8, 0) }
                                         };
 
-            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations);
+            var organismDestinations = new Dictionary<Organism, Coordinates>
+                                        {
+                                            { organismA, new Coordinates(2, 0) },
+                                            { organismB, new Coordinates(2, 0) },
+                                            { organismY, new Coordinates(7, 0) },
+                                            { organismZ, new Coordinates(7, 0) }
+                                        };
+
+            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations, organismDestinations);
             var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
             var expectedCoordinates = new List<Coordinates>
                                           {
@@ -132,15 +150,28 @@
              * all organisms are moving in convoy to the right, and each will be able to go to their desired destination
              * result of test:                          |___|_A_|_B_|_C_|_D_|___|___|___|___|___| */
 
+            var organismA = new Organism("A", Color.Black, false);
+            var organismB = new Organism("B", Color.Black, false);
+            var organismC = new Organism("C", Color.Black, false);
+            var organismD = new Organism("D", Color.Black, false);
+
             var organismLocations = new Dictionary<Organism, Coordinates>
                                         {
-                                            { new Organism("A", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(0, 0) },
-                                            { new Organism("B", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(1, 0) },
-                                            { new Organism("C", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(2, 0) },
-                                            { new Organism("D", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(3, 0) }
+                                            { organismA, new Coordinates(0, 0) },
+                                            { organismB, new Coordinates(1, 0) },
+                                            { organismC, new Coordinates(2, 0) },
+                                            { organismD, new Coordinates(3, 0) }
                                         };
 
-            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations);
+            var organismDestinations = new Dictionary<Organism, Coordinates>
+                                        {
+                                            { organismA, new Coordinates(1, 0) },
+                                            { organismB, new Coordinates(2, 0) },
+                                            { organismC, new Coordinates(3, 0) },
+                                            { organismD, new Coordinates(4, 0) }
+                                        };
+
+            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations, organismDestinations);
             var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
             var expectedCoordinates = new List<Coordinates>
                                           {
@@ -162,19 +193,40 @@
              * all organisms are moving in convoy to the right, and each will be able to go to their desired destination
              * result of test:                          |___|_A_|_B_|_C_|_D_|___|_W_|_X_|_Y_|_Z_| */
 
+            var organismA = new Organism("A", Color.Black, false);
+            var organismB = new Organism("B", Color.Black, false);
+            var organismC = new Organism("C", Color.Black, false);
+            var organismD = new Organism("D", Color.Black, false);
+            var organismW = new Organism("W", Color.Black, false);
+            var organismX = new Organism("X", Color.Black, false);
+            var organismY = new Organism("Y", Color.Black, false);
+            var organismZ = new Organism("Z", Color.Black, false);
+
             var organismLocations = new Dictionary<Organism, Coordinates>
                                         {
-                                            { new Organism("A", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(0, 0) },
-                                            { new Organism("B", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(1, 0) },
-                                            { new Organism("C", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(2, 0) },
-                                            { new Organism("D", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(3, 0) },
-                                            { new Organism("W", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(5, 0) },
-                                            { new Organism("X", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(6, 0) },
-                                            { new Organism("Y", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(7, 0) },
-                                            { new Organism("Z", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(8, 0) }
+                                            { organismA, new Coordinates(0, 0) },
+                                            { organismB, new Coordinates(1, 0) },
+                                            { organismC, new Coordinates(2, 0) },
+                                            { organismD, new Coordinates(3, 0) },
+                                            { organismW, new Coordinates(5, 0) },
+                                            { organismX, new Coordinates(6, 0) },
+                                            { organismY, new Coordinates(7, 0) },
+                                            { organismZ, new Coordinates(8, 0) }
                                         };
 
-            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations);
+            var organismDestinations = new Dictionary<Organism, Coordinates>
+                                        {
+                                            { organismA, new Coordinates(1, 0) },
+                                            { organismB, new Coordinates(2, 0) },
+                                            { organismC, new Coordinates(3, 0) },
+                                            { organismD, new Coordinates(4, 0) },
+                                            { organismW, new Coordinates(6, 0) },
+                                            { organismX, new Coordinates(7, 0) },
+                                            { organismY, new Coordinates(8, 0) },
+                                            { organismZ, new Coordinates(9, 0) }
+                                        };
+
+            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations, organismDestinations);
             var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
             var expectedCoordinates = new List<Coordinates>
                                           {
@@ -201,15 +253,28 @@
              * A is trailing B, and will be able to move when B wins the vacant destination
              * result of test:                          |___|_A_|_B_|_C_|_D_|___|___|___|___|___| */
 
+            var organismA = new Organism("A", Color.Black, false);
+            var organismB = new Organism("B", Color.Black, false);
+            var organismC = new Organism("C", Color.Black, false);
+            var organismD = new Organism("D", Color.Black, false);
+
             var organismLocations = new Dictionary<Organism, Coordinates>
                                         {
-                                            { new Organism("A", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(0, 0) },
-                                            { new Organism("B", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(1, 0) },
-                                            { new Organism("C", Color.Black, this.leftmostStimulusLogic.Object, false), new Coordinates(3, 0) },
-                                            { new Organism("D", Color.Black, this.leftmostStimulusLogic.Object, false), new Coordinates(4, 0) }
+                                            { organismA, new Coordinates(0, 0) },
+                                            { organismB, new Coordinates(1, 0) },
+                                            { organismC, new Coordinates(3, 0) },
+                                            { organismD, new Coordinates(4, 0) }
                                         };
 
-            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations);
+            var organismDestinations = new Dictionary<Organism, Coordinates>
+                                        {
+                                            { organismA, new Coordinates(1, 0) },
+                                            { organismB, new Coordinates(2, 0) },
+                                            { organismC, new Coordinates(2, 0) },
+                                            { organismD, new Coordinates(3, 0) }
+                                        };
+
+            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations, organismDestinations);
             var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
             var expectedCoordinates = new List<Coordinates>
                                           {
@@ -235,19 +300,40 @@
              * Z is trailing W, and will be able to move when W wins the vacant destination 
              * result of test:                          |___|_A_|_B_|_C_|_D_|_X_|_Y_|_W_|_Z_|___| */
 
+            var organismA = new Organism("A", Color.Black, false);
+            var organismB = new Organism("B", Color.Black, false);
+            var organismC = new Organism("C", Color.Black, false);
+            var organismD = new Organism("D", Color.Black, false);
+            var organismW = new Organism("W", Color.Black, false);
+            var organismX = new Organism("X", Color.Black, false);
+            var organismY = new Organism("Y", Color.Black, false);
+            var organismZ = new Organism("Z", Color.Black, false);
+
             var organismLocations = new Dictionary<Organism, Coordinates>
                                         {
-                                            { new Organism("A", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(0, 0) },
-                                            { new Organism("B", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(1, 0) },
-                                            { new Organism("C", Color.Black, this.leftmostStimulusLogic.Object, false), new Coordinates(3, 0) },
-                                            { new Organism("D", Color.Black, this.leftmostStimulusLogic.Object, false), new Coordinates(4, 0) },
-                                            { new Organism("W", Color.Black, this.leftmostStimulusLogic.Object, false), new Coordinates(8, 0) },
-                                            { new Organism("X", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(5, 0) },
-                                            { new Organism("Y", Color.Black, this.rightmostStimulusLogic.Object, false), new Coordinates(6, 0) },
-                                            { new Organism("Z", Color.Black, this.leftmostStimulusLogic.Object, false), new Coordinates(9, 0) }
+                                            { organismA, new Coordinates(0, 0) },
+                                            { organismB, new Coordinates(1, 0) },
+                                            { organismC, new Coordinates(3, 0) },
+                                            { organismD, new Coordinates(4, 0) },
+                                            { organismW, new Coordinates(8, 0) },
+                                            { organismX, new Coordinates(5, 0) },
+                                            { organismY, new Coordinates(6, 0) },
+                                            { organismZ, new Coordinates(9, 0) }
                                         };
 
-            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations);
+            var organismDestinations = new Dictionary<Organism, Coordinates>
+                                        {
+                                            { organismA, new Coordinates(1, 0) },
+                                            { organismB, new Coordinates(2, 0) },
+                                            { organismC, new Coordinates(2, 0) },
+                                            { organismD, new Coordinates(3, 0) },
+                                            { organismW, new Coordinates(7, 0) },
+                                            { organismX, new Coordinates(6, 0) },
+                                            { organismY, new Coordinates(7, 0) },
+                                            { organismZ, new Coordinates(8, 0) }
+                                        };
+
+            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations, organismDestinations);
             var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
             var expectedCoordinates = new List<Coordinates>
                                           {
@@ -279,7 +365,7 @@
             return habitats;
         }
 
-        private UpdateSummary CreateAndUpdateEcosystem(Dictionary<Organism, Coordinates> organismLocations)
+        private UpdateSummary CreateAndUpdateEcosystem(Dictionary<Organism, Coordinates> organismLocations, Dictionary<Organism, Coordinates> organismDestinations)
         {
             foreach (var organismLocation in organismLocations)
             {
@@ -289,13 +375,7 @@
                 this.habitats[location.X, location.Y].AddOrganism(organism);
             }
 
-            // mock conflicting movement logic that awards the desired space to the first organism in the list
-            // the ecosystem's lists of organisms are kept in order of creation, so the earliest-created organisms will win
-            var conflictingMovementLogic = new Mock<IDecisionLogic>();
-            conflictingMovementLogic.Setup(logic => logic.MakeDecision(It.IsAny<List<Measurement>>(), It.IsAny<Random>()))
-                                    .Returns((List<Measurement> measurements, Random random) => measurements.First());
-
-            var ecosystem = new Ecosystem(habitats, organismLocations, conflictingMovementLogic.Object);
+            var ecosystem = new TestEcosystem(habitats, organismLocations, organismDestinations);
             return ecosystem.Update();
         }
     }

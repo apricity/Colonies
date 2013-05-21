@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ColoniesTests
+﻿namespace Colonies.Tests
 {
+    using System.Collections.Generic;
     using System.Drawing;
+    using System.Linq;
 
     using Colonies;
     using Colonies.Logic;
     using Colonies.Models;
-
-    using ColoniesTests.Mocks;
+    using Colonies.Tests.Mocks;
 
     using NUnit.Framework;
 

@@ -1,4 +1,4 @@
-﻿namespace ColoniesTests
+﻿namespace Colonies.Tests
 {
     using System.Collections.Generic;
     using System.Drawing;
@@ -6,12 +6,9 @@
 
     using Colonies;
     using Colonies.Models;
-
-    using ColoniesTests.Mocks;
+    using Colonies.Tests.Mocks;
 
     using NUnit.Framework;
-
-    using Environment = Colonies.Models.Environment;
 
     [TestFixture]
     public class OrganismMovementTests
@@ -349,7 +346,7 @@
                 this.habitats[location.X, location.Y].AddOrganism(organism);
             }
 
-            var mockEcosystem = new MockEcosystem(habitats, organismLocations, organismIntendedDestinations);
+            var mockEcosystem = new MockEcosystem(this.habitats, organismLocations, organismIntendedDestinations);
             return mockEcosystem.Update();
         }
     }

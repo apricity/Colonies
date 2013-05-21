@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ColoniesTests.Mocks
+﻿namespace Colonies.Tests.Mocks
 {
+    using System;
+
     public class MockRandom : Random
     {
         private double nextDouble;
@@ -16,7 +13,7 @@ namespace ColoniesTests.Mocks
 
         public override double NextDouble()
         {
-            return nextDouble;
+            return this.nextDouble;
         }
     }
 }

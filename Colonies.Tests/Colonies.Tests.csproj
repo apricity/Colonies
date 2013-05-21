@@ -7,8 +7,8 @@
     <ProjectGuid>{01A31DB3-BE9B-4AB0-9064-1C13680B947D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ColoniesTests</RootNamespace>
-    <AssemblyName>ColoniesTests</AssemblyName>
+    <RootNamespace>Colonies.Tests</RootNamespace>
+    <AssemblyName>Colonies.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

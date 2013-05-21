@@ -1,4 +1,4 @@
-﻿namespace ColoniesTests.Mocks
+﻿namespace Colonies.Tests.Mocks
 {
     using System.Collections.Generic;
     using System.Linq;

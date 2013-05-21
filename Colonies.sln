@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Colonies", "Colonies\Colonies.csproj", "{75A3E797-07FE-4E0F-A491-7BD4E3022EA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "ColoniesTests\Tests.csproj", "{01A31DB3-BE9B-4AB0-9064-1C13680B947D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Colonies.Tests", "Colonies.Tests\Colonies.Tests.csproj", "{01A31DB3-BE9B-4AB0-9064-1C13680B947D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

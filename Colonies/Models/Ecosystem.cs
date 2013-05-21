@@ -52,7 +52,6 @@
             /* find out where each organism would like to move to
              * then analyse them to decide where the organisms will actually move to 
              * and to resolve any conflicting intentions */
-            // TODO: should there be another layer of logic - organism movement logic (which contains conflict movement logic)?
             var intendedOrganismDestinations = this.GetIntendedOrganismDestinations();
             var actualOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations, new List<Organism>());
 

@@ -1,6 +1,5 @@
 ﻿namespace Colonies.ViewModels
 {
-    using System;
     using System.ComponentModel;
 
     using Colonies.Annotations;

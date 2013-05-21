@@ -1,11 +1,7 @@
 ﻿namespace Colonies.Models
 {
-    using System;
     using System.Collections.Generic;
     using System.Drawing;
-    using System.Linq;
-
-    using Colonies.Logic;
 
     public sealed class Organism : IMeasurable, IBiased
     {

@@ -183,14 +183,14 @@
             return resolvedOrganismDestinations;
         }
 
-        protected virtual Organism ChooseOrganism(List<Organism> conflictingOrganisms)
+        protected virtual Organism ChooseOrganism(List<Organism> organisms)
         {
-            var conflictingOrganismMeasurements = conflictingOrganisms.ToDictionary(
-                conflictingOrganism => conflictingOrganism, 
-                conflictingOrganism => conflictingOrganism.GetMeasurement());
+            var organismMeasurements = organisms.ToDictionary(
+                organism => organism, 
+                organism => organism.GetMeasurement());
 
-            var organismToMove = DecisionLogic.MakeDecision(conflictingOrganismMeasurements, this.GetMeasureBiases());
-            return organismToMove;
+            var chosenOrganism = DecisionLogic.MakeDecision(organismMeasurements, this.GetMeasureBiases());
+            return chosenOrganism;
         }
 
         private void MoveOrganism(Organism organism, Coordinates destination)

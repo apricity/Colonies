@@ -9,7 +9,8 @@
 
     public static class DecisionLogic
     {
-        private static readonly Random Random = new Random();
+        private static Random random = new Random();
+        private static double baseWeighting = 1.0;
 
         public static T MakeDecision<T>(Dictionary<T, Measurement> measuredItems, Dictionary<Measure, double> biases)
         {
@@ -40,19 +41,19 @@
         {
             foreach (var measurement in measuredItems)
             {
-                // each measurement initially has a '1' rating
+                // each measurement initially has a base weighting (the greater it is, the less effect the measurement level and bias have)
                 // add further weighting according to strength of measurement with bias applied
-                var weighting = 1.0 + measurement.Value.Conditions.Sum(condition => condition.Level * condition.Bias);
+                var weighting = baseWeighting + measurement.Value.Conditions.Sum(condition => condition.Level * condition.Bias);
                 measurement.Value.SetWeighting(weighting);
             }
         }
 
         private static T ChooseRandomItem<T>(Dictionary<T, Measurement> weightedMeasuredItems)
         {
-            T chosenItem = default(T);
+            var chosenItem = default(T);
             var totalWeight = weightedMeasuredItems.Values.Sum(measurement => measurement.Weighting);
 
-            var randomNumber = Random.NextDouble() * totalWeight;
+            var randomNumber = random.NextDouble() * totalWeight;
             foreach (var weightedMeasuredItem in weightedMeasuredItems)
             {
                 if (randomNumber < weightedMeasuredItem.Value.Weighting)
@@ -65,6 +66,16 @@
             }
 
             return chosenItem;
+        }
+
+        public static void SetRandomNumberGenerator(Random randomNumberGenerator)
+        {
+            random = randomNumberGenerator;
+        }
+
+        public static void SetBaseWeighting(double weighting)
+        {
+            baseWeighting = weighting;
         }
     }
 }

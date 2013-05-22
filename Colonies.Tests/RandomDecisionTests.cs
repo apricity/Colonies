@@ -14,12 +14,18 @@
     [TestFixture]
     public class RandomDecisionTests
     {
-        private List<string> items;
+        private List<TestItem> items;
 
         [SetUp]
         public void SetupTest()
         {
-            this.items = new List<string> { "A", "B", "C", "D", "W", "X", "Y", "Z" };
+            this.items = new List<TestItem>();
+
+            var itemIdentifiers = new List<string> { "A", "B", "C", "D", "W", "X", "Y", "Z" };
+            foreach (var itemIdentifier in itemIdentifiers)
+            {
+                this.items.Add(new TestItem(itemIdentifier));
+            }
         }
 
         [Test]
@@ -37,7 +43,7 @@
             var mockRandom = new MockRandom();
             DecisionLogic.SetRandomNumberGenerator(mockRandom);
 
-            var chosenItems = new List<string>();
+            var chosenItems = new List<TestItem>();
             
             // the numbers generated are distributed evenly based on the number of organisms
             // therefore there should be each organism should be chosen once by the decision logic
@@ -59,7 +65,7 @@
         {
             // all items will only have one measurement but the levels will all be different
             // by an even spread based on how many items there are
-            var itemMeasurements = new Dictionary<string, Measurement>();
+            var itemMeasurements = new Dictionary<TestItem, Measurement>();
             var measurementLevelChange = 1.0 / this.items.Count;
             for (var i = 0; i < this.items.Count; i++)
             {
@@ -78,7 +84,7 @@
             DecisionLogic.SetRandomNumberGenerator(mockRandom);
             DecisionLogic.SetBaseWeighting(0.0);
 
-            var chosenItems = new List<string>();
+            var chosenItems = new List<TestItem>();
 
             // the numbers generated need to reflect the range of measurement levels in the items
             // if there are 8 items...
@@ -97,13 +103,13 @@
             }
 
             // expecting each organism to be chosen a number of times proportional to their health
-            var expectedItemCounts = new Dictionary<string, int>();
+            var expectedItemCounts = new Dictionary<TestItem, int>();
             for (var i = 0; i < this.items.Count; i++)
             {
                 expectedItemCounts.Add(this.items.ElementAt(i), i + 1);
             }
 
-            var actualItemCounts = new Dictionary<string, int>();
+            var actualItemCounts = new Dictionary<TestItem, int>();
             foreach (var item in this.items)
             {
                 var numberOfTimesChosen = chosenItems.Count(chosenItem => chosenItem.Equals(item));
@@ -111,6 +117,21 @@
             }
 
             Assert.That(actualItemCounts, Is.EqualTo(expectedItemCounts));
+        }
+
+        private class TestItem
+        {
+            private readonly string identifier;
+
+            public TestItem(string identifier)
+            {
+                this.identifier = identifier;
+            }
+
+            public override string ToString()
+            {
+                return this.identifier;
+            }
         }
     }
 }

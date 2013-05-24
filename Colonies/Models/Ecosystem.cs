@@ -10,6 +10,7 @@
     {
         public Habitat[,] Habitats { get; private set; }
         public Dictionary<Organism, Coordinates> OrganismLocations { get; private set; }
+        public Dictionary<Habitat, Coordinates> HabitatLocations { get; private set; } 
         public double HealthBias { get; private set; }
 
         public int Width
@@ -34,6 +35,15 @@
             this.OrganismLocations = organismLocations;
 
             this.HealthBias = 1;
+
+            this.HabitatLocations = new Dictionary<Habitat, Coordinates>();
+            for (var i = 0; i < this.Width; i++)
+            {
+                for (var j = 0; j < this.Height; j++)
+                {
+                    this.HabitatLocations.Add(this.Habitats[i, j], new Coordinates(i, j));
+                }
+            }
         }
 
         public UpdateSummary Update()
@@ -109,8 +119,9 @@
                 var neighbourhoodEnvironmentMeasurements = this.GetNeighbourhoodEnvironmentMeasurements(location);
 
                 // determine organism's intentions based on the measurements
-                var chosenCoordinate = DecisionLogic.MakeDecision(neighbourhoodEnvironmentMeasurements, organism.GetMeasureBiases());
-
+                var chosenHabitat = DecisionLogic.MakeDecision(neighbourhoodEnvironmentMeasurements, organism.GetMeasureBiases());
+                var chosenCoordinate = this.HabitatLocations[chosenHabitat];
+                
                 // var intendedDestination = neighbourhoodEnvironmentMeasurements[chosenMeasurement];
                 intendedOrganismDestinations.Add(organism, chosenCoordinate);
             }
@@ -239,9 +250,9 @@
             this.Habitats[location.X, location.Y].Environment.DecreasePheromoneLevel(levelDecrease);
         }
 
-        private Dictionary<Coordinates, Measurement> GetNeighbourhoodEnvironmentMeasurements(Coordinates location)
+        private Dictionary<Habitat, Measurement> GetNeighbourhoodEnvironmentMeasurements(Coordinates location)
         {
-            var neighbourhoodMeasurements = new Dictionary<Coordinates, Measurement>();
+            var neighbourhoodMeasurements = new Dictionary<Habitat, Measurement>();
             for (var x = location.X - 1; x <= location.X + 1; x++)
             {
                 // do not carry on if x is out-of-bounds
@@ -258,10 +269,10 @@
                         continue;
                     }
 
-                    if (!this.Habitats[x, y].ContainsImpassable())
+                    var currentHabitat = this.Habitats[x, y];
+                    if (!currentHabitat.ContainsImpassable())
                     {
-                        var currentLocation = new Coordinates(x, y);
-                        neighbourhoodMeasurements.Add(currentLocation, this.GetEnvironmentMeasurement(currentLocation));
+                        neighbourhoodMeasurements.Add(currentHabitat, this.GetEnvironmentMeasurement(currentHabitat));
                     }
                 }
             }
@@ -269,9 +280,9 @@
             return neighbourhoodMeasurements;
         }
 
-        private Measurement GetEnvironmentMeasurement(Coordinates location)
+        private Measurement GetEnvironmentMeasurement(Habitat location)
         {
-            return this.Habitats[location.X, location.Y].GetEnvironmentMeasurement();
+            return location.GetEnvironmentMeasurement();
         }
 
         public Dictionary<Measure, double> GetMeasureBiases()

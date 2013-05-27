@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
 
-    public sealed class Habitat
+    public sealed class Habitat : IMeasurable
     {
         public Environment Environment { get; private set; }
         public Organism Organism { get; private set; }
@@ -34,11 +34,15 @@
             return this.Environment.Terrain == Terrain.Impassable;
         }
 
-        // TODO: is this necessary?
         public Measurement GetEnvironmentMeasurement()
         {
-            // TODO: take into account organisms before return the measure?
             return this.Environment.GetMeasurement();
+        }
+
+        public Measurement GetMeasurement()
+        {
+            // TODO: take into account organisms before return the measure
+            return this.GetEnvironmentMeasurement();
         }
 
         public override String ToString()

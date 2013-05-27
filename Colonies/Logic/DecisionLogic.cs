@@ -12,7 +12,7 @@
         private static Random random = new Random();
         private static double baseWeighting = 1.0;
 
-        public static T MakeDecision<T>(Dictionary<T, Measurement> measuredItems, Dictionary<Measure, double> biases)
+        public static T MakeDecision<T>(Dictionary<T, Measurement> measuredItems, Dictionary<Measure, double> biases) where T : IMeasurable
         {
             ApplyMeasurementBias(measuredItems, biases);
             WeightMeasuredItems(measuredItems);
@@ -26,7 +26,7 @@
             return chosenItem;
         }
 
-        private static void ApplyMeasurementBias<T>(Dictionary<T, Measurement> measuredItems, Dictionary<Measure, double> biases)
+        private static void ApplyMeasurementBias<T>(Dictionary<T, Measurement> measuredItems, Dictionary<Measure, double> biases) where T : IMeasurable
         {
             foreach (var measurement in measuredItems.Values)
             {
@@ -37,7 +37,7 @@
             }
         }
 
-        private static void WeightMeasuredItems<T>(Dictionary<T, Measurement> measuredItems)
+        private static void WeightMeasuredItems<T>(Dictionary<T, Measurement> measuredItems) where T : IMeasurable
         {
             foreach (var measurement in measuredItems)
             {
@@ -48,7 +48,7 @@
             }
         }
 
-        private static T ChooseRandomItem<T>(Dictionary<T, Measurement> weightedMeasuredItems)
+        private static T ChooseRandomItem<T>(Dictionary<T, Measurement> weightedMeasuredItems) where T : IMeasurable
         {
             var chosenItem = default(T);
             var totalWeight = weightedMeasuredItems.Values.Sum(measurement => measurement.Weighting);

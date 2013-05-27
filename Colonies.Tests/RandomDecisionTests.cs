@@ -119,13 +119,20 @@
             Assert.That(actualItemCounts, Is.EqualTo(expectedItemCounts));
         }
 
-        private class TestItem
+        private class TestItem : IMeasurable
         {
             private readonly string identifier;
+            private readonly Measurement measurement;
 
             public TestItem(string identifier)
             {
                 this.identifier = identifier;
+                this.measurement = new Measurement(new List<Condition> { new Condition(Measure.Pheromone, 1.0) });
+            }
+
+            public Measurement GetMeasurement()
+            {
+                return this.measurement;
             }
 
             public override string ToString()

@@ -31,10 +31,6 @@
         [Test]
         public void EqualItems()
         {
-            // all items will only have one measurement, and they will all be the same
-            var measurement = new Measurement(new List<Condition> { new Condition(Measure.Pheromone, 1.0) });
-            var itemMeasurements = this.items.ToDictionary(item => item, item => measurement);
-
             // there needs to be a bias for each measure (will be applied to all items)
             // but will have no effect when there is only one measure
             var measureBiases = new Dictionary<Measure, double> { { Measure.Pheromone, 1.0 } };
@@ -51,7 +47,7 @@
             for (var nextDouble = 0.0; nextDouble < 1.0; nextDouble += increment)
             {
                 mockRandom.SetNextDouble(nextDouble);
-                chosenItems.Add(DecisionLogic.MakeDecision(itemMeasurements, measureBiases));
+                chosenItems.Add(DecisionLogic.MakeDecision(this.items, measureBiases));
             }
 
             // expecting each organism to be chosen once, so expecting the same as the original list
@@ -65,13 +61,11 @@
         {
             // all items will only have one measurement but the levels will all be different
             // by an even spread based on how many items there are
-            var itemMeasurements = new Dictionary<TestItem, Measurement>();
             var measurementLevelChange = 1.0 / this.items.Count;
             for (var i = 0; i < this.items.Count; i++)
             {
                 var measurementLevel = (i + 1) * measurementLevelChange;
-                var measurement = new Measurement(new List<Condition> { new Condition(Measure.Pheromone, measurementLevel) });
-                itemMeasurements.Add(this.items.ElementAt(i), measurement);
+                this.items[i].SetPheromoneLevel(measurementLevel);
             }
 
             // there needs to be a bias for each measure (will be applied to all items)
@@ -99,7 +93,7 @@
             for (var nextDouble = 0.0; nextDouble < 1.0; nextDouble += increment)
             {
                 mockRandom.SetNextDouble(nextDouble);
-                chosenItems.Add(DecisionLogic.MakeDecision(itemMeasurements, measureBiases));
+                chosenItems.Add(DecisionLogic.MakeDecision(this.items, measureBiases));
             }
 
             // expecting each organism to be chosen a number of times proportional to their health
@@ -122,17 +116,25 @@
         private class TestItem : IMeasurable
         {
             private readonly string identifier;
-            private readonly Measurement measurement;
+            private readonly Condition pheromoneCondition;
+            private readonly Condition healthCondition;
 
             public TestItem(string identifier)
             {
                 this.identifier = identifier;
-                this.measurement = new Measurement(new List<Condition> { new Condition(Measure.Pheromone, 1.0) });
+                this.pheromoneCondition = new Condition(Measure.Pheromone, 1.0);
+                this.healthCondition = new Condition(Measure.Health, 1.0);
             }
 
             public Measurement GetMeasurement()
             {
-                return this.measurement;
+                // TODO: include a second condition and write tests to use both of them
+                return new Measurement(new List<Condition> { this.pheromoneCondition });
+            }
+
+            public void SetPheromoneLevel(double pheromoneLevel)
+            {
+                this.pheromoneCondition.SetLevel(pheromoneLevel);
             }
 
             public override string ToString()

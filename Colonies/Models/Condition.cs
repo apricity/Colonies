@@ -4,7 +4,6 @@
     {
         public Measure Measure { get; private set; }
         public double Level { get; private set; }
-        public double Bias { get; private set; }
 
         public Condition(Measure measure, double level)
         {
@@ -25,11 +24,6 @@
         public void DecreaseLevel(double value)
         {
             this.Level -= value;
-        }
-
-        public void SetBias(double bias)
-        {
-            this.Bias = bias;
         }
     }
 }

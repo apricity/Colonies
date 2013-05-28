@@ -116,10 +116,10 @@
                 var location = organismCoordinates.Value;
 
                 // get measurements of neighbouring environments
-                var neighbourhoodEnvironmentMeasurements = this.GetNeighbourhoodEnvironmentMeasurements(location);
+                var neighbouringHabitats = this.GetNeighbouringHabitats(location);
 
                 // determine organism's intentions based on the measurements
-                var chosenHabitat = DecisionLogic.MakeDecision(neighbourhoodEnvironmentMeasurements, organism.GetMeasureBiases());
+                var chosenHabitat = DecisionLogic.MakeDecision(neighbouringHabitats, organism.GetMeasureBiases());
                 var chosenCoordinate = this.HabitatLocations[chosenHabitat];
                 
                 // var intendedDestination = neighbourhoodEnvironmentMeasurements[chosenMeasurement];
@@ -196,12 +196,8 @@
 
         protected virtual Organism ChooseOrganism(List<Organism> organisms)
         {
-            var organismMeasurements = organisms.ToDictionary(
-                organism => organism, 
-                organism => organism.GetMeasurement());
-
-            var chosenOrganism = DecisionLogic.MakeDecision(organismMeasurements, this.GetMeasureBiases());
-            return chosenOrganism;
+            // this is in a virtual method so the mock ecosystem can override for testing
+            return DecisionLogic.MakeDecision(organisms, this.GetMeasureBiases());
         }
 
         private void MoveOrganism(Organism organism, Coordinates destination)
@@ -250,9 +246,9 @@
             this.Habitats[location.X, location.Y].Environment.DecreasePheromoneLevel(levelDecrease);
         }
 
-        private Dictionary<Habitat, Measurement> GetNeighbourhoodEnvironmentMeasurements(Coordinates location)
+        private List<Habitat> GetNeighbouringHabitats(Coordinates location)
         {
-            var neighbourhoodMeasurements = new Dictionary<Habitat, Measurement>();
+            var neighbourhoodMeasurements = new List<Habitat>();
             for (var x = location.X - 1; x <= location.X + 1; x++)
             {
                 // do not carry on if x is out-of-bounds
@@ -272,7 +268,7 @@
                     var currentHabitat = this.Habitats[x, y];
                     if (!currentHabitat.ContainsImpassable())
                     {
-                        neighbourhoodMeasurements.Add(currentHabitat, this.GetEnvironmentMeasurement(currentHabitat));
+                        neighbourhoodMeasurements.Add(currentHabitat);
                     }
                 }
             }

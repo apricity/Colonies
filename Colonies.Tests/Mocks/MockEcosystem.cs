@@ -8,17 +8,17 @@
 
     public class MockEcosystem : Ecosystem
     {
-        private Dictionary<Organism, Coordinates> OverriddenChosenLocations { get; set; }
+        private Dictionary<Organism, Habitat> OverriddenChosenHabitats { get; set; }
 
-        public MockEcosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismLocations, Dictionary<Organism, Coordinates> overridenChosenLocations)
-            : base(habitats, organismLocations)
+        public MockEcosystem(Habitat[,] habitats, Dictionary<Organism, Habitat> organismHabitats, Dictionary<Organism, Habitat> overriddenChosenHabitats)
+            : base(habitats, organismHabitats)
         {
-            this.OverriddenChosenLocations = overridenChosenLocations;
+            this.OverriddenChosenHabitats = overriddenChosenHabitats;
         }
 
-        protected override Dictionary<Organism, Coordinates> GetIntendedOrganismDestinations()
+        protected override Dictionary<Organism, Habitat> GetIntendedOrganismDestinations()
         {
-            return this.OverriddenChosenLocations;
+            return this.OverriddenChosenHabitats;
         }
 
         protected override Organism DecideOrganism(List<Organism> organisms)

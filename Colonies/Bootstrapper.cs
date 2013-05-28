@@ -59,7 +59,7 @@
                 }
             }
 
-            var ecosystem = new Ecosystem(habitats, new Dictionary<Organism, Coordinates>());
+            var ecosystem = new Ecosystem(habitats, new Dictionary<Organism, Habitat>());
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);

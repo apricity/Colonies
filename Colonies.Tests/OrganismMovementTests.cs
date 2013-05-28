@@ -15,7 +15,7 @@
     {
         private Habitat[,] habitats;
         private Dictionary<string, Organism> organisms;
-        private Dictionary<int, Coordinates> locations;
+        private Dictionary<Habitat, Coordinates> habitatCoordinates;
 
         [SetUp]
         public void SetupTest()
@@ -32,10 +32,13 @@
                 this.organisms.Add(organismIdentifier, new Organism(organismIdentifier, Color.Black, false));
             }
 
-            this.locations = new Dictionary<int, Coordinates>();
-            for (var i = 0; i < 10; i++)
+            this.habitatCoordinates = new Dictionary<Habitat, Coordinates>();
+            for (var i = 0; i < this.habitats.GetLength(0); i++)
             {
-                this.locations.Add(i, new Coordinates(i, 0));
+                for (var j = 0; j < this.habitats.GetLength(1); j++)
+                {
+                    this.habitatCoordinates.Add(this.habitats[i, j], new Coordinates(i, j));
+                }
             }
         }
 
@@ -47,25 +50,25 @@
              * no conflict, both organisms should move where they chose to go
              * result of test:                          |_A_|___|___|___|_B_|___|___|___|___|___| */
 
-            var organismLocations = new Dictionary<Organism, Coordinates>
+            var organismHabitats = new Dictionary<Organism, Habitat>
                                         {
-                                            { this.organisms["A"], this.locations[1] },
-                                            { this.organisms["B"], this.locations[3] }
+                                            { this.organisms["A"], this.habitats[1, 0] },
+                                            { this.organisms["B"], this.habitats[3, 0] }
                                         };
 
-            var organismIntendedDestinations = new Dictionary<Organism, Coordinates>
+            var organismIntendedDestinations = new Dictionary<Organism, Habitat>
                                         {
-                                            { this.organisms["A"], this.locations[0] },
-                                            { this.organisms["B"], this.locations[4] }
+                                            { this.organisms["A"], this.habitats[0, 0] },
+                                            { this.organisms["B"], this.habitats[4, 0] }
                                         };
 
             var expectedOrganismDestinations = organismIntendedDestinations.ToDictionary(
                     intendedDestination => intendedDestination.Key, 
                     intendedDestination => intendedDestination.Value);
 
-            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations, organismIntendedDestinations);
+            var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
-            var expectedCoordinates = expectedOrganismDestinations.Values.ToList();
+            var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
             var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
             Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
         }
@@ -79,16 +82,16 @@
              * (therefore, when A wants to move left and B wants to move right, A will win)
              * result of test:                          |___|_B_|_A_|___|___|___|___|___|___|___| */
 
-            var organismLocations = new Dictionary<Organism, Coordinates>
+            var organismHabitats = new Dictionary<Organism, Habitat>
                                         {
-                                            { this.organisms["A"], this.locations[3] },
-                                            { this.organisms["B"], this.locations[1] }
+                                            { this.organisms["A"], this.habitats[3, 0] },
+                                            { this.organisms["B"], this.habitats[1, 0] }
                                         };
 
-            var organismIntendedDestinations = new Dictionary<Organism, Coordinates>
+            var organismIntendedDestinations = new Dictionary<Organism, Habitat>
                                         {
-                                            { this.organisms["A"], this.locations[2] },
-                                            { this.organisms["B"], this.locations[2] }
+                                            { this.organisms["A"], this.habitats[2, 0] },
+                                            { this.organisms["B"], this.habitats[2, 0] }
                                         };
 
             var expectedOrganismDestinations = organismIntendedDestinations.ToDictionary(
@@ -96,11 +99,11 @@
                     intendedDestination => intendedDestination.Value);
 
             // expect B to not have moved
-            expectedOrganismDestinations[this.organisms["B"]] = organismLocations[this.organisms["B"]];
+            expectedOrganismDestinations[this.organisms["B"]] = organismHabitats[this.organisms["B"]];
 
-            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations, organismIntendedDestinations);
+            var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
-            var expectedCoordinates = expectedOrganismDestinations.Values.ToList();
+            var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
             var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
             Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
         }
@@ -116,20 +119,20 @@
              * (therefore, when Y wants to move right and Z wants to move left, Y will win)
              * result of test:                          |___|_B_|_A_|___|___|___|___|_Y_|_Z_|___| */
 
-            var organismLocations = new Dictionary<Organism, Coordinates>
+            var organismHabitats = new Dictionary<Organism, Habitat>
                                         {
-                                            { this.organisms["A"], this.locations[3] },
-                                            { this.organisms["B"], this.locations[1] },
-                                            { this.organisms["Y"], this.locations[6] },
-                                            { this.organisms["Z"], this.locations[0] }
+                                            { this.organisms["A"], this.habitats[3, 0] },
+                                            { this.organisms["B"], this.habitats[1, 0] },
+                                            { this.organisms["Y"], this.habitats[6, 0] },
+                                            { this.organisms["Z"], this.habitats[0, 0] }
                                         };
 
-            var organismIntendedDestinations = new Dictionary<Organism, Coordinates>
+            var organismIntendedDestinations = new Dictionary<Organism, Habitat>
                                         {
-                                            { this.organisms["A"], this.locations[2] },
-                                            { this.organisms["B"], this.locations[2] },
-                                            { this.organisms["Y"], this.locations[7] },
-                                            { this.organisms["Z"], this.locations[7] }
+                                            { this.organisms["A"], this.habitats[2, 0] },
+                                            { this.organisms["B"], this.habitats[2, 0] },
+                                            { this.organisms["Y"], this.habitats[7, 0] },
+                                            { this.organisms["Z"], this.habitats[7, 0] }
                                         };
 
             var expectedOrganismDestinations = organismIntendedDestinations.ToDictionary(
@@ -137,12 +140,12 @@
                     intendedDestination => intendedDestination.Value);
 
             // expect B, Z to not have moved
-            expectedOrganismDestinations[this.organisms["B"]] = organismLocations[this.organisms["B"]];
-            expectedOrganismDestinations[this.organisms["Z"]] = organismLocations[this.organisms["Z"]];
+            expectedOrganismDestinations[this.organisms["B"]] = organismHabitats[this.organisms["B"]];
+            expectedOrganismDestinations[this.organisms["Z"]] = organismHabitats[this.organisms["Z"]];
 
-            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations, organismIntendedDestinations);
+            var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
-            var expectedCoordinates = expectedOrganismDestinations.Values.ToList();
+            var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
             var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
             Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
         }
@@ -155,29 +158,29 @@
              * all organisms are moving in convoy to the right, and each will be able to go to their desired destination
              * result of test:                          |___|_A_|_B_|_C_|_D_|___|___|___|___|___| */
 
-            var organismLocations = new Dictionary<Organism, Coordinates>
+            var organismHabitats = new Dictionary<Organism, Habitat>
                                         {
-                                            { this.organisms["A"], this.locations[0] },
-                                            { this.organisms["B"], this.locations[1] },
-                                            { this.organisms["C"], this.locations[2] },
-                                            { this.organisms["D"], this.locations[3] }
+                                            { this.organisms["A"], this.habitats[0, 0] },
+                                            { this.organisms["B"], this.habitats[1, 0] },
+                                            { this.organisms["C"], this.habitats[2, 0] },
+                                            { this.organisms["D"], this.habitats[3, 0] }
                                         };
 
-            var organismIntendedDestinations = new Dictionary<Organism, Coordinates>
+            var organismIntendedDestinations = new Dictionary<Organism, Habitat>
                                         {
-                                            { this.organisms["A"], this.locations[1] },
-                                            { this.organisms["B"], this.locations[2] },
-                                            { this.organisms["C"], this.locations[3] },
-                                            { this.organisms["D"], this.locations[4] }
+                                            { this.organisms["A"], this.habitats[1, 0] },
+                                            { this.organisms["B"], this.habitats[2, 0] },
+                                            { this.organisms["C"], this.habitats[3, 0] },
+                                            { this.organisms["D"], this.habitats[4, 0] }
                                         };
 
             var expectedOrganismDestinations = organismIntendedDestinations.ToDictionary(
                     intendedDestination => intendedDestination.Key,
                     intendedDestination => intendedDestination.Value);
 
-            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations, organismIntendedDestinations);
+            var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
-            var expectedCoordinates = expectedOrganismDestinations.Values.ToList();
+            var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
             var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
             Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
         }
@@ -191,37 +194,37 @@
              * all organisms are moving in convoy to the right, and each will be able to go to their desired destination
              * result of test:                          |___|_A_|_B_|_C_|_D_|___|_W_|_X_|_Y_|_Z_| */
 
-            var organismLocations = new Dictionary<Organism, Coordinates>
+            var organismHabitats = new Dictionary<Organism, Habitat>
                                         {
-                                            { this.organisms["A"], this.locations[0] },
-                                            { this.organisms["B"], this.locations[1] },
-                                            { this.organisms["C"], this.locations[2] },
-                                            { this.organisms["D"], this.locations[3] },
-                                            { this.organisms["W"], this.locations[5] },
-                                            { this.organisms["X"], this.locations[6] },
-                                            { this.organisms["Y"], this.locations[7] },
-                                            { this.organisms["Z"], this.locations[8] }
+                                            { this.organisms["A"], this.habitats[0, 0] },
+                                            { this.organisms["B"], this.habitats[1, 0] },
+                                            { this.organisms["C"], this.habitats[2, 0] },
+                                            { this.organisms["D"], this.habitats[3, 0] },
+                                            { this.organisms["W"], this.habitats[5, 0] },
+                                            { this.organisms["X"], this.habitats[6, 0] },
+                                            { this.organisms["Y"], this.habitats[7, 0] },
+                                            { this.organisms["Z"], this.habitats[8, 0] }
                                         };
 
-            var organismIntendedDestinations = new Dictionary<Organism, Coordinates>
+            var organismIntendedDestinations = new Dictionary<Organism, Habitat>
                                         {
-                                            { this.organisms["A"], this.locations[1] },
-                                            { this.organisms["B"], this.locations[2] },
-                                            { this.organisms["C"], this.locations[3] },
-                                            { this.organisms["D"], this.locations[4] },
-                                            { this.organisms["W"], this.locations[6] },
-                                            { this.organisms["X"], this.locations[7] },
-                                            { this.organisms["Y"], this.locations[8] },
-                                            { this.organisms["Z"], this.locations[9] }
+                                            { this.organisms["A"], this.habitats[1, 0] },
+                                            { this.organisms["B"], this.habitats[2, 0] },
+                                            { this.organisms["C"], this.habitats[3, 0] },
+                                            { this.organisms["D"], this.habitats[4, 0] },
+                                            { this.organisms["W"], this.habitats[6, 0] },
+                                            { this.organisms["X"], this.habitats[7, 0] },
+                                            { this.organisms["Y"], this.habitats[8, 0] },
+                                            { this.organisms["Z"], this.habitats[9, 0] }
                                         };
 
             var expectedOrganismDestinations = organismIntendedDestinations.ToDictionary(
                     intendedDestination => intendedDestination.Key,
                     intendedDestination => intendedDestination.Value);
 
-            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations, organismIntendedDestinations);
+            var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
-            var expectedCoordinates = expectedOrganismDestinations.Values.ToList();
+            var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
             var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
             Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
         }
@@ -236,20 +239,20 @@
              * A is trailing B, and will be able to move when B wins the vacant destination
              * result of test:                          |___|_A_|_B_|_C_|_D_|___|___|___|___|___| */
 
-            var organismLocations = new Dictionary<Organism, Coordinates>
+            var organismHabitats = new Dictionary<Organism, Habitat>
                                         {
-                                            { this.organisms["A"], this.locations[0] },
-                                            { this.organisms["B"], this.locations[1] },
-                                            { this.organisms["C"], this.locations[3] },
-                                            { this.organisms["D"], this.locations[4] }
+                                            { this.organisms["A"], this.habitats[0, 0] },
+                                            { this.organisms["B"], this.habitats[1, 0] },
+                                            { this.organisms["C"], this.habitats[3, 0] },
+                                            { this.organisms["D"], this.habitats[4, 0] }
                                         };
 
-            var organismIntendedDestinations = new Dictionary<Organism, Coordinates>
+            var organismIntendedDestinations = new Dictionary<Organism, Habitat>
                                         {
-                                            { this.organisms["A"], this.locations[1] },
-                                            { this.organisms["B"], this.locations[2] },
-                                            { this.organisms["C"], this.locations[2] },
-                                            { this.organisms["D"], this.locations[3] }
+                                            { this.organisms["A"], this.habitats[1, 0] },
+                                            { this.organisms["B"], this.habitats[2, 0] },
+                                            { this.organisms["C"], this.habitats[2, 0] },
+                                            { this.organisms["D"], this.habitats[3, 0] }
                                         };
 
             var expectedOrganismDestinations = organismIntendedDestinations.ToDictionary(
@@ -257,12 +260,12 @@
                     intendedDestination => intendedDestination.Value);
 
             // expect C, D to not have moved
-            expectedOrganismDestinations[this.organisms["C"]] = organismLocations[this.organisms["C"]];
-            expectedOrganismDestinations[this.organisms["D"]] = organismLocations[this.organisms["D"]];
+            expectedOrganismDestinations[this.organisms["C"]] = organismHabitats[this.organisms["C"]];
+            expectedOrganismDestinations[this.organisms["D"]] = organismHabitats[this.organisms["D"]];
 
-            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations, organismIntendedDestinations);
+            var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
-            var expectedCoordinates = expectedOrganismDestinations.Values.ToList();
+            var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
             var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
             Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
         }
@@ -280,28 +283,28 @@
              * Z is trailing W, and will be able to move when W wins the vacant destination 
              * result of test:                          |___|_A_|_B_|_C_|_D_|_X_|_Y_|_W_|_Z_|___| */
 
-            var organismLocations = new Dictionary<Organism, Coordinates>
+            var organismHabitats = new Dictionary<Organism, Habitat>
                                         {
-                                            { this.organisms["A"], this.locations[0] },
-                                            { this.organisms["B"], this.locations[1] },
-                                            { this.organisms["C"], this.locations[3] },
-                                            { this.organisms["D"], this.locations[4] },
-                                            { this.organisms["W"], this.locations[8] },
-                                            { this.organisms["X"], this.locations[5] },
-                                            { this.organisms["Y"], this.locations[6] },
-                                            { this.organisms["Z"], this.locations[9] }
+                                            { this.organisms["A"], this.habitats[0, 0] },
+                                            { this.organisms["B"], this.habitats[1, 0] },
+                                            { this.organisms["C"], this.habitats[3, 0] },
+                                            { this.organisms["D"], this.habitats[4, 0] },
+                                            { this.organisms["W"], this.habitats[8, 0] },
+                                            { this.organisms["X"], this.habitats[5, 0] },
+                                            { this.organisms["Y"], this.habitats[6, 0] },
+                                            { this.organisms["Z"], this.habitats[9, 0] }
                                         };
 
-            var organismIntendedDestinations = new Dictionary<Organism, Coordinates>
+            var organismIntendedDestinations = new Dictionary<Organism, Habitat>
                                         {
-                                            { this.organisms["A"], this.locations[1] },
-                                            { this.organisms["B"], this.locations[2] },
-                                            { this.organisms["C"], this.locations[2] },
-                                            { this.organisms["D"], this.locations[3] },
-                                            { this.organisms["W"], this.locations[7] },
-                                            { this.organisms["X"], this.locations[6] },
-                                            { this.organisms["Y"], this.locations[7] },
-                                            { this.organisms["Z"], this.locations[8] }
+                                            { this.organisms["A"], this.habitats[1, 0] },
+                                            { this.organisms["B"], this.habitats[2, 0] },
+                                            { this.organisms["C"], this.habitats[2, 0] },
+                                            { this.organisms["D"], this.habitats[3, 0] },
+                                            { this.organisms["W"], this.habitats[7, 0] },
+                                            { this.organisms["X"], this.habitats[6, 0] },
+                                            { this.organisms["Y"], this.habitats[7, 0] },
+                                            { this.organisms["Z"], this.habitats[8, 0] }
                                         };
 
             var expectedOrganismDestinations = organismIntendedDestinations.ToDictionary(
@@ -309,14 +312,14 @@
                     intendedDestination => intendedDestination.Value);
 
             // expect C, D, X, Y to not have moved
-            expectedOrganismDestinations[this.organisms["C"]] = organismLocations[this.organisms["C"]];
-            expectedOrganismDestinations[this.organisms["D"]] = organismLocations[this.organisms["D"]];
-            expectedOrganismDestinations[this.organisms["X"]] = organismLocations[this.organisms["X"]];
-            expectedOrganismDestinations[this.organisms["Y"]] = organismLocations[this.organisms["Y"]];
+            expectedOrganismDestinations[this.organisms["C"]] = organismHabitats[this.organisms["C"]];
+            expectedOrganismDestinations[this.organisms["D"]] = organismHabitats[this.organisms["D"]];
+            expectedOrganismDestinations[this.organisms["X"]] = organismHabitats[this.organisms["X"]];
+            expectedOrganismDestinations[this.organisms["Y"]] = organismHabitats[this.organisms["Y"]];
 
-            var updateSummary = this.CreateAndUpdateEcosystem(organismLocations, organismIntendedDestinations);
+            var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
-            var expectedCoordinates = expectedOrganismDestinations.Values.ToList();
+            var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
             var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
             Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
         }
@@ -336,17 +339,17 @@
             return habitats;
         }
 
-        private UpdateSummary CreateAndUpdateEcosystem(Dictionary<Organism, Coordinates> organismLocations, Dictionary<Organism, Coordinates> organismIntendedDestinations)
+        private UpdateSummary CreateAndUpdateEcosystem(Dictionary<Organism, Habitat> organismHabitats, Dictionary<Organism, Habitat> organismIntendedDestinations)
         {
-            foreach (var organismLocation in organismLocations)
+            foreach (var organismHabitat in organismHabitats)
             {
-                var organism = organismLocation.Key;
-                var location = organismLocation.Value;
+                var organism = organismHabitat.Key;
+                var habitat = organismHabitat.Value;
 
-                this.habitats[location.X, location.Y].AddOrganism(organism);
+                habitat.AddOrganism(organism);
             }
 
-            var mockEcosystem = new MockEcosystem(this.habitats, organismLocations, organismIntendedDestinations);
+            var mockEcosystem = new MockEcosystem(this.habitats, organismHabitats, organismIntendedDestinations);
             return mockEcosystem.Update();
         }
     }

@@ -40,6 +40,7 @@
 
                 // TODO: not all previous environments will need updated
                 // TODO: as some organisms might not be depositing pheromones
+                // TODO: although... this will only update environments that an organism was on..?  need to update any that have decreased pheromone level... (quite a lot)
                 this.HabitatViewModels[x][y].RefreshEnvironmentViewModel();
                 this.HabitatViewModels[x][y].RefreshOrganismViewModel();
             }

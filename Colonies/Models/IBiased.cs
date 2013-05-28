@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace Colonies.Models
+﻿namespace Colonies.Models
 {
+    using System.Collections.Generic;
+
     public interface IBiased
     {
         Dictionary<Measure, double> GetMeasureBiases();

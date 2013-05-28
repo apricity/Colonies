@@ -13,22 +13,6 @@
         public Dictionary<Habitat, Coordinates> HabitatLocations { get; private set; } 
         public double HealthBias { get; private set; }
 
-        public int Width
-        {
-            get
-            {
-                return this.Habitats.GetLength(0);
-            }
-        }
-
-        public int Height
-        {
-            get
-            {
-                return this.Habitats.GetLength(1);
-            }
-        }
-
         public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Coordinates> organismLocations)
         {
             this.Habitats = habitats;
@@ -43,6 +27,22 @@
                 {
                     this.HabitatLocations.Add(this.Habitats[i, j], new Coordinates(i, j));
                 }
+            }
+        }
+
+        public int Width
+        {
+            get
+            {
+                return this.Habitats.GetLength(0);
+            }
+        }
+
+        public int Height
+        {
+            get
+            {
+                return this.Habitats.GetLength(1);
             }
         }
 
@@ -85,10 +85,7 @@
         {
             foreach (var habitat in this.Habitats)
             {
-                if (habitat.Environment.Pheromone.Level > 0)
-                {
-                    habitat.Environment.DecreasePheromoneLevel(0.001);
-                }
+                habitat.Environment.DecreasePheromoneLevel(0.001);
             }
         }
 
@@ -97,13 +94,7 @@
             foreach (var organismLocation in this.OrganismLocations.ToList())
             {
                 var organism = organismLocation.Key;
-
-                // reduce the organism's health / check if it is dead
                 organism.DecreaseHealth(0.01);
-                if (organism.Health.Level.Equals(0))
-                {
-                    // it is dead!
-                }
             }
         }
 
@@ -122,7 +113,6 @@
                 var chosenHabitat = DecisionLogic.MakeDecision(neighbouringHabitats, organism.GetMeasureBiases());
                 var chosenCoordinate = this.HabitatLocations[chosenHabitat];
                 
-                // var intendedDestination = neighbourhoodEnvironmentMeasurements[chosenMeasurement];
                 intendedOrganismDestinations.Add(organism, chosenCoordinate);
             }
 
@@ -131,10 +121,15 @@
 
         private Dictionary<Organism, Coordinates> ResolveOrganismDestinations(Dictionary<Organism, Coordinates> intendedOrganismDestinations, IEnumerable<Organism> alreadyResolvedOrganisms)
         {
+            var resolvedOrganismDestinations = new Dictionary<Organism, Coordinates>();
+
+            // create a copy of the organism locations because we don't want to modify the actual set
             var currentOrganismLocations = this.OrganismLocations.ToDictionary(
                 organismLocation => organismLocation.Key,
                 organismLocation => organismLocation.Value);
 
+            // remove organisms that have been resolved (from previous iterations)
+            // as they no longer need to be processed
             foreach (var alreadyResolvedOrganism in alreadyResolvedOrganisms)
             {
                 currentOrganismLocations.Remove(alreadyResolvedOrganism);
@@ -142,10 +137,9 @@
 
             var currentLocations = currentOrganismLocations.Values.ToList();
             var intendedDestinations = intendedOrganismDestinations.Values.ToList();
-            var resolvedOrganismDestinations = new Dictionary<Organism, Coordinates>();
 
             // if there are no vacant destinations, this is our base case
-            // return an empty list - none of the intended movements will become real movements
+            // return an empty list - i.e. no organism can move to its intended destination
             var vacantDestinations = intendedDestinations.Except(currentLocations).ToList();
             if (vacantDestinations.Count == 0)
             {
@@ -164,10 +158,10 @@
                 Organism organismToMove;
                 if (conflictingOrganisms.Count > 1)
                 {
-                    organismToMove = this.ChooseOrganism(conflictingOrganisms);
-
-                    // losers now intend to move nowhere
+                    organismToMove = this.DecideOrganism(conflictingOrganisms);
                     conflictingOrganisms.Remove(organismToMove);
+
+                    // the remaining conflicting organisms cannot move, so reset their intended destinations
                     foreach (var remainingOrganism in conflictingOrganisms)
                     {
                         intendedOrganismDestinations[remainingOrganism] = this.OrganismLocations[remainingOrganism];
@@ -178,14 +172,15 @@
                     organismToMove = conflictingOrganisms.Single();
                 }
                 
-                // intended movement becomes an actual movement
+                // intended movement becomes an actual, resolved movement
                 resolvedOrganismDestinations.Add(organismToMove, intendedOrganismDestinations[organismToMove]);
                 intendedOrganismDestinations.Remove(organismToMove);
             }
 
             // need to recursively call resolve organism destinations with the knowledge of what has been resolved so far
             // so those resolved can be taken into consideration when calculating which destinations are now vacant
-            var trailingOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations, resolvedOrganismDestinations.Keys.ToList());
+            var resolvedOrganisms = resolvedOrganismDestinations.Keys.ToList();
+            var trailingOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations, resolvedOrganisms);
             foreach (var trailingOrganismDestination in trailingOrganismDestinations)
             {
                 resolvedOrganismDestinations.Add(trailingOrganismDestination.Key, trailingOrganismDestination.Value);
@@ -194,7 +189,7 @@
             return resolvedOrganismDestinations;
         }
 
-        protected virtual Organism ChooseOrganism(List<Organism> organisms)
+        protected virtual Organism DecideOrganism(List<Organism> organisms)
         {
             // this is in a virtual method so the mock ecosystem can override for testing
             return DecisionLogic.MakeDecision(organisms, this.GetMeasureBiases());
@@ -203,19 +198,22 @@
         private void MoveOrganism(Organism organism, Coordinates destination)
         {           
             var source = this.OrganismLocations[organism];
-
             if (organism.IsDepositingPheromones)
             {
                 this.Habitats[source.X, source.Y].Environment.IncreasePheromoneLevel(0.01);
             }
 
             // the organism can only move to the destination if it does not already contain an organism
-            if (!this.Habitats[destination.X, destination.Y].ContainsOrganism())
+            if (this.Habitats[destination.X, destination.Y].ContainsOrganism())
             {
-                this.Habitats[source.X, source.Y].RemoveOrganism();
-                this.Habitats[destination.X, destination.Y].AddOrganism(organism);
-                this.OrganismLocations[organism] = destination;
+                throw new InvalidOperationException(
+                    string.Format("Cannot move organism {0} to {1} because the destination is occupied by {2}",
+                                  organism, destination, this.Habitats[destination.X, destination.Y].Organism));
             }
+
+            this.Habitats[source.X, source.Y].RemoveOrganism();
+            this.Habitats[destination.X, destination.Y].AddOrganism(organism);
+            this.OrganismLocations[organism] = destination;
         }
 
         public void AddOrganism(Organism organism, Coordinates location)
@@ -236,19 +234,10 @@
             this.Habitats[location.X, location.Y].Environment.SetTerrain(terrain);
         }
 
-        public void IncreasePheromoneLevel(Coordinates location, double levelIncrease)
-        {
-            this.Habitats[location.X, location.Y].Environment.IncreasePheromoneLevel(levelIncrease);
-        }
-
-        public void DecreasePheromoneLevel(Coordinates location, double levelDecrease)
-        {
-            this.Habitats[location.X, location.Y].Environment.DecreasePheromoneLevel(levelDecrease);
-        }
 
         private List<Habitat> GetNeighbouringHabitats(Coordinates location)
         {
-            var neighbourhoodMeasurements = new List<Habitat>();
+            var neighbouringHabitats = new List<Habitat>();
             for (var x = location.X - 1; x <= location.X + 1; x++)
             {
                 // do not carry on if x is out-of-bounds
@@ -268,17 +257,12 @@
                     var currentHabitat = this.Habitats[x, y];
                     if (!currentHabitat.ContainsImpassable())
                     {
-                        neighbourhoodMeasurements.Add(currentHabitat);
+                        neighbouringHabitats.Add(currentHabitat);
                     }
                 }
             }
 
-            return neighbourhoodMeasurements;
-        }
-
-        private Measurement GetEnvironmentMeasurement(Habitat location)
-        {
-            return location.GetEnvironmentMeasurement();
+            return neighbouringHabitats;
         }
 
         public Dictionary<Measure, double> GetMeasureBiases()

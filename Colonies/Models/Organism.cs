@@ -51,7 +51,7 @@
 
         public override string ToString()
         {
-            return string.Format("{0}-{1} {2}", this.Name, this.Health.Level * 100, this.Color);
+            return string.Format("{0}: {1} {2}", this.Name, this.Health, this.Color);
         }
     }
 }

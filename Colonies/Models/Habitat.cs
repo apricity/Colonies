@@ -1,7 +1,6 @@
 ﻿namespace Colonies.Models
 {
     using System;
-    using System.Collections.Generic;
 
     public sealed class Habitat : IMeasurable
     {
@@ -34,15 +33,10 @@
             return this.Environment.Terrain == Terrain.Impassable;
         }
 
-        public Measurement GetEnvironmentMeasurement()
-        {
-            return this.Environment.GetMeasurement();
-        }
-
         public Measurement GetMeasurement()
         {
             // TODO: take into account organisms before return the measure
-            return this.GetEnvironmentMeasurement();
+            return this.Environment.GetMeasurement();
         }
 
         public override String ToString()

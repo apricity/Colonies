@@ -26,6 +26,10 @@
         public void DecreasePheromoneLevel(double levelDecrease)
         {
             this.Pheromone.DecreaseLevel(levelDecrease);
+            if (this.Pheromone.Level < 0)
+            {
+                this.Pheromone.SetLevel(0.0);
+            }
         }
 
         public Measurement GetMeasurement()
@@ -35,7 +39,7 @@
         
         public override string ToString()
         {
-            return string.Format("{0} <Ph:{1}>", this.Terrain.ToString(), this.Pheromone.Level);
+            return string.Format("{0}: {1}", this.Terrain, this.Pheromone);
         }
     }
 }

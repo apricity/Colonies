@@ -21,7 +21,7 @@
             return this.OverriddenChosenLocations;
         }
 
-        protected override Organism ChooseOrganism(List<Organism> organisms)
+        protected override Organism DecideOrganism(List<Organism> organisms)
         {
             return organisms.First();
         }

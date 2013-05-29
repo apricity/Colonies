@@ -14,32 +14,29 @@
     [TestFixture]
     public class RandomDecisionTests
     {
-        private List<TestItem> items;
+        private List<TestMeasurableItem> items;
 
         [SetUp]
         public void SetupTest()
         {
-            this.items = new List<TestItem>();
+            this.items = new List<TestMeasurableItem>();
 
             var itemIdentifiers = new List<string> { "A", "B", "C", "D", "W", "X", "Y", "Z" };
             foreach (var itemIdentifier in itemIdentifiers)
             {
-                this.items.Add(new TestItem(itemIdentifier));
+                this.items.Add(new TestMeasurableItem(itemIdentifier));
             }
         }
 
         [Test]
         public void EqualItems()
         {
-            // there needs to be a bias for each measure (will be applied to all items)
-            // but will have no effect when there is only one measure
-            var measureBiases = new Dictionary<Measure, double> { { Measure.Pheromone, 1.0 } };
-
             // override the random number generator used by the decision logic so it can be manipulated
             var mockRandom = new MockRandom();
             DecisionLogic.SetRandomNumberGenerator(mockRandom);
 
-            var chosenItems = new List<TestItem>();
+            var biasedItem = new TestBiasedItem();
+            var chosenItems = new List<TestMeasurableItem>();
             
             // the numbers generated are distributed evenly based on the number of organisms
             // therefore there should be each organism should be chosen once by the decision logic
@@ -47,7 +44,7 @@
             for (var nextDouble = 0.0; nextDouble < 1.0; nextDouble += increment)
             {
                 mockRandom.SetNextDouble(nextDouble);
-                chosenItems.Add(DecisionLogic.MakeDecision(this.items, measureBiases));
+                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
             }
 
             // expecting each organism to be chosen once, so expecting the same as the original list
@@ -68,17 +65,14 @@
                 this.items[i].SetPheromoneLevel(measurementLevel);
             }
 
-            // there needs to be a bias for each measure (will be applied to all items)
-            // but will have no effect when there is only one measure
-            var measureBiases = new Dictionary<Measure, double> { { Measure.Pheromone, 1.0 } };
-
             // override the random number generator used by the decision logic so it can be manipulated
             // and set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
             var mockRandom = new MockRandom();
             DecisionLogic.SetRandomNumberGenerator(mockRandom);
             DecisionLogic.SetBaseWeighting(0.0);
 
-            var chosenItems = new List<TestItem>();
+            var biasedItem = new TestBiasedItem();
+            var chosenItems = new List<TestMeasurableItem>();
 
             // the numbers generated need to reflect the range of measurement levels in the items
             // if there are 8 items...
@@ -93,17 +87,17 @@
             for (var nextDouble = 0.0; nextDouble < 1.0; nextDouble += increment)
             {
                 mockRandom.SetNextDouble(nextDouble);
-                chosenItems.Add(DecisionLogic.MakeDecision(this.items, measureBiases));
+                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
             }
 
             // expecting each organism to be chosen a number of times proportional to their health
-            var expectedItemCounts = new Dictionary<TestItem, int>();
+            var expectedItemCounts = new Dictionary<TestMeasurableItem, int>();
             for (var i = 0; i < this.items.Count; i++)
             {
                 expectedItemCounts.Add(this.items.ElementAt(i), i + 1);
             }
 
-            var actualItemCounts = new Dictionary<TestItem, int>();
+            var actualItemCounts = new Dictionary<TestMeasurableItem, int>();
             foreach (var item in this.items)
             {
                 var numberOfTimesChosen = chosenItems.Count(chosenItem => chosenItem.Equals(item));
@@ -113,17 +107,22 @@
             Assert.That(actualItemCounts, Is.EqualTo(expectedItemCounts));
         }
 
-        private class TestItem : IMeasurable
+        private class TestMeasurableItem : IMeasurable
         {
             private readonly string identifier;
             private readonly Condition pheromoneCondition;
             private readonly Condition healthCondition;
 
-            public TestItem(string identifier)
+            public TestMeasurableItem(string identifier)
             {
                 this.identifier = identifier;
                 this.pheromoneCondition = new Condition(Measure.Pheromone, 1.0);
                 this.healthCondition = new Condition(Measure.Health, 1.0);
+            }
+
+            public void SetPheromoneLevel(double pheromoneLevel)
+            {
+                this.pheromoneCondition.SetLevel(pheromoneLevel);
             }
 
             public Measurement GetMeasurement()
@@ -132,15 +131,20 @@
                 return new Measurement(new List<Condition> { this.pheromoneCondition });
             }
 
-            public void SetPheromoneLevel(double pheromoneLevel)
-            {
-                this.pheromoneCondition.SetLevel(pheromoneLevel);
-            }
-
             public override string ToString()
             {
                 return this.identifier;
             }
+        }
+
+        private class TestBiasedItem : IBiased
+        {
+            public Dictionary<Measure, double> GetMeasureBiases()
+            {
+                // there needs to be a bias for each measure (will be applied to all items)
+                // but will have no effect when there is only one measure
+                return new Dictionary<Measure, double> { { Measure.Pheromone, 1.0 } };
+            } 
         }
     }
 }

@@ -12,9 +12,9 @@
         private static Random random = new Random();
         private static double baseWeighting = 1.0;
 
-        public static T MakeDecision<T>(List<T> measurableItems, Dictionary<Measure, double> biases) where T : IMeasurable
+        public static T MakeDecision<T>(List<T> measurableItems, IBiased biasProvider) where T : IMeasurable
         {
-            var weightedMeasuredItems = WeightMeasuredItems(measurableItems, biases);
+            var weightedMeasuredItems = WeightMeasuredItems(measurableItems, biasProvider);
             var chosenItem = ChooseRandomItem(weightedMeasuredItems);
 
             if (chosenItem == null)
@@ -25,12 +25,14 @@
             return chosenItem;
         }
 
-        private static Dictionary<T, double> WeightMeasuredItems<T>(List<T> measurableItems, Dictionary<Measure, double> biases) where T : IMeasurable
+        private static Dictionary<T, double> WeightMeasuredItems<T>(List<T> measurableItems, IBiased biasProvider) where T : IMeasurable
         {
             var weightedMeasurableItems = new Dictionary<T, double>();
 
+            var biases = biasProvider.GetMeasureBiases();
             foreach (var measurableItem in measurableItems)
             {
+                // TODO: easy for a bug to occur if bias does not contain a measure in the measurable items
                 // each measurement initially has a base weighting (the greater it is, the less effect the measurement level and bias have)
                 // add further weighting according to strength of measurement with bias applied
                 var measurement = measurableItem.GetMeasurement();

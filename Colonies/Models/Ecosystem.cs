@@ -109,7 +109,7 @@
                 var neighbouringHabitats = this.GetNeighbouringHabitats(habitat);
 
                 // determine organism's intentions based on the measurements
-                var chosenHabitat = DecisionLogic.MakeDecision(neighbouringHabitats, organism.GetMeasureBiases());
+                var chosenHabitat = DecisionLogic.MakeDecision(neighbouringHabitats, organism);
                 intendedOrganismDestinations.Add(organism, chosenHabitat);
             }
 
@@ -189,7 +189,7 @@
         protected virtual Organism DecideOrganism(List<Organism> organisms)
         {
             // this is in a virtual method so the mock ecosystem can override for testing
-            return DecisionLogic.MakeDecision(organisms, this.GetMeasureBiases());
+            return DecisionLogic.MakeDecision(organisms, this);
         }
 
         private void MoveOrganism(Organism organism, Habitat destination)
@@ -216,11 +216,6 @@
         public void AddOrganism(Organism organism, Coordinates location)
         {
             var habitat = this.Habitats[location.X, location.Y];
-            this.AddOrganism(organism, habitat);
-        }
-
-        public void AddOrganism(Organism organism, Habitat habitat)
-        {
             habitat.AddOrganism(organism);
             this.OrganismHabitats.Add(organism, habitat);
         }

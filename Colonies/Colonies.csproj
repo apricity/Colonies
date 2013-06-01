@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MahApps.Metro, Version=0.11.0.12, Culture=neutral, processorArchitecture=MSIL">
@@ -173,7 +173,6 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="ExternalDependencies\Microsoft.Practices.Prism.dll" />
-    <Resource Include="Icon.ico" />
     <Resource Include="Resources\Icon.ico" />
     <Resource Include="Resources\Icon.png" />
     <Resource Include="Resources\Entypo-license.txt" />

@@ -1,5 +1,7 @@
-﻿namespace Colonies.Models
+﻿namespace Wacton.Colonies.Interfaces
 {
+    using Wacton.Colonies.Models;
+
     public interface IMeasurable
     {
         Measurement GetMeasurement();

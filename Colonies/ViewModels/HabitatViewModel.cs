@@ -1,8 +1,8 @@
-﻿namespace Colonies.ViewModels
+﻿namespace Wacton.Colonies.ViewModels
 {
-    using Colonies.Models;
-
     using Microsoft.Practices.Prism.Events;
+
+    using Wacton.Colonies.Models;
 
     public sealed class HabitatViewModel : ViewModelBase<Habitat>
     {

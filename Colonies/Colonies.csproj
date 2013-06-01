@@ -7,8 +7,8 @@
     <ProjectGuid>{75A3E797-07FE-4E0F-A491-7BD4E3022EA7}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Colonies</RootNamespace>
-    <AssemblyName>Colonies</AssemblyName>
+    <RootNamespace>Wacton.Colonies</RootNamespace>
+    <AssemblyName>Wacton.Colonies</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -78,8 +78,8 @@
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="Logic\DecisionLogic.cs" />
     <Compile Include="Models\Condition.cs" />
-    <Compile Include="Models\IBiased.cs" />
-    <Compile Include="Models\IMeasurable.cs" />
+    <Compile Include="Interfaces\IBiased.cs" />
+    <Compile Include="Interfaces\IMeasurable.cs" />
     <Compile Include="Models\Measurement.cs" />
     <Compile Include="Models\Ecosystem.cs" />
     <Compile Include="Models\Main.cs" />

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-using System;
-using System.ComponentModel;
-
-namespace Colonies.Annotations
+namespace Wacton.Colonies.Properties
 {
-  /// <summary>
+    using System;
+
+    /// <summary>
   /// Indicates that marked element should be localized or not.
   /// </summary>
   /// <example>
@@ -48,7 +47,7 @@ namespace Colonies.Annotations
     /// <param name="required"><c>true</c> if a element should be localized; otherwise, <c>false</c>.</param>
     public LocalizationRequiredAttribute(bool required)
     {
-      Required = required;
+      this.Required = required;
     }
 
     /// <summary>
@@ -67,7 +66,7 @@ namespace Colonies.Annotations
     public override bool Equals(object obj)
     {
       var attribute = obj as LocalizationRequiredAttribute;
-      return attribute != null && attribute.Required == Required;
+      return attribute != null && attribute.Required == this.Required;
     }
 
     /// <summary>
@@ -107,7 +106,7 @@ namespace Colonies.Annotations
     /// <param name="formatParameterName">Specifies which parameter of an annotated method should be treated as format-string</param>
     public StringFormatMethodAttribute(string formatParameterName)
     {
-      FormatParameterName = formatParameterName;
+      this.FormatParameterName = formatParameterName;
     }
 
     /// <summary>
@@ -184,7 +183,7 @@ namespace Colonies.Annotations
     public NotifyPropertyChangedInvocatorAttribute() { }
     public NotifyPropertyChangedInvocatorAttribute(string parameterName)
     {
-      ParameterName = parameterName;
+      this.ParameterName = parameterName;
     }
 
     [UsedImplicitly] public string ParameterName { get; private set; }
@@ -278,8 +277,8 @@ namespace Colonies.Annotations
 
     public ContractAnnotationAttribute([NotNull] string fdt, bool forceFullStates)
     {
-      FDT = fdt;
-      ForceFullStates = forceFullStates;
+      this.FDT = fdt;
+      this.ForceFullStates = forceFullStates;
     }
 
     public string FDT { get; private set; }
@@ -341,7 +340,7 @@ namespace Colonies.Annotations
     /// <param name="baseType">Specifies which types are required</param>
     public BaseTypeRequiredAttribute(Type baseType)
     {
-      BaseTypes = new[] { baseType };
+      this.BaseTypes = new[] { baseType };
     }
 
     /// <summary>
@@ -363,8 +362,8 @@ namespace Colonies.Annotations
     [UsedImplicitly]
     public UsedImplicitlyAttribute(ImplicitUseKindFlags useKindFlags, ImplicitUseTargetFlags targetFlags)
     {
-      UseKindFlags = useKindFlags;
-      TargetFlags = targetFlags;
+      this.UseKindFlags = useKindFlags;
+      this.TargetFlags = targetFlags;
     }
 
     [UsedImplicitly] public UsedImplicitlyAttribute(ImplicitUseKindFlags useKindFlags)
@@ -394,8 +393,8 @@ namespace Colonies.Annotations
     [UsedImplicitly]
     public MeansImplicitUseAttribute(ImplicitUseKindFlags useKindFlags, ImplicitUseTargetFlags targetFlags)
     {
-      UseKindFlags = useKindFlags;
-      TargetFlags = targetFlags;
+      this.UseKindFlags = useKindFlags;
+      this.TargetFlags = targetFlags;
     }
 
     [UsedImplicitly] public MeansImplicitUseAttribute(ImplicitUseKindFlags useKindFlags)
@@ -515,7 +514,7 @@ namespace Colonies.Annotations
     [UsedImplicitly]
     public PathReferenceAttribute([PathReference] string basePath)
     {
-      BasePath = basePath;
+      this.BasePath = basePath;
     }
 
     [UsedImplicitly] public string BasePath { get; private set; }
@@ -538,7 +537,7 @@ namespace Colonies.Annotations
 
     public AspMvcActionAttribute(string anonymousProperty)
     {
-      AnonymousProperty = anonymousProperty;
+      this.AnonymousProperty = anonymousProperty;
     }
   }
 
@@ -556,7 +555,7 @@ namespace Colonies.Annotations
 
     public AspMvcAreaAttribute(string anonymousProperty)
     {
-      AnonymousProperty = anonymousProperty;
+      this.AnonymousProperty = anonymousProperty;
     }
   }
 
@@ -575,7 +574,7 @@ namespace Colonies.Annotations
 
     public AspMvcControllerAttribute(string anonymousProperty)
     {
-      AnonymousProperty = anonymousProperty;
+      this.AnonymousProperty = anonymousProperty;
     }
   }
 

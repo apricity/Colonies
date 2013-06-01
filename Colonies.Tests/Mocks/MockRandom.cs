@@ -1,4 +1,4 @@
-﻿namespace Colonies.Tests.Mocks
+﻿namespace Wacton.Colonies.Tests.Mocks
 {
     using System;
 

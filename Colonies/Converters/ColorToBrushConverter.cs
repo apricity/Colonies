@@ -1,4 +1,4 @@
-﻿namespace Colonies.Converters
+﻿namespace Wacton.Colonies.Converters
 {
     using System;
     using System.Globalization;

@@ -1,4 +1,4 @@
-﻿namespace Colonies.Models
+﻿namespace Wacton.Colonies.Interfaces
 {
     using System.Collections.Generic;
 

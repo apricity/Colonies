@@ -1,10 +1,9 @@
-﻿namespace Colonies.Tests.Mocks
+﻿namespace Wacton.Colonies.Tests.Mocks
 {
     using System.Collections.Generic;
     using System.Linq;
 
-    using Colonies;
-    using Colonies.Models;
+    using Wacton.Colonies.Models;
 
     public class MockEcosystem : Ecosystem
     {

@@ -1,4 +1,4 @@
-﻿namespace Colonies.Events
+﻿namespace Wacton.Colonies.Events
 {
     using Microsoft.Practices.Prism.Events;
 

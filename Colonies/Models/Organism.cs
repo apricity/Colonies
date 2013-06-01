@@ -1,7 +1,9 @@
-﻿namespace Colonies.Models
+﻿namespace Wacton.Colonies.Models
 {
     using System.Collections.Generic;
     using System.Drawing;
+
+    using Wacton.Colonies.Interfaces;
 
     public sealed class Organism : IMeasurable, IBiased
     {

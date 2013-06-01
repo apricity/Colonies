@@ -1,11 +1,10 @@
-﻿namespace Colonies.Logic
+﻿namespace Wacton.Colonies.Logic
 {
     using System;
-
-    using Colonies.Models;
-
     using System.Collections.Generic;
     using System.Linq;
+
+    using Wacton.Colonies.Interfaces;
 
     public static class DecisionLogic
     {

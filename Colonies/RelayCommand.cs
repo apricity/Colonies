@@ -1,7 +1,6 @@
-﻿using System;
-
-namespace Colonies
+﻿namespace Wacton.Colonies
 {
+    using System;
     using System.Windows.Input;
 
     class RelayCommand : ICommand

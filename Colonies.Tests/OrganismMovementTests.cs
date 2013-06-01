@@ -1,14 +1,13 @@
-﻿namespace Colonies.Tests
+﻿namespace Wacton.Colonies.Tests
 {
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
 
-    using Colonies;
-    using Colonies.Models;
-    using Colonies.Tests.Mocks;
-
     using NUnit.Framework;
+
+    using Wacton.Colonies.Models;
+    using Wacton.Colonies.Tests.Mocks;
 
     [TestFixture]
     public class OrganismMovementTests

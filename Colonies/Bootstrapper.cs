@@ -1,14 +1,13 @@
-﻿namespace Colonies
+﻿namespace Wacton.Colonies
 {
     using System.Collections.Generic;
     using System.Drawing;
 
-    using Colonies.Logic;
-    using Colonies.Models;
-    using Colonies.ViewModels;
-    using Colonies.Views;
-
     using Microsoft.Practices.Prism.Events;
+
+    using Wacton.Colonies.Models;
+    using Wacton.Colonies.ViewModels;
+    using Wacton.Colonies.Views;
 
     public class Bootstrapper
     {

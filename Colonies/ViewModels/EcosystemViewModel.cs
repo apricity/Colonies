@@ -1,10 +1,10 @@
-﻿namespace Colonies.ViewModels
+﻿namespace Wacton.Colonies.ViewModels
 {
     using System.Collections.Generic;
 
-    using Colonies.Models;
-
     using Microsoft.Practices.Prism.Events;
+
+    using Wacton.Colonies.Models;
 
     public sealed class EcosystemViewModel : ViewModelBase<Ecosystem>
     {

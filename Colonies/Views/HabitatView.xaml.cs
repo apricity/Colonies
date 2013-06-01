@@ -1,4 +1,4 @@
-﻿namespace Colonies.Views
+﻿namespace Wacton.Colonies.Views
 {
     using System.Windows.Controls;
 

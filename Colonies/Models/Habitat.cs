@@ -1,6 +1,8 @@
-﻿namespace Colonies.Models
+﻿namespace Wacton.Colonies.Models
 {
     using System;
+
+    using Wacton.Colonies.Interfaces;
 
     public sealed class Habitat : IMeasurable
     {

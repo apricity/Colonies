@@ -1,6 +1,8 @@
-﻿namespace Colonies.Models
+﻿namespace Wacton.Colonies.Models
 {
     using System.Collections.Generic;
+
+    using Wacton.Colonies.Interfaces;
 
     public sealed class Environment : IMeasurable
     {

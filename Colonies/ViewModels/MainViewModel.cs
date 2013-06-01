@@ -1,11 +1,11 @@
-﻿namespace Colonies.ViewModels
+﻿namespace Wacton.Colonies.ViewModels
 {
     using System.Threading;
     using System.Windows.Input;
 
-    using Colonies.Models;
-
     using Microsoft.Practices.Prism.Events;
+
+    using Wacton.Colonies.Models;
 
     public sealed class MainViewModel : ViewModelBase<Main>
     {

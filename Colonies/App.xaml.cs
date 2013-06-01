@@ -1,4 +1,4 @@
-﻿namespace Colonies
+﻿namespace Wacton.Colonies
 {
     using System;
     using System.Windows;

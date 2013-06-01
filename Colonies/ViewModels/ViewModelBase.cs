@@ -1,10 +1,10 @@
-﻿namespace Colonies.ViewModels
+﻿namespace Wacton.Colonies.ViewModels
 {
     using System.ComponentModel;
 
-    using Colonies.Annotations;
-
     using Microsoft.Practices.Prism.Events;
+
+    using Wacton.Colonies.Properties;
 
     public abstract class ViewModelBase<T> : INotifyPropertyChanged
     {

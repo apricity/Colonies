@@ -1,4 +1,4 @@
-﻿namespace Colonies
+﻿namespace Wacton.Colonies
 {
     public enum Terrain
     {

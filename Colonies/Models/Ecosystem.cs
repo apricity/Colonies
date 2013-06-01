@@ -1,10 +1,11 @@
-﻿namespace Colonies.Models
+﻿namespace Wacton.Colonies.Models
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    using Colonies.Logic;
+    using Wacton.Colonies.Interfaces;
+    using Wacton.Colonies.Logic;
 
     public class Ecosystem : IBiased
     {

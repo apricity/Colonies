@@ -1,4 +1,4 @@
-﻿namespace Colonies.Models
+﻿namespace Wacton.Colonies.Models
 {
     public class Condition
     {

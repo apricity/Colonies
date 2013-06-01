@@ -28,39 +28,68 @@
         }
 
         [Test]
-        public void EqualItems()
+        public void EqualItemsSingleMeasure()
         {
             // override the random number generator used by the decision logic so it can be manipulated
             var mockRandom = new MockRandom();
             DecisionLogic.SetRandomNumberGenerator(mockRandom);
 
-            var biasedItem = new TestBiasedItem();
+            var biasedItem = new TestBiasedItem(1.0, 0);
             var chosenItems = new List<TestMeasurableItem>();
-            
+
             // the numbers generated are distributed evenly based on the number of organisms
             // therefore there should be each organism should be chosen once by the decision logic
-            var increment = 1.0 / this.items.Count;
-            for (var nextDouble = 0.0; nextDouble < 1.0; nextDouble += increment)
+            var nextDouble = 0.0;
+            for (var i = 0; i < this.items.Count; i++)
             {
                 mockRandom.SetNextDouble(nextDouble);
                 chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                nextDouble += 1.0 / this.items.Count;
             }
 
-            // expecting each organism to be chosen once, so expecting the same as the original list
+            // expecting each item to be chosen once, so expecting the same as the original list
             var expectedItems = this.items;
             var actualItems = chosenItems;
             Assert.That(actualItems, Is.EqualTo(expectedItems));
         }
 
         [Test]
-        public void InequalItems()
+        public void EqualItemsMultipleMeasures()
+        {
+            // override the random number generator used by the decision logic so it can be manipulated
+            var mockRandom = new MockRandom();
+            DecisionLogic.SetRandomNumberGenerator(mockRandom);
+
+            // bias in favour of health 2x more than of pheromone
+            var biasedItem = new TestBiasedItem(1.0, 2.0);
+            var chosenItems = new List<TestMeasurableItem>();
+
+            // the numbers generated are distributed evenly based on the number of organisms
+            // therefore there should be each organism should be chosen once by the decision logic
+            var nextDouble = 0.0;
+            for (var i = 0; i < this.items.Count; i++)
+            {
+                mockRandom.SetNextDouble(nextDouble);
+                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                nextDouble += 1.0 / this.items.Count;
+            }
+
+            // all items are equal, so the bias should not affect the frequency with which they are selected
+            // expecting each item to be chosen once, so expecting the same as the original list
+            var expectedItems = this.items;
+            var actualItems = chosenItems;
+            Assert.That(actualItems, Is.EqualTo(expectedItems));
+        }
+
+        [Test]
+        public void InequalItemsSingleMeasure()
         {
             // all items will only have one measurement but the levels will all be different
             // by an even spread based on how many items there are
-            var measurementLevelChange = 1.0 / this.items.Count;
+            var measurementIncrement = 1.0 / this.items.Count;
             for (var i = 0; i < this.items.Count; i++)
             {
-                var measurementLevel = (i + 1) * measurementLevelChange;
+                var measurementLevel = (i + 1) * measurementIncrement;
                 this.items[i].SetPheromoneLevel(measurementLevel);
             }
 
@@ -70,7 +99,7 @@
             DecisionLogic.SetRandomNumberGenerator(mockRandom);
             DecisionLogic.SetBaseWeighting(0.0);
 
-            var biasedItem = new TestBiasedItem();
+            var biasedItem = new TestBiasedItem(1.0, 0.0);
             var chosenItems = new List<TestMeasurableItem>();
 
             // the numbers generated need to reflect the range of measurement levels in the items
@@ -81,15 +110,16 @@
             // - ...
             // - 1/8 pheromone -> 1 result
             // total number of results: 1 + 2 + 3 + 4 + ... = n(n + 1)/2 [sum of integers from 1 - n]
-            var numberOfResults = this.items.Count() * (this.items.Count() + 1) / 2;
-            var increment = 1.0 / numberOfResults;
-            for (var nextDouble = 0.0; nextDouble < 1.0; nextDouble += increment)
+            var numberOfResults = this.items.Count * (this.items.Count + 1) / 2.0;
+            var nextDouble = 0.0;
+            for (var i = 0; i < numberOfResults; i++)
             {
                 mockRandom.SetNextDouble(nextDouble);
                 chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                nextDouble += 1.0 / numberOfResults;
             }
 
-            // expecting each organism to be chosen a number of times proportional to their health
+            // expecting each organism to be chosen a number of times proportional to the single measurement level used
             var expectedItemCounts = new Dictionary<TestMeasurableItem, int>();
             for (var i = 0; i < this.items.Count; i++)
             {
@@ -104,6 +134,81 @@
             }
 
             Assert.That(actualItemCounts, Is.EqualTo(expectedItemCounts));
+        }
+
+        [Test]
+        public void InequalItemsMultipleBalancingMeasures()
+        {
+            // all items will have two measures, the second being the inverse of the first
+            // this will balance the overall weighting and give all items a perfectly even chance
+            var measurementIncrement = 1.0 / this.items.Count;
+            for (var i = 0; i < this.items.Count; i++)
+            {
+                var measurementLevel = (i + 1) * measurementIncrement;
+                this.items[i].SetPheromoneLevel(measurementLevel);
+                this.items[i].SetHealthLevel(1.0 - measurementLevel);
+            }
+
+            // override the random number generator used by the decision logic so it can be manipulated
+            // and set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
+            var mockRandom = new MockRandom();
+            DecisionLogic.SetRandomNumberGenerator(mockRandom);
+            DecisionLogic.SetBaseWeighting(0.0);
+
+            // bias of both measurements are the same in order for them to balance
+            var biasedItem = new TestBiasedItem(1.0, 1.0);
+            var chosenItems = new List<TestMeasurableItem>();
+
+            var nextDouble = 0.0;
+            for (var i = 0; i < this.items.Count; i++)
+            {
+                mockRandom.SetNextDouble(nextDouble);
+                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                nextDouble += 1.0 / this.items.Count;
+            }
+
+            // items are not equal, but the bias should evenly distribute the selection of items
+            var expectedItems = this.items;
+            var actualItems = chosenItems;
+            Assert.That(actualItems, Is.EqualTo(expectedItems));
+        }
+
+        [Test]
+        public void InequalItemsMultipleUnbalancingMeasures()
+        {
+            // all items will have two measures, the second being double the inverse of the first
+            // this imbalance will be corrected by the bias, showing that the bias has the desired effect
+            var measurementIncrement = 1.0 / this.items.Count;
+            for (var i = 0; i < this.items.Count; i++)
+            {
+                var measurementLevel = (i + 1) * measurementIncrement;
+                this.items[i].SetPheromoneLevel(measurementLevel / 2.0);
+                this.items[i].SetHealthLevel(1 - measurementLevel);
+            }
+
+            // override the random number generator used by the decision logic so it can be manipulated
+            // and set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
+            var mockRandom = new MockRandom();
+            DecisionLogic.SetRandomNumberGenerator(mockRandom);
+            DecisionLogic.SetBaseWeighting(0.0);
+
+            // pheromone bias is double that of health bias to compensate for the halving of the measurement level
+            var biasedItem = new TestBiasedItem(2.0, 1.0);
+            var chosenItems = new List<TestMeasurableItem>();
+
+            var nextDouble = 0.0;
+            for (var i = 0; i < this.items.Count; i++)
+            {
+                mockRandom.SetNextDouble(nextDouble);
+                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                nextDouble += 1.0 / this.items.Count;
+            }
+
+            // items are not equal, but the bias should evenly compensate for the disproportionate measurements
+            // and evenly distribute the selection of items
+            var expectedItems = this.items;
+            var actualItems = chosenItems;
+            Assert.That(actualItems, Is.EqualTo(expectedItems));
         }
 
         private class TestMeasurableItem : IMeasurable
@@ -124,10 +229,14 @@
                 this.pheromoneCondition.SetLevel(pheromoneLevel);
             }
 
+            public void SetHealthLevel(double healthLevel)
+            {
+                this.healthCondition.SetLevel(healthLevel);
+            }
+
             public Measurement GetMeasurement()
             {
-                // TODO: include a second condition and write tests to use both of them
-                return new Measurement(new List<Condition> { this.pheromoneCondition });
+                return new Measurement(new List<Condition> { this.pheromoneCondition, this.healthCondition });
             }
 
             public override string ToString()
@@ -138,13 +247,24 @@
 
         private class TestBiasedItem : IBiased
         {
+            private readonly string identifier;
+            private readonly double pheromoneBias;
+            private readonly double healthBias;
+
+            public TestBiasedItem(double pheromoneBias, double healthBias)
+            {
+                this.pheromoneBias = pheromoneBias;
+                this.healthBias = healthBias;
+            }
+
             public Dictionary<Measure, double> GetMeasureBiases()
             {
                 // there needs to be a bias for each measure (will be applied to all items)
                 // but will have no effect when there is only one measure
-                return new Dictionary<Measure, double> { { Measure.Pheromone, 1.0 } };
-            } 
+                return new Dictionary<Measure, double> { { Measure.Pheromone, this.pheromoneBias }, { Measure.Health, this.healthBias } };
+            }
         }
+
     }
 }
 

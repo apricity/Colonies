@@ -9,7 +9,7 @@
         xmlns:ViewModels="clr-namespace:Wacton.Colonies.ViewModels"
         mc:Ignorable="d" 
         Title="Wacton Colonies" Height="350" Width="600" WindowStartupLocation="CenterScreen"
-        Icon="../Resources/Icon.ico" ShowTitleBar="True" ShowIconOnTitleBar="True"
+        Icon="/Resources/Icon.ico" ShowTitleBar="True" ShowIconOnTitleBar="True"
         d:DataContext="{d:DesignInstance ViewModels:MainViewModel}">
 
     <Window.Resources>

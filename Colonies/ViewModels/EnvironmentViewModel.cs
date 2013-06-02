@@ -16,6 +16,14 @@
             }
         }
 
+        public bool IsObstructed
+        {
+            get
+            {
+                return this.DomainModel.IsObstructed;
+            }
+        }
+
         public double PheromoneOpacity
         {
             get

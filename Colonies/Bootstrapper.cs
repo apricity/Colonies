@@ -45,7 +45,7 @@
                 for (var y = 0; y < height; y++)
                 {
                     // initially set each habitat to have an unknown environment and no organism
-                    var environment = new Environment(Terrain.Unknown);
+                    var environment = new Environment(Terrain.Unknown, false);
                     var environmentViewModel = new EnvironmentViewModel(environment, eventaggregator);
 
                     var organismViewModel = new OrganismViewModel(null, eventaggregator);
@@ -82,39 +82,50 @@
             // apply a terrain for every habitat
             for (var x = 0; x < ecosystem.Width; x++)
             {
-                //ecosystem.SetTerrain(new Coordinates(x, 0), Terrain.Impassable);
                 for (var y = 0; y < ecosystem.Height; y++)
                 {
-                    //ecosystem.SetTerrain(new Coordinates(0, y), Terrain.Impassable);
+                    //ecosystem.SetTerrain(new Coordinates(x, y), Terrain.Something);
                 }
             }
 
-            ecosystem.SetTerrain(new Coordinates(1, 1), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(1, 2), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(2, 1), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(2, 2), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(5, 3), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(5, 4), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(6, 3), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(6, 4), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(14, 5), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(14, 6), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(15, 5), Terrain.Impassable);
-            ecosystem.SetTerrain(new Coordinates(15, 6), Terrain.Impassable);
-            // testing drawing of pheromones
-            //ecosystem.IncreasePheromoneLevel(new Coordinates(5, 0), 1);
-            //ecosystem.IncreasePheromoneLevel(new Coordinates(5, 1), 0.75);
-            //ecosystem.IncreasePheromoneLevel(new Coordinates(5, 2), 0.5);
-            //ecosystem.IncreasePheromoneLevel(new Coordinates(5, 3), 0.25);
-            //ecosystem.IncreasePheromoneLevel(new Coordinates(5, 4), 0);
+            // custom obstructed habitats (will make a square shapen with an entrance - a pen?)
+            ecosystem.Habitats[1, 1].SetObstructed(true);
+            ecosystem.Habitats[1, 2].SetObstructed(true);
+            ecosystem.Habitats[1, 3].SetObstructed(true);
+            ecosystem.Habitats[1, 4].SetObstructed(true);
+            ecosystem.Habitats[1, 5].SetObstructed(true);
+            ecosystem.Habitats[1, 6].SetObstructed(true);
+            ecosystem.Habitats[1, 7].SetObstructed(true);
+            ecosystem.Habitats[1, 8].SetObstructed(true);
+
+            ecosystem.Habitats[2, 1].SetObstructed(true);
+            ecosystem.Habitats[3, 1].SetObstructed(true);
+            ecosystem.Habitats[4, 1].SetObstructed(true);
+            ecosystem.Habitats[5, 1].SetObstructed(true);
+            ecosystem.Habitats[6, 1].SetObstructed(true);
+            ecosystem.Habitats[7, 1].SetObstructed(true);
+
+            ecosystem.Habitats[2, 8].SetObstructed(true);
+            ecosystem.Habitats[3, 8].SetObstructed(true);
+            ecosystem.Habitats[4, 8].SetObstructed(true);
+            ecosystem.Habitats[5, 8].SetObstructed(true);
+            ecosystem.Habitats[6, 8].SetObstructed(true);
+            ecosystem.Habitats[7, 8].SetObstructed(true);
+
+            ecosystem.Habitats[8, 1].SetObstructed(true);
+            ecosystem.Habitats[8, 2].SetObstructed(true);
+            ecosystem.Habitats[8, 3].SetObstructed(true);
+            ecosystem.Habitats[8, 6].SetObstructed(true);
+            ecosystem.Habitats[8, 7].SetObstructed(true);
+            ecosystem.Habitats[8, 8].SetObstructed(true);
         }
 
         private IEnumerable<Coordinates> InitialiseOrganisms(Ecosystem ecosystem)
         {
-            var waffleCoords = new Coordinates(4, 4);
-            var wilberCoords = new Coordinates(0, 0);
-            var lottyCoords = new Coordinates(1, 4);
-            var louiseCoords = new Coordinates(4, 2);
+            var waffleCoords = new Coordinates(2, 2);
+            var wilberCoords = new Coordinates(2, 7);
+            var lottyCoords = new Coordinates(7, 2);
+            var louiseCoords = new Coordinates(7, 7);
 
             // place some organisms in the ecosystem
             ecosystem.AddOrganism(new Organism("Waffle", Color.White, true), waffleCoords);

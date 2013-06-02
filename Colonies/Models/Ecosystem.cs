@@ -50,15 +50,14 @@
         public UpdateSummary Update()
         {
             /* record the pre-update locations */
-            var preUpdate = this.OrganismHabitats.ToDictionary(
+            var preUpdateOrganismLocations = this.OrganismHabitats.ToDictionary(
                 organismHabitat => organismHabitat.Key.ToString(), 
                 organismHabitat => this.HabitatCoordinates[organismHabitat.Value]);
 
-            /* reduce pheromone level in all environments */
-            this.DecreaseGlobalPheromoneLevel();
-
-            /* reduce all organism's health */
-            this.DecreaseAllOrganismHealth();
+            /* reduce pheromone level in all environments 
+               and increase pheromone wherever appropriate */
+            var pheromoneDecreasedLocations = this.DecreaseGlobalPheromoneLevel();
+            this.IncreaseLocalPheromoneLevels();
 
             /* find out where each organism would like to move to
              * then analyse them to decide where the organisms will actually move to 
@@ -71,23 +70,47 @@
             /* perform ex-situ actions e.g. move any organisms that can after resolving conflicting intentions */
             foreach (var actualOrganismDestination in actualOrganismDestinations)
             {
-                this.MoveOrganism(actualOrganismDestination.Key, actualOrganismDestination.Value);
+                this.MoveOrganism(actualOrganismDestination.Key, actualOrganismDestination.Value);                    
             }
 
+            /* reduce all organisms health */
+            this.DecreaseAllOrganismHealth();
+
             /* record the post-update locations */
-            var postUpdate = this.OrganismHabitats.ToDictionary(
+            var postUpdateOrganismLocations = this.OrganismHabitats.ToDictionary(
                 organismHabitat => organismHabitat.Key.ToString(), 
                 organismHabitat => this.HabitatCoordinates[organismHabitat.Value]);
 
-            return new UpdateSummary(preUpdate, postUpdate);
+            return new UpdateSummary(preUpdateOrganismLocations, postUpdateOrganismLocations, pheromoneDecreasedLocations);
         }
 
-        private void DecreaseGlobalPheromoneLevel()
+        private void IncreaseLocalPheromoneLevels()
         {
+            foreach (var organismHabitat in this.OrganismHabitats)
+            {
+                var organism = organismHabitat.Key;
+                var habitat = organismHabitat.Value;
+
+                if (organism.IsDepositingPheromones)
+                {
+                    habitat.Environment.IncreasePheromoneLevel(0.01);
+                }
+            }
+        }
+
+        private List<Coordinates> DecreaseGlobalPheromoneLevel()
+        {
+            var pheromoneDecreasedLocations = new List<Coordinates>();
+
             foreach (var habitat in this.Habitats)
             {
-                habitat.Environment.DecreasePheromoneLevel(0.001);
+                if (habitat.Environment.DecreasePheromoneLevel(0.001))
+                {
+                    pheromoneDecreasedLocations.Add(this.HabitatCoordinates[habitat]);
+                }
             }
+
+            return pheromoneDecreasedLocations;
         }
 
         private void DecreaseAllOrganismHealth()
@@ -138,7 +161,7 @@
 
             // if there are no vacant habitats, this is our base case
             // return an empty list - i.e. no organism can move to its intended destination
-            var vacantHabitats = intendedHabitats.Except(occupiedHabitats).ToList();
+            var vacantHabitats = intendedHabitats.Except(occupiedHabitats).Where(habitat => !habitat.IsObstructed()).ToList();
             if (vacantHabitats.Count == 0)
             {
                 return resolvedOrganismDestinations;
@@ -196,9 +219,13 @@
         private void MoveOrganism(Organism organism, Habitat destination)
         {           
             var source = this.OrganismHabitats[organism];
-            if (organism.IsDepositingPheromones)
+
+            // the organism can only move to the destination if it is not obstructed
+            if (destination.IsObstructed())
             {
-                source.Environment.IncreasePheromoneLevel(0.01);
+                throw new InvalidOperationException(
+                    string.Format("Cannot move organism {0} to {1} because the destination is obstructed",
+                                  organism, destination));
             }
 
             // the organism can only move to the destination if it does not already contain an organism
@@ -254,11 +281,7 @@
                         continue;
                     }
 
-                    var currentHabitat = this.Habitats[x, y];
-                    if (!currentHabitat.ContainsImpassable())
-                    {
-                        neighbouringHabitats.Add(currentHabitat);
-                    }
+                    neighbouringHabitats.Add(this.Habitats[x, y]);
                 }
             }
 

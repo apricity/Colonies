@@ -10,12 +10,18 @@
     
     <UserControl.Resources>
         <Converters:TerrainToBrushConverter x:Key="TerrainToBrushConverter" />
+        <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
 
     <Grid>
         <Rectangle Fill="{Binding Terrain, Converter={StaticResource TerrainToBrushConverter}}" />
         <Rectangle Fill="OrangeRed" Opacity="{Binding PheromoneOpacity}"/>
+        
+        <!-- stretch lines so we don't have to care about the size of the window (e.g. currently 20x20 but could easily change) -->
+        <Line X1="0" Y1="0" X2="1" Y2="1" Stroke="Black" StrokeThickness="1" Stretch="Fill" 
+              Visibility="{Binding IsObstructed, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <Line X1="0" Y1="1" X2="1" Y2="0" Stroke="Black" StrokeThickness="1" Stretch="Fill" 
+              Visibility="{Binding IsObstructed, Converter={StaticResource BoolToVisibilityConverter}}"/>
     </Grid>
-    
     
 </UserControl>

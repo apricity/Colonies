@@ -1,6 +1,7 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     using Microsoft.Practices.Prism.Events;
 
@@ -32,25 +33,29 @@
         {
             var updateSummary = this.DomainModel.Update();
 
-            // TODO: have a more 'standard' usage of the update summary
-            foreach (var summary in updateSummary.PreUpdateSummary)
+            // TODO: have a more 'standard' usage of the update summary, whatever that might be
+            foreach (var preUpdateOrganismLocation in updateSummary.PreUpdateOrganismLocations)
             {
-                var x = summary.Value.X;
-                var y = summary.Value.Y;
-
-                // TODO: not all previous environments will need updated
-                // TODO: as some organisms might not be depositing pheromones
-                // TODO: although... this will only update environments that an organism was on..?  need to update any that have decreased pheromone level... (quite a lot)
-                this.HabitatViewModels[x][y].RefreshEnvironmentViewModel();
+                var x = preUpdateOrganismLocation.Value.X;
+                var y = preUpdateOrganismLocation.Value.Y;
                 this.HabitatViewModels[x][y].RefreshOrganismViewModel();
             }
 
-            foreach (var summary in updateSummary.PostUpdateSummary)
+            foreach (var postUpdateOrganismLocation in updateSummary.PostUpdateOrganismLocations)
             {
-                var x = summary.Value.X;
-                var y = summary.Value.Y;
-
+                var x = postUpdateOrganismLocation.Value.X;
+                var y = postUpdateOrganismLocation.Value.Y;
                 this.HabitatViewModels[x][y].RefreshOrganismViewModel();
+            }
+
+            var pheromoneChangedLocations =
+                updateSummary.PheromoneDecreasedLocations.Union(
+                    updateSummary.PreUpdateOrganismLocations.Values).ToList();
+            foreach (var pheromoneChangedLocation in pheromoneChangedLocations)
+            {
+                var x = pheromoneChangedLocation.X;
+                var y = pheromoneChangedLocation.Y;
+                this.HabitatViewModels[x][y].RefreshEnvironmentViewModel();
             }
         }
     }

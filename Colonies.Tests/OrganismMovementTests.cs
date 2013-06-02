@@ -68,7 +68,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
+            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.Values.ToList();
             Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
         }
 
@@ -103,7 +103,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
+            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.Values.ToList();
             Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
         }
 
@@ -145,7 +145,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
+            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.Values.ToList();
             Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
         }
 
@@ -180,7 +180,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
+            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.Values.ToList();
             Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
         }
 
@@ -224,7 +224,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
+            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.Values.ToList();
             Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
         }
 
@@ -265,7 +265,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
+            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.Values.ToList();
             Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
         }
 
@@ -319,7 +319,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateSummary.Values.ToList();
+            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.Values.ToList();
             Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
         }
 
@@ -330,7 +330,7 @@
             {
                 for (var y = 0; y < height; y++)
                 {
-                    var environment = new Environment(Terrain.Unknown);
+                    var environment = new Environment(Terrain.Unknown, false);
                     habitats[x, y] = new Habitat(environment, null);
                 }
             }

@@ -30,9 +30,14 @@
             return this.Organism != null;
         }
 
-        public bool ContainsImpassable()
+        public bool IsObstructed()
         {
-            return this.Environment.Terrain == Terrain.Impassable;
+            return this.Environment.IsObstructed;
+        }
+
+        public void SetObstructed(bool isObstructed)
+        {
+            this.Environment.SetObstructed(isObstructed);
         }
 
         public Measurement GetMeasurement()

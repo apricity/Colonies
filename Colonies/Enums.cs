@@ -6,8 +6,7 @@
         Earth,
         Grass,
         Water,
-        Fire,
-        Impassable
+        Fire
     }
 
     public enum Measure

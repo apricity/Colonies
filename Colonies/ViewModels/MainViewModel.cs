@@ -66,6 +66,32 @@
 
         private int lastUsedTurnInterval;
 
+        public double PheromoneDepositPerTurn
+        {
+            get
+            {
+                return this.DomainModel.Ecosystem.PheromoneDepositPerTurn;
+            }
+            set
+            {
+                this.DomainModel.Ecosystem.PheromoneDepositPerTurn = value;
+                this.OnPropertyChanged("PheromoneDepositPerTurn");
+            }
+        }
+
+        public double PheromoneFadePerTurn
+        {
+            get
+            {
+                return this.DomainModel.Ecosystem.PheromoneFadePerTurn;
+            }
+            set
+            {
+                this.DomainModel.Ecosystem.PheromoneFadePerTurn = value;
+                this.OnPropertyChanged("PheromoneFadePerTurn");
+            }
+        }
+
         public MainViewModel(Main domainModel, EcosystemViewModel ecosystemViewModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {

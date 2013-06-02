@@ -1,5 +1,6 @@
 ﻿namespace Wacton.Colonies.Models
 {
+    using System;
     using System.Collections.Generic;
 
     using Wacton.Colonies.Interfaces;
@@ -34,14 +35,15 @@
 
         public bool DecreasePheromoneLevel(double levelDecrease)
         {
+            var previousPheromoneLevel = this.Pheromone.Level;
             this.Pheromone.DecreaseLevel(levelDecrease);
             if (this.Pheromone.Level < 0)
             {
                 this.Pheromone.SetLevel(0.0);
-                return false;
             }
 
-            return true;
+            return this.Pheromone.Level != previousPheromoneLevel;
+
         }
 
         public Measurement GetMeasurement()

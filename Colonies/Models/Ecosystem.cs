@@ -14,6 +14,10 @@
         public Dictionary<Habitat, Coordinates> HabitatCoordinates { get; private set; } 
         public double HealthBias { get; private set; }
 
+        // TODO: neater management of these?
+        public double PheromoneDepositPerTurn { get; set; }
+        public double PheromoneFadePerTurn { get; set; }
+
         public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Habitat> organismHabitats)
         {
             this.Habitats = habitats;
@@ -29,6 +33,9 @@
                     this.HabitatCoordinates.Add(this.Habitats[i, j], new Coordinates(i, j));
                 }
             }
+
+            this.PheromoneDepositPerTurn = 0.01;
+            this.PheromoneFadePerTurn = 0.001;
         }
 
         public int Width
@@ -55,7 +62,7 @@
                 organismHabitat => this.HabitatCoordinates[organismHabitat.Value]);
 
             /* reduce pheromone level in all environments 
-               and increase pheromone wherever appropriate */
+             * and increase pheromone wherever appropriate */
             var pheromoneDecreasedLocations = this.DecreaseGlobalPheromoneLevel();
             this.IncreaseLocalPheromoneLevels();
 
@@ -84,6 +91,21 @@
             return new UpdateSummary(preUpdateOrganismLocations, postUpdateOrganismLocations, pheromoneDecreasedLocations);
         }
 
+        private List<Coordinates> DecreaseGlobalPheromoneLevel()
+        {
+            var pheromoneDecreasedLocations = new List<Coordinates>();
+
+            foreach (var habitat in this.Habitats)
+            {
+                if (habitat.Environment.DecreasePheromoneLevel(this.PheromoneFadePerTurn))
+                {
+                    pheromoneDecreasedLocations.Add(this.HabitatCoordinates[habitat]);
+                }
+            }
+
+            return pheromoneDecreasedLocations;
+        }
+
         private void IncreaseLocalPheromoneLevels()
         {
             foreach (var organismHabitat in this.OrganismHabitats)
@@ -93,24 +115,9 @@
 
                 if (organism.IsDepositingPheromones)
                 {
-                    habitat.Environment.IncreasePheromoneLevel(0.01);
+                    habitat.Environment.IncreasePheromoneLevel(this.PheromoneDepositPerTurn);
                 }
             }
-        }
-
-        private List<Coordinates> DecreaseGlobalPheromoneLevel()
-        {
-            var pheromoneDecreasedLocations = new List<Coordinates>();
-
-            foreach (var habitat in this.Habitats)
-            {
-                if (habitat.Environment.DecreasePheromoneLevel(0.001))
-                {
-                    pheromoneDecreasedLocations.Add(this.HabitatCoordinates[habitat]);
-                }
-            }
-
-            return pheromoneDecreasedLocations;
         }
 
         private void DecreaseAllOrganismHealth()

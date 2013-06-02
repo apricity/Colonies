@@ -44,6 +44,8 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -69,6 +71,12 @@
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Interval:"/>
                 <Slider Grid.Row="1" Grid.Column="1" Value="{Binding EcosystemTurnInterval}" 
                         Minimum="1" Maximum="2000" AutoToolTipPlacement="BottomRight" FlowDirection="RightToLeft" Margin="3"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Pheromone Deposit / Turn:"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PheromoneDepositPerTurn, UpdateSourceTrigger=PropertyChanged}" Margin="3"/>
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Pheromone Fade / Turn:"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding PheromoneFadePerTurn, UpdateSourceTrigger=PropertyChanged}" Margin="3"/>
             </Grid>    
         </Controls:Flyout>
     </Controls:MetroWindow.Flyouts>

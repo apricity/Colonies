@@ -131,7 +131,8 @@
         protected virtual Dictionary<Organism, Habitat> GetIntendedOrganismDestinations()
         {
             var intendedOrganismDestinations = new Dictionary<Organism, Habitat>();
-            foreach (var organismCoordinates in this.OrganismHabitats.ToList())
+            var aliveOrganismHabitats = this.OrganismHabitats.Where(organismHabitats => organismHabitats.Key.IsAlive).ToList();
+            foreach (var organismCoordinates in aliveOrganismHabitats)
             {
                 var organism = organismCoordinates.Key;
                 var habitat = organismCoordinates.Value;
@@ -227,11 +228,19 @@
         {           
             var source = this.OrganismHabitats[organism];
 
+            // the organism cannot move if it is dead
+            if (!organism.IsAlive)
+            {
+                throw new InvalidOperationException(
+                    string.Format("Cannot move organism {0} to {1} because it is dead",
+                                   organism, destination));
+            }
+
             // the organism can only move to the destination if it is not obstructed
             if (destination.IsObstructed())
             {
                 throw new InvalidOperationException(
-                    string.Format("Cannot move organism {0} to {1} because the destination is obstructed",
+                    string.Format("Cannot move organism {0} to {1} because the destination is obstructed", 
                                   organism, destination));
             }
 

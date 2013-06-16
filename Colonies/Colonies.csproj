@@ -75,6 +75,7 @@
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\ActiveBoolToStringConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\AliveToOpacityConverter.cs" />
     <Compile Include="Coordinates.cs" />
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="Logic\DecisionLogic.cs" />

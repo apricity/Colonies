@@ -14,15 +14,24 @@
         {
             get
             {
-                return !this.HasOrganism() ? Color.Empty : this.DomainModel.Color;
+                return !this.HasOrganism ? Color.Empty : this.DomainModel.Color;
             }
         }
 
-        public double Opacity
+        public bool IsAlive
         {
             get
             {
-                return !this.HasOrganism() ? 0 : 1;
+                // TODO: how to handle !this.HasOrganism
+                return !this.HasOrganism ? false : this.DomainModel.IsAlive;
+            }
+        }
+
+        public double HealthLevel
+        {
+            get
+            {
+                return !this.HasOrganism ? 0 : this.DomainModel.Health.Level;
             }
         }
 
@@ -32,9 +41,12 @@
 
         }
 
-        private bool HasOrganism()
+        public bool HasOrganism
         {
-            return this.DomainModel != null;
+            get
+            {
+                return this.DomainModel != null;                
+            }
         }
     }
 }

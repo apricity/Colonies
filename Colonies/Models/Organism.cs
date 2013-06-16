@@ -13,6 +13,14 @@
         public bool IsDepositingPheromones { get; private set; }
         public double PheromoneBias { get; private set; }
 
+        public bool IsAlive
+        {
+            get
+            {
+                return !(this.Health.Level <= 0.0);
+            }
+        }
+
         public Organism(string name, Color color, bool isDepostingPheromones)
         {
             this.Name = name;
@@ -32,6 +40,11 @@
             if (this.Health.Level < 0)
             {
                 this.Health.SetLevel(0.0);
+            }
+
+            if (!this.IsAlive)
+            {
+                this.IsDepositingPheromones = false;
             }
         }
 

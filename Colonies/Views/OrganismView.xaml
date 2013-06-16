@@ -10,9 +10,22 @@
 
     <UserControl.Resources>
         <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
+        <Converters:AliveToOpacityConverter x:Key="AliveToOpacityConverter" />
     </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <ProgressBar Minimum="0" Maximum="1" Value="{Binding HealthLevel, Mode=OneWay}" BorderThickness="0"/>       
+        
+        <Rectangle Grid.Row="2"  Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}" 
+                   Opacity="{Binding IsAlive, Converter={StaticResource AliveToOpacityConverter}}"/>
+    </Grid>
+
     
-    <Rectangle Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}" 
-               Opacity="{Binding Opacity}"/>
     
 </UserControl>

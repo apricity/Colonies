@@ -88,6 +88,8 @@
                 }
             }
 
+            ecosystem.Habitats[0, 0].HasNutrient = true;
+
             // custom obstructed habitats (will make a square shapen with an entrance - a pen?)
             ecosystem.Habitats[1, 1].SetObstructed(true);
             ecosystem.Habitats[1, 2].SetObstructed(true);

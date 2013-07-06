@@ -92,6 +92,7 @@
     <Compile Include="ViewModels\EcosystemViewModel.cs" />
     <Compile Include="ViewModels\EnvironmentViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\DesignTimeData\SampleOrganismViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\OrganismView.xaml.cs">
       <DependentUpon>OrganismView.xaml</DependentUpon>

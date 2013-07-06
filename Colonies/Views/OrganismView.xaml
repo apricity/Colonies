@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:Converters="clr-namespace:Wacton.Colonies.Converters"
              xmlns:ViewModels="clr-namespace:Wacton.Colonies.ViewModels"
+             xmlns:DesignTimeData="clr-namespace:Wacton.Colonies.ViewModels.DesignTimeData"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance ViewModels:OrganismViewModel}">
 
@@ -12,9 +13,10 @@
         <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
         <Converters:BoolToAliveOpacityConverter x:Key="BoolToAliveOpacityConverter" />
         <Converters:DoubleToHealthLevelBrushConverter x:Key="DoubleToHealthLevelBrushConverter"/>
+        <DesignTimeData:SampleOrganismViewModel x:Key="SampleOrganismViewModel"/>
     </UserControl.Resources>
-    
-    <Grid>
+
+    <Grid d:DataContext="{Binding Source={StaticResource SampleOrganismViewModel}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="2.5*"/>
             <RowDefinition Height="2.5*"/>

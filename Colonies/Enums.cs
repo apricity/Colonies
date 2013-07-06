@@ -2,7 +2,7 @@
 {
     public enum Terrain
     {
-        Unknown = -1,
+        Unknown,
         Earth,
         Grass,
         Water,

@@ -1,8 +1,8 @@
 ﻿namespace Wacton.Colonies.Tests
 {
     using System.Collections.Generic;
-    using System.Drawing;
     using System.Linq;
+    using System.Windows.Media;
 
     using NUnit.Framework;
 
@@ -28,7 +28,7 @@
             this.organisms = new Dictionary<string, Organism>();
             foreach (var organismIdentifier in organismIdentifiers)
             {
-                this.organisms.Add(organismIdentifier, new Organism(organismIdentifier, Color.Black, false));
+                this.organisms.Add(organismIdentifier, new Organism(organismIdentifier, Colors.Black, false));
             }
 
             this.habitatCoordinates = new Dictionary<Habitat, Coordinates>();

@@ -3,8 +3,9 @@
     using System;
     using System.Globalization;
     using System.Windows.Data;
+    using System.Windows.Media;
 
-    public class ActiveBoolToStringConverter : IValueConverter
+    public class DoubleToHealthLevelBrushConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -13,20 +14,32 @@
                 return null;
             }
 
-            if (value is bool)
+            // assumes health level is between 0.0 - 1.0
+            // 1.0 = 000, 255, 000
+            // 0.5 = 255, 255, 000
+            // 0.0 = 255, 000, 000
+            if (value is double)
             {
-                var active = (bool)value;
-                if (active)
+                var health = (double)value;
+
+                byte green;
+                byte red;
+
+                if (health >= 0.5)
                 {
-                    return "Active";
+                    green = 255;
+                    red = (byte)(255 - (health * 2) * 255);
                 }
                 else
                 {
-                    return "Inactive";
+                    green = (byte)((health * 2) * 255);
+                    red = 255;
                 }
+
+                return new SolidColorBrush(Color.FromRgb(red, green, 0));
             }
 
-            Type type = value.GetType();
+            var type = value.GetType();
             throw new InvalidOperationException("Unsupported type [" + type.Name + "]"); 
         }
 

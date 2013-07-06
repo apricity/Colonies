@@ -4,6 +4,10 @@
              Startup="ApplicationStartup">
             <!-- not using StartupUri, handling the startup process myself instead using Startup event -->
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

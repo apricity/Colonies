@@ -2,10 +2,9 @@
 {
     using System;
     using System.Globalization;
-    using System.Windows;
     using System.Windows.Data;
 
-    public class BoolToVisibilityConverter : IValueConverter
+    public class BoolToActiveStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -16,8 +15,8 @@
 
             if (value is bool)
             {
-                var isTrue = (bool)value;
-                return isTrue ? Visibility.Visible : Visibility.Hidden;
+                var active = (bool)value;
+                return active ? "Active" : "Inactive";
             }
 
             var type = value.GetType();

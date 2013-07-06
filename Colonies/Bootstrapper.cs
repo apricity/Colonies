@@ -1,7 +1,7 @@
 ﻿namespace Wacton.Colonies
 {
     using System.Collections.Generic;
-    using System.Drawing;
+    using System.Windows.Media;
 
     using Microsoft.Practices.Prism.Events;
 
@@ -130,10 +130,10 @@
             var louiseCoords = new Coordinates(7, 7);
 
             // place some organisms in the ecosystem
-            ecosystem.AddOrganism(new Organism("Waffle", Color.White, true), waffleCoords);
-            ecosystem.AddOrganism(new Organism("Wilber", Color.Black, true), wilberCoords);
-            ecosystem.AddOrganism(new Organism("Lotty", Color.Lime, true), lottyCoords);
-            ecosystem.AddOrganism(new Organism("Dr. Louise", Color.Orange, true), louiseCoords);
+            ecosystem.AddOrganism(new Organism("Waffle", Colors.White, true), waffleCoords);
+            ecosystem.AddOrganism(new Organism("Wilber", Colors.Black, true), wilberCoords);
+            ecosystem.AddOrganism(new Organism("Lotty", Colors.Lime, true), lottyCoords);
+            ecosystem.AddOrganism(new Organism("Dr. Louise", Colors.Orange, true), louiseCoords);
 
             return new List<Coordinates> { waffleCoords, wilberCoords, lottyCoords, louiseCoords };
         }

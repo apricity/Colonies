@@ -14,35 +14,28 @@
                 return null;
             }
 
-            if (value is Terrain)
+            if (Enum.IsDefined(typeof(Terrain), value))
             {
                 var terrain = (Terrain)value;
-                System.Drawing.Color drawingColor;
 
                 switch (terrain)
                 {
                     case Terrain.Earth:
-                        drawingColor = System.Drawing.Color.BurlyWood;
-                        break;
+                        return Brushes.BurlyWood;
                     case Terrain.Grass:
-                        drawingColor = System.Drawing.Color.ForestGreen;
-                        break;
+                        return Brushes.ForestGreen;
                     case Terrain.Water:
-                        drawingColor = System.Drawing.Color.DeepSkyBlue;
-                        break;
+                        return Brushes.DeepSkyBlue;
                     case Terrain.Fire:
-                        drawingColor = System.Drawing.Color.Firebrick;
-                        break;
+                        return Brushes.Firebrick;
+                    case Terrain.Unknown:
+                        return Brushes.DimGray;
                     default:
-                        drawingColor = System.Drawing.Color.Gray;
-                        break;
+                        return Brushes.Transparent;
                 }
-
-                var mediaColor = System.Windows.Media.Color.FromRgb(drawingColor.R, drawingColor.G, drawingColor.B);
-                return new SolidColorBrush(mediaColor);
             }
 
-            Type type = value.GetType();
+            var type = value.GetType();
             throw new InvalidOperationException("Unsupported type [" + type.Name + "]"); 
         }
 

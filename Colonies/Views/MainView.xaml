@@ -53,7 +53,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid.Resources>
-                    <Converters:ActiveBoolToStringConverter x:Key="ActiveBoolToStringConverter" />
+                    <Converters:BoolToActiveStringConverter x:Key="BoolToActiveStringConverter" />
                     
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Margin" Value="3,3,3,3"/>
@@ -66,7 +66,7 @@
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="State:"/>
                 <ToggleButton Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsEcosystemActive}"
-                              Content="{Binding IsEcosystemActive, Converter={StaticResource ActiveBoolToStringConverter}}" Margin="3"/>
+                              Content="{Binding IsEcosystemActive, Converter={StaticResource BoolToActiveStringConverter}}" Margin="3"/>
 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Interval:"/>
                 <Slider Grid.Row="1" Grid.Column="1" Value="{Binding EcosystemTurnInterval}" 

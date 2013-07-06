@@ -14,7 +14,7 @@
                 return null;
             }
 
-            if (value is Color)
+            if (value is System.Windows.Media.Color)
             {
                 var color = (Color)value;
                 return new SolidColorBrush(color);
@@ -27,7 +27,7 @@
                 return new SolidColorBrush(mediaColor);
             }
 
-            Type type = value.GetType();
+            var type = value.GetType();
             throw new InvalidOperationException("Unsupported type [" + type.Name + "]"); 
         }
 

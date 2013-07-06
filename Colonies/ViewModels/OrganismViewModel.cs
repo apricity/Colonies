@@ -1,6 +1,6 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
-    using System.Drawing;
+    using System.Windows.Media;
 
     using Microsoft.Practices.Prism.Events;
 
@@ -14,7 +14,8 @@
         {
             get
             {
-                return !this.HasOrganism ? Color.Empty : this.DomainModel.Color;
+                // TODO: how to handle !this.HasOrganism
+                return !this.HasOrganism ? Colors.Transparent : this.DomainModel.Color;
             }
         }
 
@@ -22,8 +23,7 @@
         {
             get
             {
-                // TODO: how to handle !this.HasOrganism
-                return !this.HasOrganism ? false : this.DomainModel.IsAlive;
+                return this.HasOrganism && this.DomainModel.IsAlive;
             }
         }
 

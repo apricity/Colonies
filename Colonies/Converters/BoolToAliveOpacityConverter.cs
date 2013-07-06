@@ -2,10 +2,9 @@
 {
     using System;
     using System.Globalization;
-    using System.Windows;
     using System.Windows.Data;
 
-    public class AliveToOpacityConverter : IValueConverter
+    public class BoolToAliveOpacityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -17,17 +16,10 @@
             if (value is bool)
             {
                 var isTrue = (bool)value;
-                if (isTrue)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return 0.5;
-                }
+                return isTrue ? 1 : 0.5;
             }
 
-            Type type = value.GetType();
+            var type = value.GetType();
             throw new InvalidOperationException("Unsupported type [" + type.Name + "]"); 
         }
 

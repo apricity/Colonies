@@ -5,43 +5,50 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ViewModels="clr-namespace:Wacton.Colonies.ViewModels"
              xmlns:Views="clr-namespace:Wacton.Colonies.Views"
+             xmlns:DesignTimeData="clr-namespace:Wacton.Colonies.ViewModels.DesignTimeData"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance ViewModels:EcosystemViewModel}">
 
-    <Border BorderBrush="#111111" BorderThickness="0, 0, 1, 1">
-        <!-- border on right & bottom of items control -->
-        <ItemsControl ItemsSource="{Binding HabitatViewModels}">
-            <!-- define the control used for the collection of collections -->
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"></StackPanel>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+    <UserControl.Resources>
+        <DesignTimeData:SampleEcosystemViewModel x:Key="SampleEcosystemViewModel"/>
+    </UserControl.Resources>
 
-            <!-- define how each collection is presented - a template that is applied to each collection -->
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <ItemsControl ItemsSource="{Binding}">
+    <Grid d:DataContext="{Binding Source={StaticResource SampleEcosystemViewModel}}">
+        <Border BorderBrush="#111111" BorderThickness="0, 0, 1, 1">
+            <!-- border on right & bottom of items control -->
+            <ItemsControl ItemsSource="{Binding HabitatViewModels}">
+                <!-- define the control used for the collection of collections -->
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-                        <!-- define the panel used for the collection of items -->
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Vertical"></StackPanel>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
+                <!-- define how each collection is presented - a template that is applied to each collection -->
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ItemsControl ItemsSource="{Binding}">
 
-                        <!-- define how each item is presented - a template that is applied to each item -->
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Views:HabitatView DataContext="{Binding}"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
+                            <!-- define the panel used for the collection of items -->
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical"></StackPanel>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
 
-                    </ItemsControl>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
+                            <!-- define how each item is presented - a template that is applied to each item -->
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Views:HabitatView DataContext="{Binding}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
 
-        </ItemsControl>
-    </Border>
+                        </ItemsControl>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
 
+            </ItemsControl>
+        </Border>
+    </Grid>
+   
 </UserControl>

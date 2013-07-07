@@ -6,16 +6,18 @@
              xmlns:Converters="clr-namespace:Wacton.Colonies.Converters"
              xmlns:Views="clr-namespace:Wacton.Colonies.Views"
              xmlns:ViewModels="clr-namespace:Wacton.Colonies.ViewModels"
+             xmlns:DesignTimeData="clr-namespace:Wacton.Colonies.ViewModels.DesignTimeData"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance ViewModels:HabitatViewModel}">
+             d:DesignHeight="20" d:DesignWidth="20" d:DataContext="{d:DesignInstance ViewModels:HabitatViewModel}">
 
     <UserControl.Resources>
-        <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <DesignTimeData:SampleHabitatViewModel x:Key="SampleHabitatViewModel"/>
     </UserControl.Resources>
 
     <Border BorderBrush="#111111" BorderThickness="1, 1, 0, 0">
         <!-- border on left & top of each item -->
-        <Grid Height="20" Width="20">
+        <Grid Height="20" Width="20" d:DataContext="{Binding Source={StaticResource SampleHabitatViewModel}}">
             <Views:EnvironmentView DataContext="{Binding EnvironmentViewModel}"/>
             <Views:OrganismView DataContext="{Binding OrganismViewModel}" Height="10" Width="10" Visibility="{Binding HasOrganism, Converter={StaticResource BoolToVisibilityConverter}}"/>
             <Rectangle Fill="ForestGreen" Height="5" Width="5" Visibility="{Binding HasNutrient, Converter={StaticResource BoolToVisibilityConverter}}"/>

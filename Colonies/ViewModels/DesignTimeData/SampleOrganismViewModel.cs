@@ -9,20 +9,22 @@
     public sealed class SampleOrganismViewModel : OrganismViewModel
     {
         public SampleOrganismViewModel()
-            : this(CreateSampleOrganism(), new EventAggregator())
+            : base(CreateSampleOrganism(), new EventAggregator())
         {
             
         }
 
-        public SampleOrganismViewModel(Organism domainModel, IEventAggregator eventAggregator)
-            : base(domainModel, eventAggregator)
+        public Organism SampleOrganism
         {
-
+            get
+            {
+                return this.DomainModel;
+            }
         }
 
         private static Organism CreateSampleOrganism()
         {
-            return new Organism("Sample", Colors.CornflowerBlue, true);
+            return new Organism("Sample", Colors.Black, true);
         }
     }
 }

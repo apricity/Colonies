@@ -5,16 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:Converters="clr-namespace:Wacton.Colonies.Converters"
              xmlns:ViewModels="clr-namespace:Wacton.Colonies.ViewModels"
+             xmlns:DesignTimeData="clr-namespace:Wacton.Colonies.ViewModels.DesignTimeData"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance ViewModels:EnvironmentViewModel}">
     
     <UserControl.Resources>
-        <Converters:TerrainToBrushConverter x:Key="TerrainToBrushConverter" />
-        <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <Converters:TerrainToBrushConverter x:Key="TerrainToBrushConverter"/>
+        <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <DesignTimeData:SampleEnvironmentViewModel x:Key="SampleEnvironmentViewModel"/>
     </UserControl.Resources>
 
-    <Grid>
-        <Rectangle Fill="{Binding Terrain, Converter={StaticResource TerrainToBrushConverter}}" />
+    <Grid d:DataContext="{Binding Source={StaticResource SampleEnvironmentViewModel}}">
+        <Rectangle Fill="{Binding Terrain, Converter={StaticResource TerrainToBrushConverter}}"/>
         <Rectangle Fill="OrangeRed" Opacity="{Binding PheromoneOpacity}"/>
         
         <!-- stretch lines so we don't have to care about the size of the window (e.g. currently 20x20 but could easily change) -->

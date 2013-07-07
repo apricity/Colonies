@@ -7,6 +7,7 @@
         xmlns:Converters="clr-namespace:Wacton.Colonies.Converters"
         xmlns:Views="clr-namespace:Wacton.Colonies.Views"
         xmlns:ViewModels="clr-namespace:Wacton.Colonies.ViewModels"
+        xmlns:DesignTimeData="clr-namespace:Wacton.Colonies.ViewModels.DesignTimeData"
         mc:Ignorable="d" 
         Title="Wacton Colonies" Height="350" Width="600" WindowStartupLocation="CenterScreen"
         Icon="/Resources/Icon.ico" ShowTitleBar="True" ShowIconOnTitleBar="True"
@@ -23,6 +24,8 @@
 
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <DesignTimeData:SampleMainViewModel x:Key="SampleMainViewModel"/>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -81,10 +84,12 @@
         </Controls:Flyout>
     </Controls:MetroWindow.Flyouts>
 
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-        <Viewbox Stretch="Uniform">
-            <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>
-        </Viewbox>
-    </ScrollViewer>
-
+    <Grid d:DataContext="{Binding Source={StaticResource SampleMainViewModel}}">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Viewbox Stretch="Uniform">
+                <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>
+            </Viewbox>
+        </ScrollViewer>
+    </Grid>
+    
 </Controls:MetroWindow>

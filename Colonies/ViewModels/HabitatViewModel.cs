@@ -4,7 +4,7 @@
 
     using Wacton.Colonies.Models;
 
-    public sealed class HabitatViewModel : ViewModelBase<Habitat>
+    public class HabitatViewModel : ViewModelBase<Habitat>
     {
         private EnvironmentViewModel environmentViewModel;
         public EnvironmentViewModel EnvironmentViewModel

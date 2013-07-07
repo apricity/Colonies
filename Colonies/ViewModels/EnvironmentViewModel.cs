@@ -4,7 +4,7 @@
 
     using Wacton.Colonies.Models;
 
-    public sealed class EnvironmentViewModel : ViewModelBase<Environment>
+    public class EnvironmentViewModel : ViewModelBase<Environment>
     {
         // do not set domain model properties through the view model
         // use events to tell view models the model has changed

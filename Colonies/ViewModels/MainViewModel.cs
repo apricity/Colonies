@@ -7,7 +7,7 @@
 
     using Wacton.Colonies.Models;
 
-    public sealed class MainViewModel : ViewModelBase<Main>
+    public class MainViewModel : ViewModelBase<Main>
     {
         // if the timer interval is too small, the model update won't have finished
         // so use a lock to ensure the model isn't updated while it's updating...

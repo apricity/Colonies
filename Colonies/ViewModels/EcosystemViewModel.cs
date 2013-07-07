@@ -7,7 +7,7 @@
 
     using Wacton.Colonies.Models;
 
-    public sealed class EcosystemViewModel : ViewModelBase<Ecosystem>
+    public class EcosystemViewModel : ViewModelBase<Ecosystem>
     {
         private List<List<HabitatViewModel>> habitatViewModels;
         public List<List<HabitatViewModel>> HabitatViewModels

@@ -12,7 +12,7 @@
 
     <UserControl.Resources>
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <DesignTimeData:SampleHabitatViewModel x:Key="SampleHabitatViewModel"/>
+        <DesignTimeData:DesignTimeHabitatViewModel x:Key="SampleHabitatViewModel"/>
     </UserControl.Resources>
 
     <Border BorderBrush="#111111" BorderThickness="1, 1, 0, 0">

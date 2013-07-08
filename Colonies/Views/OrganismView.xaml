@@ -13,7 +13,7 @@
         <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
         <Converters:BoolToAliveOpacityConverter x:Key="BoolToAliveOpacityConverter"/>
         <Converters:DoubleToHealthLevelBrushConverter x:Key="DoubleToHealthLevelBrushConverter"/>
-        <DesignTimeData:SampleOrganismViewModel x:Key="SampleOrganismViewModel"/>
+        <DesignTimeData:DesignTimeOrganismViewModel x:Key="SampleOrganismViewModel"/>
     </UserControl.Resources>
 
     <Grid d:DataContext="{Binding Source={StaticResource SampleOrganismViewModel}}">

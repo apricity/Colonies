@@ -12,7 +12,7 @@
     <UserControl.Resources>
         <Converters:TerrainToBrushConverter x:Key="TerrainToBrushConverter"/>
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <DesignTimeData:SampleEnvironmentViewModel x:Key="SampleEnvironmentViewModel"/>
+        <DesignTimeData:DesignTimeEnvironmentViewModel x:Key="SampleEnvironmentViewModel"/>
     </UserControl.Resources>
 
     <Grid d:DataContext="{Binding Source={StaticResource SampleEnvironmentViewModel}}">

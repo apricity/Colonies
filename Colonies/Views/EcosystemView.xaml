@@ -10,7 +10,7 @@
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance ViewModels:EcosystemViewModel}">
 
     <UserControl.Resources>
-        <DesignTimeData:SampleEcosystemViewModel x:Key="SampleEcosystemViewModel"/>
+        <DesignTimeData:DesignTimeEcosystemViewModel x:Key="SampleEcosystemViewModel"/>
     </UserControl.Resources>
 
     <Grid d:DataContext="{Binding Source={StaticResource SampleEcosystemViewModel}}">

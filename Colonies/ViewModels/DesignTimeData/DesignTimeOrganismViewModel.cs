@@ -6,15 +6,15 @@
 
     using Wacton.Colonies.Models;
 
-    public sealed class SampleOrganismViewModel : OrganismViewModel
+    public sealed class DesignTimeOrganismViewModel : OrganismViewModel, IDesignTimeViewModel<Organism>
     {
-        public SampleOrganismViewModel()
-            : base(CreateSampleOrganism(), new EventAggregator())
+        public DesignTimeOrganismViewModel()
+            : base(CreateDesignTimeOrganism(), new EventAggregator())
         {
             
         }
 
-        public Organism SampleOrganism
+        public Organism DesignTimeModel
         {
             get
             {
@@ -22,7 +22,7 @@
             }
         }
 
-        private static Organism CreateSampleOrganism()
+        private static Organism CreateDesignTimeOrganism()
         {
             return new Organism("Sample", Colors.Black, true);
         }

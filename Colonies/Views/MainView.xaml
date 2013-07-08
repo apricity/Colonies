@@ -25,7 +25,7 @@
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <DesignTimeData:SampleMainViewModel x:Key="SampleMainViewModel"/>
+            <DesignTimeData:DesignTimeMainViewModel x:Key="SampleMainViewModel"/>
         </ResourceDictionary>
     </Window.Resources>
 

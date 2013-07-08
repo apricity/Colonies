@@ -1,20 +1,18 @@
 ﻿namespace Wacton.Colonies.ViewModels.DesignTimeData
 {
-    using System.Windows.Media;
-
     using Microsoft.Practices.Prism.Events;
 
     using Wacton.Colonies.Models;
 
-    public sealed class SampleEnvironmentViewModel : EnvironmentViewModel
+    public sealed class DesignTimeEnvironmentViewModel : EnvironmentViewModel, IDesignTimeViewModel<Environment>
     {
-        public SampleEnvironmentViewModel()
-            : base(CreateSampleEnvironment(), new EventAggregator())
+        public DesignTimeEnvironmentViewModel()
+            : base(CreateDesignTimeEnvironment(), new EventAggregator())
         {
 
         }
 
-        public Environment SampleEnvironment
+        public Environment DesignTimeModel
         {
             get
             {
@@ -22,7 +20,7 @@
             }
         }
 
-        private static Environment CreateSampleEnvironment()
+        private static Environment CreateDesignTimeEnvironment()
         {
             var environment = new Environment(Terrain.Unknown, true);
             environment.IncreasePheromoneLevel(0.5);

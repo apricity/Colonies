@@ -12,12 +12,12 @@
 
     <UserControl.Resources>
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <DesignTimeData:DesignTimeHabitatViewModel x:Key="SampleHabitatViewModel"/>
+        <DesignTimeData:DesignTimeHabitatViewModel x:Key="DesignTimeHabitatViewModel"/>
     </UserControl.Resources>
 
     <Border BorderBrush="#111111" BorderThickness="1, 1, 0, 0">
         <!-- border on left & top of each item -->
-        <Grid Height="20" Width="20" d:DataContext="{Binding Source={StaticResource SampleHabitatViewModel}}">
+        <Grid Height="20" Width="20" d:DataContext="{Binding Source={StaticResource DesignTimeHabitatViewModel}}">
             <Views:EnvironmentView DataContext="{Binding EnvironmentViewModel}"/>
             <Views:OrganismView DataContext="{Binding OrganismViewModel}" Height="10" Width="10" Visibility="{Binding HasOrganism, Converter={StaticResource BoolToVisibilityConverter}}"/>
             <Rectangle Fill="ForestGreen" Height="5" Width="5" Visibility="{Binding HasNutrient, Converter={StaticResource BoolToVisibilityConverter}}"/>

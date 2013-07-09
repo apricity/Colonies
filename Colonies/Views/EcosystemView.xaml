@@ -10,13 +10,14 @@
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance ViewModels:EcosystemViewModel}">
 
     <UserControl.Resources>
-        <DesignTimeData:DesignTimeEcosystemViewModel x:Key="SampleEcosystemViewModel"/>
+        <DesignTimeData:DesignTimeEcosystemViewModel x:Key="DesignTimeEcosystemViewModel"/>
     </UserControl.Resources>
 
-    <Grid d:DataContext="{Binding Source={StaticResource SampleEcosystemViewModel}}">
+    <Grid d:DataContext="{Binding Source={StaticResource DesignTimeEcosystemViewModel}}">
+        <!-- border on right & bottom of items control -->
         <Border BorderBrush="#111111" BorderThickness="0, 0, 1, 1">
-            <!-- border on right & bottom of items control -->
             <ItemsControl ItemsSource="{Binding HabitatViewModels}">
+                
                 <!-- define the control used for the collection of collections -->
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>

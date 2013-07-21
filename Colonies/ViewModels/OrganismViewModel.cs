@@ -35,6 +35,14 @@
             }
         }
 
+        public string Name
+        {
+            get
+            {
+                return !this.HasOrganism ? string.Empty : this.DomainModel.Name;
+            }
+        }
+
         public OrganismViewModel(Organism domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {

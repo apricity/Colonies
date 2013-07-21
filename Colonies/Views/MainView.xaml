@@ -81,10 +81,14 @@
         </Controls:Flyout>
     </Controls:MetroWindow.Flyouts>
 
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+    <!--<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
         <Viewbox Stretch="Uniform">
-            <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>
+            <Views:OrganismSummaryView DataContext="{Binding EcosystemViewModel}"/>
         </Viewbox>
+    </ScrollViewer>-->
+
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <Views:OrganismSummaryView DataContext="{Binding OrganismSummaryViewModel}"/>
     </ScrollViewer>
 
 </Controls:MetroWindow>

@@ -31,6 +31,20 @@
             }
         }
 
+        private OrganismSummaryViewModel organismSummaryViewModel;
+        public OrganismSummaryViewModel OrganismSummaryViewModel
+        {
+            get
+            {
+                return this.organismSummaryViewModel;
+            }
+            set
+            {
+                this.organismSummaryViewModel = value;
+                this.OnPropertyChanged("OrganismSummaryViewModel");
+            }
+        }
+
         private bool isEcosystemActive;
         public bool IsEcosystemActive
         {
@@ -90,6 +104,12 @@
                 this.DomainModel.Ecosystem.PheromoneFadePerTurn = value;
                 this.OnPropertyChanged("PheromoneFadePerTurn");
             }
+        }
+
+        public MainViewModel(Main domainModel, EcosystemViewModel ecosystemViewModel, OrganismSummaryViewModel organismSummaryViewModel, IEventAggregator eventAggregator)
+            : this(domainModel, ecosystemViewModel, eventAggregator)
+        {
+            this.OrganismSummaryViewModel = organismSummaryViewModel;
         }
 
         public MainViewModel(Main domainModel, EcosystemViewModel ecosystemViewModel, IEventAggregator eventAggregator)

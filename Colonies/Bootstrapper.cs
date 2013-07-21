@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Windows.Media;
+    using System.Linq;
 
     using Microsoft.Practices.Prism.Events;
 
@@ -71,8 +72,14 @@
                 habitatViewModels[organismCoordinate.X][organismCoordinate.Y].RefreshOrganismViewModel();
             }
 
+            // TODO: setting up the summary view after organisms initialised... how to handle this nicely
+            var organismViewModels = habitatViewModels.SelectMany(habitatViewModel => habitatViewModel)
+                                                      .Select(habitatViewModel => habitatViewModel.OrganismViewModel)
+                                                      .Where(organismViewModel => organismViewModel.HasOrganism).ToList();
+            var organismSummaryViewModel = new OrganismSummaryViewModel(ecosystem, organismViewModels, eventaggregator);
+
             var main = new Main(ecosystem);
-            var mainViewModel = new MainViewModel(main, ecosystemViewModel, eventaggregator);
+            var mainViewModel = new MainViewModel(main, ecosystemViewModel, organismSummaryViewModel, eventaggregator);
 
             return mainViewModel;
         }

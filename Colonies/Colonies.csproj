@@ -93,12 +93,19 @@
     <Compile Include="ViewModels\DesignTimeData\DesignTimeHabitatViewModel.cs" />
     <Compile Include="ViewModels\DesignTimeData\DesignTimeEnvironmentViewModel.cs" />
     <Compile Include="ViewModels\DesignTimeData\IDesignTimeViewModel.cs" />
+    <Compile Include="ViewModels\OrganismSummaryViewModel.cs" />
     <Compile Include="ViewModels\OrganismViewModel.cs" />
     <Compile Include="ViewModels\EcosystemViewModel.cs" />
     <Compile Include="ViewModels\EnvironmentViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\DesignTimeData\DesignTimeOrganismViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\OrganismDetailsView.xaml.cs">
+      <DependentUpon>OrganismDetailsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\OrganismSummaryView.xaml.cs">
+      <DependentUpon>OrganismSummaryView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\OrganismView.xaml.cs">
       <DependentUpon>OrganismView.xaml</DependentUpon>
     </Compile>
@@ -125,6 +132,14 @@
     <Page Include="Styles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OrganismDetailsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\OrganismSummaryView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\OrganismView.xaml">
       <Generator>MSBuild:Compile</Generator>

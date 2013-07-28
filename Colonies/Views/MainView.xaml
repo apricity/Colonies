@@ -85,11 +85,13 @@
     </Controls:MetroWindow.Flyouts>
 
     <Grid d:DataContext="{Binding Source={StaticResource DesignTimeMainViewModel}}">
-        <!--<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Viewbox Stretch="Uniform">
                 <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>
             </Viewbox>
-        </ScrollViewer>-->
+        </ScrollViewer>
+        
+        <!-- left in for testing purposes -->
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Views:OrganismSummaryView DataContext="{Binding OrganismSummaryViewModel}"/>
         </ScrollViewer>

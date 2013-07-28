@@ -1,5 +1,6 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
+    using System.Linq;
     using System.Threading;
     using System.Windows.Input;
 
@@ -147,7 +148,10 @@
         {
             lock (this.updateLock)
             {
-                this.EcosystemViewModel.ProgressEcosystemOneTurn();
+                var updateSummary = this.DomainModel.UpdateOnce();
+                this.UpdateViewModels(updateSummary);
+
+                //this.EcosystemViewModel.ProgressEcosystemOneTurn();
                 
                 // if there's been a change in the turn interval while the previous turn was processed
                 // update the interval of the ecosystem timer
@@ -155,6 +159,42 @@
                 {
                     this.ChangeEcosystemTimer();
                 }
+            }
+        }
+
+        private void UpdateViewModels(UpdateSummary updateSummary)
+        {
+            // ecosystem updates
+            foreach (var preUpdateOrganismLocation in updateSummary.PreUpdateOrganismLocations)
+            {
+                var x = preUpdateOrganismLocation.Value.X;
+                var y = preUpdateOrganismLocation.Value.Y;
+                var organism = this.DomainModel.Ecosystem.Habitats[x, y].Organism;
+                this.EcosystemViewModel.HabitatViewModels[x][y].OrganismViewModel = new OrganismViewModel(null, this.EventAggregator);
+            }
+
+            foreach (var postUpdateOrganismLocation in updateSummary.PostUpdateOrganismLocations)
+            {
+                var x = postUpdateOrganismLocation.Value.X;
+                var y = postUpdateOrganismLocation.Value.Y;
+                var organism = this.DomainModel.Ecosystem.Habitats[x, y].Organism;
+                this.EcosystemViewModel.HabitatViewModels[x][y].OrganismViewModel = new OrganismViewModel(organism, this.EventAggregator);
+            }
+
+            var pheromoneChangedLocations =
+                updateSummary.PheromoneDecreasedLocations.Union(
+                    updateSummary.PreUpdateOrganismLocations.Values).ToList();
+            foreach (var pheromoneChangedLocation in pheromoneChangedLocations)
+            {
+                var x = pheromoneChangedLocation.X;
+                var y = pheromoneChangedLocation.Y;
+                this.EcosystemViewModel.HabitatViewModels[x][y].EnvironmentViewModel.Refresh();
+            }
+
+            // organism summary updates
+            foreach (var organismViewModel in this.OrganismSummaryViewModel.OrganismViewModels)
+            {
+                organismViewModel.Refresh();
             }
         }
     }

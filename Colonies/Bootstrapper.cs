@@ -65,11 +65,20 @@
             this.InitialiseTerrain(ecosystem);
             var initialOrganismCoordinates = this.InitialiseOrganisms(ecosystem);
 
-            // TODO: do this in InitialiseOrganisms
-            // boshed together so the organisms are visible before ecosystem is switched on the first time
+            // TODO: do this in InitialiseOrganisms, all getting a bit too messy here...
+            // TODO: boshed together so the organisms are visible before ecosystem is switched on the first time
             foreach (var organismCoordinate in initialOrganismCoordinates)
             {
-                habitatViewModels[organismCoordinate.X][organismCoordinate.Y].RefreshOrganismViewModel();
+                var organism = ecosystem.Habitats[organismCoordinate.X, organismCoordinate.Y].Organism;
+                habitatViewModels[organismCoordinate.X][organismCoordinate.Y].OrganismViewModel = new OrganismViewModel(organism, eventaggregator);
+            }
+
+            for (var x = 0; x < width; x++)
+            {
+                for (var y = 0; y < height; y++)
+                {
+                    habitatViewModels[x][y].EnvironmentViewModel.Refresh();
+                }
             }
 
             // TODO: setting up the summary view after organisms initialised... how to handle this nicely
@@ -86,47 +95,47 @@
 
         private void InitialiseTerrain(Ecosystem ecosystem)
         {
-            // apply a terrain for every habitat
-            for (var x = 0; x < ecosystem.Width; x++)
+            var nutrientCoordinates = new List<Coordinates> { new Coordinates(0, 0) };
+            foreach (var coordinates in nutrientCoordinates)
             {
-                for (var y = 0; y < ecosystem.Height; y++)
-                {
-                    //ecosystem.SetTerrain(new Coordinates(x, y), Terrain.Something);
-                }
+                ecosystem.Habitats[coordinates.X, coordinates.Y].HasNutrient = true;
             }
 
-            ecosystem.Habitats[0, 0].HasNutrient = true;
-
             // custom obstructed habitats (will make a square shapen with an entrance - a pen?)
-            ecosystem.Habitats[1, 1].SetObstructed(true);
-            ecosystem.Habitats[1, 2].SetObstructed(true);
-            ecosystem.Habitats[1, 3].SetObstructed(true);
-            ecosystem.Habitats[1, 4].SetObstructed(true);
-            ecosystem.Habitats[1, 5].SetObstructed(true);
-            ecosystem.Habitats[1, 6].SetObstructed(true);
-            ecosystem.Habitats[1, 7].SetObstructed(true);
-            ecosystem.Habitats[1, 8].SetObstructed(true);
+            var obstructedCoordinates = new List<Coordinates>
+                                            {
+                                                new Coordinates(1, 1),
+                                                new Coordinates(1, 2),
+                                                new Coordinates(1, 3),
+                                                new Coordinates(1, 4),
+                                                new Coordinates(1, 5),
+                                                new Coordinates(1, 6),
+                                                new Coordinates(1, 7),
+                                                new Coordinates(1, 8),
+                                                new Coordinates(2, 1),
+                                                new Coordinates(3, 1),
+                                                new Coordinates(4, 1),
+                                                new Coordinates(5, 1),
+                                                new Coordinates(6, 1),
+                                                new Coordinates(7, 1),
+                                                new Coordinates(2, 8),
+                                                new Coordinates(3, 8),
+                                                new Coordinates(4, 8),
+                                                new Coordinates(5, 8),
+                                                new Coordinates(6, 8),
+                                                new Coordinates(7, 8),
+                                                new Coordinates(8, 1),
+                                                new Coordinates(8, 2),
+                                                new Coordinates(8, 3),
+                                                new Coordinates(8, 6),
+                                                new Coordinates(8, 7),
+                                                new Coordinates(8, 8)
+                                            };
 
-            ecosystem.Habitats[2, 1].SetObstructed(true);
-            ecosystem.Habitats[3, 1].SetObstructed(true);
-            ecosystem.Habitats[4, 1].SetObstructed(true);
-            ecosystem.Habitats[5, 1].SetObstructed(true);
-            ecosystem.Habitats[6, 1].SetObstructed(true);
-            ecosystem.Habitats[7, 1].SetObstructed(true);
-
-            ecosystem.Habitats[2, 8].SetObstructed(true);
-            ecosystem.Habitats[3, 8].SetObstructed(true);
-            ecosystem.Habitats[4, 8].SetObstructed(true);
-            ecosystem.Habitats[5, 8].SetObstructed(true);
-            ecosystem.Habitats[6, 8].SetObstructed(true);
-            ecosystem.Habitats[7, 8].SetObstructed(true);
-
-            ecosystem.Habitats[8, 1].SetObstructed(true);
-            ecosystem.Habitats[8, 2].SetObstructed(true);
-            ecosystem.Habitats[8, 3].SetObstructed(true);
-            ecosystem.Habitats[8, 6].SetObstructed(true);
-            ecosystem.Habitats[8, 7].SetObstructed(true);
-            ecosystem.Habitats[8, 8].SetObstructed(true);
+            foreach (var coordinates in obstructedCoordinates)
+            {
+                ecosystem.Habitats[coordinates.X, coordinates.Y].SetObstructed(true);
+            }
         }
 
         private IEnumerable<Coordinates> InitialiseOrganisms(Ecosystem ecosystem)

@@ -17,6 +17,16 @@
             this.EventAggregator = eventAggregator;
         }
 
+        public void AssignModel(T model)
+        {
+            this.DomainModel = model;
+        }
+
+        public void RemoveModel()
+        {
+            this.DomainModel = default(T);
+        }
+
         public override string ToString()
         {
             return string.Format("VM: {0}", this.DomainModel);

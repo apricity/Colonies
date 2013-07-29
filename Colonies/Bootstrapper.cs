@@ -67,10 +67,17 @@
 
             // TODO: do this in InitialiseOrganisms, all getting a bit too messy here...
             // TODO: boshed together so the organisms are visible before ecosystem is switched on the first time
+            var summaryOrganismViewModels = new List<OrganismViewModel>();            
             foreach (var organismCoordinate in initialOrganismCoordinates)
             {
                 var organism = ecosystem.Habitats[organismCoordinate.X, organismCoordinate.Y].Organism;
-                habitatViewModels[organismCoordinate.X][organismCoordinate.Y].OrganismViewModel = new OrganismViewModel(organism, eventaggregator);
+
+                // hook organism model into the ecosystem
+                habitatViewModels[organismCoordinate.X][organismCoordinate.Y].OrganismViewModel.AssignModel(organism);
+                habitatViewModels[organismCoordinate.X][organismCoordinate.Y].OrganismViewModel.Refresh();
+
+                // hook organism model into the organism summary
+                summaryOrganismViewModels.Add(new OrganismViewModel(organism, eventaggregator));
             }
 
             for (var x = 0; x < width; x++)
@@ -82,10 +89,7 @@
             }
 
             // TODO: setting up the summary view after organisms initialised... how to handle this nicely
-            var organismViewModels = habitatViewModels.SelectMany(habitatViewModel => habitatViewModel)
-                                                      .Select(habitatViewModel => habitatViewModel.OrganismViewModel)
-                                                      .Where(organismViewModel => organismViewModel.HasOrganism).ToList();
-            var organismSummaryViewModel = new OrganismSummaryViewModel(ecosystem, organismViewModels, eventaggregator);
+            var organismSummaryViewModel = new OrganismSummaryViewModel(ecosystem, summaryOrganismViewModels, eventaggregator);
 
             var main = new Main(ecosystem);
             var mainViewModel = new MainViewModel(main, ecosystemViewModel, organismSummaryViewModel, eventaggregator);

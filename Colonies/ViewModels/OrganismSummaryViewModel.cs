@@ -28,5 +28,10 @@
         {
             this.OrganismViewModels = organismViewModels;
         }
+
+        public override void Refresh()
+        {
+            // to complete when there is something to refresh
+        }
     }
 }

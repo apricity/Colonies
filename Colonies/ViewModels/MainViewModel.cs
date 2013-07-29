@@ -169,8 +169,7 @@
             {
                 var x = preUpdateOrganismLocation.Value.X;
                 var y = preUpdateOrganismLocation.Value.Y;
-                var organism = this.DomainModel.Ecosystem.Habitats[x, y].Organism;
-                this.EcosystemViewModel.HabitatViewModels[x][y].OrganismViewModel = new OrganismViewModel(null, this.EventAggregator);
+                this.EcosystemViewModel.HabitatViewModels[x][y].OrganismViewModel.RemoveModel();
             }
 
             foreach (var postUpdateOrganismLocation in updateSummary.PostUpdateOrganismLocations)
@@ -178,7 +177,7 @@
                 var x = postUpdateOrganismLocation.Value.X;
                 var y = postUpdateOrganismLocation.Value.Y;
                 var organism = this.DomainModel.Ecosystem.Habitats[x, y].Organism;
-                this.EcosystemViewModel.HabitatViewModels[x][y].OrganismViewModel = new OrganismViewModel(organism, this.EventAggregator);
+                this.EcosystemViewModel.HabitatViewModels[x][y].OrganismViewModel.AssignModel(organism);
             }
 
             var pheromoneChangedLocations =
@@ -196,6 +195,11 @@
             {
                 organismViewModel.Refresh();
             }
+        }
+
+        public override void Refresh()
+        {
+            // refresh all child view models (ecosystem & organism summary)?
         }
     }
 }

@@ -60,7 +60,7 @@
         }
 
         // TODO: can Refresh() be a generic ViewModel method?
-        public void Refresh()
+        public override void Refresh()
         {
             this.Terrain = this.DomainModel.Terrain;
             this.IsObstructed = this.DomainModel.IsObstructed;

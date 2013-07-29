@@ -27,5 +27,10 @@
         {
             this.HabitatViewModels = habitatViewModels;
         }
+
+        public override void Refresh()
+        {
+            // refresh all child view models?
+        }
     }
 }

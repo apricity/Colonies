@@ -20,12 +20,16 @@
         public void AssignModel(T model)
         {
             this.DomainModel = model;
+            this.Refresh();
         }
 
         public void RemoveModel()
         {
             this.DomainModel = default(T);
+            this.Refresh();
         }
+
+        public abstract void Refresh();
 
         public override string ToString()
         {

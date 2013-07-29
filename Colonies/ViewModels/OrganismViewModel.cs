@@ -10,6 +10,20 @@
     {
         // do not set domain model properties through the view model
         // use events to tell view models the model has changed
+        private bool hasOrganism;
+        public bool HasOrganism
+        {
+            get
+            {
+                return this.hasOrganism;
+            }
+            set
+            {
+                this.hasOrganism = value;
+                this.OnPropertyChanged("HasOrganism");
+            }
+        }
+
         private Color color;
         public Color Color
         {
@@ -73,29 +87,24 @@
         }
 
         // TODO: can Refresh() be a generic ViewModel method?
-        public void Refresh()
+        public override void Refresh()
         {
-            if (this.DomainModel == null)
-            {
-                this.Color = Colors.Transparent;
-                this.IsAlive = false;
-                this.HealthLevel = 0;
-                this.Name = string.Empty;
-            }
-            else
+            this.HasOrganism = this.DomainModel != null;
+
+            if (this.HasOrganism)
             {
                 this.Color = this.DomainModel.Color;
                 this.IsAlive = this.DomainModel.IsAlive;
                 this.HealthLevel = this.DomainModel.Health.Level;
                 this.Name = this.DomainModel.Name;
             }
-        }
-
-        public bool HasOrganism
-        {
-            get
+            else
             {
-                return this.DomainModel != null;
+                // reset the properties to their default values if no organism in the model
+                this.Color = default(Color);
+                this.IsAlive = default(bool);
+                this.HealthLevel = default(double);
+                this.Name = default(string); 
             }
         }
     }

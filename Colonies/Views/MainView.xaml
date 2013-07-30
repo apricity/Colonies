@@ -85,6 +85,11 @@
     </Controls:MetroWindow.Flyouts>
 
     <Grid d:DataContext="{Binding Source={StaticResource DesignTimeMainViewModel}}">
+        <!--<Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>-->
+        
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Viewbox Stretch="Uniform">
                 <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>

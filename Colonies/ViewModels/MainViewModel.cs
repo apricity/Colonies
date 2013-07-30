@@ -108,15 +108,10 @@
         }
 
         public MainViewModel(Main domainModel, EcosystemViewModel ecosystemViewModel, OrganismSummaryViewModel organismSummaryViewModel, IEventAggregator eventAggregator)
-            : this(domainModel, ecosystemViewModel, eventAggregator)
-        {
-            this.OrganismSummaryViewModel = organismSummaryViewModel;
-        }
-
-        public MainViewModel(Main domainModel, EcosystemViewModel ecosystemViewModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
             this.EcosystemViewModel = ecosystemViewModel;
+            this.OrganismSummaryViewModel = organismSummaryViewModel;
 
             // initally set the ecosystem up to be not running
             this.ecosystemTimer = new Timer(this.OnEcosystemTimerTick);
@@ -127,7 +122,6 @@
 
             // hook up a toggle ecosystem command so a keyboard shortcut can be used to toggle the ecosystem on/off
             this.ToggleEcosystemCommand = new RelayCommand(this.ToggleEcosystem);
-
         }
 
         private void ToggleEcosystem(object obj)
@@ -191,15 +185,14 @@
             }
 
             // organism summary updates
-            foreach (var organismViewModel in this.OrganismSummaryViewModel.OrganismViewModels)
-            {
-                organismViewModel.Refresh();
-            }
+            this.OrganismSummaryViewModel.Refresh();
         }
 
         public override void Refresh()
         {
-            // refresh all child view models (ecosystem & organism summary)?
+            // refresh all child view models (ecosystem and organism summary)
+            this.EcosystemViewModel.Refresh();
+            this.OrganismSummaryViewModel.Refresh();
         }
     }
 }

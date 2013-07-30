@@ -53,13 +53,9 @@
         public EnvironmentViewModel(Environment domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
-            if (domainModel != null)
-            {
-                this.Refresh();
-            }
+            
         }
 
-        // TODO: can Refresh() be a generic ViewModel method?
         public override void Refresh()
         {
             this.Terrain = this.DomainModel.Terrain;

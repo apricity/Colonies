@@ -7,7 +7,7 @@
 
     using Wacton.Colonies.Models;
 
-    public sealed class OrganismSummaryViewModel : ViewModelBase<Ecosystem>
+    public class OrganismSummaryViewModel : ViewModelBase<OrganismSummary>
     {
         private List<OrganismViewModel> organismViewModels;
         public List<OrganismViewModel> OrganismViewModels
@@ -19,11 +19,11 @@
             set
             {
                 this.organismViewModels = value;
-                this.OnPropertyChanged("organismViewModels");
+                this.OnPropertyChanged("OrganismViewModels");
             }
         }
 
-        public OrganismSummaryViewModel(Ecosystem domainModel, List<OrganismViewModel> organismViewModels, IEventAggregator eventAggregator)
+        public OrganismSummaryViewModel(OrganismSummary domainModel, List<OrganismViewModel> organismViewModels, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
             this.OrganismViewModels = organismViewModels;
@@ -31,7 +31,11 @@
 
         public override void Refresh()
         {
-            // to complete when there is something to refresh
+            // refresh all child view models (each organism)
+            foreach (var organismViewModel in this.OrganismViewModels)
+            {
+                organismViewModel.Refresh();
+            }
         }
     }
 }

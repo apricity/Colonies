@@ -83,7 +83,7 @@
         public OrganismViewModel(Organism domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
-            this.Refresh();
+
         }
 
         // TODO: can Refresh() be a generic ViewModel method?

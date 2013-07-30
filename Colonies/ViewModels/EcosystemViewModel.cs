@@ -1,6 +1,7 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     using Microsoft.Practices.Prism.Events;
 
@@ -30,7 +31,11 @@
 
         public override void Refresh()
         {
-            // refresh all child view models?
+            // refresh all child view models (each habitat)
+            foreach (var habitatViewModel in this.HabitatViewModels.SelectMany(habitatViewModel => habitatViewModel))
+            {
+                habitatViewModel.Refresh();
+            }
         }
     }
 }

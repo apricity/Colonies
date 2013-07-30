@@ -22,6 +22,8 @@
             // create the view to display to the user
             // the data context is the view model tree that contains the model
             var mainViewModel = this.BuildMainDataContext();
+            mainViewModel.Refresh();
+
             var mainView = new MainView { DataContext = mainViewModel };
 
             // display the window to the user!
@@ -63,33 +65,22 @@
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
-            var initialOrganismCoordinates = this.InitialiseOrganisms(ecosystem);
+            var initialOrganismLocations = this.InitialiseOrganisms(ecosystem);
 
-            // TODO: do this in InitialiseOrganisms, all getting a bit too messy here...
-            // TODO: boshed together so the organisms are visible before ecosystem is switched on the first time
-            var summaryOrganismViewModels = new List<OrganismViewModel>();            
-            foreach (var organismCoordinate in initialOrganismCoordinates)
+            // hook organism model into the ecosystem
+            foreach (var organismLocation in initialOrganismLocations)
             {
-                var organism = ecosystem.Habitats[organismCoordinate.X, organismCoordinate.Y].Organism;
+                var organism = organismLocation.Key;
+                var location = organismLocation.Value;
 
-                // hook organism model into the ecosystem
-                habitatViewModels[organismCoordinate.X][organismCoordinate.Y].OrganismViewModel.AssignModel(organism);
-                habitatViewModels[organismCoordinate.X][organismCoordinate.Y].OrganismViewModel.Refresh();
-
-                // hook organism model into the organism summary
-                summaryOrganismViewModels.Add(new OrganismViewModel(organism, eventaggregator));
+                habitatViewModels[location.X][location.Y].OrganismViewModel.AssignModel(organism);
             }
 
-            for (var x = 0; x < width; x++)
-            {
-                for (var y = 0; y < height; y++)
-                {
-                    habitatViewModels[x][y].EnvironmentViewModel.Refresh();
-                }
-            }
-
-            // TODO: setting up the summary view after organisms initialised... how to handle this nicely
-            var organismSummaryViewModel = new OrganismSummaryViewModel(ecosystem, summaryOrganismViewModels, eventaggregator);
+            // hook organism model into the organism summary
+            var organismSummary = new OrganismSummary(initialOrganismLocations.Keys.ToList());
+            var summaryOrganismViewModels =
+                organismSummary.Organisms.Select(organism => new OrganismViewModel(organism, eventaggregator)).ToList();
+            var organismSummaryViewModel = new OrganismSummaryViewModel(organismSummary, summaryOrganismViewModels, eventaggregator);
 
             var main = new Main(ecosystem);
             var mainViewModel = new MainViewModel(main, ecosystemViewModel, organismSummaryViewModel, eventaggregator);
@@ -142,20 +133,22 @@
             }
         }
 
-        private IEnumerable<Coordinates> InitialiseOrganisms(Ecosystem ecosystem)
+        private Dictionary<Organism, Coordinates> InitialiseOrganisms(Ecosystem ecosystem)
         {
-            var waffleCoords = new Coordinates(2, 2);
-            var wilberCoords = new Coordinates(2, 7);
-            var lottyCoords = new Coordinates(7, 2);
-            var louiseCoords = new Coordinates(7, 7);
+            var organismLocations = new Dictionary<Organism, Coordinates>
+                                        {
+                                            { new Organism("Waffle", Colors.White, true), new Coordinates(2, 2) },
+                                            { new Organism("Wilber", Colors.Black, true), new Coordinates(2, 7) },
+                                            { new Organism("Lotty", Colors.Lime, true), new Coordinates(7, 2) },
+                                            { new Organism("Dr. Louise", Colors.Orange, true), new Coordinates(7, 7) },
+                                        };
 
-            // place some organisms in the ecosystem
-            ecosystem.AddOrganism(new Organism("Waffle", Colors.White, true), waffleCoords);
-            ecosystem.AddOrganism(new Organism("Wilber", Colors.Black, true), wilberCoords);
-            ecosystem.AddOrganism(new Organism("Lotty", Colors.Lime, true), lottyCoords);
-            ecosystem.AddOrganism(new Organism("Dr. Louise", Colors.Orange, true), louiseCoords);
+            foreach (var organismLocation in organismLocations)
+            {
+                ecosystem.AddOrganism(organismLocation.Key, organismLocation.Value);
+            }
 
-            return new List<Coordinates> { waffleCoords, wilberCoords, lottyCoords, louiseCoords };
+            return organismLocations;
         }
     }
 }

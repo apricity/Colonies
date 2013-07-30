@@ -7,9 +7,10 @@
     public sealed class DesignTimeMainViewModel : MainViewModel, IDesignTimeViewModel<Main>
     {
         private static readonly DesignTimeEcosystemViewModel SampleEcosystemViewModel = new DesignTimeEcosystemViewModel();
+        private static readonly DesignTimeOrganismSummaryViewModel SampleOrganismSummaryViewModel = new DesignTimeOrganismSummaryViewModel();
 
         public DesignTimeMainViewModel()
-            : base(CreateDesignTimeMain(), SampleEcosystemViewModel, new EventAggregator())
+            : base(CreateDesignTimeMain(), SampleEcosystemViewModel, SampleOrganismSummaryViewModel, new EventAggregator())
         {   
             
         }

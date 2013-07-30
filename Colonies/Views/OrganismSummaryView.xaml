@@ -8,6 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance ViewModels:OrganismSummaryViewModel}">
 
+    <!-- TODO: use sample data context in a grid -->
     <Border BorderBrush="Wheat" BorderThickness="1">
         <!-- border on right & bottom of items control -->
         <ItemsControl ItemsSource="{Binding OrganismViewModels}">

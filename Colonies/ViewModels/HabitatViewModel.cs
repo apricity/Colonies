@@ -53,12 +53,13 @@
         {
             this.EnvironmentViewModel = environmentViewModel;
             this.OrganismViewModel = organismViewModel;
-            this.HasNutrient = false;
         }
 
         public override void Refresh()
         {
-            // refresh all child (organism & environment) view models?
+            // refresh child view models (environment & organism)
+            this.EnvironmentViewModel.Refresh();
+            this.OrganismViewModel.Refresh();
         }
     }
 }

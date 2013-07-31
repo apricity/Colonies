@@ -76,7 +76,7 @@
                 habitatViewModels[location.X][location.Y].OrganismViewModel.AssignModel(organism);
             }
 
-            // hook organism model into the organism summary
+            // hook organism model into the organism synopsis
             var organismSynopsis = new OrganismSynopsis(initialOrganismLocations.Keys.ToList());
             var organismViewModels =
                 organismSynopsis.Organisms.Select(organism => new OrganismViewModel(organism, eventaggregator)).ToList();

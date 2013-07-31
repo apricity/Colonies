@@ -184,13 +184,13 @@
                 this.EcosystemViewModel.HabitatViewModels[x][y].EnvironmentViewModel.Refresh();
             }
 
-            // organism summary updates
+            // organism synopsis updates
             this.OrganismSynopsisViewModel.Refresh();
         }
 
         public override void Refresh()
         {
-            // refresh all child view models (ecosystem and organism summary)
+            // refresh all child view models (ecosystem and organism synopsis)
             this.EcosystemViewModel.Refresh();
             this.OrganismSynopsisViewModel.Refresh();
         }

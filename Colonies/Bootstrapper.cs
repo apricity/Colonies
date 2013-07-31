@@ -77,13 +77,13 @@
             }
 
             // hook organism model into the organism summary
-            var organismSummary = new OrganismSummary(initialOrganismLocations.Keys.ToList());
-            var summaryOrganismViewModels =
-                organismSummary.Organisms.Select(organism => new OrganismViewModel(organism, eventaggregator)).ToList();
-            var organismSummaryViewModel = new OrganismSummaryViewModel(organismSummary, summaryOrganismViewModels, eventaggregator);
+            var organismSynopsis = new OrganismSynopsis(initialOrganismLocations.Keys.ToList());
+            var organismViewModels =
+                organismSynopsis.Organisms.Select(organism => new OrganismViewModel(organism, eventaggregator)).ToList();
+            var organismSynopsisViewModel = new OrganismSynopsisViewModel(organismSynopsis, organismViewModels, eventaggregator);
 
             var main = new Main(ecosystem);
-            var mainViewModel = new MainViewModel(main, ecosystemViewModel, organismSummaryViewModel, eventaggregator);
+            var mainViewModel = new MainViewModel(main, ecosystemViewModel, organismSynopsisViewModel, eventaggregator);
 
             return mainViewModel;
         }

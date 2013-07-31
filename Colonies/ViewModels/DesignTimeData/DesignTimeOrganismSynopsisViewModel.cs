@@ -7,7 +7,7 @@
 
     using Wacton.Colonies.Models;
 
-    public sealed class DesignTimeOrganismSummaryViewModel : OrganismSummaryViewModel, IDesignTimeViewModel<OrganismSummary>
+    public sealed class DesignTimeOrganismSynopsisViewModel : OrganismSynopsisViewModel, IDesignTimeViewModel<OrganismSynopsis>
     {
         private static readonly List<OrganismViewModel> SampleOrganismViewModels
             = new List<OrganismViewModel>
@@ -18,13 +18,13 @@
                     new DesignTimeOrganismViewModel()
                 };
 
-        public DesignTimeOrganismSummaryViewModel()
-            : base(CreateDesignTimeOrganismSummary(), SampleOrganismViewModels, new EventAggregator())
+        public DesignTimeOrganismSynopsisViewModel()
+            : base(CreateDesignTimeOrganismSynopsis(), SampleOrganismViewModels, new EventAggregator())
         {
 
         }
 
-        public OrganismSummary DesignTimeModel
+        public OrganismSynopsis DesignTimeModel
         {
             get
             {
@@ -32,13 +32,13 @@
             }
         }
 
-        private static OrganismSummary CreateDesignTimeOrganismSummary()
+        private static OrganismSynopsis CreateDesignTimeOrganismSynopsis()
         {
             var organisms =
                 SampleOrganismViewModels.Select(
                     organismViewModel => ((DesignTimeOrganismViewModel)organismViewModel).DesignTimeModel).ToList();
 
-            return new OrganismSummary(organisms);
+            return new OrganismSynopsis(organisms);
         }
     }
 }

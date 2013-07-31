@@ -1,13 +1,12 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
     using System.Collections.Generic;
-    using System.Linq;
 
     using Microsoft.Practices.Prism.Events;
 
     using Wacton.Colonies.Models;
 
-    public class OrganismSummaryViewModel : ViewModelBase<OrganismSummary>
+    public class OrganismSynopsisViewModel : ViewModelBase<OrganismSynopsis>
     {
         private List<OrganismViewModel> organismViewModels;
         public List<OrganismViewModel> OrganismViewModels
@@ -23,7 +22,7 @@
             }
         }
 
-        public OrganismSummaryViewModel(OrganismSummary domainModel, List<OrganismViewModel> organismViewModels, IEventAggregator eventAggregator)
+        public OrganismSynopsisViewModel(OrganismSynopsis domainModel, List<OrganismViewModel> organismViewModels, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
             this.OrganismViewModels = organismViewModels;

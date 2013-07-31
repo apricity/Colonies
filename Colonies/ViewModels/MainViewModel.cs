@@ -32,17 +32,17 @@
             }
         }
 
-        private OrganismSummaryViewModel organismSummaryViewModel;
-        public OrganismSummaryViewModel OrganismSummaryViewModel
+        private OrganismSynopsisViewModel organismSynopsisViewModel;
+        public OrganismSynopsisViewModel OrganismSynopsisViewModel
         {
             get
             {
-                return this.organismSummaryViewModel;
+                return this.organismSynopsisViewModel;
             }
             set
             {
-                this.organismSummaryViewModel = value;
-                this.OnPropertyChanged("OrganismSummaryViewModel");
+                this.organismSynopsisViewModel = value;
+                this.OnPropertyChanged("OrganismSynopsisViewModel");
             }
         }
 
@@ -107,11 +107,11 @@
             }
         }
 
-        public MainViewModel(Main domainModel, EcosystemViewModel ecosystemViewModel, OrganismSummaryViewModel organismSummaryViewModel, IEventAggregator eventAggregator)
+        public MainViewModel(Main domainModel, EcosystemViewModel ecosystemViewModel, OrganismSynopsisViewModel organismSynopsisViewModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
             this.EcosystemViewModel = ecosystemViewModel;
-            this.OrganismSummaryViewModel = organismSummaryViewModel;
+            this.OrganismSynopsisViewModel = organismSynopsisViewModel;
 
             // initally set the ecosystem up to be not running
             this.ecosystemTimer = new Timer(this.OnEcosystemTimerTick);
@@ -185,14 +185,14 @@
             }
 
             // organism summary updates
-            this.OrganismSummaryViewModel.Refresh();
+            this.OrganismSynopsisViewModel.Refresh();
         }
 
         public override void Refresh()
         {
             // refresh all child view models (ecosystem and organism summary)
             this.EcosystemViewModel.Refresh();
-            this.OrganismSummaryViewModel.Refresh();
+            this.OrganismSynopsisViewModel.Refresh();
         }
     }
 }

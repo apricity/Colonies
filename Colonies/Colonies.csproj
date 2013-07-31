@@ -86,16 +86,16 @@
     <Compile Include="Models\Measurement.cs" />
     <Compile Include="Models\Ecosystem.cs" />
     <Compile Include="Models\Main.cs" />
-    <Compile Include="Models\OrganismSummary.cs" />
+    <Compile Include="Models\OrganismSynopsis.cs" />
     <Compile Include="Models\UpdateSummary.cs" />
     <Compile Include="RelayCommand.cs" />
-    <Compile Include="ViewModels\DesignTimeData\DesignTimeOrganismSummaryViewModel.cs" />
+    <Compile Include="ViewModels\DesignTimeData\DesignTimeOrganismSynopsisViewModel.cs" />
     <Compile Include="ViewModels\DesignTimeData\DesignTimeMainViewModel.cs" />
     <Compile Include="ViewModels\DesignTimeData\DesignTimeEcosystemViewModel.cs" />
     <Compile Include="ViewModels\DesignTimeData\DesignTimeHabitatViewModel.cs" />
     <Compile Include="ViewModels\DesignTimeData\DesignTimeEnvironmentViewModel.cs" />
     <Compile Include="ViewModels\DesignTimeData\IDesignTimeViewModel.cs" />
-    <Compile Include="ViewModels\OrganismSummaryViewModel.cs" />
+    <Compile Include="ViewModels\OrganismSynopsisViewModel.cs" />
     <Compile Include="ViewModels\OrganismViewModel.cs" />
     <Compile Include="ViewModels\EcosystemViewModel.cs" />
     <Compile Include="ViewModels\EnvironmentViewModel.cs" />
@@ -105,8 +105,8 @@
     <Compile Include="Views\OrganismDetailsView.xaml.cs">
       <DependentUpon>OrganismDetailsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\OrganismSummaryView.xaml.cs">
-      <DependentUpon>OrganismSummaryView.xaml</DependentUpon>
+    <Compile Include="Views\OrganismSynopsisView.xaml.cs">
+      <DependentUpon>OrganismSynopsisView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OrganismView.xaml.cs">
       <DependentUpon>OrganismView.xaml</DependentUpon>
@@ -139,7 +139,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\OrganismSummaryView.xaml">
+    <Page Include="Views\OrganismSynopsisView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -98,7 +98,7 @@
         
         <!-- left in for testing purposes -->
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <Views:OrganismSummaryView DataContext="{Binding OrganismSummaryViewModel}"/>
+            <Views:OrganismSynopsisView DataContext="{Binding OrganismSynopsisViewModel}"/>
         </ScrollViewer>
     </Grid>   
 

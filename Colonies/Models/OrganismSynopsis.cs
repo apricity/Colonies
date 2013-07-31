@@ -2,11 +2,11 @@
 {
     using System.Collections.Generic;
 
-    public class OrganismSummary
+    public class OrganismSynopsis
     {
         public List<Organism> Organisms { get; private set; }
 
-        public OrganismSummary(List<Organism> organisms)
+        public OrganismSynopsis(List<Organism> organisms)
         {
             this.Organisms = organisms;
         }

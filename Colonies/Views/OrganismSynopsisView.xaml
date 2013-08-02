@@ -14,26 +14,24 @@
     </UserControl.Resources>
 
     <Grid d:DataContext="{Binding Source={StaticResource DesignTimeOrganismSynopsisViewModel}}">
-        <Border BorderBrush="Wheat" BorderThickness="1">
-            <!-- border on right & bottom of items control -->
+        <Border BorderBrush="#111111" BorderThickness="1">
             <ItemsControl ItemsSource="{Binding OrganismViewModels}">
                 <!-- define the control used for the collection of collections -->
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical"></StackPanel>
+                        <StackPanel Orientation="Vertical"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
                 <!-- define how each collection is presented - a template that is applied to each collection -->
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="Violet" BorderThickness="1">
-                            <Views:OrganismDetailsView DataContext="{Binding}" />
-                        </Border>
+                        <Views:OrganismDetailsView DataContext="{Binding}" Padding="1"/>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </Border>
+        
     </Grid>
 
 </UserControl>

@@ -9,9 +9,10 @@
         xmlns:ViewModels="clr-namespace:Wacton.Colonies.ViewModels"
         xmlns:DesignTimeData="clr-namespace:Wacton.Colonies.ViewModels.DesignTimeData"
         mc:Ignorable="d" 
-        Title="Wacton Colonies" Height="350" Width="600" WindowStartupLocation="CenterScreen"
+        Title="Wacton.Colonies" Height="350" Width="900" WindowStartupLocation="CenterScreen"
         Icon="/Resources/Icon.ico" ShowTitleBar="True" ShowIconOnTitleBar="True"
         d:DataContext="{d:DesignInstance ViewModels:MainViewModel}">
+        <!-- "snoop" used to determine a good startup height and width -->
 
     <Window.Resources>
         <ResourceDictionary>
@@ -19,7 +20,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Purple.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
 
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
@@ -45,6 +46,7 @@
         <Controls:Flyout Header="Settings" Position="Top">
             <Grid Margin="3">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -85,21 +87,23 @@
     </Controls:MetroWindow.Flyouts>
 
     <Grid d:DataContext="{Binding Source={StaticResource DesignTimeMainViewModel}}">
-        <!--<Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>-->
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
         
-        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Right">
             <Viewbox Stretch="Uniform">
                 <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>
             </Viewbox>
         </ScrollViewer>
+
+        <GridSplitter Grid.Row="0" Grid.Column="1" Visibility="Visible" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns" Width="5"/>
         
-        <!-- left in for testing purposes -->
-        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
             <Views:OrganismSynopsisView DataContext="{Binding OrganismSynopsisViewModel}"/>
         </ScrollViewer>
-    </Grid>   
+    </Grid>
 
 </Controls:MetroWindow>

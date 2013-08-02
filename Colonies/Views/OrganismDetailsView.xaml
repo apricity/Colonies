@@ -16,15 +16,24 @@
         <DesignTimeData:DesignTimeOrganismViewModel x:Key="DesignTimeOrganismViewModel" />
     </UserControl.Resources>
 
-    <!-- TODO: remove stackpanel, use grid only for more organised spacing -->
     <Grid d:DataContext="{Binding Source={StaticResource DesignTimeOrganismViewModel}}">
-        <StackPanel Orientation="Horizontal">
-            <Rectangle Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}" 
-                   Opacity="{Binding IsAlive, Converter={StaticResource AliveToOpacityConverter}}" MinWidth="20" MinHeight="20"/>
-            <TextBlock Text="{Binding Name}"/>
-            <ProgressBar Minimum="0" Maximum="1" Value="{Binding HealthLevel, Mode=OneWay}" BorderThickness="0"
-                     Style="{StaticResource HealthLevelProgressBar}" 
-                     Foreground="{Binding HealthLevel, Converter={StaticResource DoubleToHealthLevelBrushConverter}}" MinWidth="100"/>
-        </StackPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <Rectangle Grid.Column="0" Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}" 
+                   Opacity="{Binding IsAlive, Converter={StaticResource AliveToOpacityConverter}}" Width="20" Height="20"/>
+        
+        <TextBlock Grid.Column="1" Text="{Binding Name}" Padding="2, 0" MinWidth="50"/>
+        
+        <ProgressBar Grid.Column="2" Minimum="0" Maximum="1" Value="{Binding HealthLevel, Mode=OneWay}" BorderThickness="0"
+                     Style="{StaticResource HealthLevelProgressBar}" HorizontalContentAlignment="Right"
+                     Foreground="{Binding HealthLevel, Converter={StaticResource DoubleToHealthLevelBrushConverter}}"/>
     </Grid>
+    
 </UserControl>

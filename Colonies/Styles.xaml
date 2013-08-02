@@ -9,7 +9,9 @@
                 <ControlTemplate TargetType="{x:Type ProgressBar}">
                     <Grid x:Name="Background" SnapsToDevicePixels="true">
                         <Rectangle x:Name="PART_Track"/>
-                        <Decorator x:Name="PART_Indicator" HorizontalAlignment="Left">
+                        
+                        <!-- TODO: find out how to PROPERLY make HorizontalAlignment settable from outside this styles.xaml -->
+                        <Decorator x:Name="PART_Indicator" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
                             <Rectangle x:Name="Indicator" Fill="{TemplateBinding Foreground}" />
                         </Decorator>
                     </Grid>

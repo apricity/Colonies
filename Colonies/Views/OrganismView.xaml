@@ -30,7 +30,7 @@
 
         <ProgressBar Grid.Row="0" Grid.Column="1" 
                      Minimum="0" Maximum="1" Value="{Binding HealthLevel, Mode=OneWay}" BorderThickness="0"
-                     Style="{StaticResource HealthLevelProgressBar}" 
+                     Style="{StaticResource HealthLevelProgressBar}" HorizontalContentAlignment="Left"
                      Foreground="{Binding HealthLevel, Converter={StaticResource DoubleToHealthLevelBrushConverter}}"/>       
         
         <Rectangle Grid.Row="2" Grid.Column="1"  

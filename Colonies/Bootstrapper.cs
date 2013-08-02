@@ -1,6 +1,7 @@
 ﻿namespace Wacton.Colonies
 {
     using System.Collections.Generic;
+    using System.Reflection;
     using System.Windows.Media;
     using System.Linq;
 
@@ -19,12 +20,17 @@
 
         public void Run()
         {
+            // get the version number to display on the main window title
+            var assembly = Assembly.GetExecutingAssembly();
+            var version = AssemblyName.GetAssemblyName(assembly.Location).Version.ToString();
+
             // create the view to display to the user
             // the data context is the view model tree that contains the model
             var mainViewModel = this.BuildMainDataContext();
             mainViewModel.Refresh();
 
             var mainView = new MainView { DataContext = mainViewModel };
+            mainView.Title += string.Format(" ({0})", version);
 
             // display the window to the user!
             mainView.Show();

@@ -76,6 +76,7 @@
     <Compile Include="Converters\BoolToActiveStringConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToAliveOpacityConverter.cs" />
+    <Compile Include="Converters\DoubleDivisionConverter.cs" />
     <Compile Include="Converters\DoubleToHealthBrushConverter.cs" />
     <Compile Include="Coordinates.cs" />
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />

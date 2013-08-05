@@ -10,12 +10,14 @@
         public Terrain Terrain { get; private set; }
         public bool IsObstructed { get; private set; }
         public Condition Pheromone { get; private set; }
+        public bool HasNutrient { get; set; }
 
         public Environment(Terrain terrain, bool isObstructed)
         {
             this.Terrain = terrain;
             this.IsObstructed = isObstructed;
             this.Pheromone = new Condition(Measure.Pheromone, 0);
+            this.HasNutrient = false;
         }
 
         public void SetTerrain(Terrain terrain)

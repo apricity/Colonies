@@ -23,7 +23,7 @@
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
         <Rectangle Grid.Column="0" Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}" 

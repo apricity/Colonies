@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:Converters="clr-namespace:Wacton.Colonies.Converters"
+             xmlns:Views="clr-namespace:Wacton.Colonies.Views"
              xmlns:ViewModels="clr-namespace:Wacton.Colonies.ViewModels"
              xmlns:DesignTimeData="clr-namespace:Wacton.Colonies.ViewModels.DesignTimeData"
              mc:Ignorable="d" 
@@ -12,13 +13,21 @@
     <UserControl.Resources>
         <Converters:TerrainToBrushConverter x:Key="TerrainToBrushConverter"/>
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <Converters:DoubleDivisionConverter x:Key="DoubleDivisionConverter"/>
         <DesignTimeData:DesignTimeEnvironmentViewModel x:Key="DesignTimeEnvironmentViewModel"/>
     </UserControl.Resources>
 
     <Grid d:DataContext="{Binding Source={StaticResource DesignTimeEnvironmentViewModel}}">
         <Rectangle Fill="{Binding Terrain, Converter={StaticResource TerrainToBrushConverter}}"/>
         <Rectangle Fill="OrangeRed" Opacity="{Binding PheromoneOpacity}"/>
-        
+
+        <Rectangle Fill="MediumAquamarine" 
+                   Height="{Binding Height, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}, 
+                                            Converter={StaticResource DoubleDivisionConverter}, ConverterParameter=4}"
+                   Width="{Binding Width, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}, 
+                                          Converter={StaticResource DoubleDivisionConverter}, ConverterParameter=4}" 
+                   Visibility="{Binding HasNutrient, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
         <!-- stretch lines so we don't have to care about the size of the window (e.g. currently 20x20 but could easily change) -->
         <Line X1="0" Y1="0" X2="1" Y2="1" Stroke="Black" StrokeThickness="1" Stretch="Fill" 
               Visibility="{Binding IsObstructed, Converter={StaticResource BoolToVisibilityConverter}}"/>

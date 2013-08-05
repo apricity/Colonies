@@ -73,6 +73,17 @@
             var actualOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations, new List<Organism>());
 
             /* perform in-situ actions e.g. take food, eat food, attack */
+            foreach (var actualOrganismDestination in actualOrganismDestinations)
+            {
+                var organism = actualOrganismDestination.Key;
+                var habitat = actualOrganismDestination.Value;
+
+                if (habitat.Environment.HasNutrient)
+                {
+                    organism.IncreaseHealth(1.0);
+                    //habitat.Environment.HasNutrient = false; // this will remove the nutrient from the ecosystem
+                }
+            }
 
             /* perform ex-situ actions e.g. move any organisms that can after resolving conflicting intentions */
             foreach (var actualOrganismDestination in actualOrganismDestinations)
@@ -124,7 +135,7 @@
         {
             foreach (var organism in this.OrganismHabitats.Keys.ToList())
             {
-                organism.DecreaseHealth(0.01);
+                organism.DecreaseHealth(0.005);
             }
         }
 

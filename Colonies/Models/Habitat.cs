@@ -8,7 +8,6 @@
     {
         public Environment Environment { get; private set; }
         public Organism Organism { get; private set; }
-        public bool HasNutrient { get; set; }
 
         public Habitat(Environment environment, Organism organism)
         {

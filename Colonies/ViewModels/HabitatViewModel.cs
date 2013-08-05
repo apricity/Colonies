@@ -34,20 +34,6 @@
             }
         }
 
-        private bool hasNutrient;
-        public bool HasNutrient
-        {
-            get
-            {
-                return this.DomainModel.HasNutrient;
-            }
-            set
-            {
-                this.DomainModel.HasNutrient = value;
-                this.OnPropertyChanged("HasNutrient");
-            }
-        }
-
         public HabitatViewModel(Habitat domainModel, EnvironmentViewModel environmentViewModel, OrganismViewModel organismViewModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {

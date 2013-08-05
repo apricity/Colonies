@@ -50,6 +50,20 @@
             }
         }
 
+        private bool hasNutrient;
+        public bool HasNutrient
+        {
+            get
+            {
+                return this.DomainModel.HasNutrient;
+            }
+            set
+            {
+                this.DomainModel.HasNutrient = value;
+                this.OnPropertyChanged("HasNutrient");
+            }
+        }
+
         public EnvironmentViewModel(Environment domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
@@ -61,6 +75,7 @@
             this.Terrain = this.DomainModel.Terrain;
             this.IsObstructed = this.DomainModel.IsObstructed;
             this.PheromoneOpacity = this.DomainModel.Pheromone.Level;
+            this.HasNutrient = this.DomainModel.HasNutrient;
         }
     }
 }

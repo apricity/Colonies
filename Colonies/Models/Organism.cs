@@ -34,6 +34,15 @@
             this.IsDepositingPheromones = isDepostingPheromones;
         }
 
+        public void IncreaseHealth(double increaseLevel)
+        {
+            this.Health.IncreaseLevel(increaseLevel);
+            if (this.Health.Level > 1)
+            {
+                this.Health.SetLevel(1.0);
+            }
+        }
+
         public void DecreaseHealth(double decreaseLevel)
         {
             this.Health.DecreaseLevel(decreaseLevel);

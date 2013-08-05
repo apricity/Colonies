@@ -96,10 +96,10 @@
 
         private void InitialiseTerrain(Ecosystem ecosystem)
         {
-            var nutrientCoordinates = new List<Coordinates> { new Coordinates(0, 0) };
+            var nutrientCoordinates = new List<Coordinates> { new Coordinates(4, 4) };
             foreach (var coordinates in nutrientCoordinates)
             {
-                ecosystem.Habitats[coordinates.X, coordinates.Y].HasNutrient = true;
+                ecosystem.Habitats[coordinates.X, coordinates.Y].Environment.HasNutrient = true;
             }
 
             // custom obstructed habitats (will make a square shapen with an entrance - a pen?)

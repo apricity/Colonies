@@ -308,6 +308,12 @@
                         continue;
                     }
 
+                    // do not carry on if (x, y) is diagonal from organism
+                    if (x != location.X && y != location.Y)
+                    {
+                        continue;
+                    }
+
                     neighbouringHabitats.Add(this.Habitats[x, y]);
                 }
             }

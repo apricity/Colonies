@@ -9,15 +9,25 @@
     {
         public Terrain Terrain { get; private set; }
         public bool IsObstructed { get; private set; }
-        public Condition Pheromone { get; private set; }
-        public bool HasNutrient { get; set; }
+        public Measurement Measurement { get; private set; }
 
-        public Environment(Terrain terrain, bool isObstructed)
+        public Environment(Terrain terrain)
         {
             this.Terrain = terrain;
-            this.IsObstructed = isObstructed;
-            this.Pheromone = new Condition(Measure.Pheromone, 0);
-            this.HasNutrient = false;
+
+            var pheromone = new Condition(Measure.Pheromone, 0);
+            var nutrient = new Condition(Measure.Nutrient, 0);
+            var mineral = new Condition(Measure.Mineral, 0);
+
+            var damp = this.Terrain.Equals(Terrain.Water)
+                            ? new Condition(Measure.Damp, 1)
+                            : new Condition(Measure.Damp, 0);
+
+            var heat = this.Terrain.Equals(Terrain.Fire)
+                            ? new Condition(Measure.Heat, 1)
+                            : new Condition(Measure.Heat, 0);
+
+            this.Measurement = new Measurement(new List<Condition> { pheromone, nutrient, mineral, damp, heat });
         }
 
         public void SetTerrain(Terrain terrain)
@@ -30,32 +40,42 @@
             this.IsObstructed = isObstructed;
         }
 
-        public void IncreasePheromoneLevel(double levelIncrease)
+        public double GetLevel(Measure measure)
         {
-            this.Pheromone.IncreaseLevel(levelIncrease);
+            return this.Measurement.GetLevel(measure);
         }
 
-        public bool DecreasePheromoneLevel(double levelDecrease)
+        public void SetLevel(Measure measure, double level)
         {
-            var previousPheromoneLevel = this.Pheromone.Level;
-            this.Pheromone.DecreaseLevel(levelDecrease);
-            if (this.Pheromone.Level < 0)
+            this.EnsureModifiable(measure);
+            this.Measurement.SetLevel(measure, level);
+        }
+
+        public bool IncreaseLevel(Measure measure, double increment)
+        {
+            this.EnsureModifiable(measure);
+            return this.Measurement.IncreaseLevel(measure, increment);
+        }
+
+        public bool DecreaseLevel(Measure measure, double decrement)
+        {
+            this.EnsureModifiable(measure);
+            return this.Measurement.DecreaseLevel(measure, decrement);
+        }
+
+        // TODO: use a dictionary to keep track of restrictions if this grows later on
+        private void EnsureModifiable(Measure measure)
+        {
+            if (this.Terrain.Equals(Terrain.Water) && measure.Equals(Measure.Damp)
+                || this.Terrain.Equals(Terrain.Fire) && measure.Equals(Measure.Heat))
             {
-                this.Pheromone.SetLevel(0.0);
+                throw new InvalidOperationException(string.Format("Modification of {0} - {1} is disallowed", this.Terrain, measure));
             }
-
-            return this.Pheromone.Level != previousPheromoneLevel;
-
-        }
-
-        public Measurement GetMeasurement()
-        {
-            return new Measurement( new List<Condition> { this.Pheromone });
         }
         
         public override string ToString()
         {
-            return string.Format("{0}: {1}", this.Terrain, this.Pheromone);
+            return string.Format("{0}: {1}", this.Terrain, this.Measurement);
         }
     }
 }

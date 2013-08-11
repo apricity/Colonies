@@ -4,7 +4,7 @@
 
     using Wacton.Colonies.Interfaces;
 
-    public sealed class Habitat : IMeasurable
+    public sealed class Habitat
     {
         public Environment Environment { get; private set; }
         public Organism Organism { get; private set; }
@@ -38,12 +38,6 @@
         public void SetObstructed(bool isObstructed)
         {
             this.Environment.SetObstructed(isObstructed);
-        }
-
-        public Measurement GetMeasurement()
-        {
-            // TODO: take into account organisms before return the measure
-            return this.Environment.GetMeasurement();
         }
 
         public override String ToString()

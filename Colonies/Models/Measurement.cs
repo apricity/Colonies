@@ -1,6 +1,7 @@
 ﻿namespace Wacton.Colonies.Models
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
 
     public class Measurement
@@ -10,6 +11,31 @@
         public Measurement(List<Condition> conditions)
         {
             this.Conditions = conditions;
+        }
+
+        public double GetLevel(Measure measure)
+        {
+            return this.GetCondition(measure).Level;
+        }
+
+        public void SetLevel(Measure measure, double level)
+        {
+            this.GetCondition(measure).SetLevel(level);
+        }
+
+        public bool IncreaseLevel(Measure measure, double increment)
+        {
+            return this.GetCondition(measure).IncreaseLevel(increment);
+        }
+
+        public bool DecreaseLevel(Measure measure, double decrement)
+        {
+            return this.GetCondition(measure).DecreaseLevel(decrement);
+        }
+
+        private Condition GetCondition(Measure measure)
+        {
+            return this.Conditions.Single(condition => condition.Measure.Equals(measure));
         }
 
         public override string ToString()

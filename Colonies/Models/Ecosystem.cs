@@ -12,7 +12,7 @@
         public Habitat[,] Habitats { get; private set; }
         public Dictionary<Organism, Habitat> OrganismHabitats { get; private set; }
         public Dictionary<Habitat, Coordinates> HabitatCoordinates { get; private set; } 
-        public double HealthBias { get; private set; }
+        public Dictionary<Measure, double> MeasureBiases { get; private set; }
 
         // TODO: neater management of these?
         public double PheromoneDepositPerTurn { get; set; }
@@ -23,8 +23,6 @@
             this.Habitats = habitats;
             this.OrganismHabitats = organismHabitats;
 
-            this.HealthBias = 1;
-
             this.HabitatCoordinates = new Dictionary<Habitat, Coordinates>();
             for (var i = 0; i < this.Width; i++)
             {
@@ -33,6 +31,8 @@
                     this.HabitatCoordinates.Add(this.Habitats[i, j], new Coordinates(i, j));
                 }
             }
+
+            this.MeasureBiases = new Dictionary<Measure, double> { { Measure.Health, 1 } };
 
             this.PheromoneDepositPerTurn = 0.01;
             this.PheromoneFadePerTurn = 0.001;
@@ -77,11 +77,11 @@
             {
                 var organism = actualOrganismDestination.Key;
                 var habitat = actualOrganismDestination.Value;
+                var habitatNutrientLevel = habitat.Environment.GetLevel(Measure.Nutrient);
 
-                if (habitat.Environment.HasNutrient)
+                if (habitatNutrientLevel > 0.0)
                 {
-                    organism.IncreaseHealth(1.0);
-                    //habitat.Environment.HasNutrient = false; // this will remove the nutrient from the ecosystem
+                    organism.IncreaseLevel(Measure.Health, habitatNutrientLevel); // TODO: don't eat all the food! (test only)
                 }
             }
 
@@ -108,7 +108,7 @@
 
             foreach (var habitat in this.Habitats)
             {
-                if (habitat.Environment.DecreasePheromoneLevel(this.PheromoneFadePerTurn))
+                if (habitat.Environment.DecreaseLevel(Measure.Pheromone,  this.PheromoneFadePerTurn))
                 {
                     pheromoneDecreasedLocations.Add(this.HabitatCoordinates[habitat]);
                 }
@@ -124,9 +124,9 @@
                 var organism = organismHabitat.Key;
                 var habitat = organismHabitat.Value;
 
-                if (organism.IsDepositingPheromones)
+                if (organism.IsDepositingPheromones && organism.IsAlive)
                 {
-                    habitat.Environment.IncreasePheromoneLevel(this.PheromoneDepositPerTurn);
+                    habitat.Environment.IncreaseLevel(Measure.Pheromone, this.PheromoneDepositPerTurn);
                 }
             }
         }
@@ -135,7 +135,7 @@
         {
             foreach (var organism in this.OrganismHabitats.Keys.ToList())
             {
-                organism.DecreaseHealth(0.005);
+                organism.DecreaseLevel(Measure.Health, 0.005);
             }
         }
 
@@ -150,9 +150,13 @@
 
                 // get measurements of neighbouring environments
                 var neighbouringHabitats = this.GetNeighbouringHabitats(habitat);
+                var neighbouringEnvironments = neighbouringHabitats.Select(neighbour => neighbour.Environment).ToList();
 
-                // determine organism's intentions based on the measurements
-                var chosenHabitat = DecisionLogic.MakeDecision(neighbouringHabitats, organism);
+                // determine organism's intentions based on the environment measurements
+                var chosenEnvironment = DecisionLogic.MakeDecision(neighbouringEnvironments, organism);
+
+                // get the habitat the environment is from - this is where the organism wants to move to
+                var chosenHabitat = neighbouringHabitats.Single(neighbour => neighbour.Environment.Equals(chosenEnvironment));
                 intendedOrganismDestinations.Add(organism, chosenHabitat);
             }
 
@@ -321,9 +325,9 @@
             return neighbouringHabitats;
         }
 
-        public Dictionary<Measure, double> GetMeasureBiases()
+        public void SetMeasureBias(Measure measure, double bias)
         {
-            return new Dictionary<Measure, double> { { Measure.Health, this.HealthBias } };
+            this.MeasureBiases[measure] = bias;
         }
 
         public override String ToString()

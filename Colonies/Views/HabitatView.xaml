@@ -12,22 +12,31 @@
 
     <UserControl.Resources>
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <Converters:DoubleDivisionConverter x:Key="DoubleDivisionConverter"/>
+        <Converters:RelativeScaleConverter x:Key="RelativeScaleConverter"/>
         <DesignTimeData:DesignTimeHabitatViewModel x:Key="DesignTimeHabitatViewModel"/>
     </UserControl.Resources>
 
     <Border BorderBrush="#111111" BorderThickness="0.5, 0.5, 0, 0">
         <!-- border on left & top of each item -->
-        <!-- TODO: height and width should be global variables somewhere... (and other dimensions based off these) -->
+        <!-- TODO: height and width should be global variables somewhere... -->
         <Grid d:DataContext="{Binding Source={StaticResource DesignTimeHabitatViewModel}}">
             <Views:EnvironmentView DataContext="{Binding EnvironmentViewModel}"/>
-            
-            <Views:OrganismView DataContext="{Binding OrganismViewModel}" 
-                                Height="{Binding Height, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}, 
-                                                         Converter={StaticResource DoubleDivisionConverter}, ConverterParameter=2}"
-                                Width="{Binding Width, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}, 
-                                                       Converter={StaticResource DoubleDivisionConverter}, ConverterParameter=2}"
-                                Visibility="{Binding HasOrganism,  Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+            <Views:OrganismView DataContext="{Binding OrganismViewModel}" Visibility="{Binding HasOrganism,  Converter={StaticResource BoolToVisibilityConverter}}">
+                <Views:OrganismView.Height>
+                    <MultiBinding Converter="{StaticResource RelativeScaleConverter}">
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}" Path="Height"/>
+                        <Binding Path="HabitatScale"/>
+                    </MultiBinding>
+                </Views:OrganismView.Height>
+
+                <Views:OrganismView.Width>
+                    <MultiBinding Converter="{StaticResource RelativeScaleConverter}">
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}" Path="Width"/>
+                        <Binding Path="HabitatScale"/>
+                    </MultiBinding>
+                </Views:OrganismView.Width>
+            </Views:OrganismView>
         </Grid>
     </Border>
     

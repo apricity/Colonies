@@ -9,15 +9,15 @@
     {
         public string Name { get; private set; }
         public Color Color { get; private set; }
-        public Condition Health { get; private set; }
         public bool IsDepositingPheromones { get; private set; }
-        public double PheromoneBias { get; private set; }
+        public Measurement Measurement { get; private set; }
+        public Dictionary<Measure, double> MeasureBiases { get; private set; } 
 
         public bool IsAlive
         {
             get
             {
-                return !(this.Health.Level <= 0.0);
+                return this.Measurement.GetLevel(Measure.Health) > 0.0;
             }
         }
 
@@ -26,53 +26,46 @@
             this.Name = name;
             this.Color = color;
 
-            this.Health = new Condition(Measure.Health, 1.0);
-
-            this.PheromoneBias = 10;
+            var health = new Condition(Measure.Health, 1.0);
+            this.Measurement = new Measurement(new List<Condition> { health });
+            this.MeasureBiases = new Dictionary<Measure, double>
+                                     {
+                                         { Measure.Pheromone, 10 },
+                                         { Measure.Nutrient, 0 },
+                                         { Measure.Mineral, 0 },
+                                         { Measure.Damp, 0 },
+                                         { Measure.Heat, 0 }
+                                     };
         }
 
-        public void IncreaseHealth(double increaseLevel)
+        public double GetLevel(Measure measure)
         {
-            this.Health.IncreaseLevel(increaseLevel);
-            if (this.Health.Level > 1)
-            {
-                this.Health.SetLevel(1.0);
-            }
+            return this.Measurement.GetLevel(measure);
         }
 
-        public void DecreaseHealth(double decreaseLevel)
+        public void SetLevel(Measure measure, double level)
         {
-            this.Health.DecreaseLevel(decreaseLevel);
-            if (this.Health.Level < 0)
-            {
-                this.Health.SetLevel(0.0);
-            }
-
-            if (!this.IsAlive)
-            {
-                this.IsDepositingPheromones = false;
-            }
+            this.Measurement.SetLevel(measure, level);
         }
 
-        public Measurement GetMeasurement()
+        public bool IncreaseLevel(Measure measure, double increment)
         {
-            return new Measurement(new List<Condition> { this.Health });
+            return this.Measurement.IncreaseLevel(measure, increment);
         }
 
-        public Dictionary<Measure, double> GetMeasureBiases()
+        public bool DecreaseLevel(Measure measure, double decrement)
         {
-            return new Dictionary<Measure, double> { { Measure.Pheromone, this.PheromoneBias } };
+            return this.Measurement.DecreaseLevel(measure, decrement);
         }
 
-        // TODO: take Measure as another parameter, and update a dictionary of Measure -> bias accordingly
-        public void SetPheromoneBias(double bias)
+        public void SetMeasureBias(Measure measure, double bias)
         {
-            this.PheromoneBias = bias;
+            this.MeasureBiases[measure] = bias;
         }
 
         public override string ToString()
         {
-            return string.Format("{0}: {1} {2}", this.Name, this.Health, this.Color);
+            return string.Format("{0}: {1} {2}", this.Name, this.GetLevel(Measure.Health), this.Color);
         }
     }
 }

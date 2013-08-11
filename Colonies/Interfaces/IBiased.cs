@@ -4,6 +4,6 @@
 
     public interface IBiased
     {
-        Dictionary<Measure, double> GetMeasureBiases();
+        Dictionary<Measure, double> MeasureBiases { get; }
     }
 }

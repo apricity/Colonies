@@ -217,6 +217,14 @@
             private readonly Condition pheromoneCondition;
             private readonly Condition healthCondition;
 
+            public Measurement Measurement
+            {
+                get
+                {
+                    return new Measurement(new List<Condition> { this.pheromoneCondition, this.healthCondition });
+                }
+            }
+
             public TestMeasurableItem(string identifier)
             {
                 this.identifier = identifier;
@@ -234,11 +242,6 @@
                 this.healthCondition.SetLevel(healthLevel);
             }
 
-            public Measurement GetMeasurement()
-            {
-                return new Measurement(new List<Condition> { this.pheromoneCondition, this.healthCondition });
-            }
-
             public override string ToString()
             {
                 return this.identifier;
@@ -247,21 +250,23 @@
 
         private class TestBiasedItem : IBiased
         {
-            private readonly string identifier;
             private readonly double pheromoneBias;
             private readonly double healthBias;
+
+            public Dictionary<Measure, double> MeasureBiases
+            {
+                get
+                {
+                    // there needs to be a bias for each measure (will be applied to all items)
+                    // but will have no effect when there is only one measure
+                    return new Dictionary<Measure, double> { { Measure.Pheromone, this.pheromoneBias }, { Measure.Health, this.healthBias } };
+                }
+            }
 
             public TestBiasedItem(double pheromoneBias, double healthBias)
             {
                 this.pheromoneBias = pheromoneBias;
                 this.healthBias = healthBias;
-            }
-
-            public Dictionary<Measure, double> GetMeasureBiases()
-            {
-                // there needs to be a bias for each measure (will be applied to all items)
-                // but will have no effect when there is only one measure
-                return new Dictionary<Measure, double> { { Measure.Pheromone, this.pheromoneBias }, { Measure.Health, this.healthBias } };
             }
         }
 

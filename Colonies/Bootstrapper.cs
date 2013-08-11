@@ -54,7 +54,7 @@
                 for (var y = 0; y < height; y++)
                 {
                     // initially set each habitat to have an unknown environment and no organism
-                    var environment = new Environment(Terrain.Earth, false);
+                    var environment = new Environment(Terrain.Earth);
                     var environmentViewModel = new EnvironmentViewModel(environment, eventaggregator);
 
                     var organismViewModel = new OrganismViewModel(null, eventaggregator);
@@ -99,10 +99,10 @@
             ecosystem.Habitats[19, 0].Environment.SetTerrain(Terrain.Water);
             ecosystem.Habitats[19, 9].Environment.SetTerrain(Terrain.Fire);
 
-            var nutrientCoordinates = new List<Coordinates> { new Coordinates(4, 4) };
-            foreach (var coordinates in nutrientCoordinates)
+            for (var i = 0; i < 15; i++)
             {
-                ecosystem.Habitats[coordinates.X, coordinates.Y].Environment.HasNutrient = true;
+                ecosystem.Habitats[i, 0].Environment.SetLevel(Measure.Nutrient, 1.0 - (i * (1 / (double)15)));
+                ecosystem.Habitats[i, 9].Environment.SetLevel(Measure.Mineral, 1.0 - (i * (1 / (double)15)));
             }
 
             // custom obstructed habitats (will make a square shapen with an entrance - a pen?)
@@ -146,10 +146,10 @@
         {
             var organismLocations = new Dictionary<Organism, Coordinates>
                                         {
-                                            { new Organism("Waffle", Colors.Gray), new Coordinates(2, 2) },
-                                            { new Organism("Wilber", Colors.Gray), new Coordinates(2, 7) },
-                                            { new Organism("Lotty", Colors.Gray), new Coordinates(7, 2) },
-                                            { new Organism("Dr. Louise", Colors.Gray), new Coordinates(7, 7) },
+                                            { new Organism("Waffle", Colors.Silver), new Coordinates(2, 2) },
+                                            { new Organism("Wilber", Colors.Silver), new Coordinates(2, 7) },
+                                            { new Organism("Lotty", Colors.Silver), new Coordinates(7, 2) },
+                                            { new Organism("Dr. Louise", Colors.Silver), new Coordinates(7, 7) },
                                         };
 
             foreach (var organismLocation in organismLocations)

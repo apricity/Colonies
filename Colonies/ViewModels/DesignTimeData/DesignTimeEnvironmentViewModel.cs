@@ -22,8 +22,11 @@
 
         private static Environment CreateDesignTimeEnvironment()
         {
-            var environment = new Environment(Terrain.Earth, true);
-            environment.IncreasePheromoneLevel(0.5);
+            var environment = new Environment(Terrain.Earth);
+            environment.SetObstructed(true);
+            environment.SetLevel(Measure.Pheromone, 0.5);
+            environment.SetLevel(Measure.Nutrient, 0.5);
+            environment.SetLevel(Measure.Mineral, 0.5);
             return environment;
         }
     }

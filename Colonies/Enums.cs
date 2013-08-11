@@ -10,6 +10,10 @@
     public enum Measure
     {
         Pheromone,
+        Nutrient,
+        Mineral,
+        Damp,
+        Heat,
         Health
     }
 }

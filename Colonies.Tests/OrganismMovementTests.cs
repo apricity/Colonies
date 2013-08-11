@@ -330,7 +330,7 @@
             {
                 for (var y = 0; y < height; y++)
                 {
-                    var environment = new Environment(Terrain.Earth, false);
+                    var environment = new Environment(Terrain.Earth);
                     habitats[x, y] = new Habitat(environment, null);
                 }
             }

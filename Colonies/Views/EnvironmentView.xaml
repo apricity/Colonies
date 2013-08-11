@@ -13,20 +13,37 @@
     <UserControl.Resources>
         <Converters:TerrainToBrushConverter x:Key="TerrainToBrushConverter"/>
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <Converters:DoubleDivisionConverter x:Key="DoubleDivisionConverter"/>
+        <Converters:RelativeScaleConverter x:Key="RelativeScaleConverter"/>
         <DesignTimeData:DesignTimeEnvironmentViewModel x:Key="DesignTimeEnvironmentViewModel"/>
     </UserControl.Resources>
 
     <Grid d:DataContext="{Binding Source={StaticResource DesignTimeEnvironmentViewModel}}">
-        <Rectangle Fill="{Binding Terrain, Converter={StaticResource TerrainToBrushConverter}}"/>
+        <Rectangle>
+            <Rectangle.Fill>
+                <MultiBinding Converter="{StaticResource TerrainToBrushConverter}">
+                    <Binding Path="Terrain"/>
+                    <Binding Path="MineralLevel"/>
+                </MultiBinding>
+            </Rectangle.Fill>
+        </Rectangle>
+        
         <Rectangle Fill="OrangeRed" Opacity="{Binding PheromoneOpacity}"/>
 
-        <Rectangle Fill="LawnGreen" 
-                   Height="{Binding Height, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}, 
-                                            Converter={StaticResource DoubleDivisionConverter}, ConverterParameter=4}"
-                   Width="{Binding Width, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}, 
-                                          Converter={StaticResource DoubleDivisionConverter}, ConverterParameter=4}" 
-                   Visibility="{Binding HasNutrient, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <Rectangle Fill="LawnGreen">
+            <Rectangle.Height>
+                <MultiBinding Converter="{StaticResource RelativeScaleConverter}">
+                    <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}" Path="Height"/>
+                    <Binding Path="NutrientScalar"/>
+                </MultiBinding>
+            </Rectangle.Height>
+
+            <Rectangle.Width>
+                <MultiBinding Converter="{StaticResource RelativeScaleConverter}">
+                    <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}" Path="Width"/>
+                    <Binding Path="NutrientScalar"/>
+                </MultiBinding>
+            </Rectangle.Width>
+        </Rectangle>
 
         <!-- stretch lines so we don't have to care about the size of the window (e.g. currently 20x20 but could easily change) -->
         <Line X1="0" Y1="0" X2="1" Y2="1" Stroke="Black" StrokeThickness="0.5" Stretch="Fill" 

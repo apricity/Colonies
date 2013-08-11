@@ -38,17 +38,17 @@
             }
         }
 
-        private bool isAlive;
-        public bool IsAlive
+        private string name;
+        public string Name
         {
             get
             {
-                return this.isAlive;
+                return this.name;
             }
             set
             {
-                this.isAlive = value;
-                this.OnPropertyChanged("IsAlive");
+                this.name = value;
+                this.OnPropertyChanged("Name");
             }
         }
 
@@ -66,20 +66,29 @@
             }
         }
 
-        private string name;
-        public string Name
+        private bool isAlive;
+        public bool IsAlive
         {
             get
             {
-                return this.name;
+                return this.isAlive;
             }
             set
             {
-                this.name = value;
-                this.OnPropertyChanged("Name");
+                this.isAlive = value;
+                this.OnPropertyChanged("IsAlive");
             }
         }
 
+        public static double HabitatScale
+        {
+            get
+            {
+                return 0.5;
+            }
+        }
+
+        
         public OrganismViewModel(Organism domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
@@ -95,7 +104,7 @@
             {
                 this.Color = this.DomainModel.Color;
                 this.IsAlive = this.DomainModel.IsAlive;
-                this.HealthLevel = this.DomainModel.Health.Level;
+                this.HealthLevel = this.DomainModel.GetLevel(Measure.Health);
                 this.Name = this.DomainModel.Name;
             }
             else

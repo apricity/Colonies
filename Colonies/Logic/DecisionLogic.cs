@@ -28,13 +28,13 @@
         {
             var weightedMeasurableItems = new Dictionary<T, double>();
 
-            var biases = biasProvider.GetMeasureBiases();
+            var biases = biasProvider.MeasureBiases;
             foreach (var measurableItem in measurableItems)
             {
                 // TODO: easy for a bug to occur if bias does not contain a measure in the measurable items
                 // each measurement initially has a base weighting (the greater it is, the less effect the measurement level and bias have)
                 // add further weighting according to strength of measurement with bias applied
-                var measurement = measurableItem.GetMeasurement();
+                var measurement = measurableItem.Measurement;
                 var weighting = baseWeighting + measurement.Conditions.Sum(condition => condition.Level * biases[condition.Measure]);
 
                 weightedMeasurableItems.Add(measurableItem, weighting);

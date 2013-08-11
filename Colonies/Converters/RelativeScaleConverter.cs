@@ -5,27 +5,27 @@
     using System.Windows;
     using System.Windows.Data;
 
-    public class DoubleDivisionConverter : IValueConverter
+    public class RelativeScaleConverter : IMultiValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null)
             {
                 return null;
             }
 
-            var divisor = System.Convert.ToDouble(parameter);
-
-            if (value is double)
+            if (value[0] is double && value[1] is double)
             {
-                return (double)value / divisor;
+                var dimension = (double)value[0];
+                var scale = (double)value[1];
+                return dimension * scale;
             }
 
             var type = value.GetType();
             throw new InvalidOperationException("Unsupported type [" + type.Name + "]"); 
         }
 
-        public object ConvertBack(object value, Type targetType,object parameter, CultureInfo culture)
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

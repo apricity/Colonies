@@ -50,17 +50,31 @@
             }
         }
 
-        private bool hasNutrient;
-        public bool HasNutrient
+        private double nutrientScalar;
+        public double NutrientScalar
         {
             get
             {
-                return this.DomainModel.HasNutrient;
+                return this.nutrientScalar;
             }
             set
             {
-                this.DomainModel.HasNutrient = value;
-                this.OnPropertyChanged("HasNutrient");
+                this.nutrientScalar = value;
+                this.OnPropertyChanged("NutrientScalar");
+            }
+        }
+
+        private double mineralLevel;
+        public double MineralLevel
+        {
+            get
+            {
+                return this.mineralLevel;
+            }
+            set
+            {
+                this.mineralLevel = value;
+                this.OnPropertyChanged("MineralLevel");
             }
         }
 
@@ -74,8 +88,9 @@
         {
             this.Terrain = this.DomainModel.Terrain;
             this.IsObstructed = this.DomainModel.IsObstructed;
-            this.PheromoneOpacity = this.DomainModel.Pheromone.Level;
-            this.HasNutrient = this.DomainModel.HasNutrient;
+            this.PheromoneOpacity = this.DomainModel.GetLevel(Measure.Pheromone);
+            this.NutrientScalar = this.DomainModel.GetLevel(Measure.Nutrient);
+            this.MineralLevel = this.DomainModel.GetLevel(Measure.Mineral);
         }
     }
 }

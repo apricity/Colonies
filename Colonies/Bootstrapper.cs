@@ -54,7 +54,7 @@
                 for (var y = 0; y < height; y++)
                 {
                     // initially set each habitat to have an unknown environment and no organism
-                    var environment = new Environment(Terrain.Unknown, false);
+                    var environment = new Environment(Terrain.Earth, false);
                     var environmentViewModel = new EnvironmentViewModel(environment, eventaggregator);
 
                     var organismViewModel = new OrganismViewModel(null, eventaggregator);
@@ -96,6 +96,9 @@
 
         private void InitialiseTerrain(Ecosystem ecosystem)
         {
+            ecosystem.Habitats[19, 0].Environment.SetTerrain(Terrain.Water);
+            ecosystem.Habitats[19, 9].Environment.SetTerrain(Terrain.Fire);
+
             var nutrientCoordinates = new List<Coordinates> { new Coordinates(4, 4) };
             foreach (var coordinates in nutrientCoordinates)
             {
@@ -143,10 +146,10 @@
         {
             var organismLocations = new Dictionary<Organism, Coordinates>
                                         {
-                                            { new Organism("Waffle", Colors.White, true), new Coordinates(2, 2) },
-                                            { new Organism("Wilber", Colors.Black, true), new Coordinates(2, 7) },
-                                            { new Organism("Lotty", Colors.Lime, true), new Coordinates(7, 2) },
-                                            { new Organism("Dr. Louise", Colors.Orange, true), new Coordinates(7, 7) },
+                                            { new Organism("Waffle", Colors.Gray), new Coordinates(2, 2) },
+                                            { new Organism("Wilber", Colors.Gray), new Coordinates(2, 7) },
+                                            { new Organism("Lotty", Colors.Gray), new Coordinates(7, 2) },
+                                            { new Organism("Dr. Louise", Colors.Gray), new Coordinates(7, 7) },
                                         };
 
             foreach (var organismLocation in organismLocations)

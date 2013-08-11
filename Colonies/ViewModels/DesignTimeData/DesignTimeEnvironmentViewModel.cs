@@ -22,7 +22,7 @@
 
         private static Environment CreateDesignTimeEnvironment()
         {
-            var environment = new Environment(Terrain.Unknown, true);
+            var environment = new Environment(Terrain.Earth, true);
             environment.IncreasePheromoneLevel(0.5);
             return environment;
         }

@@ -24,7 +24,7 @@
 
         private static Organism CreateDesignTimeOrganism()
         {
-            return new Organism("Sample", Colors.Black, true);
+            return new Organism("Sample", Colors.Gray);
         }
     }
 }

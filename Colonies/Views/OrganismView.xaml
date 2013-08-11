@@ -31,11 +31,13 @@
         <ProgressBar Grid.Row="0" Grid.Column="1" 
                      Minimum="0" Maximum="1" Value="{Binding HealthLevel, Mode=OneWay}" BorderThickness="0"
                      Style="{StaticResource HealthLevelProgressBar}" HorizontalContentAlignment="Left"
-                     Foreground="{Binding HealthLevel, Converter={StaticResource DoubleToHealthLevelBrushConverter}}"/>       
+                     Foreground="{Binding HealthLevel, Converter={StaticResource DoubleToHealthLevelBrushConverter}}"/>
+
+        <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="0.25">
+            <Rectangle Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}" 
+                       Opacity="{Binding IsAlive, Converter={StaticResource BoolToAliveOpacityConverter}}"/>
+        </Border>
         
-        <Rectangle Grid.Row="2" Grid.Column="1"  
-                   Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}" 
-                   Opacity="{Binding IsAlive, Converter={StaticResource BoolToAliveOpacityConverter}}"/>
     </Grid>
 
 </UserControl>

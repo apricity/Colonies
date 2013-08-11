@@ -21,15 +21,11 @@
                 switch (terrain)
                 {
                     case Terrain.Earth:
-                        return Brushes.BurlyWood;
-                    case Terrain.Grass:
-                        return Brushes.ForestGreen;
+                        return Brushes.Sienna;
                     case Terrain.Water:
-                        return Brushes.DeepSkyBlue;
+                        return Brushes.CornflowerBlue;
                     case Terrain.Fire:
-                        return Brushes.Firebrick;
-                    case Terrain.Unknown:
-                        return Brushes.DimGray;
+                        return Brushes.Tomato;
                     default:
                         return Brushes.Transparent;
                 }

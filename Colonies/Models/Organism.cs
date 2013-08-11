@@ -21,7 +21,7 @@
             }
         }
 
-        public Organism(string name, Color color, bool isDepostingPheromones)
+        public Organism(string name, Color color)
         {
             this.Name = name;
             this.Color = color;
@@ -29,9 +29,6 @@
             this.Health = new Condition(Measure.Health, 1.0);
 
             this.PheromoneBias = 10;
-
-            // TODO: depositing pheromones should probably not be something that is handled through construction (it will probably be very dynamic)
-            this.IsDepositingPheromones = isDepostingPheromones;
         }
 
         public void IncreaseHealth(double increaseLevel)

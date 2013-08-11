@@ -28,7 +28,7 @@
             this.organisms = new Dictionary<string, Organism>();
             foreach (var organismIdentifier in organismIdentifiers)
             {
-                this.organisms.Add(organismIdentifier, new Organism(organismIdentifier, Colors.Black, false));
+                this.organisms.Add(organismIdentifier, new Organism(organismIdentifier, Colors.Black));
             }
 
             this.habitatCoordinates = new Dictionary<Habitat, Coordinates>();
@@ -330,7 +330,7 @@
             {
                 for (var y = 0; y < height; y++)
                 {
-                    var environment = new Environment(Terrain.Unknown, false);
+                    var environment = new Environment(Terrain.Earth, false);
                     habitats[x, y] = new Habitat(environment, null);
                 }
             }

@@ -16,7 +16,7 @@
         <DesignTimeData:DesignTimeHabitatViewModel x:Key="DesignTimeHabitatViewModel"/>
     </UserControl.Resources>
 
-    <Border BorderBrush="#111111" BorderThickness="1, 1, 0, 0">
+    <Border BorderBrush="#111111" BorderThickness="0.5, 0.5, 0, 0">
         <!-- border on left & top of each item -->
         <!-- TODO: height and width should be global variables somewhere... (and other dimensions based off these) -->
         <Grid d:DataContext="{Binding Source={StaticResource DesignTimeHabitatViewModel}}">

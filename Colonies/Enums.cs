@@ -2,9 +2,7 @@
 {
     public enum Terrain
     {
-        Unknown,
         Earth,
-        Grass,
         Water,
         Fire
     }

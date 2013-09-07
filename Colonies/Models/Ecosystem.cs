@@ -195,6 +195,42 @@
             }
         }
 
+        public void InsertWater(Coordinates coordinates)
+        {
+            var waterHabitat = this.Habitats[coordinates.X, coordinates.Y];
+            waterHabitat.Environment.SetLevel(Measure.Damp, 1.0);
+            waterHabitat.Environment.SetTerrain(Terrain.Water);
+
+            var neighbouringHabitats = this.GetNeighbouringHabitats(waterHabitat);
+            foreach (var habitat in neighbouringHabitats)
+            {
+                if (habitat.Equals(waterHabitat))
+                {
+                    continue;
+                }
+
+                habitat.Environment.SetLevel(Measure.Damp, 0.5);
+            }
+        }
+
+        public void InsertFire(Coordinates coordinates)
+        {
+            var fireHabitat = this.Habitats[coordinates.X, coordinates.Y];
+            fireHabitat.Environment.SetLevel(Measure.Heat, 1.0);
+            fireHabitat.Environment.SetTerrain(Terrain.Fire);
+
+            var neighbouringHabitats = this.GetNeighbouringHabitats(fireHabitat);
+            foreach (var habitat in neighbouringHabitats)
+            {
+                if (habitat.Equals(fireHabitat))
+                {
+                    continue;
+                }
+
+                habitat.Environment.SetLevel(Measure.Heat, 0.5);
+            }
+        }
+
         protected virtual Dictionary<Organism, Habitat> GetIntendedOrganismDestinations()
         {
             var intendedOrganismDestinations = new Dictionary<Organism, Habitat>();

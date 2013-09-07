@@ -20,7 +20,9 @@
             if (Enum.IsDefined(typeof(Terrain), value[0]) && value[1] is double)
             {
                 var terrain = (Terrain)value[0];
-                var ratio = (double)value[1];
+                var mineralRatio = (double)value[1];
+                var dampRatio = (double)value[2];
+                var heatRatio = (double)value[3];
 
                 SolidColorBrush terrainBrush;
                 switch (terrain)
@@ -39,7 +41,11 @@
                         break;
                 }
 
-                terrainBrush = this.ApplyMineralBrush(terrainBrush, Brushes.Goldenrod, ratio);
+                // TODO: does the order of modification matter?
+                terrainBrush = this.ModifyBrush(terrainBrush, Brushes.Goldenrod, mineralRatio);
+                terrainBrush = this.ModifyBrush(terrainBrush, Brushes.CornflowerBlue, dampRatio);
+                terrainBrush = this.ModifyBrush(terrainBrush, Brushes.Tomato, heatRatio);
+
                 return terrainBrush;
             }
 
@@ -47,10 +53,10 @@
             throw new InvalidOperationException("Unsupported type [" + type.Name + "]"); 
         }
 
-        private SolidColorBrush ApplyMineralBrush(SolidColorBrush baseBrush, SolidColorBrush mineralBrush, double mineralRatio)
+        private SolidColorBrush ModifyBrush(SolidColorBrush baseBrush, SolidColorBrush modifyBrush, double modifyRatio)
         {
-            var earthWithMineralColor = this.Interpolate(baseBrush.Color, mineralBrush.Color, mineralRatio);
-            return new SolidColorBrush(earthWithMineralColor);
+            var modifiedColor = this.Interpolate(baseBrush.Color, modifyBrush.Color, modifyRatio);
+            return new SolidColorBrush(modifiedColor);
         }
 
         private Color Interpolate(Color baseColor, Color targetColor, double targetRatio)

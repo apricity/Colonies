@@ -79,6 +79,34 @@
             }
         }
 
+        private double dampLevel;
+        public double DampLevel
+        {
+            get
+            {
+                return this.dampLevel;
+            }
+            set
+            {
+                this.dampLevel = value;
+                this.OnPropertyChanged("DampLevel");
+            }
+        }
+
+        private double heatLevel;
+        public double HeatLevel
+        {
+            get
+            {
+                return this.heatLevel;
+            }
+            set
+            {
+                this.heatLevel = value;
+                this.OnPropertyChanged("HeatLevel");
+            }
+        }
+
         public EnvironmentViewModel(Environment domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
@@ -92,6 +120,8 @@
             this.PheromoneOpacity = this.DomainModel.GetLevel(Measure.Pheromone);
             this.NutrientScalar = this.DomainModel.GetLevel(Measure.Nutrient);
             this.MineralLevel = this.DomainModel.GetLevel(Measure.Mineral);
+            this.DampLevel = this.DomainModel.GetLevel(Measure.Damp);
+            this.HeatLevel = this.DomainModel.GetLevel(Measure.Heat);
         }
     }
 }

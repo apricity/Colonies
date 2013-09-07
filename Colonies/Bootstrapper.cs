@@ -97,8 +97,8 @@
 
         private void InitialiseTerrain(Ecosystem ecosystem)
         {
-            ecosystem.Habitats[19, 0].Environment.SetTerrain(Terrain.Water);
-            ecosystem.Habitats[19, 9].Environment.SetTerrain(Terrain.Fire);
+            ecosystem.InsertWater(new Coordinates(17, 2));
+            ecosystem.InsertFire(new Coordinates(17, 7));
 
             for (var i = 0; i < 15; i++)
             {

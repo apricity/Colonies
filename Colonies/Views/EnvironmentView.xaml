@@ -23,6 +23,8 @@
                 <MultiBinding Converter="{StaticResource TerrainToBrushConverter}">
                     <Binding Path="Terrain"/>
                     <Binding Path="MineralLevel"/>
+                    <Binding Path="DampLevel"/>
+                    <Binding Path="HeatLevel"/>
                 </MultiBinding>
             </Rectangle.Fill>
         </Rectangle>

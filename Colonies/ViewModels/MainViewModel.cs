@@ -6,6 +6,7 @@
 
     using Microsoft.Practices.Prism.Events;
 
+    using Wacton.Colonies.Ancillary;
     using Wacton.Colonies.Models;
 
     public class MainViewModel : ViewModelBase<Main>
@@ -145,8 +146,6 @@
                 var updateSummary = this.DomainModel.UpdateOnce();
                 this.UpdateViewModels(updateSummary);
 
-                //this.EcosystemViewModel.ProgressEcosystemOneTurn();
-                
                 // if there's been a change in the turn interval while the previous turn was processed
                 // update the interval of the ecosystem timer
                 if (this.EcosystemTurnInterval != this.lastUsedTurnInterval)

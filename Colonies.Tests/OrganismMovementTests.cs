@@ -6,6 +6,7 @@
 
     using NUnit.Framework;
 
+    using Wacton.Colonies.Ancillary;
     using Wacton.Colonies.Models;
     using Wacton.Colonies.Tests.Mocks;
 

@@ -6,6 +6,8 @@
     using System.Windows.Data;
     using System.Windows.Media;
 
+    using Wacton.Colonies.Ancillary;
+
     public class TerrainToBrushConverter : IMultiValueConverter
     {
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)

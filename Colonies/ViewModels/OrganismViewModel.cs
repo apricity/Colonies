@@ -4,6 +4,7 @@
 
     using Microsoft.Practices.Prism.Events;
 
+    using Wacton.Colonies.Ancillary;
     using Wacton.Colonies.Models;
 
     public class OrganismViewModel : ViewModelBase<Organism>

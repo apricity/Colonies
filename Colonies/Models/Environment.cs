@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
 
+    using Wacton.Colonies.Ancillary;
     using Wacton.Colonies.Interfaces;
 
     public sealed class Environment : IMeasurable

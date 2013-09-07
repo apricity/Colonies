@@ -78,17 +78,17 @@
     <Compile Include="Converters\BoolToAliveOpacityConverter.cs" />
     <Compile Include="Converters\RelativeScaleConverter.cs" />
     <Compile Include="Converters\DoubleToHealthBrushConverter.cs" />
-    <Compile Include="Coordinates.cs" />
+    <Compile Include="Ancillary\Coordinates.cs" />
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="Logic\DecisionLogic.cs" />
-    <Compile Include="Models\Condition.cs" />
+    <Compile Include="Ancillary\Condition.cs" />
     <Compile Include="Interfaces\IBiased.cs" />
     <Compile Include="Interfaces\IMeasurable.cs" />
-    <Compile Include="Models\Measurement.cs" />
+    <Compile Include="Ancillary\Measurement.cs" />
     <Compile Include="Models\Ecosystem.cs" />
     <Compile Include="Models\Main.cs" />
     <Compile Include="Models\OrganismSynopsis.cs" />
-    <Compile Include="Models\UpdateSummary.cs" />
+    <Compile Include="Ancillary\UpdateSummary.cs" />
     <Compile Include="RelayCommand.cs" />
     <Compile Include="ViewModels\DesignTimeData\DesignTimeOrganismSynopsisViewModel.cs" />
     <Compile Include="ViewModels\DesignTimeData\DesignTimeMainViewModel.cs" />
@@ -124,7 +124,7 @@
     </Compile>
     <Compile Include="Models\Habitat.cs" />
     <Compile Include="Models\Environment.cs" />
-    <Compile Include="Enums.cs" />
+    <Compile Include="Ancillary\Enums.cs" />
     <Compile Include="Models\Organism.cs" />
     <Compile Include="Converters\TerrainToBrushConverter.cs" />
     <Compile Include="Properties\Annotations.cs" />

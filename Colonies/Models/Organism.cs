@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Windows.Media;
 
+    using Wacton.Colonies.Ancillary;
     using Wacton.Colonies.Interfaces;
 
     public sealed class Organism : IMeasurable, IBiased

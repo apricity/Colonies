@@ -5,6 +5,7 @@
 
     using NUnit.Framework;
 
+    using Wacton.Colonies.Ancillary;
     using Wacton.Colonies.Interfaces;
     using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models;

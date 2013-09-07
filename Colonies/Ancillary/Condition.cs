@@ -1,4 +1,4 @@
-﻿namespace Wacton.Colonies.Models
+﻿namespace Wacton.Colonies.Ancillary
 {
     using System;
 

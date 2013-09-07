@@ -2,8 +2,6 @@
 {
     using System;
 
-    using Wacton.Colonies.Interfaces;
-
     public sealed class Habitat
     {
         public Environment Environment { get; private set; }

@@ -12,6 +12,14 @@
         public bool IsObstructed { get; private set; }
         public Measurement Measurement { get; private set; }
 
+        public bool HasNutrient
+        {
+            get
+            {
+                return this.GetLevel(Measure.Nutrient) > 0;
+            }
+        }
+
         public Environment(Terrain terrain)
         {
             this.Terrain = terrain;

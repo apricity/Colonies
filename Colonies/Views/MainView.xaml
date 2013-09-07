@@ -37,15 +37,17 @@
     <Controls:MetroWindow.WindowCommands>
         <Controls:WindowCommands>
             <Button Content="Settings" Click="ShowSettings"/>
-            <Button Content="Debug" IsEnabled="False"/>
+            <Button Content="Debug" Click="ShowDebug"/>
             <Button Content="God Mode" IsEnabled="False"/>
         </Controls:WindowCommands>
     </Controls:MetroWindow.WindowCommands>
 
     <Controls:MetroWindow.Flyouts>
-        <Controls:Flyout Header="Settings" Position="Top">
+        <Controls:Flyout Header="Settings" Position="Bottom">
             <Grid Margin="3">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -77,12 +79,63 @@
                 <Slider Grid.Row="1" Grid.Column="1" Value="{Binding EcosystemTurnInterval}" 
                         Minimum="1" Maximum="2000" AutoToolTipPlacement="BottomRight" FlowDirection="RightToLeft" Margin="3"/>
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Pheromone Deposit / Turn:"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PheromoneDepositPerTurn, UpdateSourceTrigger=PropertyChanged}" Margin="3"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Health Deterioration Rate:"/>
+                <DockPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
+                    <TextBlock Text="1 /"/>
+                    <TextBox Text="{Binding HealthDeteriorationDemoninator, UpdateSourceTrigger=PropertyChanged}"/>
+                </DockPanel>
 
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="Pheromone Fade / Turn:"/>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding PheromoneFadePerTurn, UpdateSourceTrigger=PropertyChanged}" Margin="3"/>
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Pheromone Deposit Rate:"/>
+                <DockPanel Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
+                    <TextBlock Text="1 /"/>
+                    <TextBox Text="{Binding PheromoneDepositDemoninator, UpdateSourceTrigger=PropertyChanged}"/>
+                </DockPanel>
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Pheromone Fade Rate:"/>
+                <DockPanel Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
+                    <TextBlock Text="1 /"/>
+                    <TextBox Text="{Binding PheromoneFadeDemoninator, UpdateSourceTrigger=PropertyChanged}"/>
+                </DockPanel>
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="Nutrient Growth Rate:"/>
+                <DockPanel Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
+                    <TextBlock Text="1 /"/>
+                    <TextBox Text="{Binding NutrientGrowthDemoninator, UpdateSourceTrigger=PropertyChanged}"/>
+                </DockPanel>
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Text="Mineral Growth Rate:"/>
+                <DockPanel Grid.Row="6" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
+                    <TextBlock Text="1 /"/>
+                    <TextBox Text="{Binding MineralGrowthDemoninator, UpdateSourceTrigger=PropertyChanged}"/>
+                </DockPanel>
             </Grid>    
+        </Controls:Flyout>
+
+        <Controls:Flyout Header="Debug" Position="Bottom">
+            <Grid Margin="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.Resources>
+                    <Converters:BoolToActiveStringConverter x:Key="BoolToActiveStringConverter" />
+
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Margin" Value="3,3,3,3"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                    </Style>
+                </Grid.Resources>
+
+                <!--<Grid.ShowGridLines>True</Grid.ShowGridLines>-->
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Turn count:"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding TurnCount}" Margin="3"/>
+            </Grid>
         </Controls:Flyout>
     </Controls:MetroWindow.Flyouts>
 

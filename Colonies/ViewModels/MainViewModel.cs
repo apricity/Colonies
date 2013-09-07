@@ -1,7 +1,9 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using System.Windows.Input;
 
     using Microsoft.Practices.Prism.Events;
@@ -82,29 +84,82 @@
 
         private int lastUsedTurnInterval;
 
-        public double PheromoneDepositPerTurn
+        public double HealthDeteriorationDemoninator
         {
             get
             {
-                return this.DomainModel.Ecosystem.PheromoneDepositPerTurn;
+                return 1 / this.DomainModel.Ecosystem.HealthDeteriorationRate;
             }
             set
             {
-                this.DomainModel.Ecosystem.PheromoneDepositPerTurn = value;
-                this.OnPropertyChanged("PheromoneDepositPerTurn");
+                this.DomainModel.Ecosystem.HealthDeteriorationRate = 1 / value;
+                this.OnPropertyChanged("HealthDeteriorationDemoninator");
             }
         }
 
-        public double PheromoneFadePerTurn
+        public double PheromoneDepositDemoninator
         {
             get
             {
-                return this.DomainModel.Ecosystem.PheromoneFadePerTurn;
+                return 1 / this.DomainModel.Ecosystem.PheromoneDepositRate;
             }
             set
             {
-                this.DomainModel.Ecosystem.PheromoneFadePerTurn = value;
-                this.OnPropertyChanged("PheromoneFadePerTurn");
+                this.DomainModel.Ecosystem.PheromoneDepositRate = 1 / value;
+                this.OnPropertyChanged("PheromoneDepositDemoninator");
+            }
+        }
+
+        public double PheromoneFadeDemoninator
+        {
+            get
+            {
+                return 1 / this.DomainModel.Ecosystem.PheromoneFadeRate;
+            }
+            set
+            {
+                this.DomainModel.Ecosystem.PheromoneFadeRate = 1 / value;
+                this.OnPropertyChanged("PheromoneFadeDemoninator");
+            }
+        }
+
+        public double NutrientGrowthDemoninator
+        {
+            get
+            {
+                return 1 / this.DomainModel.Ecosystem.NutrientGrowthRate;
+            }
+            set
+            {
+                this.DomainModel.Ecosystem.NutrientGrowthRate = 1 / value;
+                this.OnPropertyChanged("NutrientGrowthRate");
+            }
+        }
+
+        public double MineralGrowthDemoninator
+        {
+            get
+            {
+                return 1 / this.DomainModel.Ecosystem.MineralGrowthRate;
+            }
+            set
+            {
+                this.DomainModel.Ecosystem.MineralGrowthRate = 1 / value;
+                this.OnPropertyChanged("MineralGrowthRate");
+            }
+        }
+
+        private int turnCount;
+        public int TurnCount
+        {
+            get
+            {
+                return this.turnCount;
+            }
+            private set
+            {
+                this.turnCount = value;
+                this.OnPropertyChanged("TurnCount");
             }
         }
 
@@ -115,6 +170,7 @@
             this.OrganismSynopsisViewModel = organismSynopsisViewModel;
 
             // initally set the ecosystem up to be not running
+            this.TurnCount = 0;
             this.ecosystemTimer = new Timer(this.OnEcosystemTimerTick);
             this.IsEcosystemActive = false;
             var initialUpdateInterval = Properties.Settings.Default.UpdateFrequencyInMs;
@@ -145,6 +201,7 @@
             {
                 var updateSummary = this.DomainModel.UpdateOnce();
                 this.UpdateViewModels(updateSummary);
+                this.TurnCount++;
 
                 // if there's been a change in the turn interval while the previous turn was processed
                 // update the interval of the ecosystem timer
@@ -158,6 +215,20 @@
         private void UpdateViewModels(UpdateSummary updateSummary)
         {
             // ecosystem updates
+            var environmentCoordinatesToUpdate = new List<Coordinates>();
+            environmentCoordinatesToUpdate.AddRange(updateSummary.PheromoneDecreasedLocations);
+            environmentCoordinatesToUpdate.AddRange(updateSummary.PreUpdateOrganismLocations.Values); // where pheromone has been deposited
+            environmentCoordinatesToUpdate.AddRange(updateSummary.NutrientGrowthLocations);
+            environmentCoordinatesToUpdate.AddRange(updateSummary.MineralGrowthLocations);
+
+            // bitchin' parallel foreach // TODO: convert organisms to parallel before start getting too many organisms
+            Parallel.ForEach(environmentCoordinatesToUpdate, location =>
+                {
+                    var x = location.X;
+                    var y = location.Y;
+                    this.EcosystemViewModel.HabitatViewModels[x][y].EnvironmentViewModel.Refresh();
+                });
+
             foreach (var preUpdateOrganismLocation in updateSummary.PreUpdateOrganismLocations)
             {
                 var x = preUpdateOrganismLocation.Value.X;
@@ -171,16 +242,6 @@
                 var y = postUpdateOrganismLocation.Value.Y;
                 var organism = this.DomainModel.Ecosystem.Habitats[x, y].Organism;
                 this.EcosystemViewModel.HabitatViewModels[x][y].OrganismViewModel.AssignModel(organism);
-            }
-
-            var pheromoneChangedLocations =
-                updateSummary.PheromoneDecreasedLocations.Union(
-                    updateSummary.PreUpdateOrganismLocations.Values).ToList();
-            foreach (var pheromoneChangedLocation in pheromoneChangedLocations)
-            {
-                var x = pheromoneChangedLocation.X;
-                var y = pheromoneChangedLocation.Y;
-                this.EcosystemViewModel.HabitatViewModels[x][y].EnvironmentViewModel.Refresh();
             }
 
             // organism synopsis updates

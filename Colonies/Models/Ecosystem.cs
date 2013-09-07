@@ -16,8 +16,11 @@
         public Dictionary<Measure, double> MeasureBiases { get; private set; }
 
         // TODO: neater management of these?
-        public double PheromoneDepositPerTurn { get; set; }
-        public double PheromoneFadePerTurn { get; set; }
+        public double HealthDeteriorationRate { get; set; }
+        public double PheromoneDepositRate { get; set; }
+        public double PheromoneFadeRate { get; set; }
+        public double NutrientGrowthRate { get; set; }
+        public double MineralGrowthRate { get; set; }
 
         public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Habitat> organismHabitats)
         {
@@ -35,8 +38,11 @@
 
             this.MeasureBiases = new Dictionary<Measure, double> { { Measure.Health, 1 } };
 
-            this.PheromoneDepositPerTurn = 0.01;
-            this.PheromoneFadePerTurn = 0.001;
+            this.HealthDeteriorationRate = 1 / 500.0;
+            this.PheromoneDepositRate = 1 / 100.0;
+            this.PheromoneFadeRate = 1 / 500.0;
+            this.NutrientGrowthRate = 1 / 500.0;
+            this.MineralGrowthRate = 1 / 750.0;
         }
 
         public int Width
@@ -62,10 +68,13 @@
                 organismHabitat => organismHabitat.Key.ToString(), 
                 organismHabitat => this.HabitatCoordinates[organismHabitat.Value]);
 
-            /* reduce pheromone level in all environments 
-             * and increase pheromone wherever appropriate */
+            /* reduce pheromone level in all environments and increase pheromone wherever appropriate */
             var pheromoneDecreasedLocations = this.DecreaseGlobalPheromoneLevel();
             this.IncreaseLocalPheromoneLevels();
+
+            /* increase nutrient and mineral growth wherever appropriate */
+            var nutrientGrowthLocations = this.IncreaseNutrientLevels();
+            var mineralGrowthLocations = this.IncreaseMineralLevels();
 
             /* find out where each organism would like to move to
              * then analyse them to decide where the organisms will actually move to 
@@ -82,7 +91,11 @@
 
                 if (habitatNutrientLevel > 0.0)
                 {
-                    organism.IncreaseLevel(Measure.Health, habitatNutrientLevel); // TODO: don't eat all the food! (test only)
+                    var desiredNutrients = 1 - organism.GetLevel(Measure.Health);
+                    var nutrientTaken = Math.Min(desiredNutrients, habitatNutrientLevel);
+
+                    organism.IncreaseLevel(Measure.Health, nutrientTaken);
+                    habitat.Environment.DecreaseLevel(Measure.Nutrient, nutrientTaken);
                 }
             }
 
@@ -100,7 +113,7 @@
                 organismHabitat => organismHabitat.Key.ToString(), 
                 organismHabitat => this.HabitatCoordinates[organismHabitat.Value]);
 
-            return new UpdateSummary(preUpdateOrganismLocations, postUpdateOrganismLocations, pheromoneDecreasedLocations);
+            return new UpdateSummary(preUpdateOrganismLocations, postUpdateOrganismLocations, pheromoneDecreasedLocations, nutrientGrowthLocations, mineralGrowthLocations);
         }
 
         private List<Coordinates> DecreaseGlobalPheromoneLevel()
@@ -109,7 +122,7 @@
 
             foreach (var habitat in this.Habitats)
             {
-                if (habitat.Environment.DecreaseLevel(Measure.Pheromone,  this.PheromoneFadePerTurn))
+                if (habitat.Environment.DecreaseLevel(Measure.Pheromone,  this.PheromoneFadeRate))
                 {
                     pheromoneDecreasedLocations.Add(this.HabitatCoordinates[habitat]);
                 }
@@ -127,16 +140,58 @@
 
                 if (organism.IsDepositingPheromones && organism.IsAlive)
                 {
-                    habitat.Environment.IncreaseLevel(Measure.Pheromone, this.PheromoneDepositPerTurn);
+                    habitat.Environment.IncreaseLevel(Measure.Pheromone, this.PheromoneDepositRate);
                 }
             }
+        }
+
+        private List<Coordinates> IncreaseNutrientLevels()
+        {
+            var nutrientGrowthLocations = new List<Coordinates>();
+
+            foreach (var habitat in this.Habitats)
+            {
+                if (!habitat.Environment.HasNutrient)
+                {
+                    continue;
+                }
+
+                var increased = habitat.Environment.IncreaseLevel(Measure.Nutrient, this.NutrientGrowthRate);
+                if (increased)
+                {
+                    nutrientGrowthLocations.Add(this.HabitatCoordinates[habitat]);
+                }
+            }
+
+            return nutrientGrowthLocations;
+        }
+
+        private List<Coordinates> IncreaseMineralLevels()
+        {
+            var mineralGrowthLocations = new List<Coordinates>();
+
+            foreach (var habitat in this.Habitats)
+            {
+                if (!habitat.Environment.Terrain.Equals(Terrain.Earth))
+                {
+                    continue;
+                }
+
+                var increased = habitat.Environment.IncreaseLevel(Measure.Mineral, this.MineralGrowthRate);
+                if (increased)
+                {
+                    mineralGrowthLocations.Add(this.HabitatCoordinates[habitat]);
+                }
+            }
+
+            return mineralGrowthLocations;
         }
 
         private void DecreaseAllOrganismHealth()
         {
             foreach (var organism in this.OrganismHabitats.Keys.ToList())
             {
-                organism.DecreaseLevel(Measure.Health, 0.005);
+                organism.DecreaseLevel(Measure.Health, this.HealthDeteriorationRate);
             }
         }
 

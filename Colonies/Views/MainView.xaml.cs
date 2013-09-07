@@ -1,5 +1,6 @@
 ﻿namespace Wacton.Colonies.Views
 {
+    using System.Linq;
     using System.Windows;
 
     using MahApps.Metro.Controls;
@@ -16,7 +17,29 @@
 
         private void ShowSettings(object sender, RoutedEventArgs e)
         {
-            this.Flyouts[0].IsOpen = !this.Flyouts[0].IsOpen;
+            this.ToggleFlyout(this.Flyouts[0]);
+        }
+
+        private void ShowDebug(object sender, RoutedEventArgs e)
+        {
+            this.ToggleFlyout(this.Flyouts[1]);
+        }
+
+        private void ToggleFlyout(Flyout flyout)
+        {
+            if (flyout.IsOpen)
+            {
+                flyout.IsOpen = false;
+            }
+            else
+            {
+                foreach (var otherFlyout in this.Flyouts.Except(new[] { flyout }))
+                {
+                    otherFlyout.IsOpen = false;
+                }
+
+                flyout.IsOpen = true;
+            }
         }
     }
 }

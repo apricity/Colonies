@@ -33,11 +33,6 @@
             return this.Environment.IsObstructed;
         }
 
-        public void SetObstructed(bool isObstructed)
-        {
-            this.Environment.SetObstructed(isObstructed);
-        }
-
         public override String ToString()
         {
             return String.Format("{0}, {1}", this.Environment, this.Organism);

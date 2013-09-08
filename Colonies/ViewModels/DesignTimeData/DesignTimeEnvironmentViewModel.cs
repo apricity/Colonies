@@ -24,7 +24,7 @@
         private static Environment CreateDesignTimeEnvironment()
         {
             var environment = new Environment(Terrain.Earth);
-            environment.SetObstructed(true);
+            environment.SetLevel(Measure.Obstruction, 1.0);
             environment.SetLevel(Measure.Pheromone, 0.5);
             environment.SetLevel(Measure.Nutrient, 0.5);
             environment.SetLevel(Measure.Mineral, 0.5);

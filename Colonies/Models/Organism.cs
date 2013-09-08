@@ -35,7 +35,8 @@
                                          { Measure.Nutrient, 0 },
                                          { Measure.Mineral, 0 },
                                          { Measure.Damp, 0 },
-                                         { Measure.Heat, 0 }
+                                         { Measure.Heat, 0 },
+                                         { Measure.Obstruction, 0}
                                      };
         }
 

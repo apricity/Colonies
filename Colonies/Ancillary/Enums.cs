@@ -14,6 +14,7 @@
         Mineral,
         Damp,
         Heat,
+        Obstruction,
         Health
     }
 }

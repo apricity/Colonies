@@ -139,7 +139,7 @@
 
             foreach (var coordinates in obstructedCoordinates)
             {
-                ecosystem.Habitats[coordinates.X, coordinates.Y].SetObstructed(true);
+                ecosystem.Habitats[coordinates.X, coordinates.Y].Environment.SetLevel(Measure.Obstruction, 1.0);
             }
         }
 

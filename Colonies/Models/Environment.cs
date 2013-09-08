@@ -9,8 +9,15 @@
     public sealed class Environment : IMeasurable
     {
         public Terrain Terrain { get; private set; }
-        public bool IsObstructed { get; private set; }
         public Measurement Measurement { get; private set; }
+
+        public bool IsObstructed
+        {
+            get
+            {
+                return this.GetLevel(Measure.Obstruction) > 0;
+            }
+        }
 
         public bool HasNutrient
         {
@@ -27,6 +34,7 @@
             var pheromone = new Condition(Measure.Pheromone, 0);
             var nutrient = new Condition(Measure.Nutrient, 0);
             var mineral = new Condition(Measure.Mineral, 0);
+            var obstruction = new Condition(Measure.Obstruction, 0);
 
             var damp = this.Terrain.Equals(Terrain.Water)
                             ? new Condition(Measure.Damp, 1)
@@ -36,17 +44,12 @@
                             ? new Condition(Measure.Heat, 1)
                             : new Condition(Measure.Heat, 0);
 
-            this.Measurement = new Measurement(new List<Condition> { pheromone, nutrient, mineral, damp, heat });
+            this.Measurement = new Measurement(new List<Condition> { pheromone, nutrient, mineral, obstruction, damp, heat });
         }
 
         public void SetTerrain(Terrain terrain)
         {
             this.Terrain = terrain;
-        }
-
-        public void SetObstructed(bool isObstructed)
-        {
-            this.IsObstructed = isObstructed;
         }
 
         public double GetLevel(Measure measure)

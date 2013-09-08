@@ -21,6 +21,7 @@
         public double PheromoneFadeRate { get; set; }
         public double NutrientGrowthRate { get; set; }
         public double MineralGrowthRate { get; set; }
+        public double ObstructionDemolishRate { get; set; }
 
         public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Habitat> organismHabitats)
         {
@@ -43,6 +44,7 @@
             this.PheromoneFadeRate = 1 / 500.0;
             this.NutrientGrowthRate = 1 / 500.0;
             this.MineralGrowthRate = 1 / 750.0;
+            this.ObstructionDemolishRate = 1 / 5.0;
         }
 
         public int Width
@@ -81,6 +83,11 @@
              * and to resolve any conflicting intentions */
             var intendedOrganismDestinations = this.GetIntendedOrganismDestinations();
             var actualOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations, new List<Organism>());
+
+            foreach (var obstructedHabitat in intendedOrganismDestinations.Values.Where(habitat => habitat.IsObstructed()))
+            {
+                obstructedHabitat.Environment.DecreaseLevel(Measure.Obstruction, this.ObstructionDemolishRate);
+            }
 
             /* perform in-situ actions e.g. take food, eat food, attack */
             foreach (var actualOrganismDestination in actualOrganismDestinations)

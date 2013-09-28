@@ -3,17 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:ViewModels="clr-namespace:Wacton.Colonies.ViewModels"
              xmlns:Views="clr-namespace:Wacton.Colonies.Views"
-             xmlns:DesignTimeData="clr-namespace:Wacton.Colonies.ViewModels.DesignTimeData"
+             xmlns:DesignTime="clr-namespace:Wacton.Colonies.DesignTime"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance ViewModels:OrganismSynopsisViewModel}">
+             d:DesignHeight="50" d:DesignWidth="500"
+             d:DataContext="{Binding Source={StaticResource DesignTimeViewModelLocator}, Path=OrganismSynopsisViewModel}">
 
     <UserControl.Resources>
-        <DesignTimeData:DesignTimeOrganismSynopsisViewModel x:Key="DesignTimeOrganismSynopsisViewModel" />
+        <DesignTime:DesignTimeViewModelLocator x:Key="DesignTimeViewModelLocator" />
     </UserControl.Resources>
 
-    <Grid d:DataContext="{Binding Source={StaticResource DesignTimeOrganismSynopsisViewModel}}">
+    <Grid>
         <Border BorderBrush="#111111" BorderThickness="1">
             <ItemsControl ItemsSource="{Binding OrganismViewModels}">
                 <!-- define the control used for the collection of collections -->

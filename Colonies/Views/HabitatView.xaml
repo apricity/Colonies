@@ -5,21 +5,21 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:Converters="clr-namespace:Wacton.Colonies.Converters"
              xmlns:Views="clr-namespace:Wacton.Colonies.Views"
-             xmlns:ViewModels="clr-namespace:Wacton.Colonies.ViewModels"
-             xmlns:DesignTimeData="clr-namespace:Wacton.Colonies.ViewModels.DesignTimeData"
+             xmlns:DesignTime="clr-namespace:Wacton.Colonies.DesignTime"
              mc:Ignorable="d" 
-             d:DesignHeight="20" d:DesignWidth="20" d:DataContext="{d:DesignInstance ViewModels:HabitatViewModel}">
+             d:DesignHeight="20" d:DesignWidth="20" 
+             d:DataContext="{Binding Source={StaticResource DesignTimeViewModelLocator}, Path=HabitatViewModel}">
 
     <UserControl.Resources>
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <Converters:RelativeScaleConverter x:Key="RelativeScaleConverter"/>
-        <DesignTimeData:DesignTimeHabitatViewModel x:Key="DesignTimeHabitatViewModel"/>
+        <DesignTime:DesignTimeViewModelLocator x:Key="DesignTimeViewModelLocator"/>
     </UserControl.Resources>
 
     <Border BorderBrush="#111111" BorderThickness="0.5, 0.5, 0, 0">
         <!-- border on left & top of each item -->
         <!-- TODO: height and width should be global variables somewhere... -->
-        <Grid d:DataContext="{Binding Source={StaticResource DesignTimeHabitatViewModel}}">
+        <Grid>
             <Views:EnvironmentView DataContext="{Binding EnvironmentViewModel}"/>
 
             <Views:OrganismView DataContext="{Binding OrganismViewModel}" Visibility="{Binding HasOrganism,  Converter={StaticResource BoolToVisibilityConverter}}">

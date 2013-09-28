@@ -4,19 +4,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:Converters="clr-namespace:Wacton.Colonies.Converters"
-             xmlns:ViewModels="clr-namespace:Wacton.Colonies.ViewModels"
-             xmlns:DesignTimeData="clr-namespace:Wacton.Colonies.ViewModels.DesignTimeData"
+             xmlns:DesignTime="clr-namespace:Wacton.Colonies.DesignTime"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance ViewModels:OrganismViewModel}">
+             d:DesignHeight="20" d:DesignWidth="500"
+             d:DataContext="{Binding Source={StaticResource DesignTimeViewModelLocator}, Path=OrganismViewModel}">
 
     <UserControl.Resources>
         <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
         <Converters:BoolToAliveOpacityConverter x:Key="AliveToOpacityConverter" />
         <Converters:DoubleToHealthLevelBrushConverter x:Key="DoubleToHealthLevelBrushConverter" />
-        <DesignTimeData:DesignTimeOrganismViewModel x:Key="DesignTimeOrganismViewModel" />
+        <DesignTime:DesignTimeViewModelLocator x:Key="DesignTimeViewModelLocator" />
     </UserControl.Resources>
 
-    <Grid d:DataContext="{Binding Source={StaticResource DesignTimeOrganismViewModel}}">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="2*"/>

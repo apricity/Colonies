@@ -79,6 +79,7 @@
     <Compile Include="Converters\RelativeScaleConverter.cs" />
     <Compile Include="Converters\DoubleToHealthBrushConverter.cs" />
     <Compile Include="Ancillary\Coordinates.cs" />
+    <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="Logic\DecisionLogic.cs" />
     <Compile Include="Ancillary\Condition.cs" />
@@ -90,18 +91,12 @@
     <Compile Include="Models\OrganismSynopsis.cs" />
     <Compile Include="Ancillary\UpdateSummary.cs" />
     <Compile Include="RelayCommand.cs" />
-    <Compile Include="ViewModels\DesignTimeData\DesignTimeOrganismSynopsisViewModel.cs" />
-    <Compile Include="ViewModels\DesignTimeData\DesignTimeMainViewModel.cs" />
-    <Compile Include="ViewModels\DesignTimeData\DesignTimeEcosystemViewModel.cs" />
-    <Compile Include="ViewModels\DesignTimeData\DesignTimeHabitatViewModel.cs" />
-    <Compile Include="ViewModels\DesignTimeData\DesignTimeEnvironmentViewModel.cs" />
-    <Compile Include="ViewModels\DesignTimeData\IDesignTimeViewModel.cs" />
+    <Compile Include="DesignTime\DesignTimeViewModelLocator.cs" />
     <Compile Include="ViewModels\OrganismSynopsisViewModel.cs" />
     <Compile Include="ViewModels\OrganismViewModel.cs" />
     <Compile Include="ViewModels\EcosystemViewModel.cs" />
     <Compile Include="ViewModels\EnvironmentViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="ViewModels\DesignTimeData\DesignTimeOrganismViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\OrganismDetailsView.xaml.cs">
       <DependentUpon>OrganismDetailsView.xaml</DependentUpon>

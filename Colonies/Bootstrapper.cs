@@ -9,6 +9,7 @@
 
     using Wacton.Colonies.Ancillary;
     using Wacton.Colonies.Models;
+    using Wacton.Colonies.Properties;
     using Wacton.Colonies.ViewModels;
     using Wacton.Colonies.Views;
 
@@ -19,7 +20,7 @@
             
         }
 
-        public void Run()
+        public virtual void Run()
         {
             // get the version number to display on the main window title
             var assembly = Assembly.GetExecutingAssembly();
@@ -27,7 +28,7 @@
 
             // create the view to display to the user
             // the data context is the view model tree that contains the model
-            var mainViewModel = this.BuildMainDataContext();
+            var mainViewModel = this.BuildMainDataContext(Settings.Default.EcosystemWidth, Settings.Default.EcosystemHeight);
             mainViewModel.Refresh();
 
             var mainView = new MainView { DataContext = mainViewModel };
@@ -37,22 +38,19 @@
             mainView.Show();
         }
 
-        private MainViewModel BuildMainDataContext()
+        protected MainViewModel BuildMainDataContext(int ecosystemWidth, int ecosystemHeight)
         {
-            var width = Properties.Settings.Default.EcosystemWidth;
-            var height = Properties.Settings.Default.EcosystemHeight;
-
             // the event aggregator might be used by view models to inform of changes
             var eventaggregator = new EventAggregator();
 
-            var habitats = new Habitat[width, height];
+            var habitats = new Habitat[ecosystemWidth, ecosystemHeight];
             var habitatViewModels = new List<List<HabitatViewModel>>();
-            
-            for (var x = 0; x < width; x++)
+
+            for (var x = 0; x < ecosystemWidth; x++)
             {
                 habitatViewModels.Add(new List<HabitatViewModel>());
 
-                for (var y = 0; y < height; y++)
+                for (var y = 0; y < ecosystemHeight; y++)
                 {
                     // initially set each habitat to have an unknown environment and no organism
                     var environment = new Environment(Terrain.Earth);
@@ -95,7 +93,7 @@
             return mainViewModel;
         }
 
-        private void InitialiseTerrain(Ecosystem ecosystem)
+        protected virtual void InitialiseTerrain(Ecosystem ecosystem)
         {
             ecosystem.InsertWater(new Coordinates(17, 2));
             ecosystem.InsertFire(new Coordinates(17, 7));
@@ -143,7 +141,7 @@
             }
         }
 
-        private Dictionary<Organism, Coordinates> InitialiseOrganisms(Ecosystem ecosystem)
+        protected virtual Dictionary<Organism, Coordinates> InitialiseOrganisms(Ecosystem ecosystem)
         {
             var organismLocations = new Dictionary<Organism, Coordinates>
                                         {

@@ -13,6 +13,7 @@
     <UserControl.Resources>
         <Converters:TerrainToBrushConverter x:Key="TerrainToBrushConverter"/>
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <Converters:DoubleToObstructionDashConverter x:Key="DoubleToObstructionDashConverter"/>
         <Converters:RelativeScaleConverter x:Key="RelativeScaleConverter"/>
         <DesignTime:DesignTimeViewModelLocator x:Key="DesignTimeViewModelLocator"/>
     </UserControl.Resources>
@@ -48,10 +49,15 @@
         </Rectangle>
 
         <!-- stretch lines so we don't have to care about the size of the window (e.g. currently 20x20 but could easily change) -->
-        <Line X1="0" Y1="0" X2="1" Y2="1" Stroke="Black" StrokeThickness="0.5" Stretch="Fill" 
-              Visibility="{Binding IsObstructed, Converter={StaticResource BoolToVisibilityConverter}}"/>
-        <Line X1="0" Y1="1" X2="1" Y2="0" Stroke="Black" StrokeThickness="0.5" Stretch="Fill" 
-              Visibility="{Binding IsObstructed, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <!-- TODO: how to derive '7' (~ 1/4 of line length) using converters (multiconverter does not work for double collection...) -->
+        <Line X1="0" Y1="0" X2="1" Y2="1" Stroke="Black" StrokeThickness="0.5" Stretch="Fill"
+              Visibility="{Binding IsObstructed, Converter={StaticResource BoolToVisibilityConverter}}"
+              StrokeDashArray="{Binding ObstructionLevel, Converter={StaticResource DoubleToObstructionDashConverter}, 
+                                                          ConverterParameter=7}" />
+        <Line X1="0" Y1="1" X2="1" Y2="0" Stroke="Black" StrokeThickness="0.5" Stretch="Fill"
+              Visibility="{Binding IsObstructed, Converter={StaticResource BoolToVisibilityConverter}}"
+              StrokeDashArray="{Binding ObstructionLevel, Converter={StaticResource DoubleToObstructionDashConverter}, 
+                                                          ConverterParameter=7}" />
     </Grid>
     
 </UserControl>

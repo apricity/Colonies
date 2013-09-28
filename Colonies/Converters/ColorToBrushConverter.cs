@@ -14,7 +14,7 @@
                 return null;
             }
 
-            if (value is System.Windows.Media.Color)
+            if (value is Color)
             {
                 var color = (Color)value;
                 return new SolidColorBrush(color);

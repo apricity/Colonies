@@ -76,6 +76,7 @@
     <Compile Include="Converters\BoolToActiveStringConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToAliveOpacityConverter.cs" />
+    <Compile Include="Converters\DoubleToObstructionDashConverter.cs" />
     <Compile Include="Converters\RelativeScaleConverter.cs" />
     <Compile Include="Converters\DoubleToHealthBrushConverter.cs" />
     <Compile Include="Ancillary\Coordinates.cs" />
@@ -90,7 +91,7 @@
     <Compile Include="Models\Main.cs" />
     <Compile Include="Models\OrganismSynopsis.cs" />
     <Compile Include="Ancillary\UpdateSummary.cs" />
-    <Compile Include="RelayCommand.cs" />
+    <Compile Include="Ancillary\RelayCommand.cs" />
     <Compile Include="DesignTime\DesignTimeViewModelLocator.cs" />
     <Compile Include="ViewModels\OrganismSynopsisViewModel.cs" />
     <Compile Include="ViewModels\OrganismViewModel.cs" />

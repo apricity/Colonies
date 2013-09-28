@@ -1,9 +1,12 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
+    using System;
+
     using Microsoft.Practices.Prism.Events;
 
     using Wacton.Colonies.Ancillary;
-    using Wacton.Colonies.Models;
+
+    using Environment = Wacton.Colonies.Models.Environment;
 
     public class EnvironmentViewModel : ViewModelBase<Environment>
     {
@@ -23,19 +26,24 @@
             }
         }
 
-        private bool isObstructed;
-        public bool IsObstructed
+        private double obstructionLevel;
+        public double ObstructionLevel
         {
             get
             {
-                return this.isObstructed;
+                return this.obstructionLevel;
             }
             set
             {
-                this.isObstructed = value;
+                this.obstructionLevel = value;
+                this.OnPropertyChanged("ObstructionLevel");
+
+                this.IsObstructed = Math.Abs(value - 0.0) > 0.0;
                 this.OnPropertyChanged("IsObstructed");
             }
         }
+
+        public bool IsObstructed { get; private set; }
 
         private double pheromoneOpacity;
         public double PheromoneOpacity
@@ -116,7 +124,7 @@
         public override void Refresh()
         {
             this.Terrain = this.DomainModel.Terrain;
-            this.IsObstructed = this.DomainModel.IsObstructed;
+            this.ObstructionLevel = this.DomainModel.GetLevel(Measure.Obstruction);
             this.PheromoneOpacity = this.DomainModel.GetLevel(Measure.Pheromone);
             this.NutrientScalar = this.DomainModel.GetLevel(Measure.Nutrient);
             this.MineralLevel = this.DomainModel.GetLevel(Measure.Mineral);

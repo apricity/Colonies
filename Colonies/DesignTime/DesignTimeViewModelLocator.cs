@@ -20,7 +20,7 @@
         public static MainViewModel MainViewModel { get { return Bootstrapper.MainViewModel; } }
 
         public static EcosystemViewModel EcosystemViewModel { get { return MainViewModel.EcosystemViewModel; } }
-        public static HabitatViewModel HabitatViewModel { get { return EcosystemViewModel.HabitatViewModels[0][0]; } }
+        public static HabitatViewModel HabitatViewModel { get { return EcosystemViewModel.HabitatViewModels[1][1]; } }
         public static EnvironmentViewModel EnvironmentViewModel { get { return HabitatViewModel.EnvironmentViewModel; } }
         public static OrganismViewModel OrganismViewModel { get { return HabitatViewModel.OrganismViewModel; } }
 

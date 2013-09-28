@@ -1,4 +1,4 @@
-﻿namespace Wacton.Colonies
+﻿namespace Wacton.Colonies.Ancillary
 {
     using System;
     using System.Windows.Input;

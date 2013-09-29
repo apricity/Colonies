@@ -81,7 +81,7 @@
             if (this.Terrain.Equals(Terrain.Water) && measure.Equals(Measure.Damp)
                 || this.Terrain.Equals(Terrain.Fire) && measure.Equals(Measure.Heat))
             {
-                throw new InvalidOperationException(string.Format("Modification of {0} - {1} is disallowed", this.Terrain, measure));
+                //throw new InvalidOperationException(string.Format("Modification of {0} - {1} is disallowed", this.Terrain, measure));
             }
         }
         

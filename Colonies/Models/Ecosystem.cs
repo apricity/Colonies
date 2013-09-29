@@ -23,6 +23,24 @@
         public double MineralGrowthRate { get; set; }
         public double ObstructionDemolishRate { get; set; }
 
+        private int conditionSpreadDiameter;
+
+        public int Width
+        {
+            get
+            {
+                return this.Habitats.GetLength(0);
+            }
+        }
+
+        public int Height
+        {
+            get
+            {
+                return this.Habitats.GetLength(1);
+            }
+        }
+
         public Ecosystem(Habitat[,] habitats, Dictionary<Organism, Habitat> organismHabitats)
         {
             this.Habitats = habitats;
@@ -45,22 +63,9 @@
             this.NutrientGrowthRate = 1 / 500.0;
             this.MineralGrowthRate = 1 / 750.0;
             this.ObstructionDemolishRate = 1 / 5.0;
-        }
 
-        public int Width
-        {
-            get
-            {
-                return this.Habitats.GetLength(0);
-            }
-        }
-
-        public int Height
-        {
-            get
-            {
-                return this.Habitats.GetLength(1);
-            }
+            // work out how big any fire/water spread should be based on ecosystem dimensions
+            this.conditionSpreadDiameter = CalculateConditionSpreadDiameter();
         }
 
         public UpdateSummary Update()
@@ -208,14 +213,10 @@
             waterHabitat.Environment.SetLevel(Measure.Damp, 1.0);
             waterHabitat.Environment.SetTerrain(Terrain.Water);
 
-            var neighbouringHabitats = this.GetNeighbouringHabitats(waterHabitat);
+            var neighbouringHabitats = this.GetNeighbouringHabitats(waterHabitat, 1, true);
             foreach (var habitat in neighbouringHabitats)
             {
-                if (habitat.Equals(waterHabitat))
-                {
-                    continue;
-                }
-
+                // if habitat equals waterhabitat, call special method
                 habitat.Environment.SetLevel(Measure.Damp, 0.5);
             }
         }
@@ -226,15 +227,17 @@
             fireHabitat.Environment.SetLevel(Measure.Heat, 1.0);
             fireHabitat.Environment.SetTerrain(Terrain.Fire);
 
-            var neighbouringHabitats = this.GetNeighbouringHabitats(fireHabitat);
-            foreach (var habitat in neighbouringHabitats)
-            {
-                if (habitat.Equals(fireHabitat))
-                {
-                    continue;
-                }
+            var neighbouringHabitats = this.GetNeighbouringHabitats(fireHabitat, 2, true);
 
-                habitat.Environment.SetLevel(Measure.Heat, 0.5);
+            //var gaussianKernel = new List<int> { 1, 2, 1, 2, 4, 2, 1, 2, 1 };
+            var gaussianKernel = new List<int> { 2, 4, 5, 4, 2, 4, 9, 12, 9, 4, 5, 12, 15, 12, 5, 4, 9, 12, 9, 4, 2, 4, 5, 4, 2 };
+
+            var gaussianCentre = (double)gaussianKernel.Max();
+            for (var i = 0; i < neighbouringHabitats.Count; i++)
+            {
+                var habitat = neighbouringHabitats[i];
+                var weight = gaussianKernel[i] / gaussianCentre;
+                habitat.Environment.SetLevel(Measure.Heat, 1 * weight);
             }
         }
 
@@ -248,7 +251,7 @@
                 var habitat = organismCoordinates.Value;
 
                 // get measurements of neighbouring environments
-                var neighbouringHabitats = this.GetNeighbouringHabitats(habitat);
+                var neighbouringHabitats = this.GetNeighbouringHabitats(habitat, 1, false);
                 var neighbouringEnvironments = neighbouringHabitats.Select(neighbour => neighbour.Environment).ToList();
 
                 // determine organism's intentions based on the environment measurements
@@ -390,12 +393,12 @@
             this.Habitats[location.X, location.Y].Environment.SetTerrain(terrain);
         }
 
-        private List<Habitat> GetNeighbouringHabitats(Habitat habitat)
+        private List<Habitat> GetNeighbouringHabitats(Habitat habitat, int neighbourDepth, bool includeDiagonals)
         {
             var neighbouringHabitats = new List<Habitat>();
 
             var location = this.HabitatCoordinates[habitat];
-            for (var x = location.X - 1; x <= location.X + 1; x++)
+            for (var x = location.X - neighbourDepth; x <= location.X + neighbourDepth; x++)
             {
                 // do not carry on if x is out-of-bounds
                 if (x < 0 || x >= this.Width)
@@ -403,7 +406,7 @@
                     continue;
                 }
 
-                for (var y = location.Y - 1; y <= location.Y + 1; y++)
+                for (var y = location.Y - neighbourDepth; y <= location.Y + neighbourDepth; y++)
                 {
                     // do not carry on if y is out-of-bounds
                     if (y < 0 || y >= this.Height)
@@ -411,8 +414,8 @@
                         continue;
                     }
 
-                    // do not carry on if (x, y) is diagonal from organism
-                    if (x != location.X && y != location.Y)
+                    // do not carry on if (x, y) is diagonal from organism (and include diagonals is false)
+                    if (x != location.X && y != location.Y && !includeDiagonals)
                     {
                         continue;
                     }
@@ -427,6 +430,28 @@
         public void SetMeasureBias(Measure measure, double bias)
         {
             this.MeasureBiases[measure] = bias;
+        }
+
+        private int CalculateConditionSpreadDiameter()
+        {
+            var ecosystemArea = (double)(this.Height * this.Width);
+
+            var diameterFound = false;
+            var currentDiameter = 3; // minimum is 3x3
+            while (!diameterFound)
+            {
+                var nextDiameter = currentDiameter + 2;
+                if (Math.Pow(nextDiameter, 2) > Math.Sqrt(ecosystemArea))
+                {
+                    diameterFound = true;
+                }
+                else
+                {
+                    currentDiameter = nextDiameter;
+                }
+            }
+
+            return currentDiameter;
         }
 
         public override String ToString()

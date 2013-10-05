@@ -37,6 +37,15 @@
     <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AForge">
+      <HintPath>..\packages\AForge.2.2.5\lib\AForge.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Imaging">
+      <HintPath>..\packages\AForge.Imaging.2.2.5\lib\AForge.Imaging.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Math">
+      <HintPath>..\packages\AForge.Math.2.2.5\lib\AForge.Math.dll</HintPath>
+    </Reference>
     <Reference Include="MahApps.Metro, Version=0.11.0.12, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MahApps.Metro.0.11.0.12-ALPHA\lib\net40\MahApps.Metro.dll</HintPath>
@@ -82,6 +91,7 @@
     <Compile Include="Ancillary\Coordinates.cs" />
     <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Logic\DecisionLogic.cs" />
     <Compile Include="Ancillary\Condition.cs" />
     <Compile Include="Interfaces\IBiased.cs" />

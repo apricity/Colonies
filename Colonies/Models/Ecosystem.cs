@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using AForge.Imaging.Filters;
+
     using Wacton.Colonies.Ancillary;
     using Wacton.Colonies.Interfaces;
     using Wacton.Colonies.Logic;
@@ -23,7 +25,14 @@
         public double MineralGrowthRate { get; set; }
         public double ObstructionDemolishRate { get; set; }
 
-        private int conditionSpreadDiameter;
+        private int ConditionSpreadDiameter { get; set; }
+        private int ConditionSpreadRadius
+        {
+            get
+            {
+                return (this.ConditionSpreadDiameter - 1) / 2;
+            }
+        }
 
         public int Width
         {
@@ -65,7 +74,7 @@
             this.ObstructionDemolishRate = 1 / 5.0;
 
             // work out how big any fire/water spread should be based on ecosystem dimensions
-            this.conditionSpreadDiameter = CalculateConditionSpreadDiameter();
+            this.ConditionSpreadDiameter = CalculateConditionSpreadDiameter();
         }
 
         public UpdateSummary Update()
@@ -207,59 +216,26 @@
             }
         }
 
-        public void InsertWater(Coordinates coordinates)
-        {
-            var waterHabitat = this.Habitats[coordinates.X, coordinates.Y];
-            waterHabitat.Environment.SetLevel(Measure.Damp, 1.0);
-            waterHabitat.Environment.SetTerrain(Terrain.Water);
-
-            var neighbouringHabitats = this.GetNeighbouringHabitats(waterHabitat, 1, true);
-            foreach (var habitat in neighbouringHabitats)
-            {
-                // if habitat equals waterhabitat, call special method
-                habitat.Environment.SetLevel(Measure.Damp, 0.5);
-            }
-        }
-
-        public void InsertFire(Coordinates coordinates)
-        {
-            var fireHabitat = this.Habitats[coordinates.X, coordinates.Y];
-            fireHabitat.Environment.SetLevel(Measure.Heat, 1.0);
-            fireHabitat.Environment.SetTerrain(Terrain.Fire);
-
-            var neighbouringHabitats = this.GetNeighbouringHabitats(fireHabitat, 2, true);
-
-            //var gaussianKernel = new List<int> { 1, 2, 1, 2, 4, 2, 1, 2, 1 };
-            var gaussianKernel = new List<int> { 2, 4, 5, 4, 2, 4, 9, 12, 9, 4, 5, 12, 15, 12, 5, 4, 9, 12, 9, 4, 2, 4, 5, 4, 2 };
-
-            var gaussianCentre = (double)gaussianKernel.Max();
-            for (var i = 0; i < neighbouringHabitats.Count; i++)
-            {
-                var habitat = neighbouringHabitats[i];
-                var weight = gaussianKernel[i] / gaussianCentre;
-                habitat.Environment.SetLevel(Measure.Heat, 1 * weight);
-            }
-        }
-
         protected virtual Dictionary<Organism, Habitat> GetIntendedOrganismDestinations()
         {
             var intendedOrganismDestinations = new Dictionary<Organism, Habitat>();
             var aliveOrganismHabitats = this.OrganismHabitats.Where(organismHabitats => organismHabitats.Key.IsAlive).ToList();
             foreach (var organismCoordinates in aliveOrganismHabitats)
             {
-                var organism = organismCoordinates.Key;
-                var habitat = organismCoordinates.Value;
+                var currentOrganism = organismCoordinates.Key;
+                var currentHabitat = organismCoordinates.Value;
 
                 // get measurements of neighbouring environments
-                var neighbouringHabitats = this.GetNeighbouringHabitats(habitat, 1, false);
-                var neighbouringEnvironments = neighbouringHabitats.Select(neighbour => neighbour.Environment).ToList();
+                var neighbouringHabitats = this.GetNeighbouringHabitats(currentHabitat, 1, false).ToList();
+                var validNeighbouringHabitats = neighbouringHabitats.Where(habitat => habitat != null).ToList();
+                var neighbouringEnvironments = validNeighbouringHabitats.Select(neighbour => neighbour.Environment).ToList();
 
                 // determine organism's intentions based on the environment measurements
-                var chosenEnvironment = DecisionLogic.MakeDecision(neighbouringEnvironments, organism);
+                var chosenEnvironment = DecisionLogic.MakeDecision(neighbouringEnvironments, currentOrganism);
 
                 // get the habitat the environment is from - this is where the organism wants to move to
-                var chosenHabitat = neighbouringHabitats.Single(neighbour => neighbour.Environment.Equals(chosenEnvironment));
-                intendedOrganismDestinations.Add(organism, chosenHabitat);
+                var chosenHabitat = validNeighbouringHabitats.Single(habitat => habitat.Environment.Equals(chosenEnvironment));
+                intendedOrganismDestinations.Add(currentOrganism, chosenHabitat);
             }
 
             return intendedOrganismDestinations;
@@ -388,26 +364,46 @@
             this.OrganismHabitats.Remove(organism);
         }
 
-        public void SetTerrain(Coordinates location, Terrain terrain)
+        public void Insert(Terrain terrain, Measure measure, Coordinates coordinates)
         {
-            this.Habitats[location.X, location.Y].Environment.SetTerrain(terrain);
+            var habitat = this.Habitats[coordinates.X, coordinates.Y];
+            habitat.Environment.SetLevel(measure, 1.0);
+            habitat.Environment.SetTerrain(terrain);
+
+            var neighbouringHabitats = this.GetNeighbouringHabitats(habitat, this.ConditionSpreadRadius, true);
+            var gaussianKernel = new GaussianBlur(0.25 * this.ConditionSpreadDiameter, this.ConditionSpreadDiameter).Kernel;
+
+            var gaussianCentre = (double)gaussianKernel[this.ConditionSpreadRadius, this.ConditionSpreadRadius];
+            for (var x = 0; x < this.ConditionSpreadDiameter; x++)
+            {
+                for (var y = 0; y < this.ConditionSpreadDiameter; y++)
+                {
+                    var level = gaussianKernel[x, y] / gaussianCentre;
+                    neighbouringHabitats[x, y].Environment.SetLevel(measure, level);
+                }
+            }
         }
 
-        private List<Habitat> GetNeighbouringHabitats(Habitat habitat, int neighbourDepth, bool includeDiagonals)
+        private Habitat[,] GetNeighbouringHabitats(Habitat habitat, int neighbourDepth, bool includeDiagonals)
         {
-            var neighbouringHabitats = new List<Habitat>();
+            //var neighbouringHabitats = new List<Habitat>();
+            var neighbouringHabitats = new Habitat[(neighbourDepth * 2) + 1, (neighbourDepth * 2) + 1];
 
             var location = this.HabitatCoordinates[habitat];
-            for (var x = location.X - neighbourDepth; x <= location.X + neighbourDepth; x++)
+            for (var i = -neighbourDepth; i <= neighbourDepth; i++)
             {
+                var x = i + location.X;
+
                 // do not carry on if x is out-of-bounds
                 if (x < 0 || x >= this.Width)
                 {
                     continue;
                 }
 
-                for (var y = location.Y - neighbourDepth; y <= location.Y + neighbourDepth; y++)
+                for (var j = -neighbourDepth; j <= neighbourDepth; j++)
                 {
+                    var y = j + location.Y;
+
                     // do not carry on if y is out-of-bounds
                     if (y < 0 || y >= this.Height)
                     {
@@ -420,7 +416,7 @@
                         continue;
                     }
 
-                    neighbouringHabitats.Add(this.Habitats[x, y]);
+                    neighbouringHabitats[i + neighbourDepth, j + neighbourDepth] = this.Habitats[x, y];
                 }
             }
 

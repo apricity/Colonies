@@ -88,6 +88,17 @@
                 stringBuilder.AppendLine(string.Format("{0}: {1:0.000}", condition.Measure, condition.Level));
             }
 
+            if (this.DomainModel.ContainsOrganism())
+            {
+                stringBuilder.AppendLine("----------");
+                stringBuilder.AppendLine(this.DomainModel.Organism.Name);
+
+                foreach (var condition in this.DomainModel.Organism.Measurement.Conditions)
+                {
+                    stringBuilder.AppendLine(string.Format("{0}: {1:0.000}", condition.Measure, condition.Level));
+                }
+            }
+
             stringBuilder.Remove(stringBuilder.Length - 2, 2);
             this.ToolTip = stringBuilder.ToString();
         }

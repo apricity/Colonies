@@ -7,8 +7,6 @@
     using System.Windows.Data;
     using System.Windows.Media;
 
-    using Wacton.Colonies.Ancillary;
-
     public class MeasuresToBrushConverter : IMultiValueConverter
     {
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
@@ -29,21 +27,69 @@
                 var terrainBrush = Brushes.Tan;
                 terrainBrush = this.ModifyBrush(terrainBrush, Brushes.Goldenrod, mineralRatio);
 
+                // remove all zero-level brushes
                 // order all element brushes by how strong their influence is
-                // apply the strongest first, and overlay the weaker ones afterwards
-                var elementBrushes = new Dictionary<SolidColorBrush, double>
+                var elements = new Dictionary<SolidColorBrush, double>
                                         {
                                             { Brushes.Tomato, heatRatio },
                                             { Brushes.CornflowerBlue, dampRatio }
                                         };
 
-                var orderedBrushes = elementBrushes.OrderByDescending(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
-                terrainBrush = orderedBrushes.Aggregate(terrainBrush, (current, orderedBrush) => this.ModifyBrush(current, orderedBrush.Key, orderedBrush.Value));
+                var orderedElements = elements.Where(pair => Math.Abs(pair.Value - 0.0) > 0.0)
+                                              .OrderByDescending(pair => pair.Value)
+                                              .ToDictionary(pair => pair.Key, pair => pair.Value);
+
+                // if there are no brushes to apply, return the current terrain brush
+                if (orderedElements.Count == 0)
+                {
+                    return terrainBrush;
+                }
+
+                // if there is only one brush to apply, do so and return the result
+                if (orderedElements.Count == 1)
+                {
+                    return this.ModifyBrush(terrainBrush, orderedElements.Single().Key, orderedElements.Single().Value);
+                }
+
+                // if there are multiple brushes to apply
+                // calculate the blended element colour using their respective ratio
+                // then apply the blended colour, using the highest ratio of the elements
+                var blendedRatio = orderedElements.First().Value;
+                var elementBrush = this.BlendBrushes(orderedElements);
+
+                terrainBrush = this.ModifyBrush(terrainBrush, elementBrush, blendedRatio);
                 return terrainBrush;
             }
 
             var type = value.GetType();
             throw new InvalidOperationException("Unsupported type [" + type.Name + "]"); 
+        }
+
+        private SolidColorBrush BlendBrushes(Dictionary<SolidColorBrush, double> orderedElements)
+        {
+            var greaterRatio = orderedElements.First().Value;
+            var elementBrush = orderedElements.First().Key;
+            orderedElements.Remove(elementBrush);
+
+            var hasCombinedAllElementBrushes = false;
+            while (!hasCombinedAllElementBrushes)
+            {
+                var modifyBrush = orderedElements.First().Key;
+                var lesserRatio = orderedElements.First().Value;
+
+                var modifyRatio = lesserRatio / (greaterRatio + lesserRatio);
+                elementBrush = this.ModifyBrush(elementBrush, modifyBrush, modifyRatio);
+                orderedElements.Remove(modifyBrush);
+
+                greaterRatio = lesserRatio;
+
+                if (orderedElements.Count == 0)
+                {
+                    hasCombinedAllElementBrushes = true;
+                }
+            }
+
+            return elementBrush;
         }
 
         private SolidColorBrush ModifyBrush(SolidColorBrush baseBrush, SolidColorBrush modifyBrush, double modifyRatio)

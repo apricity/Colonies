@@ -226,14 +226,14 @@
                 {
                     var x = location.X;
                     var y = location.Y;
-                    this.EcosystemViewModel.HabitatViewModels[x][y].EnvironmentViewModel.Refresh();
+                    this.EcosystemViewModel.HabitatViewModels[x][y].RefreshEnvironment();
                 });
 
             foreach (var preUpdateOrganismLocation in updateSummary.PreUpdateOrganismLocations)
             {
                 var x = preUpdateOrganismLocation.Value.X;
                 var y = preUpdateOrganismLocation.Value.Y;
-                this.EcosystemViewModel.HabitatViewModels[x][y].OrganismViewModel.RemoveModel();
+                this.EcosystemViewModel.HabitatViewModels[x][y].RemoveOrganismModel();
             }
 
             foreach (var postUpdateOrganismLocation in updateSummary.PostUpdateOrganismLocations)
@@ -241,7 +241,7 @@
                 var x = postUpdateOrganismLocation.Value.X;
                 var y = postUpdateOrganismLocation.Value.Y;
                 var organism = this.DomainModel.Ecosystem.Habitats[x, y].Organism;
-                this.EcosystemViewModel.HabitatViewModels[x][y].OrganismViewModel.AssignModel(organism);
+                this.EcosystemViewModel.HabitatViewModels[x][y].AssignOrganismModel(organism);
             }
 
             // organism synopsis updates

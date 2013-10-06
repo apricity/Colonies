@@ -95,10 +95,12 @@
 
         protected virtual void InitialiseTerrain(Ecosystem ecosystem)
         {
-            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(17, 2));
-            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(16, 3));
-            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(18, 2));
-            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinates(17, 3));
+            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(19, 0));
+            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(15, 3));
+            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(17, 4));
+            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinates(17, 5));
+            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinates(15, 6));
+            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinates(19, 9));
 
             for (var i = 0; i < 15; i++)
             {

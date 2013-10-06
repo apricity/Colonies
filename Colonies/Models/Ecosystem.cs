@@ -381,7 +381,7 @@
                     var level = gaussianKernel[x, y] / gaussianCentre;
                     var neighbouringHabitat = neighbouringHabitats[x, y];
 
-                    if (level > neighbouringHabitat.Environment.GetLevel(measure))
+                    if (neighbouringHabitat != null && level > neighbouringHabitat.Environment.GetLevel(measure))
                     {
                         neighbouringHabitat.Environment.SetLevel(measure, level);
                     }

@@ -217,9 +217,9 @@
             // ecosystem updates
             var environmentCoordinatesToUpdate = new List<Coordinates>();
             environmentCoordinatesToUpdate.AddRange(updateSummary.PheromoneDecreasedLocations);
-            environmentCoordinatesToUpdate.AddRange(updateSummary.PreUpdateOrganismLocations.Values); // where pheromone has been deposited
+            environmentCoordinatesToUpdate.AddRange(updateSummary.PreUpdateOrganismLocations); // where pheromone has been deposited and mineral formed
             environmentCoordinatesToUpdate.AddRange(updateSummary.NutrientGrowthLocations);
-            environmentCoordinatesToUpdate.AddRange(updateSummary.MineralGrowthLocations);
+            environmentCoordinatesToUpdate.AddRange(updateSummary.ObstructionDemolishLocations);
 
             // bitchin' parallel foreach // TODO: convert organisms to parallel before start getting too many organisms
             Parallel.ForEach(environmentCoordinatesToUpdate, location =>
@@ -231,15 +231,15 @@
 
             foreach (var preUpdateOrganismLocation in updateSummary.PreUpdateOrganismLocations)
             {
-                var x = preUpdateOrganismLocation.Value.X;
-                var y = preUpdateOrganismLocation.Value.Y;
+                var x = preUpdateOrganismLocation.X;
+                var y = preUpdateOrganismLocation.Y;
                 this.EcosystemViewModel.HabitatViewModels[x][y].RemoveOrganismModel();
             }
 
             foreach (var postUpdateOrganismLocation in updateSummary.PostUpdateOrganismLocations)
             {
-                var x = postUpdateOrganismLocation.Value.X;
-                var y = postUpdateOrganismLocation.Value.Y;
+                var x = postUpdateOrganismLocation.X;
+                var y = postUpdateOrganismLocation.Y;
                 var organism = this.DomainModel.Ecosystem.Habitats[x, y].Organism;
                 this.EcosystemViewModel.HabitatViewModels[x][y].AssignOrganismModel(organism);
             }

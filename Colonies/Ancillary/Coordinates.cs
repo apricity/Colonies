@@ -1,6 +1,6 @@
 ﻿namespace Wacton.Colonies.Ancillary
 {
-    public class Coordinates
+    public struct Coordinates
     {
         public readonly int X;
         public readonly int Y;

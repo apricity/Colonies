@@ -69,8 +69,8 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.Values.ToList();
-            Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
+            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.ToList();
+            Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
         [Test]
@@ -104,8 +104,8 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.Values.ToList();
-            Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
+            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.ToList();
+            Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
         [Test]
@@ -146,8 +146,8 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.Values.ToList();
-            Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
+            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.ToList();
+            Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
         [Test]
@@ -181,8 +181,8 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.Values.ToList();
-            Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
+            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.ToList();
+            Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
         [Test]
@@ -225,8 +225,8 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.Values.ToList();
-            Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
+            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.ToList();
+            Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
         [Test]
@@ -266,8 +266,8 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.Values.ToList();
-            Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
+            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.ToList();
+            Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
         [Test]
@@ -320,8 +320,8 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.Values.ToList();
-            Assert.That(actualCoordinates, Is.EqualTo(expectedCoordinates));
+            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.ToList();
+            Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
         private static Habitat[,] GenerateBaseHabitats(int width, int height)

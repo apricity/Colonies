@@ -66,11 +66,13 @@
         public void RemoveOrganismModel()
         {
             this.OrganismViewModel.RemoveModel();
+            this.UpdateToolTip();
         }
 
         public void AssignOrganismModel(Organism model)
         {
             this.OrganismViewModel.AssignModel(model);
+            this.UpdateToolTip();
         }
 
         public override void Refresh()

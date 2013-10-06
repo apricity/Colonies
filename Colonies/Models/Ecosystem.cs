@@ -70,7 +70,7 @@
             this.PheromoneDepositRate = 1 / 100.0;
             this.PheromoneFadeRate = 1 / 500.0;
             this.NutrientGrowthRate = 1 / 500.0;
-            this.MineralFormRate = 1 / 750.0;
+            this.MineralFormRate = 1 / 100.0;
             this.ObstructionDemolishRate = 1 / 5.0;
 
             // work out how big any fire/water spread should be based on ecosystem dimensions
@@ -81,33 +81,14 @@
         {
             /* record the pre-update locations */
             var preUpdateOrganismLocations = this.OrganismHabitats.ToDictionary(
-                organismHabitat => organismHabitat.Key.ToString(), 
+                organismHabitat => organismHabitat.Key, 
                 organismHabitat => this.HabitatCoordinates[organismHabitat.Value]);
 
-            /* reduce pheromone level in all environments and increase pheromone wherever appropriate */
-            var pheromoneDecreasedLocations = this.DecreaseGlobalPheromoneLevel();
-            this.IncreaseLocalPheromoneLevels();
-
-            /* increase nutrients and minerals wherever appropriate */
-            var nutrientGrowthLocations = this.IncreaseNutrientLevels();
-            var mineralFormLocations = this.IncreaseMineralLevels();
-
-            /* find out where each organism would like to move to
-             * then analyse them to decide where the organisms will actually move to 
-             * and to resolve any conflicting intentions */
-            var intendedOrganismDestinations = this.GetIntendedOrganismDestinations();
-            var actualOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations, new List<Organism>());
-
-            foreach (var obstructedHabitat in intendedOrganismDestinations.Values.Where(habitat => habitat.IsObstructed()))
-            {
-                obstructedHabitat.Environment.DecreaseLevel(Measure.Obstruction, this.ObstructionDemolishRate);
-            }
-
             /* perform in-situ actions e.g. take food, eat food, attack */
-            foreach (var actualOrganismDestination in actualOrganismDestinations)
+            foreach (var organismHabitat in this.OrganismHabitats)
             {
-                var organism = actualOrganismDestination.Key;
-                var habitat = actualOrganismDestination.Value;
+                var organism = organismHabitat.Key;
+                var habitat = organismHabitat.Value;
                 var habitatNutrientLevel = habitat.Environment.GetLevel(Measure.Nutrient);
 
                 if (habitatNutrientLevel > 0.0)
@@ -120,24 +101,44 @@
                 }
             }
 
+            /* find out where each organism would like to move to
+             * then analyse them to decide where the organisms will actually move to 
+             * and to resolve any conflicting intentions */
+            var intendedOrganismDestinations = this.GetIntendedOrganismDestinations();
+            var actualOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations, new List<Organism>());
+
             /* perform ex-situ actions e.g. move any organisms that can after resolving conflicting intentions */
             foreach (var actualOrganismDestination in actualOrganismDestinations)
             {
                 this.MoveOrganism(actualOrganismDestination.Key, actualOrganismDestination.Value);                    
             }
 
+            /* reduce pheromone level in all environments
+             * increase pheromone, mineral, and nutrient where appropriate 
+             * and demolish obstruction if they have blocked a movement */
+            var pheromoneDecreasedLocations = this.DecreasePheromoneLevel();
+            this.IncreasePheromoneLevels(preUpdateOrganismLocations);
+            this.IncreaseMineralLevels(preUpdateOrganismLocations);
+            var nutrientGrowthLocations = this.IncreaseNutrientLevels();
+            var obstructionDemolishLocations = new List<Coordinates>();
+            foreach (var obstructedHabitat in intendedOrganismDestinations.Values.Where(habitat => habitat.IsObstructed()))
+            {
+                obstructedHabitat.Environment.DecreaseLevel(Measure.Obstruction, this.ObstructionDemolishRate);
+                obstructionDemolishLocations.Add(this.HabitatCoordinates[obstructedHabitat]);
+            }
+
             /* reduce all organisms health */
-            this.DecreaseAllOrganismHealth();
+            this.DecreaseOrganismHealth();
 
             /* record the post-update locations */
             var postUpdateOrganismLocations = this.OrganismHabitats.ToDictionary(
                 organismHabitat => organismHabitat.Key.ToString(), 
                 organismHabitat => this.HabitatCoordinates[organismHabitat.Value]);
 
-            return new UpdateSummary(preUpdateOrganismLocations, postUpdateOrganismLocations, pheromoneDecreasedLocations, nutrientGrowthLocations, mineralFormLocations);
+            return new UpdateSummary(preUpdateOrganismLocations.Values.ToList(), postUpdateOrganismLocations.Values.ToList(), pheromoneDecreasedLocations, nutrientGrowthLocations, obstructionDemolishLocations);
         }
 
-        private List<Coordinates> DecreaseGlobalPheromoneLevel()
+        private List<Coordinates> DecreasePheromoneLevel()
         {
             var pheromoneDecreasedLocations = new List<Coordinates>();
 
@@ -152,24 +153,40 @@
             return pheromoneDecreasedLocations;
         }
 
-        private void IncreaseLocalPheromoneLevels()
+        private void IncreasePheromoneLevels(Dictionary<Organism, Coordinates> organismLocations)
         {
-            foreach (var organismHabitat in this.OrganismHabitats)
-            {
-                var organism = organismHabitat.Key;
-                var habitat = organismHabitat.Value;
+            // only increase pheromones where the organism is alive and is depositing pheromones
+            var validLocations = organismLocations.Where(pair => pair.Key.IsAlive && pair.Key.IsDepositingPheromones)
+                                                  .ToDictionary(pair => pair.Key, pair => pair.Value)
+                                                  .Values.ToList();
 
-                if (organism.IsDepositingPheromones && organism.IsAlive)
+            foreach (var location in validLocations)
+            {
+                var habitat = this.Habitats[location.X, location.Y];
+                habitat.Environment.IncreaseLevel(Measure.Pheromone, this.PheromoneDepositRate);
+            }
+        }
+
+        private void IncreaseMineralLevels(Dictionary<Organism, Coordinates> organismLocations)
+        {
+            // only increase mineral where the terrain is earth (even when the organism is dead!)
+            // TODO: need a "HasDecomposed" bool - this could stop showing organism and stop mineral form
+            var validLocations = organismLocations.Values.ToList();
+            foreach (var location in validLocations)
+            {
+                var habitat = this.Habitats[location.X, location.Y];
+                if (!habitat.Environment.Terrain.Equals(Terrain.Earth))
                 {
-                    habitat.Environment.IncreaseLevel(Measure.Pheromone, this.PheromoneDepositRate);
+                    continue;
                 }
+
+                habitat.Environment.IncreaseLevel(Measure.Mineral, this.MineralFormRate);
             }
         }
 
         private List<Coordinates> IncreaseNutrientLevels()
         {
             var nutrientGrowthLocations = new List<Coordinates>();
-
             foreach (var habitat in this.Habitats)
             {
                 if (!habitat.Environment.HasNutrient)
@@ -187,28 +204,7 @@
             return nutrientGrowthLocations;
         }
 
-        private List<Coordinates> IncreaseMineralLevels()
-        {
-            var mineralFormLocations = new List<Coordinates>();
-
-            foreach (var habitat in this.Habitats)
-            {
-                if (!habitat.Environment.Terrain.Equals(Terrain.Earth))
-                {
-                    continue;
-                }
-
-                var increased = habitat.Environment.IncreaseLevel(Measure.Mineral, this.MineralFormRate);
-                if (increased)
-                {
-                    mineralFormLocations.Add(this.HabitatCoordinates[habitat]);
-                }
-            }
-
-            return mineralFormLocations;
-        }
-
-        private void DecreaseAllOrganismHealth()
+        private void DecreaseOrganismHealth()
         {
             foreach (var organism in this.OrganismHabitats.Keys.ToList())
             {

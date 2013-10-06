@@ -98,7 +98,7 @@
             ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(17, 2));
             ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(16, 3));
             ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(18, 2));
-            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinates(17, 4));
+            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinates(17, 3));
 
             for (var i = 0; i < 15; i++)
             {

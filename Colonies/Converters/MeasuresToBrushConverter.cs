@@ -1,14 +1,15 @@
 ﻿namespace Wacton.Colonies.Converters
 {
     using System;
-    using System.ComponentModel;
+    using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Windows.Data;
     using System.Windows.Media;
 
     using Wacton.Colonies.Ancillary;
 
-    public class TerrainToBrushConverter : IMultiValueConverter
+    public class MeasuresToBrushConverter : IMultiValueConverter
     {
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -17,36 +18,27 @@
                 return null;
             }
 
-            if (Enum.IsDefined(typeof(Terrain), value[0]) && value[1] is double)
+            if (value[0] is double && value[1] is double && value[2] is double)
             {
-                var terrain = (Terrain)value[0];
-                var mineralRatio = (double)value[1];
-                var dampRatio = (double)value[2];
-                var heatRatio = (double)value[3];
+                var mineralRatio = (double)value[0];
+                var dampRatio = (double)value[1];
+                var heatRatio = (double)value[2];
 
-                SolidColorBrush terrainBrush;
-                switch (terrain)
-                {
-                    case Terrain.Earth:
-                        terrainBrush = Brushes.Tan;
-                        break;
-                    case Terrain.Water:
-                        terrainBrush = Brushes.CornflowerBlue;
-                        break;
-                    case Terrain.Fire:
-                        terrainBrush = Brushes.Tomato;
-                        break;
-                    default:
-                        terrainBrush = Brushes.Transparent;
-                        break;
-                }
-
-                // TODO: does the order of modification matter?
+                // set up the standard default brush
+                // and modify it by how much mineral is available
+                var terrainBrush = Brushes.Tan;
                 terrainBrush = this.ModifyBrush(terrainBrush, Brushes.Goldenrod, mineralRatio);
-                terrainBrush = this.ModifyBrush(terrainBrush, Brushes.Tomato, heatRatio);
-                terrainBrush = this.ModifyBrush(terrainBrush, Brushes.CornflowerBlue, dampRatio);
 
+                // order all element brushes by how strong their influence is
+                // apply the strongest first, and overlay the weaker ones afterwards
+                var elementBrushes = new Dictionary<SolidColorBrush, double>
+                                        {
+                                            { Brushes.Tomato, heatRatio },
+                                            { Brushes.CornflowerBlue, dampRatio }
+                                        };
 
+                var orderedBrushes = elementBrushes.OrderByDescending(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+                terrainBrush = orderedBrushes.Aggregate(terrainBrush, (current, orderedBrush) => this.ModifyBrush(current, orderedBrush.Key, orderedBrush.Value));
                 return terrainBrush;
             }
 

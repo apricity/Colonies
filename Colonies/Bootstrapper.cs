@@ -96,7 +96,9 @@
         protected virtual void InitialiseTerrain(Ecosystem ecosystem)
         {
             ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(17, 2));
-            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinates(17, 7));
+            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(16, 3));
+            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(18, 2));
+            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinates(17, 4));
 
             for (var i = 0; i < 15; i++)
             {

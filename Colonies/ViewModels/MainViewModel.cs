@@ -140,12 +140,12 @@
         {
             get
             {
-                return 1 / this.DomainModel.Ecosystem.MineralGrowthRate;
+                return 1 / this.DomainModel.Ecosystem.MineralFormRate;
             }
             set
             {
-                this.DomainModel.Ecosystem.MineralGrowthRate = 1 / value;
-                this.OnPropertyChanged("MineralGrowthRate");
+                this.DomainModel.Ecosystem.MineralFormRate = 1 / value;
+                this.OnPropertyChanged("MineralFormRate");
             }
         }
 

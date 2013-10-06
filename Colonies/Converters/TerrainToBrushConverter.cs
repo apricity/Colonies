@@ -28,7 +28,7 @@
                 switch (terrain)
                 {
                     case Terrain.Earth:
-                        terrainBrush = Brushes.Sienna;
+                        terrainBrush = Brushes.Tan;
                         break;
                     case Terrain.Water:
                         terrainBrush = Brushes.CornflowerBlue;
@@ -43,8 +43,9 @@
 
                 // TODO: does the order of modification matter?
                 terrainBrush = this.ModifyBrush(terrainBrush, Brushes.Goldenrod, mineralRatio);
-                terrainBrush = this.ModifyBrush(terrainBrush, Brushes.CornflowerBlue, dampRatio);
                 terrainBrush = this.ModifyBrush(terrainBrush, Brushes.Tomato, heatRatio);
+                terrainBrush = this.ModifyBrush(terrainBrush, Brushes.CornflowerBlue, dampRatio);
+
 
                 return terrainBrush;
             }

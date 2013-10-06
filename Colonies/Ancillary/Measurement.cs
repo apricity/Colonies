@@ -44,8 +44,10 @@
             foreach (var condition in this.Conditions)
             {
                 stringBuilder.Append(condition);
+                stringBuilder.Append("/");
             }
 
+            stringBuilder.Remove(stringBuilder.Length - 1, 1);
             return stringBuilder.ToString();
         }
     }

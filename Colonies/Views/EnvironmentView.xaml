@@ -32,7 +32,7 @@
         
         <Rectangle Fill="OrangeRed" Opacity="{Binding PheromoneOpacity}"/>
 
-        <Rectangle Fill="LawnGreen">
+        <Rectangle Fill="OliveDrab">
             <Rectangle.Height>
                 <MultiBinding Converter="{StaticResource RelativeScaleConverter}">
                     <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}" Path="Height"/>

@@ -22,7 +22,7 @@
         public double PheromoneDepositRate { get; set; }
         public double PheromoneFadeRate { get; set; }
         public double NutrientGrowthRate { get; set; }
-        public double MineralGrowthRate { get; set; }
+        public double MineralFormRate { get; set; }
         public double ObstructionDemolishRate { get; set; }
 
         private int ConditionSpreadDiameter { get; set; }
@@ -70,7 +70,7 @@
             this.PheromoneDepositRate = 1 / 100.0;
             this.PheromoneFadeRate = 1 / 500.0;
             this.NutrientGrowthRate = 1 / 500.0;
-            this.MineralGrowthRate = 1 / 750.0;
+            this.MineralFormRate = 1 / 750.0;
             this.ObstructionDemolishRate = 1 / 5.0;
 
             // work out how big any fire/water spread should be based on ecosystem dimensions
@@ -88,9 +88,9 @@
             var pheromoneDecreasedLocations = this.DecreaseGlobalPheromoneLevel();
             this.IncreaseLocalPheromoneLevels();
 
-            /* increase nutrient and mineral growth wherever appropriate */
+            /* increase nutrients and minerals wherever appropriate */
             var nutrientGrowthLocations = this.IncreaseNutrientLevels();
-            var mineralGrowthLocations = this.IncreaseMineralLevels();
+            var mineralFormLocations = this.IncreaseMineralLevels();
 
             /* find out where each organism would like to move to
              * then analyse them to decide where the organisms will actually move to 
@@ -134,7 +134,7 @@
                 organismHabitat => organismHabitat.Key.ToString(), 
                 organismHabitat => this.HabitatCoordinates[organismHabitat.Value]);
 
-            return new UpdateSummary(preUpdateOrganismLocations, postUpdateOrganismLocations, pheromoneDecreasedLocations, nutrientGrowthLocations, mineralGrowthLocations);
+            return new UpdateSummary(preUpdateOrganismLocations, postUpdateOrganismLocations, pheromoneDecreasedLocations, nutrientGrowthLocations, mineralFormLocations);
         }
 
         private List<Coordinates> DecreaseGlobalPheromoneLevel()
@@ -189,7 +189,7 @@
 
         private List<Coordinates> IncreaseMineralLevels()
         {
-            var mineralGrowthLocations = new List<Coordinates>();
+            var mineralFormLocations = new List<Coordinates>();
 
             foreach (var habitat in this.Habitats)
             {
@@ -198,14 +198,14 @@
                     continue;
                 }
 
-                var increased = habitat.Environment.IncreaseLevel(Measure.Mineral, this.MineralGrowthRate);
+                var increased = habitat.Environment.IncreaseLevel(Measure.Mineral, this.MineralFormRate);
                 if (increased)
                 {
-                    mineralGrowthLocations.Add(this.HabitatCoordinates[habitat]);
+                    mineralFormLocations.Add(this.HabitatCoordinates[habitat]);
                 }
             }
 
-            return mineralGrowthLocations;
+            return mineralFormLocations;
         }
 
         private void DecreaseAllOrganismHealth()
@@ -379,7 +379,12 @@
                 for (var y = 0; y < this.ConditionSpreadDiameter; y++)
                 {
                     var level = gaussianKernel[x, y] / gaussianCentre;
-                    neighbouringHabitats[x, y].Environment.SetLevel(measure, level);
+                    var neighbouringHabitat = neighbouringHabitats[x, y];
+
+                    if (level > neighbouringHabitat.Environment.GetLevel(measure))
+                    {
+                        neighbouringHabitat.Environment.SetLevel(measure, level);
+                    }
                 }
             }
         }

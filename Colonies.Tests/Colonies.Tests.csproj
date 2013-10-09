@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LoggingTests.cs" />
     <Compile Include="Mocks\MockRandom.cs" />
     <Compile Include="OrganismMovementTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

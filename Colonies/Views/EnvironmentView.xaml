@@ -11,7 +11,7 @@
              d:DataContext="{Binding Source={StaticResource DesignTimeViewModelLocator}, Path=EnvironmentViewModel}">
     
     <UserControl.Resources>
-        <Converters:MeasuresToBrushConverter x:Key="MeasuresToBrushConverter"/>
+        <Converters:WeightedColorsToBrushConverter x:Key="WeightedColorsToBrushConverter"/>
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <Converters:DoubleToObstructionDashConverter x:Key="DoubleToObstructionDashConverter"/>
         <Converters:RelativeScaleConverter x:Key="RelativeScaleConverter"/>
@@ -21,7 +21,8 @@
     <Grid>
         <Rectangle>
             <Rectangle.Fill>
-                <MultiBinding Converter="{StaticResource MeasuresToBrushConverter}">
+                <MultiBinding Converter="{StaticResource WeightedColorsToBrushConverter}">
+                    <Binding Path="BaseColor"/>
                     <Binding Path="MineralLevel"/>
                     <Binding Path="DampLevel"/>
                     <Binding Path="HeatLevel"/>

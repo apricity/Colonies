@@ -15,7 +15,7 @@
     {
         private Habitat[,] habitats;
         private Dictionary<string, Organism> organisms;
-        private Dictionary<Habitat, Coordinates> habitatCoordinates;
+        private Dictionary<Habitat, Coordinate> habitatCoordinates;
 
         [SetUp]
         public void SetupTest()
@@ -32,12 +32,12 @@
                 this.organisms.Add(organismIdentifier, new Organism(organismIdentifier, Colors.Black));
             }
 
-            this.habitatCoordinates = new Dictionary<Habitat, Coordinates>();
+            this.habitatCoordinates = new Dictionary<Habitat, Coordinate>();
             for (var i = 0; i < this.habitats.GetLength(0); i++)
             {
                 for (var j = 0; j < this.habitats.GetLength(1); j++)
                 {
-                    this.habitatCoordinates.Add(this.habitats[i, j], new Coordinates(i, j));
+                    this.habitatCoordinates.Add(this.habitats[i, j], new Coordinate(i, j));
                 }
             }
         }

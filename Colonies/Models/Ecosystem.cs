@@ -14,7 +14,7 @@
     {
         public Habitat[,] Habitats { get; private set; }
         public Dictionary<Organism, Habitat> OrganismHabitats { get; private set; }
-        public Dictionary<Habitat, Coordinates> HabitatCoordinates { get; private set; } 
+        public Dictionary<Habitat, Coordinate> HabitatCoordinates { get; private set; } 
         public Dictionary<Measure, double> MeasureBiases { get; private set; }
 
         // TODO: neater management of these?
@@ -55,12 +55,12 @@
             this.Habitats = habitats;
             this.OrganismHabitats = organismHabitats;
 
-            this.HabitatCoordinates = new Dictionary<Habitat, Coordinates>();
+            this.HabitatCoordinates = new Dictionary<Habitat, Coordinate>();
             for (var i = 0; i < this.Width; i++)
             {
                 for (var j = 0; j < this.Height; j++)
                 {
-                    this.HabitatCoordinates.Add(this.Habitats[i, j], new Coordinates(i, j));
+                    this.HabitatCoordinates.Add(this.Habitats[i, j], new Coordinate(i, j));
                 }
             }
 
@@ -120,7 +120,7 @@
             this.IncreasePheromoneLevels(preUpdateOrganismLocations);
             this.IncreaseMineralLevels(preUpdateOrganismLocations);
             var nutrientGrowthLocations = this.IncreaseNutrientLevels();
-            var obstructionDemolishLocations = new List<Coordinates>();
+            var obstructionDemolishLocations = new List<Coordinate>();
             foreach (var obstructedHabitat in intendedOrganismDestinations.Values.Where(habitat => habitat.IsObstructed()))
             {
                 obstructedHabitat.Environment.DecreaseLevel(Measure.Obstruction, this.ObstructionDemolishRate);
@@ -138,9 +138,9 @@
             return new UpdateSummary(preUpdateOrganismLocations.Values.ToList(), postUpdateOrganismLocations.Values.ToList(), pheromoneDecreasedLocations, nutrientGrowthLocations, obstructionDemolishLocations);
         }
 
-        private List<Coordinates> DecreasePheromoneLevel()
+        private List<Coordinate> DecreasePheromoneLevel()
         {
-            var pheromoneDecreasedLocations = new List<Coordinates>();
+            var pheromoneDecreasedLocations = new List<Coordinate>();
 
             foreach (var habitat in this.Habitats)
             {
@@ -153,7 +153,7 @@
             return pheromoneDecreasedLocations;
         }
 
-        private void IncreasePheromoneLevels(Dictionary<Organism, Coordinates> organismLocations)
+        private void IncreasePheromoneLevels(Dictionary<Organism, Coordinate> organismLocations)
         {
             // only increase pheromones where the organism is alive and is depositing pheromones
             var validLocations = organismLocations.Where(pair => pair.Key.IsAlive && pair.Key.IsDepositingPheromones)
@@ -167,7 +167,7 @@
             }
         }
 
-        private void IncreaseMineralLevels(Dictionary<Organism, Coordinates> organismLocations)
+        private void IncreaseMineralLevels(Dictionary<Organism, Coordinate> organismLocations)
         {
             // only increase mineral where the terrain is earth (even when the organism is dead!)
             // TODO: need a "HasDecomposed" bool - this could stop showing organism and stop mineral form
@@ -184,9 +184,9 @@
             }
         }
 
-        private List<Coordinates> IncreaseNutrientLevels()
+        private List<Coordinate> IncreaseNutrientLevels()
         {
-            var nutrientGrowthLocations = new List<Coordinates>();
+            var nutrientGrowthLocations = new List<Coordinate>();
             foreach (var habitat in this.Habitats)
             {
                 if (!habitat.Environment.HasNutrient)
@@ -346,7 +346,7 @@
             this.OrganismHabitats[organism] = destination;
         }
 
-        public void AddOrganism(Organism organism, Coordinates location)
+        public void AddOrganism(Organism organism, Coordinate location)
         {
             var habitat = this.Habitats[location.X, location.Y];
             habitat.AddOrganism(organism);
@@ -360,7 +360,7 @@
             this.OrganismHabitats.Remove(organism);
         }
 
-        public void Insert(Terrain terrain, Measure measure, Coordinates coordinates)
+        public void Insert(Terrain terrain, Measure measure, Coordinate coordinates)
         {
             var habitat = this.Habitats[coordinates.X, coordinates.Y];
             habitat.Environment.SetLevel(measure, 1.0);

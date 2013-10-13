@@ -80,6 +80,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Ancillary\WeightedColor.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\BoolToActiveStringConverter.cs" />
@@ -88,7 +89,7 @@
     <Compile Include="Converters\DoubleToObstructionDashConverter.cs" />
     <Compile Include="Converters\RelativeScaleConverter.cs" />
     <Compile Include="Converters\DoubleToHealthBrushConverter.cs" />
-    <Compile Include="Ancillary\Coordinates.cs" />
+    <Compile Include="Ancillary\Coordinate.cs" />
     <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="ExtensionMethods.cs" />
@@ -134,7 +135,7 @@
     <Compile Include="Models\Environment.cs" />
     <Compile Include="Ancillary\Enums.cs" />
     <Compile Include="Models\Organism.cs" />
-    <Compile Include="Converters\MeasuresToBrushConverter.cs" />
+    <Compile Include="Converters\WeightedColorsToBrushConverter.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>

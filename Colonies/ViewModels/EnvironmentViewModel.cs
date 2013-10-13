@@ -1,6 +1,7 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
     using System;
+    using System.Windows.Media;
 
     using Microsoft.Practices.Prism.Events;
 
@@ -10,8 +11,8 @@
 
     public class EnvironmentViewModel : ViewModelBase<Environment>
     {
-        // do not set domain model properties through the view model
-        // use events to tell view models the model has changed
+        public Color BaseColor { get; private set; }
+
         private Terrain terrain;
         public Terrain Terrain
         {
@@ -26,24 +27,61 @@
             }
         }
 
-        private double obstructionLevel;
-        public double ObstructionLevel
+        private WeightedColor mineralLevel;
+        public WeightedColor MineralLevel
         {
             get
             {
-                return this.obstructionLevel;
+                return this.mineralLevel;
             }
             set
             {
-                this.obstructionLevel = value;
-                this.OnPropertyChanged("ObstructionLevel");
-
-                this.IsObstructed = Math.Abs(value - 0.0) > 0.0;
-                this.OnPropertyChanged("IsObstructed");
+                this.mineralLevel = value;
+                this.OnPropertyChanged("MineralLevel");
             }
         }
 
-        public bool IsObstructed { get; private set; }
+        private WeightedColor dampLevel;
+        public WeightedColor DampLevel
+        {
+            get
+            {
+                return this.dampLevel;
+            }
+            set
+            {
+                this.dampLevel = value;
+                this.OnPropertyChanged("DampLevel");
+            }
+        }
+
+        private WeightedColor heatLevel;
+        public WeightedColor HeatLevel
+        {
+            get
+            {
+                return this.heatLevel;
+            }
+            set
+            {
+                this.heatLevel = value;
+                this.OnPropertyChanged("HeatLevel");
+            }
+        }
+
+        private WeightedColor poisonLevel;
+        public WeightedColor PoisonLevel
+        {
+            get
+            {
+                return this.poisonLevel;
+            }
+            set
+            {
+                this.poisonLevel = value;
+                this.OnPropertyChanged("PoisonLevel");
+            }
+        }
 
         private double pheromoneOpacity;
         public double PheromoneOpacity
@@ -73,78 +111,43 @@
             }
         }
 
-        private double mineralLevel;
-        public double MineralLevel
+        private double obstructionLevel;
+        public double ObstructionLevel
         {
             get
             {
-                return this.mineralLevel;
+                return this.obstructionLevel;
             }
             set
             {
-                this.mineralLevel = value;
-                this.OnPropertyChanged("MineralLevel");
+                this.obstructionLevel = value;
+                this.OnPropertyChanged("ObstructionLevel");
+
+                this.IsObstructed = Math.Abs(value - 0.0) > 0.0;
+                this.OnPropertyChanged("IsObstructed");
             }
         }
 
-        private double dampLevel;
-        public double DampLevel
-        {
-            get
-            {
-                return this.dampLevel;
-            }
-            set
-            {
-                this.dampLevel = value;
-                this.OnPropertyChanged("DampLevel");
-            }
-        }
-
-        private double heatLevel;
-        public double HeatLevel
-        {
-            get
-            {
-                return this.heatLevel;
-            }
-            set
-            {
-                this.heatLevel = value;
-                this.OnPropertyChanged("HeatLevel");
-            }
-        }
-
-        private double poisonLevel;
-        public double PoisonLevel
-        {
-            get
-            {
-                return this.poisonLevel;
-            }
-            set
-            {
-                this.poisonLevel = value;
-                this.OnPropertyChanged("PoisonLevel");
-            }
-        }
+        public bool IsObstructed { get; private set; }
 
         public EnvironmentViewModel(Environment domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
-            
+            this.BaseColor = Colors.Tan;
         }
 
         public override void Refresh()
         {
             this.Terrain = this.DomainModel.Terrain;
-            this.ObstructionLevel = this.DomainModel.GetLevel(Measure.Obstruction);
-            this.PheromoneOpacity = this.DomainModel.GetLevel(Measure.Pheromone);
+
+            this.MineralLevel = new WeightedColor(Colors.Goldenrod, this.DomainModel.GetLevel(Measure.Mineral));
+            this.DampLevel = new WeightedColor(Colors.CornflowerBlue, this.DomainModel.GetLevel(Measure.Damp));
+            this.HeatLevel = new WeightedColor(Colors.Tomato, this.DomainModel.GetLevel(Measure.Heat));
+            this.PoisonLevel = new WeightedColor(Colors.MediumAquamarine, this.DomainModel.GetLevel(Measure.Poison));
+
             this.NutrientScalar = this.DomainModel.GetLevel(Measure.Nutrient);
-            this.MineralLevel = this.DomainModel.GetLevel(Measure.Mineral);
-            this.DampLevel = this.DomainModel.GetLevel(Measure.Damp);
-            this.HeatLevel = this.DomainModel.GetLevel(Measure.Heat);
-            this.PoisonLevel = this.DomainModel.GetLevel(Measure.Poison);
+            this.PheromoneOpacity = this.DomainModel.GetLevel(Measure.Pheromone);
+            this.ObstructionLevel = this.DomainModel.GetLevel(Measure.Obstruction);
         }
     }
 }

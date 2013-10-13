@@ -215,7 +215,7 @@
         private void UpdateViewModels(UpdateSummary updateSummary)
         {
             // ecosystem updates
-            var environmentCoordinatesToUpdate = new List<Coordinates>();
+            var environmentCoordinatesToUpdate = new List<Coordinate>();
             environmentCoordinatesToUpdate.AddRange(updateSummary.PheromoneDecreasedLocations);
             environmentCoordinatesToUpdate.AddRange(updateSummary.PreUpdateOrganismLocations); // where pheromone has been deposited and mineral formed
             environmentCoordinatesToUpdate.AddRange(updateSummary.NutrientGrowthLocations);

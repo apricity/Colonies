@@ -95,12 +95,12 @@
 
         protected virtual void InitialiseTerrain(Ecosystem ecosystem)
         {
-            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(19, 0));
-            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(15, 3));
-            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinates(17, 4));
-            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinates(17, 5));
-            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinates(15, 6));
-            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinates(19, 9));
+            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinate(19, 0));
+            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinate(15, 3));
+            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinate(17, 4));
+            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinate(17, 5));
+            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinate(15, 6));
+            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinate(19, 9));
 
             for (var i = 12; i < ecosystem.Width; i++)
             {
@@ -117,34 +117,34 @@
             }
 
             // custom obstructed habitats (will make a square shapen with an entrance - a pen?)
-            var obstructedCoordinates = new List<Coordinates>
+            var obstructedCoordinates = new List<Coordinate>
                                             {
-                                                new Coordinates(1, 1),
-                                                new Coordinates(1, 2),
-                                                new Coordinates(1, 3),
-                                                new Coordinates(1, 4),
-                                                new Coordinates(1, 5),
-                                                new Coordinates(1, 6),
-                                                new Coordinates(1, 7),
-                                                new Coordinates(1, 8),
-                                                new Coordinates(2, 1),
-                                                new Coordinates(3, 1),
-                                                new Coordinates(4, 1),
-                                                new Coordinates(5, 1),
-                                                new Coordinates(6, 1),
-                                                new Coordinates(7, 1),
-                                                new Coordinates(2, 8),
-                                                new Coordinates(3, 8),
-                                                new Coordinates(4, 8),
-                                                new Coordinates(5, 8),
-                                                new Coordinates(6, 8),
-                                                new Coordinates(7, 8),
-                                                new Coordinates(8, 1),
-                                                new Coordinates(8, 2),
-                                                new Coordinates(8, 3),
-                                                new Coordinates(8, 6),
-                                                new Coordinates(8, 7),
-                                                new Coordinates(8, 8)
+                                                new Coordinate(1, 1),
+                                                new Coordinate(1, 2),
+                                                new Coordinate(1, 3),
+                                                new Coordinate(1, 4),
+                                                new Coordinate(1, 5),
+                                                new Coordinate(1, 6),
+                                                new Coordinate(1, 7),
+                                                new Coordinate(1, 8),
+                                                new Coordinate(2, 1),
+                                                new Coordinate(3, 1),
+                                                new Coordinate(4, 1),
+                                                new Coordinate(5, 1),
+                                                new Coordinate(6, 1),
+                                                new Coordinate(7, 1),
+                                                new Coordinate(2, 8),
+                                                new Coordinate(3, 8),
+                                                new Coordinate(4, 8),
+                                                new Coordinate(5, 8),
+                                                new Coordinate(6, 8),
+                                                new Coordinate(7, 8),
+                                                new Coordinate(8, 1),
+                                                new Coordinate(8, 2),
+                                                new Coordinate(8, 3),
+                                                new Coordinate(8, 6),
+                                                new Coordinate(8, 7),
+                                                new Coordinate(8, 8)
                                             };
 
             foreach (var coordinates in obstructedCoordinates)
@@ -153,14 +153,14 @@
             }
         }
 
-        protected virtual Dictionary<Organism, Coordinates> InitialiseOrganisms(Ecosystem ecosystem)
+        protected virtual Dictionary<Organism, Coordinate> InitialiseOrganisms(Ecosystem ecosystem)
         {
-            var organismLocations = new Dictionary<Organism, Coordinates>
+            var organismLocations = new Dictionary<Organism, Coordinate>
                                         {
-                                            { new Organism("Waffle", Colors.Silver), new Coordinates(2, 2) },
-                                            { new Organism("Wilber", Colors.Silver), new Coordinates(2, 7) },
-                                            { new Organism("Lotty", Colors.Silver), new Coordinates(7, 2) },
-                                            { new Organism("Dr. Louise", Colors.Silver), new Coordinates(7, 7) },
+                                            { new Organism("Waffle", Colors.Silver), new Coordinate(2, 2) },
+                                            { new Organism("Wilber", Colors.Silver), new Coordinate(2, 7) },
+                                            { new Organism("Lotty", Colors.Silver), new Coordinate(7, 2) },
+                                            { new Organism("Dr. Louise", Colors.Silver), new Coordinate(7, 7) },
                                         };
 
             foreach (var organismLocation in organismLocations)

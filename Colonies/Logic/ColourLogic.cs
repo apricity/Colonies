@@ -12,63 +12,61 @@
         // TODO: include pheromone?
         public static SolidColorBrush EnvironmentBrush(Color baseColor, WeightedColor mineral, List<WeightedColor> environmentModifiers)
         {
+            // remove any modifiers that do not affect the environment
+            environmentModifiers = environmentModifiers.Where(weightedColor => weightedColor.Weight > 0.0).ToList();
+
             // set up the standard default colour and modify it by how much mineral is available
             var environmentColor = baseColor;
             environmentColor = InterpolateColor(environmentColor, mineral.Color, mineral.Weight);
 
-            // order the environment modifiers
-            var orderedEnvironmentModifiers =
-                environmentModifiers.Where(modifier => Math.Abs(modifier.Weight - 0.0) > 0.0)
-                                    .OrderByDescending(modifier => modifier.Weight)
-                                    .ToList();
-
-            // if there are no brushes to apply, return the current terrain brush
-            if (orderedEnvironmentModifiers.Count == 0)
+            // if there are no colours to apply, create a brush of the current colour
+            if (environmentModifiers.Count == 0)
             {
                 return new SolidColorBrush(environmentColor);
             }
 
-            // if there is only one brush to apply, do so and return the result
-            if (orderedEnvironmentModifiers.Count == 1)
+            // if there is only one colour to apply, do so and return the brush
+            if (environmentModifiers.Count == 1)
             {
-                var environmentModifier = orderedEnvironmentModifiers.Single();
+                var environmentModifier = environmentModifiers.Single();
                 environmentColor = InterpolateColor(environmentColor, environmentModifier.Color, environmentModifier.Weight);
                 return new SolidColorBrush(environmentColor);
             }
 
-            // calculate the color of the environment modifiers and 
-            var environmentModifierOpacity = orderedEnvironmentModifiers.First().Weight;
-            var environmentModifierColor = InterpolateWeightedColors(orderedEnvironmentModifiers);
+            // if there are two or more colours to apply 
+            // calculate the colour of the environment modifiers and apply it using the max weighting of all modifiers
+            var environmentModifierOpacity = environmentModifiers.Max(weightedColor => weightedColor.Weight);
+            var environmentModifierColor = InterpolateWeightedColors(environmentModifiers);
             environmentColor = InterpolateColor(environmentColor, environmentModifierColor, environmentModifierOpacity);
             return new SolidColorBrush(environmentColor);
         }
 
-        private static Color InterpolateColor(Color baseColor, Color modifyColor, double modifyRatio)
+        private static Color InterpolateColor(Color baseColor, Color targetColor, double targetFactor)
         {
-            if (modifyRatio < 0 || modifyRatio > 1)
+            if (targetFactor < 0 || targetFactor > 1)
             {
-                throw new ArgumentOutOfRangeException("modifyRatio");
+                throw new ArgumentOutOfRangeException("targetFactor");
             }
 
-            var alphaDifference = modifyColor.A - baseColor.A;
-            var redDifference = modifyColor.R - baseColor.R;
-            var greenDifference = modifyColor.G - baseColor.G;
-            var blueDifference = modifyColor.B - baseColor.B;
+            var alphaDifference = targetColor.A - baseColor.A;
+            var redDifference = targetColor.R - baseColor.R;
+            var greenDifference = targetColor.G - baseColor.G;
+            var blueDifference = targetColor.B - baseColor.B;
 
             return new Color
             {
-                A = (byte)(baseColor.A + (alphaDifference * modifyRatio)),
-                R = (byte)(baseColor.R + (redDifference * modifyRatio)),
-                G = (byte)(baseColor.G + (greenDifference * modifyRatio)),
-                B = (byte)(baseColor.B + (blueDifference * modifyRatio))
+                A = (byte)(baseColor.A + (alphaDifference * targetFactor)),
+                R = (byte)(baseColor.R + (redDifference * targetFactor)),
+                G = (byte)(baseColor.G + (greenDifference * targetFactor)),
+                B = (byte)(baseColor.B + (blueDifference * targetFactor))
             };
         }
 
         private static Color InterpolateWeightedColors(List<WeightedColor> weightedColors)
         {
-            var weightedRs = new List<WeightedColorChannel>();
-            var weightedGs = new List<WeightedColorChannel>();
-            var weightedBs = new List<WeightedColorChannel>();
+            var weightedRs = new List<WeightedChannelValue>();
+            var weightedGs = new List<WeightedChannelValue>();
+            var weightedBs = new List<WeightedChannelValue>();
 
             foreach (var weightedColor in weightedColors)
             {
@@ -77,48 +75,68 @@
                 weightedBs.Add(weightedColor.WeightedB);
             }
 
-            var interpolatedR = InterpolateColorChannels(weightedRs);
-            var interpolatedG = InterpolateColorChannels(weightedGs);
-            var interpolatedB = InterpolateColorChannels(weightedBs);
+            var interpolatedR = InterpolateWeightedChannelValues(weightedRs);
+            var interpolatedG = InterpolateWeightedChannelValues(weightedGs);
+            var interpolatedB = InterpolateWeightedChannelValues(weightedBs);
 
             return Color.FromRgb(interpolatedR, interpolatedG, interpolatedB);
         }
 
-        private static byte InterpolateColorChannels(List<WeightedColorChannel> weightedColorChannels)
+        private static byte InterpolateWeightedChannelValues(List<WeightedChannelValue> weightedChannelValues)
         {
-            var orderedWeightedChannels = weightedColorChannels.OrderByDescending(weightedChannel => weightedChannel.ChannelValue).ToList();
-
-            if (orderedWeightedChannels.Count == 2)
+            if (weightedChannelValues == null || weightedChannelValues.Count <= 1)
             {
-                var firstWeightedChannel = orderedWeightedChannels[0];
-                var secondWeightedChannel = orderedWeightedChannels[1];
-
-                var byteDistance = firstWeightedChannel.ChannelValue - secondWeightedChannel.ChannelValue;
-                var changeFactor = secondWeightedChannel.Weight / (firstWeightedChannel.Weight + secondWeightedChannel.Weight);
-                var bytesToMove = byteDistance * changeFactor;
-                var interpolatedChannelValue = (byte)(firstWeightedChannel.ChannelValue - bytesToMove);
-                return interpolatedChannelValue;
+                throw new ArgumentException("Cannot interpolate between one or fewer colour channels", "weightedChannelValues");
             }
 
-            var nextColourValues = new List<WeightedColorChannel>();
-            for (var i = 0; i < orderedWeightedChannels.Count - 1; i++)
+            // order color channel values so greatest channel value is first
+            weightedChannelValues = weightedChannelValues.OrderByDescending(weightedChannelValue => weightedChannelValue.ChannelValue).ToList();
+
+            // base case: 2 color channel values
+            // interpolate between the two values and return the result
+            if (weightedChannelValues.Count == 2)
             {
-                var firstWeightedChannel = orderedWeightedChannels[i];
-                var secondWeightedChannel = orderedWeightedChannels[i + 1];
-
-                var byteDistance = firstWeightedChannel.ChannelValue - secondWeightedChannel.ChannelValue;
-                var changeFactor = secondWeightedChannel.Weight / (firstWeightedChannel.Weight + secondWeightedChannel.Weight);
-                var bytesToMove = byteDistance * changeFactor;
-                var interpolatedChannelValue = (byte)(firstWeightedChannel.ChannelValue - bytesToMove);
-
-                var weightDistance = secondWeightedChannel.Weight - firstWeightedChannel.Weight;
-                var weightToMove = weightDistance * changeFactor;
-                var interpolatedWeight = firstWeightedChannel.Weight + weightToMove;
-
-                nextColourValues.Add(new WeightedColorChannel(interpolatedChannelValue, interpolatedWeight));
+                var currentWeightedChannelValue = weightedChannelValues[0];
+                var nextWeightedChannelValue = weightedChannelValues[1];
+                var interpolatedWeightedChannelValue = InterpolateWeightedChannelValues(currentWeightedChannelValue, nextWeightedChannelValue);
+                return interpolatedWeightedChannelValue.ChannelValue;
             }
 
-            return InterpolateColorChannels(nextColourValues);
+            // if > 2 color channel values
+            // interpolate each channel value with the next one, as well as the resultant weight of the interpolation
+            // then interpolate between these interpolations by recursively calling this function
+            /* 
+             * e.g. if 3 channel values A, B, C...
+             * pass 1: interpolate A-B, B-C (now only have 2 weighted channel values)
+             * pass 2: interpolate AB-BC    (2 weighted channel values is the base case, return the result of interpolation)
+             */
+            var interpolatedWeightedChannelValues = new List<WeightedChannelValue>();
+            for (var i = 0; i < weightedChannelValues.Count - 1; i++)
+            {
+                var currentWeightedChannelValue = weightedChannelValues[i];
+                var nextWeightedChannelValue = weightedChannelValues[i + 1];
+                var interpolatedWeightedChannelValue = InterpolateWeightedChannelValues(currentWeightedChannelValue, nextWeightedChannelValue);
+                interpolatedWeightedChannelValues.Add(interpolatedWeightedChannelValue);
+            }
+
+            return InterpolateWeightedChannelValues(interpolatedWeightedChannelValues);
+        }
+
+        private static WeightedChannelValue InterpolateWeightedChannelValues(WeightedChannelValue baseChannelValue, WeightedChannelValue targetChannelValue)
+        {
+            // how far towards the second channel value we should go according to the weights of the two channels
+            var targetFactor = targetChannelValue.Weight / (baseChannelValue.Weight + targetChannelValue.Weight);
+
+            // calculate the interpolated channel value based on the target factor
+            var channelValueDifference = targetChannelValue.ChannelValue - baseChannelValue.ChannelValue;
+            var interpolatedChannelValue = (byte)(baseChannelValue.ChannelValue + (channelValueDifference * targetFactor));
+
+            // calculate the weight of the resultant interpolation based on the target factor
+            var weightDifference = baseChannelValue.Weight - targetChannelValue.Weight;
+            var interpolatedWeight = baseChannelValue.Weight - (weightDifference * targetFactor);
+
+            var weightedColorChannel = new WeightedChannelValue(interpolatedChannelValue, interpolatedWeight);
+            return weightedColorChannel;
         }
     }
 }

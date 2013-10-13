@@ -7,27 +7,27 @@
         public readonly Color Color;
         public readonly double Weight;
 
-        public WeightedColorChannel WeightedR
+        public WeightedChannelValue WeightedR
         {
             get
             {
-                return new WeightedColorChannel(this.Color.R, this.Weight);
+                return new WeightedChannelValue(this.Color.R, this.Weight);
             }
         }
 
-        public WeightedColorChannel WeightedG
+        public WeightedChannelValue WeightedG
         {
             get
             {
-                return new WeightedColorChannel(this.Color.G, this.Weight);
+                return new WeightedChannelValue(this.Color.G, this.Weight);
             }
         }
 
-        public WeightedColorChannel WeightedB
+        public WeightedChannelValue WeightedB
         {
             get
             {
-                return new WeightedColorChannel(this.Color.B, this.Weight);
+                return new WeightedChannelValue(this.Color.B, this.Weight);
             }
         }
 
@@ -43,12 +43,12 @@
         }
     }
 
-    public struct WeightedColorChannel
+    public struct WeightedChannelValue
     {
         public readonly byte ChannelValue;
         public readonly double Weight;
 
-        public WeightedColorChannel(byte channelValue, double weight)
+        public WeightedChannelValue(byte channelValue, double weight)
         {
             this.ChannelValue = channelValue;
             this.Weight = weight;

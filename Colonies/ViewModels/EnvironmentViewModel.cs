@@ -27,8 +27,10 @@
             }
         }
 
-        private WeightedColor mineralLevel;
-        public WeightedColor MineralLevel
+        public SolidColorBrush MineralBrush { get; private set; }
+        
+        private double mineralLevel;
+        public double MineralLevel
         {
             get
             {
@@ -41,8 +43,10 @@
             }
         }
 
-        private WeightedColor dampLevel;
-        public WeightedColor DampLevel
+        public SolidColorBrush DampBrush { get; private set; }
+
+        private double dampLevel;
+        public double DampLevel
         {
             get
             {
@@ -55,8 +59,10 @@
             }
         }
 
-        private WeightedColor heatLevel;
-        public WeightedColor HeatLevel
+        public SolidColorBrush HeatBrush { get; private set; }
+
+        private double heatLevel;
+        public double HeatLevel
         {
             get
             {
@@ -69,8 +75,10 @@
             }
         }
 
-        private WeightedColor poisonLevel;
-        public WeightedColor PoisonLevel
+        public SolidColorBrush PoisonBrush { get; private set; }
+
+        private double poisonLevel;
+        public double PoisonLevel
         {
             get
             {
@@ -82,6 +90,8 @@
                 this.OnPropertyChanged("PoisonLevel");
             }
         }
+
+        public SolidColorBrush PheromoneBrush { get; private set; }
 
         private double pheromoneOpacity;
         public double PheromoneOpacity
@@ -97,6 +107,8 @@
             }
         }
 
+        public SolidColorBrush NutrientBrush { get; private set; }
+
         private double nutrientScalar;
         public double NutrientScalar
         {
@@ -110,6 +122,8 @@
                 this.OnPropertyChanged("NutrientScalar");
             }
         }
+
+        public SolidColorBrush ObstructionBrush { get; private set; }
 
         private double obstructionLevel;
         public double ObstructionLevel
@@ -134,19 +148,25 @@
             : base(domainModel, eventAggregator)
         {
             this.BaseColor = Colors.Tan;
+            this.MineralBrush = new SolidColorBrush(Colors.Goldenrod);
+            this.DampBrush = new SolidColorBrush(Colors.CornflowerBlue);
+            this.HeatBrush = new SolidColorBrush(Colors.Tomato);
+            this.PoisonBrush = new SolidColorBrush(Colors.MediumAquamarine);
+            this.PheromoneBrush = new SolidColorBrush(Colors.OrangeRed);
+            this.NutrientBrush = new SolidColorBrush(Colors.OliveDrab);
+            this.ObstructionBrush = new SolidColorBrush(Colors.Black);
         }
 
         public override void Refresh()
         {
             this.Terrain = this.DomainModel.Terrain;
 
-            this.MineralLevel = new WeightedColor(Colors.Goldenrod, this.DomainModel.GetLevel(Measure.Mineral));
-            this.DampLevel = new WeightedColor(Colors.CornflowerBlue, this.DomainModel.GetLevel(Measure.Damp));
-            this.HeatLevel = new WeightedColor(Colors.Tomato, this.DomainModel.GetLevel(Measure.Heat));
-            this.PoisonLevel = new WeightedColor(Colors.MediumAquamarine, this.DomainModel.GetLevel(Measure.Poison));
-
-            this.NutrientScalar = this.DomainModel.GetLevel(Measure.Nutrient);
+            this.MineralLevel = this.DomainModel.GetLevel(Measure.Mineral);
+            this.DampLevel = this.DomainModel.GetLevel(Measure.Damp);
+            this.HeatLevel = this.DomainModel.GetLevel(Measure.Heat);
+            this.PoisonLevel = this.DomainModel.GetLevel(Measure.Poison);
             this.PheromoneOpacity = this.DomainModel.GetLevel(Measure.Pheromone);
+            this.NutrientScalar = this.DomainModel.GetLevel(Measure.Nutrient);
             this.ObstructionLevel = this.DomainModel.GetLevel(Measure.Obstruction);
         }
     }

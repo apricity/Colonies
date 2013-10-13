@@ -9,7 +9,6 @@
 
     public static class ColourLogic
     {
-        // TODO: include pheromone?
         public static SolidColorBrush EnvironmentBrush(Color baseColor, WeightedColor mineral, List<WeightedColor> environmentModifiers)
         {
             // remove any modifiers that do not affect the environment

@@ -19,13 +19,17 @@
                 return null;
             }
 
-            if (value[0] is Color && value[1] is WeightedColor && value[2] is WeightedColor && value[3] is WeightedColor && value[4] is WeightedColor)
+            if (value[0] is Color && 
+                value[1] is SolidColorBrush && value[2] is double &&
+                value[3] is SolidColorBrush && value[4] is double &&
+                value[5] is SolidColorBrush && value[6] is double &&
+                value[7] is SolidColorBrush && value[8] is double)
             {
                 var baseColor = (Color)value[0];
-                var mineral = (WeightedColor)value[1];
-                var damp = (WeightedColor)value[2];
-                var heat = (WeightedColor)value[3];
-                var poison = (WeightedColor)value[4];
+                var mineral = new WeightedColor(((SolidColorBrush)value[1]).Color, (double)value[2]);
+                var damp = new WeightedColor(((SolidColorBrush)value[3]).Color, (double)value[4]);
+                var heat = new WeightedColor(((SolidColorBrush)value[5]).Color, (double)value[6]);
+                var poison = new WeightedColor(((SolidColorBrush)value[7]).Color, (double)value[8]);
 
                 var environmentModifiers = new List<WeightedColor> { damp, heat, poison };
                 return ColourLogic.EnvironmentBrush(baseColor, mineral, environmentModifiers);

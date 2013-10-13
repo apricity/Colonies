@@ -23,17 +23,21 @@
             <Rectangle.Fill>
                 <MultiBinding Converter="{StaticResource WeightedColorsToBrushConverter}">
                     <Binding Path="BaseColor"/>
+                    <Binding Path="MineralBrush"/>
                     <Binding Path="MineralLevel"/>
+                    <Binding Path="DampBrush"/>
                     <Binding Path="DampLevel"/>
+                    <Binding Path="HeatBrush"/>
                     <Binding Path="HeatLevel"/>
+                    <Binding Path="PoisonBrush"/>
                     <Binding Path="PoisonLevel"/>
                 </MultiBinding>
             </Rectangle.Fill>
         </Rectangle>
         
-        <Rectangle Fill="OrangeRed" Opacity="{Binding PheromoneOpacity}"/>
+        <Rectangle Fill="{Binding PheromoneBrush}" Opacity="{Binding PheromoneOpacity}"/>
 
-        <Rectangle Fill="OliveDrab">
+        <Rectangle Fill="{Binding NutrientBrush}">
             <Rectangle.Height>
                 <MultiBinding Converter="{StaticResource RelativeScaleConverter}">
                     <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}" Path="Height"/>
@@ -51,14 +55,12 @@
 
         <!-- stretch lines so we don't have to care about the size of the window (e.g. currently 20x20 but could easily change) -->
         <!-- TODO: how to derive '7' (~ 1/4 of line length) using converters (multiconverter does not work for double collection...) -->
-        <Line X1="0" Y1="0" X2="1" Y2="1" Stroke="Black" StrokeThickness="0.5" Stretch="Fill"
+        <Line X1="0" Y1="0" X2="1" Y2="1" Stroke="{Binding ObstructionBrush}" StrokeThickness="0.5" Stretch="Fill"
               Visibility="{Binding IsObstructed, Converter={StaticResource BoolToVisibilityConverter}}"
-              StrokeDashArray="{Binding ObstructionLevel, Converter={StaticResource DoubleToObstructionDashConverter}, 
-                                                          ConverterParameter=7}" />
-        <Line X1="0" Y1="1" X2="1" Y2="0" Stroke="Black" StrokeThickness="0.5" Stretch="Fill"
+              StrokeDashArray="{Binding ObstructionLevel, Converter={StaticResource DoubleToObstructionDashConverter}, ConverterParameter=7}" />
+        <Line X1="0" Y1="1" X2="1" Y2="0" Stroke="{Binding ObstructionBrush}" StrokeThickness="0.5" Stretch="Fill"
               Visibility="{Binding IsObstructed, Converter={StaticResource BoolToVisibilityConverter}}"
-              StrokeDashArray="{Binding ObstructionLevel, Converter={StaticResource DoubleToObstructionDashConverter}, 
-                                                          ConverterParameter=7}" />
+              StrokeDashArray="{Binding ObstructionLevel, Converter={StaticResource DoubleToObstructionDashConverter}, ConverterParameter=7}" />
     </Grid>
     
 </UserControl>

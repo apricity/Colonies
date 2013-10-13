@@ -93,6 +93,7 @@
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logic\ColourLogic.cs" />
     <Compile Include="Logic\DecisionLogic.cs" />
     <Compile Include="Ancillary\Condition.cs" />
     <Compile Include="Interfaces\IBiased.cs" />

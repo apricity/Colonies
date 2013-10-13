@@ -102,6 +102,14 @@
             ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinates(15, 6));
             ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinates(19, 9));
 
+            for (var i = 12; i < ecosystem.Width; i++)
+            {
+                for (var j = 4; j <= 5; j++)
+                {
+                    ecosystem.Habitats[i, j].Environment.SetLevel(Measure.Poison, 0.3);
+                }
+            }
+
             for (var i = 0; i < 15; i++)
             {
                 ecosystem.Habitats[i, 0].Environment.SetLevel(Measure.Nutrient, 1.0 - (i * (1 / (double)15)));

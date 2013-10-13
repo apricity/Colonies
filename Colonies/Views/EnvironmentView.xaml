@@ -25,6 +25,7 @@
                     <Binding Path="MineralLevel"/>
                     <Binding Path="DampLevel"/>
                     <Binding Path="HeatLevel"/>
+                    <Binding Path="PoisonLevel"/>
                 </MultiBinding>
             </Rectangle.Fill>
         </Rectangle>

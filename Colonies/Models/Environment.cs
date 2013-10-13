@@ -44,7 +44,9 @@
                             ? new Condition(Measure.Heat, 1)
                             : new Condition(Measure.Heat, 0);
 
-            this.Measurement = new Measurement(new List<Condition> { pheromone, nutrient, mineral, obstruction, damp, heat });
+            var poison = new Condition(Measure.Poison, 0);
+
+            this.Measurement = new Measurement(new List<Condition> { pheromone, nutrient, mineral, obstruction, damp, heat, poison });
         }
 
         public void SetTerrain(Terrain terrain)

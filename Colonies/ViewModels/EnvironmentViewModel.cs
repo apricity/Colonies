@@ -115,6 +115,20 @@
             }
         }
 
+        private double poisonLevel;
+        public double PoisonLevel
+        {
+            get
+            {
+                return this.poisonLevel;
+            }
+            set
+            {
+                this.poisonLevel = value;
+                this.OnPropertyChanged("PoisonLevel");
+            }
+        }
+
         public EnvironmentViewModel(Environment domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
@@ -130,6 +144,7 @@
             this.MineralLevel = this.DomainModel.GetLevel(Measure.Mineral);
             this.DampLevel = this.DomainModel.GetLevel(Measure.Damp);
             this.HeatLevel = this.DomainModel.GetLevel(Measure.Heat);
+            this.PoisonLevel = this.DomainModel.GetLevel(Measure.Poison);
         }
     }
 }

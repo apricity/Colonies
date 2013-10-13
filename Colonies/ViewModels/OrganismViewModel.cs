@@ -99,10 +99,9 @@
         // TODO: can Refresh() be a generic ViewModel method?
         public override void Refresh()
         {
-            this.HasOrganism = this.DomainModel != null;
-
-            if (this.HasOrganism)
+            if (this.DomainModel != null)
             {
+                this.HasOrganism = true;
                 this.Color = this.DomainModel.Color;
                 this.IsAlive = this.DomainModel.IsAlive;
                 this.HealthLevel = this.DomainModel.GetLevel(Measure.Health);
@@ -111,6 +110,7 @@
             else
             {
                 // reset the properties to their default values if no organism in the model
+                this.HasOrganism = false;
                 this.Color = default(Color);
                 this.IsAlive = default(bool);
                 this.HealthLevel = default(double);

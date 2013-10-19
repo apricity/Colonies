@@ -1,34 +1,68 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
     using System;
+    using System.Collections.Generic;
     using System.Windows.Media;
 
     using Microsoft.Practices.Prism.Events;
 
     using Wacton.Colonies.Ancillary;
+    using Wacton.Colonies.Logic;
 
     using Environment = Wacton.Colonies.Models.Environment;
 
     public class EnvironmentViewModel : ViewModelBase<Environment>
     {
-        public Color BaseColor { get; private set; }
+        private readonly Color baseColor = Colors.Tan;
+        private readonly Dictionary<Measure, Color> measureColors = new Dictionary<Measure, Color>
+                                                                        {
+                                                                            { Measure.Mineral, Colors.Goldenrod },
+                                                                            { Measure.Damp, Colors.CornflowerBlue },
+                                                                            { Measure.Heat, Colors.Tomato },
+                                                                            { Measure.Poison, Colors.MediumAquamarine },
+                                                                            { Measure.Pheromone, Colors.OrangeRed },
+                                                                            { Measure.Nutrient, Colors.OliveDrab },
+                                                                            { Measure.Obstruction, Colors.Black },
+                                                                        };
 
-        private Terrain terrain;
-        public Terrain Terrain
+        private Color environmentColor;
+        public Color EnvironmentColor
         {
             get
             {
-                return this.terrain;
+                return this.environmentColor;
             }
             set
             {
-                this.terrain = value;
-                this.OnPropertyChanged("Terrain");
+                this.environmentColor = value;
+                this.OnPropertyChanged("EnvironmentColor");
             }
         }
 
-        public SolidColorBrush MineralBrush { get; private set; }
-        
+        public Color PheromoneColor
+        {
+            get
+            {
+                return measureColors[Measure.Pheromone];
+            }
+        }
+
+        public Color NutrientColor
+        {
+            get
+            {
+                return measureColors[Measure.Nutrient];
+            }
+        }
+
+        public Color ObstructionColor
+        {
+            get
+            {
+                return measureColors[Measure.Obstruction];
+            }
+        }
+
         private double mineralLevel;
         public double MineralLevel
         {
@@ -42,8 +76,6 @@
                 this.OnPropertyChanged("MineralLevel");
             }
         }
-
-        public SolidColorBrush DampBrush { get; private set; }
 
         private double dampLevel;
         public double DampLevel
@@ -59,8 +91,6 @@
             }
         }
 
-        public SolidColorBrush HeatBrush { get; private set; }
-
         private double heatLevel;
         public double HeatLevel
         {
@@ -74,8 +104,6 @@
                 this.OnPropertyChanged("HeatLevel");
             }
         }
-
-        public SolidColorBrush PoisonBrush { get; private set; }
 
         private double poisonLevel;
         public double PoisonLevel
@@ -91,8 +119,6 @@
             }
         }
 
-        public SolidColorBrush PheromoneBrush { get; private set; }
-
         private double pheromoneOpacity;
         public double PheromoneOpacity
         {
@@ -107,8 +133,6 @@
             }
         }
 
-        public SolidColorBrush NutrientBrush { get; private set; }
-
         private double nutrientScalar;
         public double NutrientScalar
         {
@@ -122,8 +146,6 @@
                 this.OnPropertyChanged("NutrientScalar");
             }
         }
-
-        public SolidColorBrush ObstructionBrush { get; private set; }
 
         private double obstructionLevel;
         public double ObstructionLevel
@@ -147,27 +169,34 @@
         public EnvironmentViewModel(Environment domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
-            this.BaseColor = Colors.Tan;
-            this.MineralBrush = new SolidColorBrush(Colors.Goldenrod);
-            this.DampBrush = new SolidColorBrush(Colors.CornflowerBlue);
-            this.HeatBrush = new SolidColorBrush(Colors.Tomato);
-            this.PoisonBrush = new SolidColorBrush(Colors.MediumAquamarine);
-            this.PheromoneBrush = new SolidColorBrush(Colors.OrangeRed);
-            this.NutrientBrush = new SolidColorBrush(Colors.OliveDrab);
-            this.ObstructionBrush = new SolidColorBrush(Colors.Black);
+            this.CalculateEnvironmentColor();
         }
 
         public override void Refresh()
         {
-            this.Terrain = this.DomainModel.Terrain;
-
             this.MineralLevel = this.DomainModel.GetLevel(Measure.Mineral);
             this.DampLevel = this.DomainModel.GetLevel(Measure.Damp);
             this.HeatLevel = this.DomainModel.GetLevel(Measure.Heat);
             this.PoisonLevel = this.DomainModel.GetLevel(Measure.Poison);
+
             this.PheromoneOpacity = this.DomainModel.GetLevel(Measure.Pheromone);
             this.NutrientScalar = this.DomainModel.GetLevel(Measure.Nutrient);
             this.ObstructionLevel = this.DomainModel.GetLevel(Measure.Obstruction);
+
+            this.CalculateEnvironmentColor();
+        }
+
+        private void CalculateEnvironmentColor()
+        {
+            this.EnvironmentColor = ColorLogic.EnvironmentColor(
+                this.baseColor,
+                new WeightedColor(this.measureColors[Measure.Mineral], this.MineralLevel),
+                new List<WeightedColor>
+                    {
+                        new WeightedColor(this.measureColors[Measure.Damp], this.DampLevel),
+                        new WeightedColor(this.measureColors[Measure.Heat], this.HeatLevel),
+                        new WeightedColor(this.measureColors[Measure.Poison], this.PoisonLevel)
+                    });
         }
     }
 }

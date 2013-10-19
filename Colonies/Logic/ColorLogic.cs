@@ -7,9 +7,9 @@
 
     using Wacton.Colonies.Ancillary;
 
-    public static class ColourLogic
+    public static class ColorLogic
     {
-        public static SolidColorBrush EnvironmentBrush(Color baseColor, WeightedColor mineral, List<WeightedColor> environmentModifiers)
+        public static Color EnvironmentColor(Color baseColor, WeightedColor mineral, List<WeightedColor> environmentModifiers)
         {
             // remove any modifiers that do not affect the environment
             environmentModifiers = environmentModifiers.Where(weightedColor => weightedColor.Weight > 0.0).ToList();
@@ -18,18 +18,18 @@
             var environmentColor = baseColor;
             environmentColor = InterpolateColor(environmentColor, mineral.Color, mineral.Weight);
 
-            // if there are no colours to apply, create a brush of the current colour
+            // if there are no colours to apply, return the base color
             if (environmentModifiers.Count == 0)
             {
-                return new SolidColorBrush(environmentColor);
+                return environmentColor;
             }
 
-            // if there is only one colour to apply, do so and return the brush
+            // if there is only one colour to apply, do so and return
             if (environmentModifiers.Count == 1)
             {
                 var environmentModifier = environmentModifiers.Single();
                 environmentColor = InterpolateColor(environmentColor, environmentModifier.Color, environmentModifier.Weight);
-                return new SolidColorBrush(environmentColor);
+                return environmentColor;
             }
 
             // if there are two or more colours to apply 
@@ -37,7 +37,7 @@
             var environmentModifierOpacity = environmentModifiers.Max(weightedColor => weightedColor.Weight);
             var environmentModifierColor = InterpolateWeightedColors(environmentModifiers);
             environmentColor = InterpolateColor(environmentColor, environmentModifierColor, environmentModifierOpacity);
-            return new SolidColorBrush(environmentColor);
+            return environmentColor;
         }
 
         private static Color InterpolateColor(Color baseColor, Color targetColor, double targetFactor)

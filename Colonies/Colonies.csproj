@@ -94,7 +94,7 @@
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Logging\Logger.cs" />
-    <Compile Include="Logic\ColourLogic.cs" />
+    <Compile Include="Logic\ColorLogic.cs" />
     <Compile Include="Logic\DecisionLogic.cs" />
     <Compile Include="Ancillary\Condition.cs" />
     <Compile Include="Interfaces\IBiased.cs" />
@@ -135,7 +135,6 @@
     <Compile Include="Models\Environment.cs" />
     <Compile Include="Ancillary\Enums.cs" />
     <Compile Include="Models\Organism.cs" />
-    <Compile Include="Converters\WeightedColorsToBrushConverter.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>

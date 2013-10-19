@@ -1,6 +1,5 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -217,22 +216,7 @@
                 {
                     Monitor.Exit(this.updateLock);
                 }
-                
             }
-
-            //lock (this.updateLock)
-            //{
-            //    var updateSummary = this.DomainModel.UpdateOnce();
-            //    this.UpdateViewModels(updateSummary);
-            //    this.TurnCount++;
-
-            //    // if there's been a change in the turn interval while the previous turn was processed
-            //    // update the interval of the ecosystem timer
-            //    if (this.EcosystemTurnInterval != this.lastUsedTurnInterval)
-            //    {
-            //        this.ChangeEcosystemTimer();
-            //    }
-            //}
         }
 
         private void UpdateViewModels(UpdateSummary updateSummary)
@@ -245,22 +229,12 @@
             environmentCoordinatesToUpdate.AddRange(updateSummary.ObstructionDemolishLocations);
             environmentCoordinatesToUpdate = environmentCoordinatesToUpdate.Distinct().ToList();
 
-            // if want to parallelize UI updating, will result in exceptions from creating dependencyproperties on non-UI threads
-            // so consider knowing about the UI sychronization context in order to marshal UI updates back to the main thread from the view model
-            // (http://stackoverflow.com/questions/7473973/is-it-wrong-to-use-the-dispatcher-within-my-viewmodel)
-            //Parallel.ForEach(environmentCoordinatesToUpdate, location =>
-            //    {
-            //        var x = location.X;
-            //        var y = location.Y;
-            //        this.EcosystemViewModel.HabitatViewModels[x][y].RefreshEnvironment();
-            //    });
-
-            foreach (var location in environmentCoordinatesToUpdate)
-            {
-                var x = location.X;
-                var y = location.Y;
-                this.EcosystemViewModel.HabitatViewModels[x][y].RefreshEnvironment();
-            }
+            Parallel.ForEach(environmentCoordinatesToUpdate, location =>
+                {
+                    var x = location.X;
+                    var y = location.Y;
+                    this.EcosystemViewModel.HabitatViewModels[x][y].RefreshEnvironment();
+                });
 
             foreach (var preUpdateOrganismLocation in updateSummary.PreUpdateOrganismLocations)
             {

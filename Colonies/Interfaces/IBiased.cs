@@ -7,5 +7,7 @@
     public interface IBiased
     {
         Dictionary<Measure, double> MeasureBiases { get; }
+
+        void SetMeasureBias(Measure measure, double bias);
     }
 }

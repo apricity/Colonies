@@ -269,6 +269,11 @@
                 this.pheromoneBias = pheromoneBias;
                 this.healthBias = healthBias;
             }
+
+            public void SetMeasureBias(Measure measure, double bias)
+            {
+                this.MeasureBiases[measure] = bias;
+            }
         }
 
     }

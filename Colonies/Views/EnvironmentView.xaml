@@ -11,6 +11,7 @@
              d:DataContext="{Binding Source={StaticResource DesignTimeViewModelLocator}, Path=EnvironmentViewModel}">
     
     <UserControl.Resources>
+        <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <Converters:DoubleToObstructionDashConverter x:Key="DoubleToObstructionDashConverter"/>
         <Converters:RelativeScaleConverter x:Key="RelativeScaleConverter"/>
@@ -18,22 +19,11 @@
     </UserControl.Resources>
 
     <Grid>
-        <Rectangle>
-            <Rectangle.Fill>
-                <SolidColorBrush Color="{Binding EnvironmentColor}"/>
-            </Rectangle.Fill>
-        </Rectangle>
-        
-        <Rectangle Opacity="{Binding PheromoneOpacity}">
-            <Rectangle.Fill>
-                <SolidColorBrush Color="{Binding PheromoneColor}"/>
-            </Rectangle.Fill>
-        </Rectangle>
+        <Rectangle Fill="{Binding EnvironmentColor, Converter={StaticResource ColorToBrushConverter}}"/>
 
-        <Rectangle>
-            <Rectangle.Fill>
-                <SolidColorBrush Color="{Binding NutrientColor}"/>
-            </Rectangle.Fill>
+        <Rectangle Fill="{Binding PheromoneColor, Converter={StaticResource ColorToBrushConverter}}" Opacity="{Binding PheromoneOpacity}"/>
+
+        <Rectangle Fill="{Binding NutrientColor, Converter={StaticResource ColorToBrushConverter}}">
             <Rectangle.Height>
                 <MultiBinding Converter="{StaticResource RelativeScaleConverter}">
                     <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}" Path="Height"/>
@@ -51,20 +41,14 @@
 
         <!-- stretch lines so we don't have to care about the size of the window (e.g. currently 20x20 but could easily change) -->
         <!-- TODO: how to derive '7' (~ 1/4 of line length) using converters (multiconverter does not work for double collection...) -->
-        <Line X1="0" Y1="0" X2="1" Y2="1" StrokeThickness="0.5" Stretch="Fill"
+        <Line X1="0" Y1="0" X2="1" Y2="1" StrokeThickness="0.5" Stretch="Fill" Stroke="{Binding ObstructionColor, Converter={StaticResource ColorToBrushConverter}}"
               Visibility="{Binding IsObstructed, Converter={StaticResource BoolToVisibilityConverter}}"
               StrokeDashArray="{Binding ObstructionLevel, Converter={StaticResource DoubleToObstructionDashConverter}, ConverterParameter=7}">
-            <Line.Stroke>
-                <SolidColorBrush Color="{Binding ObstructionColor}"/>
-            </Line.Stroke>
         </Line>
         
-        <Line X1="0" Y1="1" X2="1" Y2="0" StrokeThickness="0.5" Stretch="Fill"
+        <Line X1="0" Y1="1" X2="1" Y2="0" StrokeThickness="0.5" Stretch="Fill" Stroke="{Binding ObstructionColor, Converter={StaticResource ColorToBrushConverter}}"
               Visibility="{Binding IsObstructed, Converter={StaticResource BoolToVisibilityConverter}}"
               StrokeDashArray="{Binding ObstructionLevel, Converter={StaticResource DoubleToObstructionDashConverter}, ConverterParameter=7}">
-            <Line.Stroke>
-                <SolidColorBrush Color="{Binding ObstructionColor}"/>
-            </Line.Stroke>
         </Line>
     </Grid>
     

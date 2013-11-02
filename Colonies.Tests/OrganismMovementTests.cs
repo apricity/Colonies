@@ -69,7 +69,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.ToList();
+            var actualCoordinates = updateSummary.CurrentOrganismCoordinates.Values.ToList();
             Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
@@ -104,7 +104,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.ToList();
+            var actualCoordinates = updateSummary.CurrentOrganismCoordinates.Values.ToList();
             Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
@@ -146,7 +146,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.ToList();
+            var actualCoordinates = updateSummary.CurrentOrganismCoordinates.Values.ToList();
             Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
@@ -181,7 +181,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.ToList();
+            var actualCoordinates = updateSummary.CurrentOrganismCoordinates.Values.ToList();
             Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
@@ -225,7 +225,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.ToList();
+            var actualCoordinates = updateSummary.CurrentOrganismCoordinates.Values.ToList();
             Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
@@ -266,7 +266,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.ToList();
+            var actualCoordinates = updateSummary.CurrentOrganismCoordinates.Values.ToList();
             Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
@@ -320,7 +320,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismHabitats, organismIntendedDestinations);
 
             var expectedCoordinates = expectedOrganismDestinations.Values.Select(expectedDestination => this.habitatCoordinates[expectedDestination]).ToList();
-            var actualCoordinates = updateSummary.PostUpdateOrganismLocations.ToList();
+            var actualCoordinates = updateSummary.CurrentOrganismCoordinates.Values.ToList();
             Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 

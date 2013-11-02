@@ -60,29 +60,24 @@
         public void RefreshEnvironment()
         {
             this.EnvironmentViewModel.Refresh();
-            this.UpdateToolTip();
         }
 
-        public void RemoveOrganismModel()
+        public void RefreshOrganism()
         {
-            this.OrganismViewModel.RemoveModel();
-            this.UpdateToolTip();
+            this.OrganismViewModel.Refresh();
         }
 
         public void AssignOrganismModel(Organism model)
         {
             this.OrganismViewModel.AssignModel(model);
-            this.UpdateToolTip();
         }
 
-        public override void Refresh()
+        public void UnassignOrganismModel()
         {
-            // refresh child view models (environment & organism)
-            this.RefreshEnvironment();
-            this.OrganismViewModel.Refresh();
+            this.OrganismViewModel.UnassignModel();
         }
 
-        private void UpdateToolTip()
+        public void RefreshToolTip()
         {
             var stringBuilder = new StringBuilder();
             foreach (var condition in this.DomainModel.Environment.Measurement.Conditions)
@@ -103,6 +98,14 @@
 
             stringBuilder.Remove(stringBuilder.Length - 2, 2);
             this.ToolTip = stringBuilder.ToString();
+        }
+
+        public override void Refresh()
+        {
+            // refresh child view models (environment & organism)
+            this.RefreshEnvironment();
+            this.RefreshOrganism();
+            this.RefreshToolTip();
         }
     }
 }

@@ -79,35 +79,36 @@
 
         public UpdateSummary Update()
         {
-            /* record the pre-update locations */
-            var preUpdateOrganismLocations = this.OrganismHabitats.ToDictionary(
-                organismHabitat => organismHabitat.Key, 
-                organismHabitat => this.HabitatCoordinates[organismHabitat.Value]);
+            var previousOrganismCoordinates = this.OrganismHabitats.ToDictionary(
+                organismCoordinate => organismCoordinate.Key, 
+                organismCoordinate => this.HabitatCoordinates[organismCoordinate.Value]);
+
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
 
             /* perform pre movement actions e.g. take food, eat food, attack */
-            this.PerformPreMovementActions();
+            alteredEnvironmentCoordinates.AddRange(this.PerformPreMovementActions());
 
             /* find out where each organism would like to move to
              * then analyse them to decide where the organisms will actually move to 
              * and to resolve any conflicting intentions */
-            // TODO: better handling of lists for update summary
-            var intendedOrganismDestinations = this.PerformMovements();
+            alteredEnvironmentCoordinates.AddRange(this.PerformMovements());
 
             /* reduce pheromone level in all environments
              * increase pheromone, mineral, and nutrient where appropriate 
              * and demolish obstruction if they have blocked a movement */
-            var updateInfo = this.PerformPostMovementActions(preUpdateOrganismLocations, intendedOrganismDestinations);
+            alteredEnvironmentCoordinates.AddRange(this.PerformPostMovementActions(previousOrganismCoordinates));
 
-            /* record the post-update locations */
-            var postUpdateOrganismLocations = this.OrganismHabitats.ToDictionary(
-                organismHabitat => organismHabitat.Key.ToString(), 
-                organismHabitat => this.HabitatCoordinates[organismHabitat.Value]);
+            var currentOrganismCoordinates = this.OrganismHabitats.ToDictionary(
+                organismCoordinate => organismCoordinate.Key,
+                organismCoordinate => this.HabitatCoordinates[organismCoordinate.Value]);
 
-            return new UpdateSummary(preUpdateOrganismLocations.Values.ToList(), postUpdateOrganismLocations.Values.ToList(), updateInfo.Item1, updateInfo.Item2, updateInfo.Item3);
+            return new UpdateSummary(previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates.Distinct().ToList());
         }
 
-        private void PerformPreMovementActions()
+        private IEnumerable<Coordinate> PerformPreMovementActions()
         {
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+
             foreach (var organismHabitat in this.OrganismHabitats)
             {
                 var organism = organismHabitat.Key;
@@ -120,50 +121,60 @@
                     var nutrientTaken = Math.Min(desiredNutrients, habitatNutrientLevel);
 
                     organism.IncreaseLevel(Measure.Health, nutrientTaken);
-                    habitat.Environment.DecreaseLevel(Measure.Nutrient, nutrientTaken);
+                    if (habitat.Environment.DecreaseLevel(Measure.Nutrient, nutrientTaken))
+                    {
+                        alteredEnvironmentCoordinates.Add(this.HabitatCoordinates[habitat]);
+                    }
                 }
             }
+
+            return alteredEnvironmentCoordinates;
         }
 
-        private Dictionary<Organism, Habitat> PerformMovements()
+        private IEnumerable<Coordinate> PerformMovements()
         {
-            var intendedOrganismDestinations = this.GetIntendedOrganismDestinations();
-            var actualOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations, new List<Organism>());
-            foreach (var actualOrganismDestination in actualOrganismDestinations)
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+
+            var desiredOrganismHabitats = this.GetDesiredOrganismHabitats();
+            var movedOrganismHabitats = this.ResolveOrganismHabitats(desiredOrganismHabitats, new List<Organism>());
+            foreach (var movedOrganismHabitat in movedOrganismHabitats)
             {
-                this.MoveOrganism(actualOrganismDestination.Key, actualOrganismDestination.Value);
+                this.MoveOrganism(movedOrganismHabitat.Key, movedOrganismHabitat.Value);
             }
 
-            return intendedOrganismDestinations;
+            // for any organisms that attempted to move to an obstructed habitat, decrease obstruction level
+            foreach (var obstructedHabitat in desiredOrganismHabitats.Values.Where(habitat => habitat.IsObstructed()))
+            {
+                if (obstructedHabitat.Environment.DecreaseLevel(Measure.Obstruction, this.ObstructionDemolishRate))
+                {
+                    alteredEnvironmentCoordinates.Add(this.HabitatCoordinates[obstructedHabitat]);
+                }
+            }
+
+            return alteredEnvironmentCoordinates;
         }
 
-        // TODO: definitely NOT this
-        private Tuple<List<Coordinate>, List<Coordinate>, List<Coordinate>> PerformPostMovementActions(Dictionary<Organism, Coordinate> preMovementOrganismCoordinates, Dictionary<Organism, Habitat> intendedOrganismDestinations)
+        private IEnumerable<Coordinate> PerformPostMovementActions(Dictionary<Organism, Coordinate> previousOrganismCoordinates)
         {
-            var pheromoneDecreasedLocations = this.DecreasePheromoneLevel();
-            this.IncreasePheromoneLevels(preMovementOrganismCoordinates);
-            this.IncreaseMineralLevels(preMovementOrganismCoordinates);
-            var nutrientGrowthLocations = this.IncreaseNutrientLevels();
-            var obstructionDemolishLocations = new List<Coordinate>();
-            foreach (var obstructedHabitat in intendedOrganismDestinations.Values.Where(habitat => habitat.IsObstructed()))
-            {
-                obstructedHabitat.Environment.DecreaseLevel(Measure.Obstruction, this.ObstructionDemolishRate);
-                obstructionDemolishLocations.Add(this.HabitatCoordinates[obstructedHabitat]);
-            }
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
 
+            alteredEnvironmentCoordinates.AddRange(this.DecreasePheromoneLevel());
+            alteredEnvironmentCoordinates.AddRange(this.IncreasePheromoneLevels(previousOrganismCoordinates));
+            alteredEnvironmentCoordinates.AddRange(this.IncreaseMineralLevels(previousOrganismCoordinates));
+            alteredEnvironmentCoordinates.AddRange(this.IncreaseNutrientLevels());
             this.DecreaseOrganismHealth();
 
-            return new Tuple<List<Coordinate>, List<Coordinate>, List<Coordinate>>(pheromoneDecreasedLocations, nutrientGrowthLocations, obstructionDemolishLocations);
+            return alteredEnvironmentCoordinates.Distinct();
         }
 
-        protected virtual Dictionary<Organism, Habitat> GetIntendedOrganismDestinations()
+        protected virtual Dictionary<Organism, Habitat> GetDesiredOrganismHabitats()
         {
-            var intendedOrganismDestinations = new Dictionary<Organism, Habitat>();
+            var desiredOrganismHabitats = new Dictionary<Organism, Habitat>();
             var aliveOrganismHabitats = this.OrganismHabitats.Where(organismHabitats => organismHabitats.Key.IsAlive).ToList();
-            foreach (var organismCoordinates in aliveOrganismHabitats)
+            foreach (var organismHabitat in aliveOrganismHabitats)
             {
-                var currentOrganism = organismCoordinates.Key;
-                var currentHabitat = organismCoordinates.Value;
+                var currentOrganism = organismHabitat.Key;
+                var currentHabitat = organismHabitat.Value;
 
                 // get measurements of neighbouring environments
                 var neighbouringHabitats = this.GetNeighbouringHabitats(currentHabitat, 1, false).ToList();
@@ -175,15 +186,15 @@
 
                 // get the habitat the environment is from - this is where the organism wants to move to
                 var chosenHabitat = validNeighbouringHabitats.Single(habitat => habitat.Environment.Equals(chosenEnvironment));
-                intendedOrganismDestinations.Add(currentOrganism, chosenHabitat);
+                desiredOrganismHabitats.Add(currentOrganism, chosenHabitat);
             }
 
-            return intendedOrganismDestinations;
+            return desiredOrganismHabitats;
         }
 
-        private Dictionary<Organism, Habitat> ResolveOrganismDestinations(Dictionary<Organism, Habitat> intendedOrganismDestinations, IEnumerable<Organism> alreadyResolvedOrganisms)
+        private Dictionary<Organism, Habitat> ResolveOrganismHabitats(Dictionary<Organism, Habitat> desiredOrganismHabitats, IEnumerable<Organism> alreadyResolvedOrganisms)
         {
-            var resolvedOrganismDestinations = new Dictionary<Organism, Habitat>();
+            var resolvedOrganismHabitats = new Dictionary<Organism, Habitat>();
 
             // create a copy of the organism habitats because we don't want to modify the actual set
             var currentOrganismHabitats = this.OrganismHabitats.ToDictionary(
@@ -198,21 +209,21 @@
             }
 
             var occupiedHabitats = currentOrganismHabitats.Values.ToList();
-            var intendedHabitats = intendedOrganismDestinations.Values.ToList();
+            var desiredHabitats = desiredOrganismHabitats.Values.ToList();
 
             // if there are no vacant habitats, this is our base case
             // return an empty list - i.e. no organism can move to its intended destination
-            var vacantHabitats = intendedHabitats.Except(occupiedHabitats).Where(habitat => !habitat.IsObstructed()).ToList();
+            var vacantHabitats = desiredHabitats.Except(occupiedHabitats).Where(habitat => !habitat.IsObstructed()).ToList();
             if (vacantHabitats.Count == 0)
             {
-                return resolvedOrganismDestinations;
+                return resolvedOrganismHabitats;
             }
 
             foreach (var habitat in vacantHabitats)
             {
                 // do not want LINQ expression to have foreach variable access, so copy to local variable
                 var vacantHabitat = habitat;
-                var conflictingOrganisms = intendedOrganismDestinations
+                var conflictingOrganisms = desiredOrganismHabitats
                     .Where(intendedOrganismDestination => intendedOrganismDestination.Value.Equals(vacantHabitat))
                     .Select(intendedOrganismDestination => intendedOrganismDestination.Key)
                     .ToList();
@@ -226,7 +237,7 @@
                     // the remaining conflicting organisms cannot move, so reset their intended destinations
                     foreach (var remainingOrganism in conflictingOrganisms)
                     {
-                        intendedOrganismDestinations[remainingOrganism] = this.OrganismHabitats[remainingOrganism];
+                        desiredOrganismHabitats[remainingOrganism] = this.OrganismHabitats[remainingOrganism];
                     }
                 }
                 else
@@ -235,20 +246,20 @@
                 }
 
                 // intended movement becomes an actual, resolved movement
-                resolvedOrganismDestinations.Add(organismToMove, intendedOrganismDestinations[organismToMove]);
-                intendedOrganismDestinations.Remove(organismToMove);
+                resolvedOrganismHabitats.Add(organismToMove, desiredOrganismHabitats[organismToMove]);
+                desiredOrganismHabitats.Remove(organismToMove);
             }
 
             // need to recursively call resolve organism destinations with the knowledge of what has been resolved so far
             // so those resolved can be taken into consideration when calculating which destinations are now vacant
-            var resolvedOrganisms = resolvedOrganismDestinations.Keys.ToList();
-            var trailingOrganismDestinations = this.ResolveOrganismDestinations(intendedOrganismDestinations, resolvedOrganisms);
-            foreach (var trailingOrganismDestination in trailingOrganismDestinations)
+            var resolvedOrganisms = resolvedOrganismHabitats.Keys.ToList();
+            var trailingOrganismHabitats = this.ResolveOrganismHabitats(desiredOrganismHabitats, resolvedOrganisms);
+            foreach (var trailingOrganismHabitat in trailingOrganismHabitats)
             {
-                resolvedOrganismDestinations.Add(trailingOrganismDestination.Key, trailingOrganismDestination.Value);
+                resolvedOrganismHabitats.Add(trailingOrganismHabitat.Key, trailingOrganismHabitat.Value);
             }
 
-            return resolvedOrganismDestinations;
+            return resolvedOrganismHabitats;
         }
 
         protected virtual Organism DecideOrganism(List<Organism> organisms)
@@ -329,41 +340,55 @@
             this.OrganismHabitats[organism] = destination;
         }
 
-        private List<Coordinate> DecreasePheromoneLevel()
+        private IEnumerable<Coordinate> DecreasePheromoneLevel()
         {
-            var pheromoneDecreasedLocations = new List<Coordinate>();
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
 
             foreach (var habitat in this.Habitats)
             {
-                if (habitat.Environment.DecreaseLevel(Measure.Pheromone,  this.PheromoneFadeRate))
+                if (habitat.Environment.GetLevel(Measure.Pheromone).Equals(0.0))
                 {
-                    pheromoneDecreasedLocations.Add(this.HabitatCoordinates[habitat]);
+                    continue;
+                }
+
+                if (habitat.Environment.DecreaseLevel(Measure.Pheromone, this.PheromoneFadeRate))
+                {
+                    alteredEnvironmentCoordinates.Add(this.HabitatCoordinates[habitat]);
                 }
             }
 
-            return pheromoneDecreasedLocations;
+            return alteredEnvironmentCoordinates;
         }
 
-        private void IncreasePheromoneLevels(Dictionary<Organism, Coordinate> organismLocations)
+        private IEnumerable<Coordinate> IncreasePheromoneLevels(Dictionary<Organism, Coordinate> organismCoordinates)
         {
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+
             // only increase pheromones where the organism is alive and is depositing pheromones
-            var validLocations = organismLocations.Where(pair => pair.Key.IsAlive && pair.Key.IsDepositingPheromones)
+            var validCoordinates = organismCoordinates.Where(pair => pair.Key.IsAlive && pair.Key.IsDepositingPheromones)
                                                   .ToDictionary(pair => pair.Key, pair => pair.Value)
                                                   .Values.ToList();
 
-            foreach (var location in validLocations)
+            foreach (var location in validCoordinates)
             {
                 var habitat = this.Habitats[location.X, location.Y];
-                habitat.Environment.IncreaseLevel(Measure.Pheromone, this.PheromoneDepositRate);
+                if (habitat.Environment.IncreaseLevel(Measure.Pheromone, this.PheromoneDepositRate))
+                {
+                    alteredEnvironmentCoordinates.Add(this.HabitatCoordinates[habitat]);
+                }
             }
+
+            return alteredEnvironmentCoordinates;
         }
 
-        private void IncreaseMineralLevels(Dictionary<Organism, Coordinate> organismLocations)
+        private IEnumerable<Coordinate> IncreaseMineralLevels(Dictionary<Organism, Coordinate> organismCoordinates)
         {
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+
             // only increase mineral where the terrain is earth (even when the organism is dead!)
             // TODO: need a "HasDecomposed" bool - this could stop showing organism and stop mineral form
-            var validLocations = organismLocations.Values.ToList();
-            foreach (var location in validLocations)
+            var validCoordinates = organismCoordinates.Values.ToList();
+            foreach (var location in validCoordinates)
             {
                 var habitat = this.Habitats[location.X, location.Y];
                 if (!habitat.Environment.Terrain.Equals(Terrain.Earth))
@@ -371,13 +396,19 @@
                     continue;
                 }
 
-                habitat.Environment.IncreaseLevel(Measure.Mineral, this.MineralFormRate);
+                if (habitat.Environment.IncreaseLevel(Measure.Mineral, this.MineralFormRate))
+                {
+                    alteredEnvironmentCoordinates.Add(this.HabitatCoordinates[habitat]);
+                }
             }
+
+            return alteredEnvironmentCoordinates;
         }
 
-        private List<Coordinate> IncreaseNutrientLevels()
+        private IEnumerable<Coordinate> IncreaseNutrientLevels()
         {
-            var nutrientGrowthLocations = new List<Coordinate>();
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+
             foreach (var habitat in this.Habitats)
             {
                 if (!habitat.Environment.HasNutrient)
@@ -385,14 +416,13 @@
                     continue;
                 }
 
-                var increased = habitat.Environment.IncreaseLevel(Measure.Nutrient, this.NutrientGrowthRate);
-                if (increased)
+                if (habitat.Environment.IncreaseLevel(Measure.Nutrient, this.NutrientGrowthRate))
                 {
-                    nutrientGrowthLocations.Add(this.HabitatCoordinates[habitat]);
+                    alteredEnvironmentCoordinates.Add(this.HabitatCoordinates[habitat]);
                 }
             }
 
-            return nutrientGrowthLocations;
+            return alteredEnvironmentCoordinates;
         }
 
         private void DecreaseOrganismHealth()

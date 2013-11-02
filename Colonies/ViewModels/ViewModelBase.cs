@@ -1,12 +1,13 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
+    using System;
     using System.ComponentModel;
 
     using Microsoft.Practices.Prism.Events;
 
     using Wacton.Colonies.Properties;
 
-    public abstract class ViewModelBase<T> : INotifyPropertyChanged
+    public abstract class ViewModelBase<T> : INotifyPropertyChanged where T : class
     {
         protected T DomainModel { get; private set; }
         protected IEventAggregator EventAggregator { get; private set; }
@@ -19,12 +20,27 @@
 
         public void AssignModel(T model)
         {
+            if (this.DomainModel != null)
+            {
+                throw new InvalidOperationException("Cannot assign a model when a model is already present");
+            }
+
+            if (model == null)
+            {
+                throw new InvalidOperationException("Cannot assign a null model");
+            }
+
             this.DomainModel = model;
             this.Refresh();
         }
 
-        public void RemoveModel()
+        public void UnassignModel()
         {
+            if (this.DomainModel == null)
+            {
+                throw new InvalidOperationException("Cannot unassign a model when no model is present");
+            }
+
             this.DomainModel = default(T);
             this.Refresh();
         }

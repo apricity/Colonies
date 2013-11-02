@@ -1,5 +1,6 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -221,37 +222,57 @@
 
         private void UpdateViewModels(UpdateSummary updateSummary)
         {
-            // ecosystem updates
-            var environmentCoordinatesToUpdate = new List<Coordinate>();
-            environmentCoordinatesToUpdate.AddRange(updateSummary.PheromoneDecreasedLocations);
-            environmentCoordinatesToUpdate.AddRange(updateSummary.PreUpdateOrganismLocations); // where pheromone has been deposited and mineral formed
-            environmentCoordinatesToUpdate.AddRange(updateSummary.NutrientGrowthLocations);
-            environmentCoordinatesToUpdate.AddRange(updateSummary.ObstructionDemolishLocations);
-            environmentCoordinatesToUpdate = environmentCoordinatesToUpdate.Distinct().ToList();
+            var refreshedHabitatViewModels = new ConcurrentBag<HabitatViewModel>();
 
-            Parallel.ForEach(environmentCoordinatesToUpdate, location =>
+            // refresh properties of all altered environments
+            Parallel.ForEach(updateSummary.AlteredEnvironmentCoordinates, alteredEnvironmentCoordinate =>
                 {
-                    var x = location.X;
-                    var y = location.Y;
-                    this.EcosystemViewModel.HabitatViewModels[x][y].RefreshEnvironment();
+                    var x = alteredEnvironmentCoordinate.X;
+                    var y = alteredEnvironmentCoordinate.Y;
+
+                    var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
+                    habitatViewModel.RefreshEnvironment();
+                    refreshedHabitatViewModels.Add(habitatViewModel);
                 });
 
-            foreach (var preUpdateOrganismLocation in updateSummary.PreUpdateOrganismLocations)
-            {
-                var x = preUpdateOrganismLocation.X;
-                var y = preUpdateOrganismLocation.Y;
-                this.EcosystemViewModel.HabitatViewModels[x][y].RemoveOrganismModel();
-            }
+            // refresh properties of all organisms that have not moved
+            Parallel.ForEach(updateSummary.InactiveOrganismCoordinates, inactiveOrganismCoordinate =>
+                {
+                    var x = inactiveOrganismCoordinate.Value.X;
+                    var y = inactiveOrganismCoordinate.Value.Y;
 
-            foreach (var postUpdateOrganismLocation in updateSummary.PostUpdateOrganismLocations)
-            {
-                var x = postUpdateOrganismLocation.X;
-                var y = postUpdateOrganismLocation.Y;
-                var organism = this.DomainModel.Ecosystem.Habitats[x, y].Organism;
-                this.EcosystemViewModel.HabitatViewModels[x][y].AssignOrganismModel(organism);
-            }
+                    var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
+                    habitatViewModel.RefreshOrganism();
+                    refreshedHabitatViewModels.Add(habitatViewModel);
+                });
 
-            // organism synopsis updates
+            // unassign moving organisms from their previous view models
+            Parallel.ForEach(updateSummary.ActiveOrganismPreviousCoordinates, activeOrganismPreviousCoordinate =>
+            {
+                var x = activeOrganismPreviousCoordinate.Value.X;
+                var y = activeOrganismPreviousCoordinate.Value.Y;
+
+                var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
+                habitatViewModel.UnassignOrganismModel();
+                refreshedHabitatViewModels.Add(habitatViewModel);
+            });
+
+            // assign moving organisms to their current view models
+            Parallel.ForEach(updateSummary.ActiveOrganismCurrentCoordinates, activeOrganismCurrentCoordinate =>
+            {
+                var x = activeOrganismCurrentCoordinate.Value.X;
+                var y = activeOrganismCurrentCoordinate.Value.Y;
+                var organism = activeOrganismCurrentCoordinate.Key;
+
+                var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
+                habitatViewModel.AssignOrganismModel(organism);
+                refreshedHabitatViewModels.Add(habitatViewModel);
+            });
+
+            // refresh the tool tip of each distinct habitat view model that has had its child view models refreshed
+            Parallel.ForEach(refreshedHabitatViewModels.Distinct(), habitatViewModel => habitatViewModel.RefreshToolTip());
+
+            // refresh organism synopsis
             this.OrganismSynopsisViewModel.Refresh();
         }
 

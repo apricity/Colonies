@@ -53,7 +53,7 @@
                 for (var y = 0; y < ecosystemHeight; y++)
                 {
                     // initially set each habitat to have an unknown environment and no organism
-                    var environment = new Environment(Terrain.Earth);
+                    var environment = new Environment();
                     var environmentViewModel = new EnvironmentViewModel(environment, eventaggregator);
 
                     var organismViewModel = new OrganismViewModel(null, eventaggregator);
@@ -95,12 +95,12 @@
 
         protected virtual void InitialiseTerrain(Ecosystem ecosystem)
         {
-            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinate(19, 0));
-            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinate(15, 3));
-            ecosystem.Insert(Terrain.Water, Measure.Damp, new Coordinate(17, 4));
-            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinate(17, 5));
-            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinate(15, 6));
-            ecosystem.Insert(Terrain.Fire, Measure.Heat, new Coordinate(19, 9));
+            ecosystem.Insert(Measure.Damp, new Coordinate(19, 0));
+            ecosystem.Insert(Measure.Damp, new Coordinate(15, 3));
+            ecosystem.Insert(Measure.Damp, new Coordinate(17, 4));
+            ecosystem.Insert(Measure.Heat, new Coordinate(17, 5));
+            ecosystem.Insert(Measure.Heat, new Coordinate(15, 6));
+            ecosystem.Insert(Measure.Heat, new Coordinate(19, 9));
 
             for (var i = 12; i < ecosystem.Width; i++)
             {

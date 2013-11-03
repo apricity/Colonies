@@ -13,9 +13,11 @@
     public class Ecosystem : IBiased
     {
         public Habitat[,] Habitats { get; private set; }
-        public Dictionary<Organism, Habitat> OrganismHabitats { get; private set; }
-        public Dictionary<Habitat, Coordinate> HabitatCoordinates { get; private set; } 
         public Dictionary<Measure, double> MeasureBiases { get; private set; }
+
+        private Dictionary<Organism, Habitat> OrganismHabitats { get; set; }
+        private Dictionary<Habitat, Coordinate> HabitatCoordinates { get; set; }
+        private Dictionary<Coordinate, Measure> CoordinateHazards { get; set; }
 
         // TODO: neater management of these?
         public double HealthDeteriorationRate { get; set; }
@@ -24,13 +26,14 @@
         public double NutrientGrowthRate { get; set; }
         public double MineralFormRate { get; set; }
         public double ObstructionDemolishRate { get; set; }
+        public double HazardSpreadRate { get; set; }
 
-        private int ConditionSpreadDiameter { get; set; }
-        private int ConditionSpreadRadius
+        private int HazardDiameter { get; set; }
+        private int HazardRadius
         {
             get
             {
-                return (this.ConditionSpreadDiameter - 1) / 2;
+                return (this.HazardDiameter - 1) / 2;
             }
         }
 
@@ -66,15 +69,16 @@
 
             this.MeasureBiases = new Dictionary<Measure, double> { { Measure.Health, 1 } };
 
+            // work out how big any fire/water spread should be based on ecosystem dimensions
+            this.HazardDiameter = this.CalculateHazardDiameter();
+
             this.HealthDeteriorationRate = 1 / 500.0;
             this.PheromoneDepositRate = 1 / 100.0;
             this.PheromoneFadeRate = 1 / 500.0;
             this.NutrientGrowthRate = 1 / 500.0;
             this.MineralFormRate = 1 / 100.0;
             this.ObstructionDemolishRate = 1 / 5.0;
-
-            // work out how big any fire/water spread should be based on ecosystem dimensions
-            this.ConditionSpreadDiameter = CalculateConditionSpreadDiameter();
+            this.HazardSpreadRate = 1 / 100.0;
         }
 
         public UpdateSummary Update()
@@ -162,6 +166,7 @@
             alteredEnvironmentCoordinates.AddRange(this.IncreasePheromoneLevels(previousOrganismCoordinates));
             alteredEnvironmentCoordinates.AddRange(this.IncreaseMineralLevels(previousOrganismCoordinates));
             alteredEnvironmentCoordinates.AddRange(this.IncreaseNutrientLevels());
+            alteredEnvironmentCoordinates.AddRange(this.SpreadHazards());
             this.DecreaseOrganismHealth();
 
             return alteredEnvironmentCoordinates.Distinct();
@@ -270,7 +275,6 @@
 
         private Habitat[,] GetNeighbouringHabitats(Habitat habitat, int neighbourDepth, bool includeDiagonals)
         {
-            //var neighbouringHabitats = new List<Habitat>();
             var neighbouringHabitats = new Habitat[(neighbourDepth * 2) + 1, (neighbourDepth * 2) + 1];
 
             var location = this.HabitatCoordinates[habitat];
@@ -385,13 +389,13 @@
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            // only increase mineral where the terrain is earth (even when the organism is dead!)
+            // only increase mineral where the terrain is not hazardous (even when the organism is dead!)
             // TODO: need a "HasDecomposed" bool - this could stop showing organism and stop mineral form
             var validCoordinates = organismCoordinates.Values.ToList();
             foreach (var location in validCoordinates)
             {
                 var habitat = this.Habitats[location.X, location.Y];
-                if (!habitat.Environment.Terrain.Equals(Terrain.Earth))
+                if (habitat.Environment.IsHazardous)
                 {
                     continue;
                 }
@@ -425,6 +429,15 @@
             return alteredEnvironmentCoordinates;
         }
 
+        private IEnumerable<Coordinate> SpreadHazards()
+        {
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+
+
+
+            return alteredEnvironmentCoordinates;
+        }
+
         private void DecreaseOrganismHealth()
         {
             foreach (var organism in this.OrganismHabitats.Keys.ToList())
@@ -447,19 +460,18 @@
             this.OrganismHabitats.Remove(organism);
         }
 
-        public void Insert(Terrain terrain, Measure measure, Coordinate coordinates)
+        public void Insert(Measure measure, Coordinate coordinates)
         {
             var habitat = this.Habitats[coordinates.X, coordinates.Y];
             habitat.Environment.SetLevel(measure, 1.0);
-            habitat.Environment.SetTerrain(terrain);
 
-            var neighbouringHabitats = this.GetNeighbouringHabitats(habitat, this.ConditionSpreadRadius, true);
-            var gaussianKernel = new GaussianBlur(0.25 * this.ConditionSpreadDiameter, this.ConditionSpreadDiameter).Kernel;
+            var neighbouringHabitats = this.GetNeighbouringHabitats(habitat, this.HazardRadius, true);
+            var gaussianKernel = new GaussianBlur(0.25 * this.HazardDiameter, this.HazardDiameter).Kernel;
 
-            var gaussianCentre = (double)gaussianKernel[this.ConditionSpreadRadius, this.ConditionSpreadRadius];
-            for (var x = 0; x < this.ConditionSpreadDiameter; x++)
+            var gaussianCentre = (double)gaussianKernel[this.HazardRadius, this.HazardRadius];
+            for (var x = 0; x < this.HazardDiameter; x++)
             {
-                for (var y = 0; y < this.ConditionSpreadDiameter; y++)
+                for (var y = 0; y < this.HazardDiameter; y++)
                 {
                     var level = gaussianKernel[x, y] / gaussianCentre;
                     var neighbouringHabitat = neighbouringHabitats[x, y];
@@ -472,7 +484,7 @@
             }
         }
 
-        private int CalculateConditionSpreadDiameter()
+        private int CalculateHazardDiameter()
         {
             var ecosystemArea = (double)(this.Height * this.Width);
 

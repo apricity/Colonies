@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
 
     using AForge.Imaging.Filters;
@@ -17,7 +18,7 @@
 
         private Dictionary<Organism, Habitat> OrganismHabitats { get; set; }
         private Dictionary<Habitat, Coordinate> HabitatCoordinates { get; set; }
-        private Dictionary<Coordinate, Measure> CoordinateHazards { get; set; }
+        private Dictionary<Coordinate, List<Measure>> CoordinateHazards { get; set; }
 
         // TODO: neater management of these?
         public double HealthDeteriorationRate { get; set; }
@@ -71,6 +72,7 @@
 
             // work out how big any fire/water spread should be based on ecosystem dimensions
             this.HazardDiameter = this.CalculateHazardDiameter();
+            this.CoordinateHazards = new Dictionary<Coordinate, List<Measure>>();
 
             this.HealthDeteriorationRate = 1 / 500.0;
             this.PheromoneDepositRate = 1 / 100.0;
@@ -78,7 +80,7 @@
             this.NutrientGrowthRate = 1 / 500.0;
             this.MineralFormRate = 1 / 100.0;
             this.ObstructionDemolishRate = 1 / 5.0;
-            this.HazardSpreadRate = 1 / 100.0;
+            this.HazardSpreadRate = 1 / 500.0;
         }
 
         public UpdateSummary Update()
@@ -182,7 +184,7 @@
                 var currentHabitat = organismHabitat.Value;
 
                 // get measurements of neighbouring environments
-                var neighbouringHabitats = this.GetNeighbouringHabitats(currentHabitat, 1, false).ToList();
+                var neighbouringHabitats = this.GetNeighbouringHabitats(currentHabitat, 1, false, true).ToList();
                 var validNeighbouringHabitats = neighbouringHabitats.Where(habitat => habitat != null).ToList();
                 var neighbouringEnvironments = validNeighbouringHabitats.Select(neighbour => neighbour.Environment).ToList();
 
@@ -273,7 +275,7 @@
             return DecisionLogic.MakeDecision(organisms, this);
         }
 
-        private Habitat[,] GetNeighbouringHabitats(Habitat habitat, int neighbourDepth, bool includeDiagonals)
+        private Habitat[,] GetNeighbouringHabitats(Habitat habitat, int neighbourDepth, bool includeDiagonals, bool includeSelf)
         {
             var neighbouringHabitats = new Habitat[(neighbourDepth * 2) + 1, (neighbourDepth * 2) + 1];
 
@@ -300,6 +302,12 @@
 
                     // do not carry on if (x, y) is diagonal from organism (and include diagonals is false)
                     if (x != location.X && y != location.Y && !includeDiagonals)
+                    {
+                        continue;
+                    }
+
+                    // do not carry on if (x, y) is the centre habitat and asked not to include self
+                    if (x == location.X && y == location.Y && !includeSelf)
                     {
                         continue;
                     }
@@ -433,7 +441,47 @@
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
+            // cannot use this.CoordinateHazards directly, since inserting a hazard (which is inside the loop) will modify this.CoordinateHazards
+            var coordinateHazards = this.CoordinateHazards.ToDictionary(pair => pair.Key, pair => pair.Value);
+            foreach (var coordinateHazard in coordinateHazards)
+            {
+                foreach (var hazardMeasure in coordinateHazard.Value)
+                {
+                    var spreadRandomNumber = RandomNumberGenerator.RandomDouble(1);
+                    var spreadSuccessful = spreadRandomNumber < this.HazardSpreadRate;
+                    if (!spreadSuccessful)
+                    {
+                        continue;
+                    }
 
+                    var neighbouringHabitats = this.GetNeighbouringHabitats(this.Habitats[coordinateHazard.Key.X, coordinateHazard.Key.Y], 1, false, false).ToList();
+                    var validNeighbouringHabitats = neighbouringHabitats.Where(habitat => habitat != null && !habitat.IsObstructed() && habitat.Environment.GetLevel(hazardMeasure) < 1).ToList();
+                    var neighbouringCoordinates = validNeighbouringHabitats.Select(habitat => this.HabitatCoordinates[habitat]).ToList();
+                    if (neighbouringCoordinates.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    var chosenCoordinate = new Coordinate(-1, -1);
+                    var coordinateRandomNumber = RandomNumberGenerator.RandomDouble(neighbouringCoordinates.Count);
+                    foreach (var neighbouringCoordinate in neighbouringCoordinates)
+                    {
+                        if (coordinateRandomNumber <= 1)
+                        {
+                            chosenCoordinate = neighbouringCoordinate;
+                            break;
+                        }
+
+                        coordinateRandomNumber -= 1;
+                    }
+
+                    this.InsertHazard(hazardMeasure, chosenCoordinate);
+                    var insertedNeighbouringHabitats = this.GetNeighbouringHabitats(this.Habitats[chosenCoordinate.X, chosenCoordinate.Y], this.HazardRadius, true, true).ToList();
+                    var validInsertedNeighbouringHabitats = insertedNeighbouringHabitats.Where(habitat => habitat != null).ToList();
+
+                    alteredEnvironmentCoordinates.AddRange(validInsertedNeighbouringHabitats.Select(habitat => this.HabitatCoordinates[habitat]));
+                } 
+            }
 
             return alteredEnvironmentCoordinates;
         }
@@ -460,12 +508,17 @@
             this.OrganismHabitats.Remove(organism);
         }
 
-        public void Insert(Measure measure, Coordinate coordinates)
+        public void InsertHazard(Measure measure, Coordinate coordinate)
         {
-            var habitat = this.Habitats[coordinates.X, coordinates.Y];
-            habitat.Environment.SetLevel(measure, 1.0);
+            if (!Environment.IsPotentialHazard(measure))
+            {
+                throw new InvalidEnumArgumentException(string.Format("{0} is not a potential hazard", measure.ToString()));
+            }
 
-            var neighbouringHabitats = this.GetNeighbouringHabitats(habitat, this.HazardRadius, true);
+            var habitat = this.Habitats[coordinate.X, coordinate.Y];
+            //habitat.Environment.SetLevel(measure, 1.0);
+
+            var neighbouringHabitats = this.GetNeighbouringHabitats(habitat, this.HazardRadius, true, true);
             var gaussianKernel = new GaussianBlur(0.25 * this.HazardDiameter, this.HazardDiameter).Kernel;
 
             var gaussianCentre = (double)gaussianKernel[this.HazardRadius, this.HazardRadius];
@@ -481,6 +534,15 @@
                         neighbouringHabitat.Environment.SetLevel(measure, level);
                     }
                 }
+            }
+
+            if (this.CoordinateHazards.ContainsKey(coordinate))
+            {
+                this.CoordinateHazards[coordinate].Add(measure);
+            }
+            else
+            {
+                this.CoordinateHazards.Add(coordinate, new List<Measure> { measure });
             }
         }
 

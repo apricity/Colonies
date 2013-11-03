@@ -19,7 +19,7 @@
                                                                             { Measure.Mineral, Colors.Goldenrod },
                                                                             { Measure.Damp, Colors.CornflowerBlue },
                                                                             { Measure.Heat, Colors.Tomato },
-                                                                            { Measure.Poison, Colors.MediumAquamarine },
+                                                                            { Measure.Poison, Colors.DimGray },
                                                                             { Measure.Pheromone, Colors.OrangeRed },
                                                                             { Measure.Nutrient, Colors.OliveDrab },
                                                                             { Measure.Obstruction, Colors.Black },

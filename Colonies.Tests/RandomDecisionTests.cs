@@ -33,7 +33,7 @@
         {
             // override the random number generator used by the decision logic so it can be manipulated
             var mockRandom = new MockRandom();
-            DecisionLogic.SetRandomNumberGenerator(mockRandom);
+            RandomNumberGenerator.SetRandom(mockRandom);
 
             var biasedItem = new TestBiasedItem(1.0, 0);
             var chosenItems = new List<TestMeasurableItem>();
@@ -59,7 +59,7 @@
         {
             // override the random number generator used by the decision logic so it can be manipulated
             var mockRandom = new MockRandom();
-            DecisionLogic.SetRandomNumberGenerator(mockRandom);
+            RandomNumberGenerator.SetRandom(mockRandom);
 
             // bias in favour of health 2x more than of pheromone
             var biasedItem = new TestBiasedItem(1.0, 2.0);
@@ -97,7 +97,7 @@
             // override the random number generator used by the decision logic so it can be manipulated
             // and set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
             var mockRandom = new MockRandom();
-            DecisionLogic.SetRandomNumberGenerator(mockRandom);
+            RandomNumberGenerator.SetRandom(mockRandom);
             DecisionLogic.SetBaseWeighting(0.0);
 
             var biasedItem = new TestBiasedItem(1.0, 0.0);
@@ -153,7 +153,7 @@
             // override the random number generator used by the decision logic so it can be manipulated
             // and set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
             var mockRandom = new MockRandom();
-            DecisionLogic.SetRandomNumberGenerator(mockRandom);
+            RandomNumberGenerator.SetRandom(mockRandom);
             DecisionLogic.SetBaseWeighting(0.0);
 
             // bias of both measurements are the same in order for them to balance
@@ -190,7 +190,7 @@
             // override the random number generator used by the decision logic so it can be manipulated
             // and set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
             var mockRandom = new MockRandom();
-            DecisionLogic.SetRandomNumberGenerator(mockRandom);
+            RandomNumberGenerator.SetRandom(mockRandom);
             DecisionLogic.SetBaseWeighting(0.0);
 
             // pheromone bias is double that of health bias to compensate for the halving of the measurement level

@@ -8,10 +8,9 @@
 
     public static class DecisionLogic
     {
-        private static Random random = new Random();
         private static double baseWeighting = 1.0;
 
-        public static T MakeDecision<T>(List<T> measurableItems, IBiased biasProvider) where T : IMeasurable
+        public static T MakeDecision<T>(IEnumerable<T> measurableItems, IBiased biasProvider) where T : class, IMeasurable
         {
             var weightedMeasuredItems = WeightMeasuredItems(measurableItems, biasProvider);
             var chosenItem = ChooseRandomItem(weightedMeasuredItems);
@@ -24,7 +23,7 @@
             return chosenItem;
         }
 
-        private static Dictionary<T, double> WeightMeasuredItems<T>(List<T> measurableItems, IBiased biasProvider) where T : IMeasurable
+        private static Dictionary<T, double> WeightMeasuredItems<T>(IEnumerable<T> measurableItems, IBiased biasProvider) where T : class, IMeasurable
         {
             var weightedMeasurableItems = new Dictionary<T, double>();
 
@@ -43,12 +42,12 @@
             return weightedMeasurableItems;
         }
 
-        private static T ChooseRandomItem<T>(Dictionary<T, double> weightedMeasurableItems) where T : IMeasurable
+        private static T ChooseRandomItem<T>(Dictionary<T, double> weightedMeasurableItems) where T : class, IMeasurable
         {
             var chosenItem = default(T);
             var totalWeight = weightedMeasurableItems.Values.Sum(weight => weight);
 
-            var randomNumber = random.NextDouble() * totalWeight;
+            var randomNumber = RandomNumberGenerator.RandomDouble(totalWeight);
             foreach (var weightedMeasuredItem in weightedMeasurableItems)
             {
                 if (randomNumber < weightedMeasuredItem.Value)
@@ -61,11 +60,6 @@
             }
 
             return chosenItem;
-        }
-
-        public static void SetRandomNumberGenerator(Random randomNumberGenerator)
-        {
-            random = randomNumberGenerator;
         }
 
         public static void SetBaseWeighting(double weighting)

@@ -1,6 +1,7 @@
 ﻿namespace Wacton.Colonies.Models
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     using Wacton.Colonies.Ancillary;
     using Wacton.Colonies.Interfaces;
@@ -29,9 +30,7 @@
         {
             get
             {
-                return !(this.GetLevel(Measure.Damp) < 1.0) 
-                       || !(this.GetLevel(Measure.Heat) < 1.0)
-                       || !(this.GetLevel(Measure.Poison) < 1.0);
+                return Hazards().Any(hazard => this.Measurement.HasCondition(hazard));
             }
         }
 
@@ -44,7 +43,6 @@
             var damp = new Condition(Measure.Damp, 0);
             var heat = new Condition(Measure.Heat, 0);
             var poison = new Condition(Measure.Poison, 0);
-
             this.Measurement = new Measurement(new List<Condition> { pheromone, nutrient, mineral, obstruction, damp, heat, poison });
         }
 
@@ -66,6 +64,19 @@
         public bool DecreaseLevel(Measure measure, double decrement)
         {
             return this.Measurement.DecreaseLevel(measure, decrement);
+        }
+
+        public static bool IsPotentialHazard(Measure measure)
+        {
+            return Hazards().Any(hazard => hazard.Measure.Equals(measure));
+        }
+
+        private static IEnumerable<Condition> Hazards()
+        {
+            var dampHazard = new Condition(Measure.Damp, 1.0);
+            var heatHazard = new Condition(Measure.Heat, 1.0);
+            var poisonHazard = new Condition(Measure.Poison, 1.0);
+            return new List<Condition> { dampHazard, heatHazard, poisonHazard };
         }
         
         public override string ToString()

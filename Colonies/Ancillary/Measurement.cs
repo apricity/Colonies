@@ -33,6 +33,11 @@
             return this.GetCondition(measure).DecreaseLevel(decrement);
         }
 
+        public bool HasCondition(Condition condition)
+        {
+            return this.Conditions.Any(condition.Equals);
+        }
+
         private Condition GetCondition(Measure measure)
         {
             return this.Conditions.Single(condition => condition.Measure.Equals(measure));

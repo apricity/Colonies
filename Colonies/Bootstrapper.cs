@@ -95,18 +95,18 @@
 
         protected virtual void InitialiseTerrain(Ecosystem ecosystem)
         {
-            ecosystem.Insert(Measure.Damp, new Coordinate(19, 0));
-            ecosystem.Insert(Measure.Damp, new Coordinate(15, 3));
-            ecosystem.Insert(Measure.Damp, new Coordinate(17, 4));
-            ecosystem.Insert(Measure.Heat, new Coordinate(17, 5));
-            ecosystem.Insert(Measure.Heat, new Coordinate(15, 6));
-            ecosystem.Insert(Measure.Heat, new Coordinate(19, 9));
+            ecosystem.InsertHazard(Measure.Damp, new Coordinate(19, 0));
+            ecosystem.InsertHazard(Measure.Damp, new Coordinate(15, 3));
+            ecosystem.InsertHazard(Measure.Damp, new Coordinate(17, 4));
+            ecosystem.InsertHazard(Measure.Heat, new Coordinate(17, 5));
+            ecosystem.InsertHazard(Measure.Heat, new Coordinate(15, 6));
+            ecosystem.InsertHazard(Measure.Heat, new Coordinate(19, 9));
 
             for (var i = 12; i < ecosystem.Width; i++)
             {
                 for (var j = 4; j <= 5; j++)
                 {
-                    ecosystem.Habitats[i, j].Environment.SetLevel(Measure.Poison, 0.3);
+                    ecosystem.InsertHazard(Measure.Poison, new Coordinate(i, j));
                 }
             }
 

@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class Condition
+    public class Condition : IEquatable<Condition>
     {
         public Measure Measure { get; private set; }
         public double Level { get; private set; }
@@ -47,6 +47,11 @@
             {
                 this.Level = 1.0;
             }
+        }
+
+        public bool Equals(Condition other)
+        {
+            return this.Measure.Equals(other.Measure) && this.Level.Equals(other.Level);
         }
 
         public override string ToString()

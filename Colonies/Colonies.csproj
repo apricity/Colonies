@@ -100,6 +100,7 @@
     <Compile Include="Interfaces\IBiased.cs" />
     <Compile Include="Interfaces\IMeasurable.cs" />
     <Compile Include="Ancillary\Measurement.cs" />
+    <Compile Include="Logic\RandomNumberGenerator.cs" />
     <Compile Include="Models\Ecosystem.cs" />
     <Compile Include="Models\Main.cs" />
     <Compile Include="Models\OrganismSynopsis.cs" />

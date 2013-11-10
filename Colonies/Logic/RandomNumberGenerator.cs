@@ -6,14 +6,16 @@
     {
         private static Random random = new Random();
 
+        public static double? OverrideNextDouble { get; set; }
+
         public static double RandomDouble(double multiplier)
         {
-            return random.NextDouble() * multiplier;
-        }
+            if (OverrideNextDouble.HasValue)
+            {
+                return (double)OverrideNextDouble * multiplier;
+            }
 
-        public static void SetRandom(Random newRandom)
-        {
-            random = newRandom;
+            return random.NextDouble() * multiplier;
         }
     }
 }

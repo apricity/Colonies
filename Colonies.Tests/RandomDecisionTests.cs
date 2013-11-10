@@ -8,7 +8,6 @@
     using Wacton.Colonies.Ancillary;
     using Wacton.Colonies.Interfaces;
     using Wacton.Colonies.Logic;
-    using Wacton.Colonies.Tests.Mocks;
 
     [TestFixture]
     public class RandomDecisionTests
@@ -30,10 +29,6 @@
         [Test]
         public void EqualItemsSingleMeasure()
         {
-            // override the random number generator used by the decision logic so it can be manipulated
-            var mockRandom = new MockRandom();
-            RandomNumberGenerator.SetRandom(mockRandom);
-
             var biasedItem = new TestBiasedItem(1.0, 0);
             var chosenItems = new List<TestMeasurableItem>();
 
@@ -42,7 +37,7 @@
             var nextDouble = 0.0;
             for (var i = 0; i < this.items.Count; i++)
             {
-                mockRandom.SetNextDouble(nextDouble);
+                RandomNumberGenerator.OverrideNextDouble = nextDouble;
                 chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
@@ -56,10 +51,6 @@
         [Test]
         public void EqualItemsMultipleMeasures()
         {
-            // override the random number generator used by the decision logic so it can be manipulated
-            var mockRandom = new MockRandom();
-            RandomNumberGenerator.SetRandom(mockRandom);
-
             // bias in favour of health 2x more than of pheromone
             var biasedItem = new TestBiasedItem(1.0, 2.0);
             var chosenItems = new List<TestMeasurableItem>();
@@ -69,7 +60,7 @@
             var nextDouble = 0.0;
             for (var i = 0; i < this.items.Count; i++)
             {
-                mockRandom.SetNextDouble(nextDouble);
+                RandomNumberGenerator.OverrideNextDouble = nextDouble;
                 chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
@@ -93,10 +84,7 @@
                 this.items[i].SetPheromoneLevel(measurementLevel);
             }
 
-            // override the random number generator used by the decision logic so it can be manipulated
-            // and set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
-            var mockRandom = new MockRandom();
-            RandomNumberGenerator.SetRandom(mockRandom);
+            // set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
             DecisionLogic.SetBaseWeighting(0.0);
 
             var biasedItem = new TestBiasedItem(1.0, 0.0);
@@ -114,7 +102,7 @@
             var nextDouble = 0.0;
             for (var i = 0; i < numberOfResults; i++)
             {
-                mockRandom.SetNextDouble(nextDouble);
+                RandomNumberGenerator.OverrideNextDouble = nextDouble;
                 chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / numberOfResults;
             }
@@ -149,10 +137,7 @@
                 this.items[i].SetHealthLevel(1.0 - measurementLevel);
             }
 
-            // override the random number generator used by the decision logic so it can be manipulated
-            // and set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
-            var mockRandom = new MockRandom();
-            RandomNumberGenerator.SetRandom(mockRandom);
+            // set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
             DecisionLogic.SetBaseWeighting(0.0);
 
             // bias of both measurements are the same in order for them to balance
@@ -162,7 +147,7 @@
             var nextDouble = 0.0;
             for (var i = 0; i < this.items.Count; i++)
             {
-                mockRandom.SetNextDouble(nextDouble);
+                RandomNumberGenerator.OverrideNextDouble = nextDouble;
                 chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
@@ -186,10 +171,7 @@
                 this.items[i].SetHealthLevel(1 - measurementLevel);
             }
 
-            // override the random number generator used by the decision logic so it can be manipulated
-            // and set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
-            var mockRandom = new MockRandom();
-            RandomNumberGenerator.SetRandom(mockRandom);
+            // set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
             DecisionLogic.SetBaseWeighting(0.0);
 
             // pheromone bias is double that of health bias to compensate for the halving of the measurement level
@@ -199,7 +181,7 @@
             var nextDouble = 0.0;
             for (var i = 0; i < this.items.Count; i++)
             {
-                mockRandom.SetNextDouble(nextDouble);
+                RandomNumberGenerator.OverrideNextDouble = nextDouble;
                 chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }

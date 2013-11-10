@@ -18,7 +18,7 @@
 
         public Dictionary<Organism, Habitat> OrganismHabitats { get; set; }
         public Dictionary<Habitat, Coordinate> HabitatCoordinates { get; set; }
-        public Dictionary<Coordinate, List<Measure>> CoordinateHazards { get; set; }
+        private Dictionary<Coordinate, List<Measure>> CoordinateHazards { get; set; }
 
         // TODO: neater management of these?
         public double HealthDeteriorationRate { get; set; }
@@ -70,8 +70,8 @@
 
             this.MeasureBiases = new Dictionary<Measure, double> { { Measure.Health, 1 } };
 
-            // work out how big any fire/water spread should be based on ecosystem dimensions
-            this.HazardDiameter = EcosystemLogic.CalculateHazardDiameter(this.Width, this.Height);
+            // work out how big any hazard spread should be based on ecosystem dimensions
+            this.HazardDiameter = this.CalculateHazardDiameter();
             this.CoordinateHazards = new Dictionary<Coordinate, List<Measure>>();
 
             this.HealthDeteriorationRate = 1 / 500.0;
@@ -172,108 +172,6 @@
             this.DecreaseOrganismHealth();
 
             return alteredEnvironmentCoordinates.Distinct();
-        }
-
-        //protected virtual Dictionary<Organism, Habitat> GetDesiredOrganismHabitats()
-        //{
-        //    var desiredOrganismHabitats = new Dictionary<Organism, Habitat>();
-        //    var aliveOrganismHabitats = this.OrganismHabitats.Where(organismHabitats => organismHabitats.Key.IsAlive).ToList();
-        //    foreach (var organismHabitat in aliveOrganismHabitats)
-        //    {
-        //        var currentOrganism = organismHabitat.Key;
-        //        var currentHabitat = organismHabitat.Value;
-        //        var currentCoordinate = this.HabitatCoordinates[currentHabitat];
-                
-        //        // get measurements of neighbouring environments
-        //        var neighbouringHabitats = this.Habitats.GetNeighbours(currentCoordinate, 1, false, true).ToList();
-        //        var validNeighbouringHabitats = neighbouringHabitats.Where(habitat => habitat != null).ToList();
-        //        var neighbouringEnvironments = validNeighbouringHabitats.Select(neighbour => neighbour.Environment).ToList();
-
-        //        // determine organism's intentions based on the environment measurements
-        //        var chosenEnvironment = DecisionLogic.MakeDecision(neighbouringEnvironments, currentOrganism);
-
-        //        // get the habitat the environment is from - this is where the organism wants to move to
-        //        var chosenHabitat = validNeighbouringHabitats.Single(habitat => habitat.Environment.Equals(chosenEnvironment));
-        //        desiredOrganismHabitats.Add(currentOrganism, chosenHabitat);
-        //    }
-
-        //    return desiredOrganismHabitats;
-        //}
-
-        private Dictionary<Organism, Habitat> ResolveOrganismHabitats(Dictionary<Organism, Habitat> desiredOrganismHabitats, IEnumerable<Organism> alreadyResolvedOrganisms)
-        {
-            var resolvedOrganismHabitats = new Dictionary<Organism, Habitat>();
-
-            // create a copy of the organism habitats because we don't want to modify the actual set
-            var currentOrganismHabitats = this.OrganismHabitats.ToDictionary(
-                organismHabitat => organismHabitat.Key,
-                organismHabitat => organismHabitat.Value);
-
-            // remove organisms that have been resolved (from previous iterations)
-            // as they no longer need to be processed
-            foreach (var alreadyResolvedOrganism in alreadyResolvedOrganisms)
-            {
-                currentOrganismHabitats.Remove(alreadyResolvedOrganism);
-            }
-
-            var occupiedHabitats = currentOrganismHabitats.Values.ToList();
-            var desiredHabitats = desiredOrganismHabitats.Values.ToList();
-
-            // if there are no vacant habitats, this is our base case
-            // return an empty list - i.e. no organism can move to its intended destination
-            var vacantHabitats = desiredHabitats.Except(occupiedHabitats).Where(habitat => !habitat.IsObstructed()).ToList();
-            if (vacantHabitats.Count == 0)
-            {
-                return resolvedOrganismHabitats;
-            }
-
-            foreach (var habitat in vacantHabitats)
-            {
-                // do not want LINQ expression to have foreach variable access, so copy to local variable
-                var vacantHabitat = habitat;
-                var conflictingOrganisms = desiredOrganismHabitats
-                    .Where(intendedOrganismDestination => intendedOrganismDestination.Value.Equals(vacantHabitat))
-                    .Select(intendedOrganismDestination => intendedOrganismDestination.Key)
-                    .ToList();
-
-                Organism organismToMove;
-                if (conflictingOrganisms.Count > 1)
-                {
-                    organismToMove = this.DecideOrganism(conflictingOrganisms);
-                    conflictingOrganisms.Remove(organismToMove);
-
-                    // the remaining conflicting organisms cannot move, so reset their intended destinations
-                    foreach (var remainingOrganism in conflictingOrganisms)
-                    {
-                        desiredOrganismHabitats[remainingOrganism] = this.OrganismHabitats[remainingOrganism];
-                    }
-                }
-                else
-                {
-                    organismToMove = conflictingOrganisms.Single();
-                }
-
-                // intended movement becomes an actual, resolved movement
-                resolvedOrganismHabitats.Add(organismToMove, desiredOrganismHabitats[organismToMove]);
-                desiredOrganismHabitats.Remove(organismToMove);
-            }
-
-            // need to recursively call resolve organism destinations with the knowledge of what has been resolved so far
-            // so those resolved can be taken into consideration when calculating which destinations are now vacant
-            var resolvedOrganisms = resolvedOrganismHabitats.Keys.ToList();
-            var trailingOrganismHabitats = this.ResolveOrganismHabitats(desiredOrganismHabitats, resolvedOrganisms);
-            foreach (var trailingOrganismHabitat in trailingOrganismHabitats)
-            {
-                resolvedOrganismHabitats.Add(trailingOrganismHabitat.Key, trailingOrganismHabitat.Value);
-            }
-
-            return resolvedOrganismHabitats;
-        }
-
-        protected virtual Organism DecideOrganism(List<Organism> organisms)
-        {
-            // this is in a virtual method so the mock ecosystem can override for testing
-            return DecisionLogic.MakeDecision(organisms, this);
         }
 
         private void MoveOrganism(Organism organism, Habitat destination)

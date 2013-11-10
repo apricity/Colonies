@@ -503,8 +503,6 @@
             }
 
             var habitat = this.Habitats[coordinate.X, coordinate.Y];
-            //habitat.Environment.SetLevel(measure, 1.0);
-
             var neighbouringHabitats = this.GetNeighbouringHabitats(habitat, this.HazardRadius, true, true);
             var gaussianKernel = new GaussianBlur(0.25 * this.HazardDiameter, this.HazardDiameter).Kernel;
 

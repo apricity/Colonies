@@ -278,7 +278,7 @@
 
             foreach (var habitat in this.Habitats)
             {
-                if (!habitat.Environment.HasNutrient)
+                if (!habitat.Environment.HasNutrient || habitat.Environment.IsHazardous)
                 {
                     continue;
                 }

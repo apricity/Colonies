@@ -53,6 +53,8 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -61,6 +63,7 @@
 
                 <Grid.Resources>
                     <Converters:BoolToActiveStringConverter x:Key="BoolToActiveStringConverter" />
+                    <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
                     
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Margin" Value="3,3,3,3"/>
@@ -82,31 +85,63 @@
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Health Deterioration Rate:"/>
                 <DockPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
                     <TextBlock Text="1 /"/>
-                    <TextBox Text="{Binding HealthDeteriorationDemoninator, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Text="{Binding HealthDeteriorationDemoninator, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#00FF00" Offset="0.0"/>
+                                <GradientStop Color="#FFFF00" Offset="0.5"/>
+                                <GradientStop Color="#FF0000" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </TextBox.Background>
+                    </TextBox>
                 </DockPanel>
 
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Pheromone Deposit Rate:"/>
                 <DockPanel Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
                     <TextBlock Text="1 /"/>
-                    <TextBox Text="{Binding PheromoneDepositDemoninator, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Text="{Binding PheromoneDepositDemoninator, UpdateSourceTrigger=PropertyChanged}"
+                             Background="{Binding PheromoneColor, Converter={StaticResource ColorToBrushConverter}}"/>
                 </DockPanel>
 
                 <TextBlock Grid.Row="4" Grid.Column="0" Text="Pheromone Fade Rate:"/>
                 <DockPanel Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
                     <TextBlock Text="1 /"/>
-                    <TextBox Text="{Binding PheromoneFadeDemoninator, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Text="{Binding PheromoneFadeDemoninator, UpdateSourceTrigger=PropertyChanged}"
+                             Background="{Binding PheromoneColor, Converter={StaticResource ColorToBrushConverter}}"/>
                 </DockPanel>
 
-                <TextBlock Grid.Row="5" Grid.Column="0" Text="Nutrient Growth Rate:"/>
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="Nutrient Form Rate:"/>
                 <DockPanel Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
                     <TextBlock Text="1 /"/>
-                    <TextBox Text="{Binding NutrientGrowthDemoninator, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Text="{Binding NutrientGrowthDemoninator, UpdateSourceTrigger=PropertyChanged}"
+                             Background="{Binding NutrientColor, Converter={StaticResource ColorToBrushConverter}}"/>
                 </DockPanel>
 
                 <TextBlock Grid.Row="6" Grid.Column="0" Text="Mineral Growth Rate:"/>
                 <DockPanel Grid.Row="6" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
                     <TextBlock Text="1 /"/>
-                    <TextBox Text="{Binding MineralGrowthDemoninator, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Text="{Binding MineralFormDemoninator, UpdateSourceTrigger=PropertyChanged}"
+                             Background="{Binding MineralColor, Converter={StaticResource ColorToBrushConverter}}"/>
+                </DockPanel>
+
+                <TextBlock Grid.Row="7" Grid.Column="0" Text="Obstruction Demolish Rate:"/>
+                <DockPanel Grid.Row="7" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
+                    <TextBlock Text="1 /"/>
+                    <TextBox Text="{Binding ObstructionDemolishDenominator, UpdateSourceTrigger=PropertyChanged}"
+                             Background="{Binding ObstructionColor, Converter={StaticResource ColorToBrushConverter}}"/>
+                </DockPanel>
+
+                <TextBlock Grid.Row="8" Grid.Column="0" Text="Hazard Spread Rate:"/>
+                <DockPanel Grid.Row="8" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
+                    <TextBlock Text="1 /"/>
+                    <TextBox Text="{Binding HazardSpreadDenominator, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="{Binding DampColor}" Offset="0.0"/>
+                                <GradientStop Color="{Binding HeatColor}" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </TextBox.Background>
+                    </TextBox>
                 </DockPanel>
             </Grid>    
         </Controls:Flyout>

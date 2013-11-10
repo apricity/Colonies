@@ -14,7 +14,7 @@
     public class EnvironmentViewModel : ViewModelBase<Environment>
     {
         private readonly Color baseColor = Colors.Tan;
-        private readonly Dictionary<Measure, Color> measureColors = new Dictionary<Measure, Color>
+        public static readonly Dictionary<Measure, Color> MeasureColors = new Dictionary<Measure, Color>
                                                                         {
                                                                             { Measure.Mineral, Colors.Goldenrod },
                                                                             { Measure.Damp, Colors.CornflowerBlue },
@@ -43,7 +43,7 @@
         {
             get
             {
-                return measureColors[Measure.Pheromone];
+                return MeasureColors[Measure.Pheromone];
             }
         }
 
@@ -51,7 +51,7 @@
         {
             get
             {
-                return measureColors[Measure.Nutrient];
+                return MeasureColors[Measure.Nutrient];
             }
         }
 
@@ -59,7 +59,7 @@
         {
             get
             {
-                return measureColors[Measure.Obstruction];
+                return MeasureColors[Measure.Obstruction];
             }
         }
 
@@ -190,12 +190,12 @@
         {
             this.EnvironmentColor = ColorLogic.EnvironmentColor(
                 this.baseColor,
-                new WeightedColor(this.measureColors[Measure.Mineral], this.MineralLevel),
+                new WeightedColor(MeasureColors[Measure.Mineral], this.MineralLevel),
                 new List<WeightedColor>
                     {
-                        new WeightedColor(this.measureColors[Measure.Damp], this.DampLevel),
-                        new WeightedColor(this.measureColors[Measure.Heat], this.HeatLevel),
-                        new WeightedColor(this.measureColors[Measure.Poison], this.PoisonLevel)
+                        new WeightedColor(MeasureColors[Measure.Damp], this.DampLevel),
+                        new WeightedColor(MeasureColors[Measure.Heat], this.HeatLevel),
+                        new WeightedColor(MeasureColors[Measure.Poison], this.PoisonLevel)
                     });
         }
     }

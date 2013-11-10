@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Input;
+    using System.Windows.Media;
 
     using Microsoft.Practices.Prism.Events;
 
@@ -137,7 +138,7 @@
             }
         }
 
-        public double MineralGrowthDemoninator
+        public double MineralFormDemoninator
         {
             get
             {
@@ -149,6 +150,39 @@
                 this.OnPropertyChanged("MineralFormRate");
             }
         }
+
+        public double ObstructionDemolishDenominator
+        {
+            get
+            {
+                return 1 / this.DomainModel.Ecosystem.ObstructionDemolishRate;
+            }
+            set
+            {
+                this.DomainModel.Ecosystem.ObstructionDemolishRate = 1 / value;
+                this.OnPropertyChanged("ObstructionDemolishRate");
+            }
+        }
+
+        public double HazardSpreadDenominator
+        {
+            get
+            {
+                return 1 / this.DomainModel.Ecosystem.HazardSpreadRate;
+            }
+            set
+            {
+                this.DomainModel.Ecosystem.HazardSpreadRate = 1 / value;
+                this.OnPropertyChanged("HazardSpreadRate");
+            }
+        }
+
+        public static Color PheromoneColor { get { return EnvironmentViewModel.MeasureColors[Measure.Pheromone]; } }
+        public static Color NutrientColor { get { return EnvironmentViewModel.MeasureColors[Measure.Nutrient]; } }
+        public static Color MineralColor { get { return EnvironmentViewModel.MeasureColors[Measure.Mineral]; } }
+        public static Color ObstructionColor { get { return EnvironmentViewModel.MeasureColors[Measure.Obstruction]; } }
+        public static Color DampColor { get { return EnvironmentViewModel.MeasureColors[Measure.Damp]; } }
+        public static Color HeatColor { get { return EnvironmentViewModel.MeasureColors[Measure.Heat]; } }
 
         private int turnCount;
         public int TurnCount

@@ -17,10 +17,53 @@
 
             if (chosenItem == null)
             {
-                throw new NullReferenceException("A measurement has not been chosen");
+                throw new NullReferenceException("An item has not been chosen");
             }
 
             return chosenItem;
+        }
+
+        public static T MakeDecision<T>(IEnumerable<T> items)
+        {
+            var chosenItem = default(T);
+            var itemList = items.ToList();
+
+            var itemChosen = false;
+            var randomNumber = RandomNumberGenerator.RandomDouble(itemList.Count);
+            foreach (var item in itemList)
+            {
+                if (randomNumber <= 1)
+                {
+                    chosenItem = item;
+                    itemChosen = true;
+                    break;
+                }
+
+                randomNumber -= 1;
+            }
+
+            if (!itemChosen)
+            {
+                throw new NullReferenceException("An item has not been chosen");
+            }
+
+            return chosenItem;
+        }
+
+        public static bool IsSuccessful(double successProbability)
+        {
+            if (successProbability < 0 || successProbability > 1)
+            {
+                throw new ArgumentOutOfRangeException("successProbability", successProbability, "Success probability must be between 0 - 1");
+            }
+
+            if (successProbability == 0.0)
+            {
+                return false;
+            }
+
+            var randomNumber = RandomNumberGenerator.RandomDouble(1);
+            return randomNumber <= successProbability;
         }
 
         private static Dictionary<T, double> WeightMeasuredItems<T>(IEnumerable<T> measurableItems, IBiased biasProvider) where T : class, IMeasurable

@@ -42,7 +42,7 @@
         {
             get
             {
-                return this.Habitats.GetLength(0);
+                return this.Habitats.Width();
             }
         }
 
@@ -50,7 +50,7 @@
         {
             get
             {
-                return this.Habitats.GetLength(1);
+                return this.Habitats.Height();
             }
         }
 
@@ -447,35 +447,22 @@
             {
                 foreach (var hazardMeasure in coordinateHazard.Value)
                 {
-                    var spreadRandomNumber = RandomNumberGenerator.RandomDouble(1);
-                    var spreadSuccessful = spreadRandomNumber < this.HazardSpreadRate;
-                    if (!spreadSuccessful)
+                    if (!DecisionLogic.IsSuccessful(this.HazardSpreadRate))
                     {
                         continue;
                     }
 
                     var neighbouringHabitats = this.GetNeighbouringHabitats(this.Habitats[coordinateHazard.Key.X, coordinateHazard.Key.Y], 1, false, false).ToList();
                     var validNeighbouringHabitats = neighbouringHabitats.Where(habitat => habitat != null && !habitat.IsObstructed() && habitat.Environment.GetLevel(hazardMeasure) < 1).ToList();
-                    var neighbouringCoordinates = validNeighbouringHabitats.Select(habitat => this.HabitatCoordinates[habitat]).ToList();
-                    if (neighbouringCoordinates.Count == 0)
+                    if (validNeighbouringHabitats.Count == 0)
                     {
                         continue;
                     }
-
-                    var chosenCoordinate = new Coordinate(-1, -1);
-                    var coordinateRandomNumber = RandomNumberGenerator.RandomDouble(neighbouringCoordinates.Count);
-                    foreach (var neighbouringCoordinate in neighbouringCoordinates)
-                    {
-                        if (coordinateRandomNumber <= 1)
-                        {
-                            chosenCoordinate = neighbouringCoordinate;
-                            break;
-                        }
-
-                        coordinateRandomNumber -= 1;
-                    }
-
+                    
+                    var neighbouringCoordinates = validNeighbouringHabitats.Select(habitat => this.HabitatCoordinates[habitat]).ToList();
+                    var chosenCoordinate = DecisionLogic.MakeDecision(neighbouringCoordinates);
                     this.InsertHazard(hazardMeasure, chosenCoordinate);
+
                     var insertedNeighbouringHabitats = this.GetNeighbouringHabitats(this.Habitats[chosenCoordinate.X, chosenCoordinate.Y], this.HazardRadius, true, true).ToList();
                     var validInsertedNeighbouringHabitats = insertedNeighbouringHabitats.Where(habitat => habitat != null).ToList();
 

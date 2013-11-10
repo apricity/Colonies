@@ -16,9 +16,9 @@
         public Habitat[,] Habitats { get; private set; }
         public Dictionary<Measure, double> MeasureBiases { get; private set; }
 
-        private Dictionary<Organism, Habitat> OrganismHabitats { get; set; }
-        private Dictionary<Habitat, Coordinate> HabitatCoordinates { get; set; }
-        private Dictionary<Coordinate, List<Measure>> CoordinateHazards { get; set; }
+        public Dictionary<Organism, Habitat> OrganismHabitats { get; set; }
+        public Dictionary<Habitat, Coordinate> HabitatCoordinates { get; set; }
+        public Dictionary<Coordinate, List<Measure>> CoordinateHazards { get; set; }
 
         // TODO: neater management of these?
         public double HealthDeteriorationRate { get; set; }
@@ -71,7 +71,7 @@
             this.MeasureBiases = new Dictionary<Measure, double> { { Measure.Health, 1 } };
 
             // work out how big any fire/water spread should be based on ecosystem dimensions
-            this.HazardDiameter = this.CalculateHazardDiameter();
+            this.HazardDiameter = EcosystemLogic.CalculateHazardDiameter(this.Width, this.Height);
             this.CoordinateHazards = new Dictionary<Coordinate, List<Measure>>();
 
             this.HealthDeteriorationRate = 1 / 500.0;
@@ -174,30 +174,31 @@
             return alteredEnvironmentCoordinates.Distinct();
         }
 
-        protected virtual Dictionary<Organism, Habitat> GetDesiredOrganismHabitats()
-        {
-            var desiredOrganismHabitats = new Dictionary<Organism, Habitat>();
-            var aliveOrganismHabitats = this.OrganismHabitats.Where(organismHabitats => organismHabitats.Key.IsAlive).ToList();
-            foreach (var organismHabitat in aliveOrganismHabitats)
-            {
-                var currentOrganism = organismHabitat.Key;
-                var currentHabitat = organismHabitat.Value;
+        //protected virtual Dictionary<Organism, Habitat> GetDesiredOrganismHabitats()
+        //{
+        //    var desiredOrganismHabitats = new Dictionary<Organism, Habitat>();
+        //    var aliveOrganismHabitats = this.OrganismHabitats.Where(organismHabitats => organismHabitats.Key.IsAlive).ToList();
+        //    foreach (var organismHabitat in aliveOrganismHabitats)
+        //    {
+        //        var currentOrganism = organismHabitat.Key;
+        //        var currentHabitat = organismHabitat.Value;
+        //        var currentCoordinate = this.HabitatCoordinates[currentHabitat];
+                
+        //        // get measurements of neighbouring environments
+        //        var neighbouringHabitats = this.Habitats.GetNeighbours(currentCoordinate, 1, false, true).ToList();
+        //        var validNeighbouringHabitats = neighbouringHabitats.Where(habitat => habitat != null).ToList();
+        //        var neighbouringEnvironments = validNeighbouringHabitats.Select(neighbour => neighbour.Environment).ToList();
 
-                // get measurements of neighbouring environments
-                var neighbouringHabitats = this.GetNeighbouringHabitats(currentHabitat, 1, false, true).ToList();
-                var validNeighbouringHabitats = neighbouringHabitats.Where(habitat => habitat != null).ToList();
-                var neighbouringEnvironments = validNeighbouringHabitats.Select(neighbour => neighbour.Environment).ToList();
+        //        // determine organism's intentions based on the environment measurements
+        //        var chosenEnvironment = DecisionLogic.MakeDecision(neighbouringEnvironments, currentOrganism);
 
-                // determine organism's intentions based on the environment measurements
-                var chosenEnvironment = DecisionLogic.MakeDecision(neighbouringEnvironments, currentOrganism);
+        //        // get the habitat the environment is from - this is where the organism wants to move to
+        //        var chosenHabitat = validNeighbouringHabitats.Single(habitat => habitat.Environment.Equals(chosenEnvironment));
+        //        desiredOrganismHabitats.Add(currentOrganism, chosenHabitat);
+        //    }
 
-                // get the habitat the environment is from - this is where the organism wants to move to
-                var chosenHabitat = validNeighbouringHabitats.Single(habitat => habitat.Environment.Equals(chosenEnvironment));
-                desiredOrganismHabitats.Add(currentOrganism, chosenHabitat);
-            }
-
-            return desiredOrganismHabitats;
-        }
+        //    return desiredOrganismHabitats;
+        //}
 
         private Dictionary<Organism, Habitat> ResolveOrganismHabitats(Dictionary<Organism, Habitat> desiredOrganismHabitats, IEnumerable<Organism> alreadyResolvedOrganisms)
         {
@@ -273,50 +274,6 @@
         {
             // this is in a virtual method so the mock ecosystem can override for testing
             return DecisionLogic.MakeDecision(organisms, this);
-        }
-
-        private Habitat[,] GetNeighbouringHabitats(Habitat habitat, int neighbourDepth, bool includeDiagonals, bool includeSelf)
-        {
-            var neighbouringHabitats = new Habitat[(neighbourDepth * 2) + 1, (neighbourDepth * 2) + 1];
-
-            var location = this.HabitatCoordinates[habitat];
-            for (var i = -neighbourDepth; i <= neighbourDepth; i++)
-            {
-                var x = i + location.X;
-
-                // do not carry on if x is out-of-bounds
-                if (x < 0 || x >= this.Width)
-                {
-                    continue;
-                }
-
-                for (var j = -neighbourDepth; j <= neighbourDepth; j++)
-                {
-                    var y = j + location.Y;
-
-                    // do not carry on if y is out-of-bounds
-                    if (y < 0 || y >= this.Height)
-                    {
-                        continue;
-                    }
-
-                    // do not carry on if (x, y) is diagonal from organism (and include diagonals is false)
-                    if (x != location.X && y != location.Y && !includeDiagonals)
-                    {
-                        continue;
-                    }
-
-                    // do not carry on if (x, y) is the centre habitat and asked not to include self
-                    if (x == location.X && y == location.Y && !includeSelf)
-                    {
-                        continue;
-                    }
-
-                    neighbouringHabitats[i + neighbourDepth, j + neighbourDepth] = this.Habitats[x, y];
-                }
-            }
-
-            return neighbouringHabitats;
         }
 
         private void MoveOrganism(Organism organism, Habitat destination)
@@ -452,7 +409,7 @@
                         continue;
                     }
 
-                    var neighbouringHabitats = this.GetNeighbouringHabitats(this.Habitats[coordinateHazard.Key.X, coordinateHazard.Key.Y], 1, false, false).ToList();
+                    var neighbouringHabitats = this.Habitats.GetNeighbours(coordinateHazard.Key, 1, false, false).ToList();
                     var validNeighbouringHabitats = neighbouringHabitats.Where(habitat => habitat != null && !habitat.IsObstructed() && habitat.Environment.GetLevel(hazardMeasure) < 1).ToList();
                     if (validNeighbouringHabitats.Count == 0)
                     {
@@ -463,7 +420,7 @@
                     var chosenCoordinate = DecisionLogic.MakeDecision(neighbouringCoordinates);
                     this.InsertHazard(hazardMeasure, chosenCoordinate);
 
-                    var insertedNeighbouringHabitats = this.GetNeighbouringHabitats(this.Habitats[chosenCoordinate.X, chosenCoordinate.Y], this.HazardRadius, true, true).ToList();
+                    var insertedNeighbouringHabitats = this.Habitats.GetNeighbours(coordinateHazard.Key, this.HazardRadius, true, true).ToList();
                     var validInsertedNeighbouringHabitats = insertedNeighbouringHabitats.Where(habitat => habitat != null).ToList();
 
                     alteredEnvironmentCoordinates.AddRange(validInsertedNeighbouringHabitats.Select(habitat => this.HabitatCoordinates[habitat]));
@@ -502,8 +459,7 @@
                 throw new InvalidEnumArgumentException(string.Format("{0} is not a potential hazard", measure.ToString()));
             }
 
-            var habitat = this.Habitats[coordinate.X, coordinate.Y];
-            var neighbouringHabitats = this.GetNeighbouringHabitats(habitat, this.HazardRadius, true, true);
+            var neighbouringHabitats = this.Habitats.GetNeighbours(coordinate, this.HazardRadius, true, true);
             var gaussianKernel = new GaussianBlur(0.25 * this.HazardDiameter, this.HazardDiameter).Kernel;
 
             var gaussianCentre = (double)gaussianKernel[this.HazardRadius, this.HazardRadius];
@@ -529,28 +485,6 @@
             {
                 this.CoordinateHazards.Add(coordinate, new List<Measure> { measure });
             }
-        }
-
-        private int CalculateHazardDiameter()
-        {
-            var ecosystemArea = (double)(this.Height * this.Width);
-
-            var diameterFound = false;
-            var currentDiameter = 3; // minimum is 3x3
-            while (!diameterFound)
-            {
-                var nextDiameter = currentDiameter + 2;
-                if (Math.Pow(nextDiameter, 2) > Math.Sqrt(ecosystemArea))
-                {
-                    diameterFound = true;
-                }
-                else
-                {
-                    currentDiameter = nextDiameter;
-                }
-            }
-
-            return currentDiameter;
         }
 
         public void SetMeasureBias(Measure measure, double bias)

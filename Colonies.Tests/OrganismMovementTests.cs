@@ -351,7 +351,9 @@
 
             EcosystemLogic.OverrideDesiredOrganismHabitats = organismIntendedDestinations;
             EcosystemLogic.OverrideDecideOrganismFunction = organisms => organisms.First();
-            var ecosystem = new Ecosystem(this.habitats, organismHabitats);
+
+            var ecosystemData = new EcosystemData(this.habitats, organismHabitats);
+            var ecosystem = new Ecosystem(ecosystemData);
             return ecosystem.Update();
         }
     }

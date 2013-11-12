@@ -5,6 +5,7 @@
     using System.Linq;
 
     using Wacton.Colonies.Ancillary;
+    using Wacton.Colonies.Interfaces;
     using Wacton.Colonies.Models;
 
     public static class EcosystemLogic
@@ -12,7 +13,7 @@
         public static Dictionary<Organism, Habitat> OverrideDesiredOrganismHabitats { get; set; }
         public static Func<IEnumerable<Organism>, Organism> OverrideDecideOrganismFunction { get; set; } 
 
-        public static Dictionary<Organism, Habitat> GetDesiredOrganismHabitats(this Ecosystem ecosystem)
+        public static Dictionary<Organism, Habitat> GetDesiredOrganismHabitats(EcosystemData ecosystemData)
         {
             if (OverrideDesiredOrganismHabitats != null)
             {
@@ -20,15 +21,15 @@
             }
 
             var desiredOrganismHabitats = new Dictionary<Organism, Habitat>();
-            var aliveOrganismHabitats = ecosystem.OrganismHabitats.Where(organismHabitats => organismHabitats.Key.IsAlive).ToList();
+            var aliveOrganismHabitats = ecosystemData.OrganismHabitats.Where(organismHabitats => organismHabitats.Key.IsAlive).ToList();
             foreach (var organismHabitat in aliveOrganismHabitats)
             {
                 var currentOrganism = organismHabitat.Key;
                 var currentHabitat = organismHabitat.Value;
-                var currentCoordinate = ecosystem.HabitatCoordinates[currentHabitat];
+                var currentCoordinate = ecosystemData.HabitatCoordinates[currentHabitat];
                 
                 // get measurements of neighbouring environments
-                var neighbouringHabitats = ecosystem.Habitats.GetNeighbours(currentCoordinate, 1, false, true).ToList();
+                var neighbouringHabitats = ecosystemData.Habitats.GetNeighbours(currentCoordinate, 1, false, true).ToList();
                 var validNeighbouringHabitats = neighbouringHabitats.Where(habitat => habitat != null).ToList();
                 var neighbouringEnvironments = validNeighbouringHabitats.Select(neighbour => neighbour.Environment).ToList();
 
@@ -43,12 +44,12 @@
             return desiredOrganismHabitats;
         }
 
-        public static Dictionary<Organism, Habitat> ResolveOrganismHabitats(this Ecosystem ecosystem, Dictionary<Organism, Habitat> desiredOrganismHabitats, IEnumerable<Organism> alreadyResolvedOrganisms)
+        public static Dictionary<Organism, Habitat> ResolveOrganismHabitats(EcosystemData ecosystemData, Dictionary<Organism, Habitat> desiredOrganismHabitats, IEnumerable<Organism> alreadyResolvedOrganisms, IBiased biasProvider)
         {
             var resolvedOrganismHabitats = new Dictionary<Organism, Habitat>();
 
             // create a copy of the organism habitats because we don't want to modify the actual set
-            var currentOrganismHabitats = ecosystem.OrganismHabitats.ToDictionary(
+            var currentOrganismHabitats = ecosystemData.OrganismHabitats.ToDictionary(
                 organismHabitat => organismHabitat.Key,
                 organismHabitat => organismHabitat.Value);
 
@@ -82,13 +83,13 @@
                 Organism organismToMove;
                 if (conflictingOrganisms.Count > 1)
                 {
-                    organismToMove = ecosystem.DecideOrganism(conflictingOrganisms);
+                    organismToMove = DecideOrganism(biasProvider, conflictingOrganisms);
                     conflictingOrganisms.Remove(organismToMove);
 
                     // the remaining conflicting organisms cannot move, so reset their intended destinations
                     foreach (var remainingOrganism in conflictingOrganisms)
                     {
-                        desiredOrganismHabitats[remainingOrganism] = ecosystem.OrganismHabitats[remainingOrganism];
+                        desiredOrganismHabitats[remainingOrganism] = ecosystemData.OrganismHabitats[remainingOrganism];
                     }
                 }
                 else
@@ -104,7 +105,7 @@
             // need to recursively call resolve organism destinations with the knowledge of what has been resolved so far
             // so those resolved can be taken into consideration when calculating which destinations are now vacant
             var resolvedOrganisms = resolvedOrganismHabitats.Keys.ToList();
-            var trailingOrganismHabitats = ecosystem.ResolveOrganismHabitats(desiredOrganismHabitats, resolvedOrganisms);
+            var trailingOrganismHabitats = ResolveOrganismHabitats(ecosystemData, desiredOrganismHabitats, resolvedOrganisms, biasProvider);
             foreach (var trailingOrganismHabitat in trailingOrganismHabitats)
             {
                 resolvedOrganismHabitats.Add(trailingOrganismHabitat.Key, trailingOrganismHabitat.Value);
@@ -113,14 +114,14 @@
             return resolvedOrganismHabitats;
         }
 
-        private static Organism DecideOrganism(this Ecosystem ecosystem, IEnumerable<Organism> organisms)
+        private static Organism DecideOrganism(IBiased biasProvider, IEnumerable<Organism> organisms)
         {
             if (OverrideDecideOrganismFunction != null)
             {
                 return OverrideDecideOrganismFunction.Invoke(organisms);
             }
 
-            return DecisionLogic.MakeDecision(organisms, ecosystem);
+            return DecisionLogic.MakeDecision(organisms, biasProvider);
         }
 
         public static Habitat[,] GetNeighbours(this Habitat[,] habitats, Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)

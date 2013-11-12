@@ -66,7 +66,8 @@
                 }
             }
 
-            var ecosystem = new Ecosystem(habitats, new Dictionary<Organism, Habitat>());
+            var ecosystemData = new EcosystemData(habitats, new Dictionary<Organism, Habitat>());
+            var ecosystem = new Ecosystem(ecosystemData);
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
@@ -112,8 +113,8 @@
 
             for (var i = 0; i < 15; i++)
             {
-                ecosystem.Habitats[i, 0].Environment.SetLevel(Measure.Nutrient, 1.0 - (i * (1 / (double)15)));
-                ecosystem.Habitats[i, 9].Environment.SetLevel(Measure.Mineral, 1.0 - (i * (1 / (double)15)));
+                ecosystem.HabitatAt(new Coordinate(i, 0)).Environment.SetLevel(Measure.Nutrient, 1.0 - (i * (1 / (double)15)));
+                ecosystem.HabitatAt(new Coordinate(i, 9)).Environment.SetLevel(Measure.Nutrient, 1.0 - (i * (1 / (double)15)));
             }
 
             // custom obstructed habitats (will make a square shapen with an entrance - a pen?)
@@ -147,9 +148,9 @@
                                                 new Coordinate(8, 8)
                                             };
 
-            foreach (var coordinates in obstructedCoordinates)
+            foreach (var coordinate in obstructedCoordinates)
             {
-                ecosystem.Habitats[coordinates.X, coordinates.Y].Environment.SetLevel(Measure.Obstruction, 1.0);
+                ecosystem.HabitatAt(coordinate).Environment.SetLevel(Measure.Obstruction, 1.0);
             }
         }
 

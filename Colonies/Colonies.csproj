@@ -103,6 +103,7 @@
     <Compile Include="Logic\EcosystemLogic.cs" />
     <Compile Include="Logic\RandomNumberGenerator.cs" />
     <Compile Include="Models\Ecosystem.cs" />
+    <Compile Include="Models\EcosystemData.cs" />
     <Compile Include="Models\Main.cs" />
     <Compile Include="Models\OrganismSynopsis.cs" />
     <Compile Include="Ancillary\UpdateSummary.cs" />

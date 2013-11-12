@@ -27,7 +27,7 @@
 
         protected override void InitialiseTerrain(Ecosystem ecosystem)
         {
-            ecosystem.Habitats[1, 1].Environment.SetLevel(Measure.Obstruction, 1.0);
+            ecosystem.HabitatAt(new Coordinate(1, 1)).Environment.SetLevel(Measure.Obstruction, 1.0);
         }
 
         // TODO: tidy up how this is done in the bootstrapper

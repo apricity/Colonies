@@ -15,7 +15,7 @@
 
         public void SetLevel(double level)
         {
-            this.Level = level;
+            this.Level = Math.Round(level, 4);
             this.EnsureLevelWithinLimit();
         }
 
@@ -31,8 +31,9 @@
 
         private bool ChangeLevel(double value)
         {
+            // rounding is used to counteract some of the floating point arithmetic loss of precision
             var previousLevel = this.Level;
-            this.Level += value;
+            this.Level = Math.Round(previousLevel + value, 4);
             this.EnsureLevelWithinLimit();
             return Math.Abs(previousLevel - this.Level) > 0.0;
         }

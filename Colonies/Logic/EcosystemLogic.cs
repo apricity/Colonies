@@ -21,24 +21,22 @@
             }
 
             var desiredOrganismHabitats = new Dictionary<Organism, Habitat>();
-            var aliveOrganismHabitats = ecosystemData.OrganismHabitats.Where(organismHabitats => organismHabitats.Key.IsAlive).ToList();
-            foreach (var organismHabitat in aliveOrganismHabitats)
+            var aliveOrganisms = ecosystemData.GetOrganisms().Where(organism => organism.IsAlive).ToList();
+            foreach (var organism in aliveOrganisms)
             {
-                var currentOrganism = organismHabitat.Key;
-                var currentHabitat = organismHabitat.Value;
-                var currentCoordinate = ecosystemData.HabitatCoordinates[currentHabitat];
+                var currentCoordinate = ecosystemData.CoordinateOf(organism);
                 
                 // get measurements of neighbouring environments
-                var neighbouringHabitats = ecosystemData.Habitats.GetNeighbours(currentCoordinate, 1, false, true).ToList();
+                var neighbouringHabitats = ecosystemData.GetNeighbours(currentCoordinate, 1, false, true).ToList();
                 var validNeighbouringHabitats = neighbouringHabitats.Where(habitat => habitat != null).ToList();
                 var neighbouringEnvironments = validNeighbouringHabitats.Select(neighbour => neighbour.Environment).ToList();
 
                 // determine organism's intentions based on the environment measurements
-                var chosenEnvironment = DecisionLogic.MakeDecision(neighbouringEnvironments, currentOrganism);
+                var chosenEnvironment = DecisionLogic.MakeDecision(neighbouringEnvironments, organism);
 
                 // get the habitat the environment is from - this is where the organism wants to move to
                 var chosenHabitat = validNeighbouringHabitats.Single(habitat => habitat.Environment.Equals(chosenEnvironment));
-                desiredOrganismHabitats.Add(currentOrganism, chosenHabitat);
+                desiredOrganismHabitats.Add(organism, chosenHabitat);
             }
 
             return desiredOrganismHabitats;
@@ -49,18 +47,16 @@
             var resolvedOrganismHabitats = new Dictionary<Organism, Habitat>();
 
             // create a copy of the organism habitats because we don't want to modify the actual set
-            var currentOrganismHabitats = ecosystemData.OrganismHabitats.ToDictionary(
-                organismHabitat => organismHabitat.Key,
-                organismHabitat => organismHabitat.Value);
+            var organisms = ecosystemData.GetOrganisms().ToList();
 
             // remove organisms that have been resolved (from previous iterations)
             // as they no longer need to be processed
             foreach (var alreadyResolvedOrganism in alreadyResolvedOrganisms)
             {
-                currentOrganismHabitats.Remove(alreadyResolvedOrganism);
+                organisms.Remove(alreadyResolvedOrganism);
             }
 
-            var occupiedHabitats = currentOrganismHabitats.Values.ToList();
+            var occupiedHabitats = organisms.Select(ecosystemData.HabitatOf);
             var desiredHabitats = desiredOrganismHabitats.Values.ToList();
 
             // if there are no vacant habitats, this is our base case
@@ -89,7 +85,7 @@
                     // the remaining conflicting organisms cannot move, so reset their intended destinations
                     foreach (var remainingOrganism in conflictingOrganisms)
                     {
-                        desiredOrganismHabitats[remainingOrganism] = ecosystemData.OrganismHabitats[remainingOrganism];
+                        desiredOrganismHabitats[remainingOrganism] = ecosystemData.HabitatOf(remainingOrganism);
                     }
                 }
                 else

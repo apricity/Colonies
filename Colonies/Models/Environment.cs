@@ -30,7 +30,7 @@
         {
             get
             {
-                return Hazards().Any(hazard => this.Measurement.HasCondition(hazard));
+                return HazardMeasures().Any(hazardMeasure => this.Measurement.GetLevel(hazardMeasure).Equals(1.0));
             }
         }
 
@@ -68,15 +68,12 @@
 
         public static bool IsPotentialHazard(Measure measure)
         {
-            return Hazards().Any(hazard => hazard.Measure.Equals(measure));
+            return HazardMeasures().Any(hazardMeasure => hazardMeasure.Equals(measure));
         }
 
-        private static IEnumerable<Condition> Hazards()
+        public static IEnumerable<Measure> HazardMeasures()
         {
-            var dampHazard = new Condition(Measure.Damp, 1.0);
-            var heatHazard = new Condition(Measure.Heat, 1.0);
-            var poisonHazard = new Condition(Measure.Poison, 1.0);
-            return new List<Condition> { dampHazard, heatHazard, poisonHazard };
+            return new List<Measure> { Measure.Damp, Measure.Heat, Measure.Poison };
         }
         
         public override string ToString()

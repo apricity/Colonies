@@ -114,7 +114,7 @@
             for (var i = 0; i < 15; i++)
             {
                 ecosystem.HabitatAt(new Coordinate(i, 0)).Environment.SetLevel(Measure.Nutrient, 1.0 - (i * (1 / (double)15)));
-                ecosystem.HabitatAt(new Coordinate(i, 9)).Environment.SetLevel(Measure.Nutrient, 1.0 - (i * (1 / (double)15)));
+                ecosystem.HabitatAt(new Coordinate(i, 9)).Environment.SetLevel(Measure.Mineral, 1.0 - (i * (1 / (double)15)));
             }
 
             // custom obstructed habitats (will make a square shapen with an entrance - a pen?)

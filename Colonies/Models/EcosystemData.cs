@@ -1,17 +1,19 @@
 ﻿namespace Wacton.Colonies.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using Wacton.Colonies.Ancillary;
+    using Wacton.Colonies.Logic;
 
     public class EcosystemData
     {
-        // TODO: these should be private, accessible through methods only
-        public Habitat[,] Habitats { get; private set; }
-        public Dictionary<Organism, Habitat> OrganismHabitats { get; private set; }
-        public Dictionary<Habitat, Coordinate> HabitatCoordinates { get; private set; }
-        public Dictionary<Coordinate, List<Measure>> CoordinateHazards { get; set; }
+        private Habitat[,] Habitats { get; set; }
+        private Dictionary<Organism, Habitat> OrganismHabitats { get; set; }
+        private Dictionary<Habitat, Coordinate> HabitatCoordinates { get; set; }
+        private Dictionary<Measure, List<Coordinate>> HazardCoordinates { get; set; }
+        // TODO: need NutrientCoordinates?
 
         public int Width
         {
@@ -34,7 +36,7 @@
             this.Habitats = habitats;
             this.OrganismHabitats = organismHabitats;
             this.HabitatCoordinates = new Dictionary<Habitat, Coordinate>();
-            this.CoordinateHazards = new Dictionary<Coordinate, List<Measure>>();
+            this.HazardCoordinates = new Dictionary<Measure, List<Coordinate>>();
 
             for (var i = 0; i < this.Width; i++)
             {
@@ -43,19 +45,22 @@
                     this.HabitatCoordinates.Add(this.Habitats[i, j], new Coordinate(i, j));
                 }
             }
+
+            foreach (var hazardMeasure in Environment.HazardMeasures())
+            {
+                this.HazardCoordinates.Add(hazardMeasure, new List<Coordinate>());
+            }
         }
 
-        // TODO: use interface?
-        public List<Organism> GetOrganisms()
+        // TODO: use interfaces?
+        public IEnumerable<Organism> GetOrganisms()
         {
             return this.OrganismHabitats.Keys.ToList();
         }
 
-        public Dictionary<Organism, Coordinate> GetOrganismCoordinates()
+        public IEnumerable<Habitat> GetHabitats()
         {
-            return this.OrganismHabitats.ToDictionary(
-                organismHabitat => organismHabitat.Key,
-                organismHabitat => this.HabitatCoordinates[organismHabitat.Value]);
+            return this.Habitats.ToList();
         }
 
         public Habitat HabitatAt(Coordinate coordinate)
@@ -76,6 +81,71 @@
         public Coordinate CoordinateOf(Organism organism)
         {
             return this.HabitatCoordinates[this.OrganismHabitats[organism]];
+        }
+
+        public void AddOrganism(Organism organism, Coordinate coordinate)
+        {
+            this.AddOrganism(organism, this.HabitatAt(coordinate));
+        }
+
+        public void AddOrganism(Organism organism, Habitat habitat)
+        {
+            habitat.AddOrganism(organism);
+            this.OrganismHabitats.Add(organism, habitat);
+        }
+
+        public void RemoveOrganism(Organism organism)
+        {
+            this.HabitatOf(organism).RemoveOrganism();
+            this.OrganismHabitats.Remove(organism);
+        }
+
+        public void MoveOrganism(Organism organism, Habitat destinationHabitat)
+        {
+            var sourceHabitat = this.HabitatOf(organism);
+
+            // the organism cannot move if it is dead
+            if (!organism.IsAlive)
+            {
+                throw new InvalidOperationException(
+                    string.Format("Cannot move organism {0} to {1} because it is dead",
+                                   organism, destinationHabitat));
+            }
+
+            // the organism can only move to the destination if it is not obstructed
+            if (destinationHabitat.IsObstructed())
+            {
+                throw new InvalidOperationException(
+                    string.Format("Cannot move organism {0} to {1} because the destination is obstructed",
+                                  organism, destinationHabitat));
+            }
+
+            // the organism can only move to the destination if it does not already contain an organism
+            if (destinationHabitat.ContainsOrganism())
+            {
+                throw new InvalidOperationException(
+                    string.Format("Cannot move organism {0} to {1} because the destination is occupied by {2}",
+                                  organism, destinationHabitat, destinationHabitat.Organism));
+            }
+
+            sourceHabitat.RemoveOrganism();
+            destinationHabitat.AddOrganism(organism);
+            this.OrganismHabitats[organism] = destinationHabitat;
+        }
+
+        public void InsertHazard(Measure hazardMeasure, Coordinate coordinate)
+        {
+            this.HazardCoordinates[hazardMeasure].Add(coordinate);
+        }
+
+        public IEnumerable<Coordinate> GetHazardCoordinates(Measure hazardMeasure)
+        {
+            return this.HazardCoordinates[hazardMeasure].ToList();
+        }
+
+        public Habitat[,] GetNeighbours(Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
+        {
+            return this.Habitats.GetNeighbours(coordinate, neighbourDepth, includeDiagonals, includeSelf);
         }
     }
 }

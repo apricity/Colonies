@@ -70,7 +70,8 @@
 
         public UpdateSummary Update()
         {
-            var previousOrganismCoordinates = this.ecosystemData.GetOrganismCoordinates();
+            var previousOrganismCoordinates = this.ecosystemData.GetOrganisms()
+                .ToDictionary(organism => organism, organism => this.ecosystemData.CoordinateOf(organism));
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
@@ -87,7 +88,8 @@
              * and demolish obstruction if they have blocked a movement */
             alteredEnvironmentCoordinates.AddRange(this.PerformPostMovementActions(previousOrganismCoordinates));
 
-            var currentOrganismCoordinates = this.ecosystemData.GetOrganismCoordinates();
+            var currentOrganismCoordinates = this.ecosystemData.GetOrganisms()
+                .ToDictionary(organism => organism, organism => this.ecosystemData.CoordinateOf(organism));
 
             return new UpdateSummary(previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates.Distinct().ToList());
         }
@@ -126,7 +128,7 @@
             // TODO: move to ecosystem data?
             foreach (var movedOrganismHabitat in movedOrganismHabitats)
             {
-                this.MoveOrganism(movedOrganismHabitat.Key, movedOrganismHabitat.Value);
+                this.ecosystemData.MoveOrganism(movedOrganismHabitat.Key, movedOrganismHabitat.Value);
             }
 
             // for any organisms that attempted to move to an obstructed habitat, decrease obstruction level
@@ -155,45 +157,11 @@
             return alteredEnvironmentCoordinates.Distinct();
         }
 
-        // TODO: move to ecosystemData?
-        private void MoveOrganism(Organism organism, Habitat destination)
-        {
-            var source = this.HabitatOf(organism);
-
-            // the organism cannot move if it is dead
-            if (!organism.IsAlive)
-            {
-                throw new InvalidOperationException(
-                    string.Format("Cannot move organism {0} to {1} because it is dead",
-                                   organism, destination));
-            }
-
-            // the organism can only move to the destination if it is not obstructed
-            if (destination.IsObstructed())
-            {
-                throw new InvalidOperationException(
-                    string.Format("Cannot move organism {0} to {1} because the destination is obstructed",
-                                  organism, destination));
-            }
-
-            // the organism can only move to the destination if it does not already contain an organism
-            if (destination.ContainsOrganism())
-            {
-                throw new InvalidOperationException(
-                    string.Format("Cannot move organism {0} to {1} because the destination is occupied by {2}",
-                                  organism, destination, destination.Organism));
-            }
-
-            source.RemoveOrganism();
-            destination.AddOrganism(organism);
-            this.ecosystemData.OrganismHabitats[organism] = destination;
-        }
-
         private IEnumerable<Coordinate> DecreasePheromoneLevel()
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            foreach (var habitat in this.ecosystemData.Habitats)
+            foreach (var habitat in this.ecosystemData.GetHabitats())
             {
                 if (habitat.Environment.GetLevel(Measure.Pheromone).Equals(0.0))
                 {
@@ -258,7 +226,7 @@
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            foreach (var habitat in this.ecosystemData.Habitats)
+            foreach (var habitat in this.ecosystemData.GetHabitats())
             {
                 if (!habitat.Environment.HasNutrient || habitat.Environment.IsHazardous)
                 {
@@ -278,33 +246,28 @@
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            // cannot use this.CoordinateHazards directly, since inserting a hazard (which is inside the loop) will modify this.CoordinateHazards
-            var coordinateHazards = this.ecosystemData.CoordinateHazards.ToDictionary(pair => pair.Key, pair => pair.Value);
-            foreach (var coordinateHazard in coordinateHazards)
+            foreach (var hazardMeasure in Environment.HazardMeasures())
             {
-                foreach (var hazardMeasure in coordinateHazard.Value)
+                var hazardCoordinates = this.ecosystemData.GetHazardCoordinates(hazardMeasure);
+                foreach (var coordinate in hazardCoordinates)
                 {
                     if (!DecisionLogic.IsSuccessful(this.HazardSpreadRate))
                     {
                         continue;
                     }
 
-                    var neighbouringHabitats = this.ecosystemData.Habitats.GetNeighbours(coordinateHazard.Key, 1, false, false).ToList();
-                    var validNeighbouringHabitats = neighbouringHabitats.Where(habitat => habitat != null && !habitat.IsObstructed() && habitat.Environment.GetLevel(hazardMeasure) < 1).ToList();
+                    var neighbouringHabitats = this.ecosystemData.GetNeighbours(coordinate, 1, false, false).ToList();
+                    var validNeighbouringHabitats = neighbouringHabitats.Where(habitat =>
+                        habitat != null && !habitat.IsObstructed() && habitat.Environment.GetLevel(hazardMeasure) < 1).ToList();
                     if (validNeighbouringHabitats.Count == 0)
                     {
                         continue;
                     }
-                    
+
                     var neighbouringCoordinates = validNeighbouringHabitats.Select(this.CoordinateOf).ToList();
                     var chosenCoordinate = DecisionLogic.MakeDecision(neighbouringCoordinates);
-                    this.InsertHazard(hazardMeasure, chosenCoordinate);
-
-                    var insertedNeighbouringHabitats = this.ecosystemData.Habitats.GetNeighbours(coordinateHazard.Key, this.HazardRadius, true, true).ToList();
-                    var validInsertedNeighbouringHabitats = insertedNeighbouringHabitats.Where(habitat => habitat != null).ToList();
-
-                    alteredEnvironmentCoordinates.AddRange(validInsertedNeighbouringHabitats.Select(this.CoordinateOf));
-                } 
+                    alteredEnvironmentCoordinates.AddRange(this.InsertHazard(hazardMeasure, chosenCoordinate));
+                }
             }
 
             return alteredEnvironmentCoordinates;
@@ -320,26 +283,24 @@
 
         public void AddOrganism(Organism organism, Coordinate coordinate)
         {
-            var habitat = this.HabitatAt(coordinate);
-            habitat.AddOrganism(organism);
-            this.ecosystemData.OrganismHabitats.Add(organism, habitat);
+            this.ecosystemData.AddOrganism(organism, coordinate);
         }
 
         public void RemoveOrganism(Organism organism)
         {
-            var habitat = this.ecosystemData.OrganismHabitats[organism];
-            habitat.RemoveOrganism();
-            this.ecosystemData.OrganismHabitats.Remove(organism);
+            this.ecosystemData.RemoveOrganism(organism);
         }
 
-        public void InsertHazard(Measure measure, Coordinate coordinate)
+        public IEnumerable<Coordinate> InsertHazard(Measure measure, Coordinate coordinate)
         {
             if (!Environment.IsPotentialHazard(measure))
             {
-                throw new InvalidEnumArgumentException(string.Format("{0} is not a potential hazard", measure.ToString()));
+                throw new InvalidEnumArgumentException(string.Format("{0} is not a potential hazard", measure));
             }
 
-            var neighbouringHabitats = this.ecosystemData.Habitats.GetNeighbours(coordinate, this.HazardRadius, true, true);
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+
+            var neighbouringHabitats = this.ecosystemData.GetNeighbours(coordinate, this.HazardRadius, true, true);
             var gaussianKernel = new GaussianBlur(0.25 * this.HazardDiameter, this.HazardDiameter).Kernel;
 
             var gaussianCentre = (double)gaussianKernel[this.HazardRadius, this.HazardRadius];
@@ -353,18 +314,14 @@
                     if (neighbouringHabitat != null && level > neighbouringHabitat.Environment.GetLevel(measure))
                     {
                         neighbouringHabitat.Environment.SetLevel(measure, level);
+                        alteredEnvironmentCoordinates.Add(this.ecosystemData.CoordinateOf(neighbouringHabitat));
                     }
                 }
             }
 
-            if (this.ecosystemData.CoordinateHazards.ContainsKey(coordinate))
-            {
-                this.ecosystemData.CoordinateHazards[coordinate].Add(measure);
-            }
-            else
-            {
-                this.ecosystemData.CoordinateHazards.Add(coordinate, new List<Measure> { measure });
-            }
+            this.ecosystemData.InsertHazard(measure, coordinate);
+
+            return alteredEnvironmentCoordinates;
         }
 
         public Habitat HabitatAt(Coordinate coordinate)
@@ -394,7 +351,7 @@
 
         public override String ToString()
         {
-            return string.Format("{0}x{1} : {2} organisms", this.Width, this.Height, this.ecosystemData.OrganismHabitats.Count);
+            return string.Format("{0}x{1} : {2} organisms", this.Width, this.Height, this.ecosystemData.GetOrganisms().Count());
         }
     }
 }

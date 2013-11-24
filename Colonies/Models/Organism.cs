@@ -61,6 +61,11 @@
             return this.Measurement.DecreaseLevel(measure, decrement);
         }
 
+        public static IEnumerable<Measure> Measures()
+        {
+            return new List<Measure> { Measure.Health };
+        }
+
         public void SetMeasureBias(Measure measure, double bias)
         {
             this.MeasureBiases[measure] = bias;

@@ -97,24 +97,7 @@
         private IEnumerable<Coordinate> PerformPreMovementActions()
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
-
-            foreach (var organism in this.ecosystemData.GetOrganisms())
-            {
-                var habitat = this.HabitatOf(organism);
-                var habitatNutrientLevel = habitat.Environment.GetLevel(Measure.Nutrient);
-                if (habitatNutrientLevel > 0.0)
-                {
-                    var desiredNutrients = 1 - organism.GetLevel(Measure.Health);
-                    var nutrientTaken = Math.Min(desiredNutrients, habitatNutrientLevel);
-
-                    organism.IncreaseLevel(Measure.Health, nutrientTaken);
-                    if (habitat.Environment.DecreaseLevel(Measure.Nutrient, nutrientTaken))
-                    {
-                        alteredEnvironmentCoordinates.Add(this.ecosystemData.CoordinateOf(habitat));
-                    }
-                }
-            }
-
+            alteredEnvironmentCoordinates.AddRange(this.OrganismsConsumeNutrients());
             return alteredEnvironmentCoordinates;
         }
 
@@ -122,21 +105,24 @@
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            var desiredOrganismHabitats = EcosystemLogic.GetDesiredOrganismHabitats(this.ecosystemData);
-            var movedOrganismHabitats = EcosystemLogic.ResolveOrganismHabitats(this.ecosystemData, desiredOrganismHabitats, new List<Organism>(), this);
+            var desiredOrganismCoordinates = EcosystemLogic.GetDesiredOrganismHabitats(this.ecosystemData);
+            var movedOrganismCoordinates = EcosystemLogic.ResolveOrganismHabitats(this.ecosystemData, desiredOrganismCoordinates, new List<Organism>(), this);
 
-            // TODO: move to ecosystem data?
-            foreach (var movedOrganismHabitat in movedOrganismHabitats)
+            alteredEnvironmentCoordinates.AddRange(this.IncreasePheromoneLevels());
+            alteredEnvironmentCoordinates.AddRange(this.IncreaseMineralLevels());
+
+            foreach (var movedOrganismCoordinate in movedOrganismCoordinates)
             {
-                this.ecosystemData.MoveOrganism(movedOrganismHabitat.Key, movedOrganismHabitat.Value);
+                this.ecosystemData.MoveOrganism(movedOrganismCoordinate.Key, movedOrganismCoordinate.Value);
             }
 
             // for any organisms that attempted to move to an obstructed habitat, decrease obstruction level
-            foreach (var obstructedHabitat in desiredOrganismHabitats.Values.Where(habitat => habitat.IsObstructed()))
+            var obstructedCoordinates = desiredOrganismCoordinates.Values.Where(coordinate => this.ecosystemData.HasMeasure(coordinate, Measure.Obstruction));
+            foreach (var obstructedCoordinate in obstructedCoordinates)
             {
-                if (obstructedHabitat.Environment.DecreaseLevel(Measure.Obstruction, this.ObstructionDemolishRate))
+                if (this.ecosystemData.DecreaseLevel(obstructedCoordinate, Measure.Obstruction, this.ObstructionDemolishRate))
                 {
-                    alteredEnvironmentCoordinates.Add(this.ecosystemData.CoordinateOf(obstructedHabitat));
+                    alteredEnvironmentCoordinates.Add(obstructedCoordinate);
                 }
             }
 
@@ -148,74 +134,86 @@
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
             alteredEnvironmentCoordinates.AddRange(this.DecreasePheromoneLevel());
-            alteredEnvironmentCoordinates.AddRange(this.IncreasePheromoneLevels(previousOrganismCoordinates));
-            alteredEnvironmentCoordinates.AddRange(this.IncreaseMineralLevels(previousOrganismCoordinates));
             alteredEnvironmentCoordinates.AddRange(this.IncreaseNutrientLevels());
             alteredEnvironmentCoordinates.AddRange(this.SpreadHazards());
-            this.DecreaseOrganismHealth();
+            alteredEnvironmentCoordinates.AddRange(this.DecreaseOrganismHealth());
 
             return alteredEnvironmentCoordinates.Distinct();
         }
 
+        private IEnumerable<Coordinate> OrganismsConsumeNutrients()
+        {
+            var organismCoordinates = this.ecosystemData.OrganismCoordinates(true, null)
+                .Where(coordinate => this.ecosystemData.HasMeasure(coordinate, Measure.Nutrient)).ToList();
+
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+            foreach (var organismCoordinate in organismCoordinates)
+            {
+                var organismHealth = this.ecosystemData.GetLevel(organismCoordinate, Measure.Health);
+                var habitatNutrient = this.ecosystemData.GetLevel(organismCoordinate, Measure.Nutrient);
+                var desiredNutrient = 1 - organismHealth;
+                var nutrientTaken = Math.Min(desiredNutrient, habitatNutrient); 
+
+                var healthIncreased = this.ecosystemData.IncreaseLevel(organismCoordinate, Measure.Health, nutrientTaken);
+                var nutrientDecreased = this.ecosystemData.DecreaseLevel(organismCoordinate, Measure.Nutrient, nutrientTaken);
+                if (healthIncreased || nutrientDecreased)
+                {
+                    alteredEnvironmentCoordinates.Add(organismCoordinate);
+                }
+            }
+
+            return alteredEnvironmentCoordinates;
+        }
+
         private IEnumerable<Coordinate> DecreasePheromoneLevel()
         {
+            var pheromoneCoordinates = this.ecosystemData.AllCoordinates()
+                .Where(coordinate => this.ecosystemData.HasMeasure(coordinate, Measure.Pheromone)).ToList();
+
             var alteredEnvironmentCoordinates = new List<Coordinate>();
-
-            foreach (var habitat in this.ecosystemData.GetHabitats())
+            foreach (var pheromoneCoordinate in pheromoneCoordinates)
             {
-                if (habitat.Environment.GetLevel(Measure.Pheromone).Equals(0.0))
+                var pheromoneDecreased = this.ecosystemData.DecreaseLevel(pheromoneCoordinate, Measure.Pheromone, this.PheromoneFadeRate);
+                if (pheromoneDecreased)
                 {
-                    continue;
-                }
-
-                if (habitat.Environment.DecreaseLevel(Measure.Pheromone, this.PheromoneFadeRate))
-                {
-                    alteredEnvironmentCoordinates.Add(this.CoordinateOf(habitat));
+                    alteredEnvironmentCoordinates.Add(pheromoneCoordinate);
                 }
             }
 
             return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> IncreasePheromoneLevels(Dictionary<Organism, Coordinate> organismCoordinates)
+        private IEnumerable<Coordinate> IncreasePheromoneLevels()
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            // only increase pheromones where the organism is alive and is depositing pheromones
-            var validCoordinates = organismCoordinates.Where(pair => pair.Key.IsAlive && pair.Key.IsDepositingPheromones)
-                                                  .ToDictionary(pair => pair.Key, pair => pair.Value)
-                                                  .Values.ToList();
-
-            foreach (var coordinate in validCoordinates)
+            var organismCoordinates = this.ecosystemData.OrganismCoordinates(true, true).ToList();
+            foreach (var organismCoordinate in organismCoordinates)
             {
-                var habitat = this.HabitatAt(coordinate);
-                if (habitat.Environment.IncreaseLevel(Measure.Pheromone, this.PheromoneDepositRate))
+                var pheromoneIncreased = this.ecosystemData.IncreaseLevel(organismCoordinate, Measure.Pheromone, this.PheromoneDepositRate);
+                if (pheromoneIncreased)
                 {
-                    alteredEnvironmentCoordinates.Add(this.CoordinateOf(habitat));
+                    alteredEnvironmentCoordinates.Add(organismCoordinate);
                 }
             }
 
             return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> IncreaseMineralLevels(Dictionary<Organism, Coordinate> organismCoordinates)
+        private IEnumerable<Coordinate> IncreaseMineralLevels()
         {
-            var alteredEnvironmentCoordinates = new List<Coordinate>();
-
             // only increase mineral where the terrain is not hazardous (even when the organism is dead!)
             // TODO: need a "HasDecomposed" bool - this could stop showing organism and stop mineral form
-            var validCoordinates = organismCoordinates.Values.ToList();
-            foreach (var coordinate in validCoordinates)
-            {
-                var habitat = this.HabitatAt(coordinate);
-                if (habitat.Environment.IsHazardous)
-                {
-                    continue;
-                }
+            var organismCoordinates = this.ecosystemData.OrganismCoordinates(null, null)
+                .Where(coordinate => !this.ecosystemData.IsHazardous(coordinate)).ToList();
 
-                if (habitat.Environment.IncreaseLevel(Measure.Mineral, this.MineralFormRate))
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+            foreach (var organismCoordinate in organismCoordinates)
+            {
+                var mineralIncreased = this.ecosystemData.IncreaseLevel(organismCoordinate, Measure.Mineral, this.MineralFormRate);
+                if (mineralIncreased)
                 {
-                    alteredEnvironmentCoordinates.Add(this.CoordinateOf(habitat));
+                    alteredEnvironmentCoordinates.Add(organismCoordinate);
                 }
             }
 
@@ -224,18 +222,34 @@
 
         private IEnumerable<Coordinate> IncreaseNutrientLevels()
         {
+            var nutrientCoordinates = this.ecosystemData.AllCoordinates()
+                .Where(coordinate => this.ecosystemData.HasMeasure(coordinate, Measure.Nutrient) 
+                                     && !this.ecosystemData.IsHazardous(coordinate)).ToList();
+
             var alteredEnvironmentCoordinates = new List<Coordinate>();
-
-            foreach (var habitat in this.ecosystemData.GetHabitats())
+            foreach (var nutrientCoordinate in nutrientCoordinates)
             {
-                if (!habitat.Environment.HasNutrient || habitat.Environment.IsHazardous)
+                var nutrientIncreased = this.ecosystemData.IncreaseLevel(nutrientCoordinate, Measure.Nutrient, this.NutrientGrowthRate);
+                if (nutrientIncreased)
                 {
-                    continue;
+                    alteredEnvironmentCoordinates.Add(nutrientCoordinate);
                 }
+            }
 
-                if (habitat.Environment.IncreaseLevel(Measure.Nutrient, this.NutrientGrowthRate))
+            return alteredEnvironmentCoordinates;
+        }
+
+        private IEnumerable<Coordinate> DecreaseOrganismHealth()
+        {
+            var organismCoordinates = this.ecosystemData.OrganismCoordinates(true, null).ToList();
+
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+            foreach (var organismCoordinate in organismCoordinates)
+            {
+                var healthDecreased = this.ecosystemData.DecreaseLevel(organismCoordinate, Measure.Health, this.HealthDeteriorationRate);
+                if (healthDecreased)
                 {
-                    alteredEnvironmentCoordinates.Add(this.CoordinateOf(habitat));
+                    alteredEnvironmentCoordinates.Add(organismCoordinate);
                 }
             }
 
@@ -248,50 +262,33 @@
 
             foreach (var hazardMeasure in Environment.HazardMeasures())
             {
-                var hazardCoordinates = this.ecosystemData.GetHazardCoordinates(hazardMeasure);
-                foreach (var coordinate in hazardCoordinates)
+                var hazardCoordinates = this.ecosystemData.GetHazardCoordinates(hazardMeasure).ToList();
+                foreach (var hazardCoordinate in hazardCoordinates)
                 {
                     if (!DecisionLogic.IsSuccessful(this.HazardSpreadRate))
                     {
                         continue;
                     }
 
-                    var neighbouringHabitats = this.ecosystemData.GetNeighbours(coordinate, 1, false, false).ToList();
-                    var validNeighbouringHabitats = neighbouringHabitats.Where(habitat =>
-                        habitat != null && !habitat.IsObstructed() && habitat.Environment.GetLevel(hazardMeasure) < 1).ToList();
-                    if (validNeighbouringHabitats.Count == 0)
+                    var neighbouringCoordinates = this.ecosystemData.GetNeighbours(hazardCoordinate, 1, false, false).ToList();
+                    var validNeighbouringCoordinates = neighbouringCoordinates.Where(neighbourCoordinate =>
+                        neighbourCoordinate != null 
+                        && !this.ecosystemData.HasMeasure(neighbourCoordinate, Measure.Obstruction)
+                        && this.ecosystemData.GetLevel(neighbourCoordinate, hazardMeasure) < 1).ToList();
+                    if (validNeighbouringCoordinates.Count == 0)
                     {
                         continue;
                     }
 
-                    var neighbouringCoordinates = validNeighbouringHabitats.Select(this.CoordinateOf).ToList();
-                    var chosenCoordinate = DecisionLogic.MakeDecision(neighbouringCoordinates);
-                    alteredEnvironmentCoordinates.AddRange(this.InsertHazard(hazardMeasure, chosenCoordinate));
+                    var chosenCoordinate = DecisionLogic.MakeDecision(validNeighbouringCoordinates);
+                    alteredEnvironmentCoordinates.AddRange(this.InsertHazard(chosenCoordinate, hazardMeasure));
                 }
             }
 
             return alteredEnvironmentCoordinates;
         }
 
-        private void DecreaseOrganismHealth()
-        {
-            foreach (var organism in this.ecosystemData.GetOrganisms())
-            {
-                organism.DecreaseLevel(Measure.Health, this.HealthDeteriorationRate);
-            }
-        }
-
-        public void AddOrganism(Organism organism, Coordinate coordinate)
-        {
-            this.ecosystemData.AddOrganism(organism, coordinate);
-        }
-
-        public void RemoveOrganism(Organism organism)
-        {
-            this.ecosystemData.RemoveOrganism(organism);
-        }
-
-        public IEnumerable<Coordinate> InsertHazard(Measure measure, Coordinate coordinate)
+        public IEnumerable<Coordinate> InsertHazard(Coordinate coordinate, Measure measure)
         {
             if (!Environment.IsPotentialHazard(measure))
             {
@@ -300,7 +297,7 @@
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            var neighbouringHabitats = this.ecosystemData.GetNeighbours(coordinate, this.HazardRadius, true, true);
+            var neighbouringCoordinates = this.ecosystemData.GetNeighbours(coordinate, this.HazardRadius, true, true);
             var gaussianKernel = new GaussianBlur(0.25 * this.HazardDiameter, this.HazardDiameter).Kernel;
 
             var gaussianCentre = (double)gaussianKernel[this.HazardRadius, this.HazardRadius];
@@ -309,12 +306,12 @@
                 for (var y = 0; y < this.HazardDiameter; y++)
                 {
                     var level = gaussianKernel[x, y] / gaussianCentre;
-                    var neighbouringHabitat = neighbouringHabitats[x, y];
+                    var neighbouringCoordinate = neighbouringCoordinates[x, y];
 
-                    if (neighbouringHabitat != null && level > neighbouringHabitat.Environment.GetLevel(measure))
+                    if (neighbouringCoordinate != null && level > this.ecosystemData.GetLevel(neighbouringCoordinate, measure))
                     {
-                        neighbouringHabitat.Environment.SetLevel(measure, level);
-                        alteredEnvironmentCoordinates.Add(this.ecosystemData.CoordinateOf(neighbouringHabitat));
+                        this.ecosystemData.SetLevel(neighbouringCoordinate, measure, level);
+                        alteredEnvironmentCoordinates.Add(neighbouringCoordinate);
                     }
                 }
             }
@@ -324,24 +321,9 @@
             return alteredEnvironmentCoordinates;
         }
 
-        public Habitat HabitatAt(Coordinate coordinate)
+        public void SetLevel(Coordinate coordinate, Measure measure, double level)
         {
-            return this.ecosystemData.HabitatAt(coordinate);
-        }
-
-        public Habitat HabitatOf(Organism organism)
-        {
-            return this.ecosystemData.HabitatOf(organism);
-        }
-
-        public Coordinate CoordinateOf(Habitat habitat)
-        {
-            return this.ecosystemData.CoordinateOf(habitat);
-        }
-
-        public Coordinate CoordinateOf(Organism organism)
-        {
-            return this.ecosystemData.CoordinateOf(organism);
+            this.ecosystemData.SetLevel(coordinate, measure, level);
         }
 
         public void SetMeasureBias(Measure measure, double bias)

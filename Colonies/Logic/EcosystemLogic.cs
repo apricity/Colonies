@@ -10,41 +10,41 @@
 
     public static class EcosystemLogic
     {
-        public static Dictionary<Organism, Habitat> OverrideDesiredOrganismHabitats { get; set; }
+        public static Dictionary<Organism, Coordinate> OverrideDesiredOrganismCoordinates { get; set; }
         public static Func<IEnumerable<Organism>, Organism> OverrideDecideOrganismFunction { get; set; } 
 
-        public static Dictionary<Organism, Habitat> GetDesiredOrganismHabitats(EcosystemData ecosystemData)
+        public static Dictionary<Organism, Coordinate> GetDesiredOrganismHabitats(EcosystemData ecosystemData)
         {
-            if (OverrideDesiredOrganismHabitats != null)
+            if (OverrideDesiredOrganismCoordinates != null)
             {
-                return OverrideDesiredOrganismHabitats;
+                return OverrideDesiredOrganismCoordinates;
             }
 
-            var desiredOrganismHabitats = new Dictionary<Organism, Habitat>();
+            var desiredOrganismCoordinates = new Dictionary<Organism, Coordinate>();
             var aliveOrganisms = ecosystemData.GetOrganisms().Where(organism => organism.IsAlive).ToList();
             foreach (var organism in aliveOrganisms)
             {
                 var currentCoordinate = ecosystemData.CoordinateOf(organism);
                 
                 // get measurements of neighbouring environments
-                var neighbouringHabitats = ecosystemData.GetNeighbours(currentCoordinate, 1, false, true).ToList();
-                var validNeighbouringHabitats = neighbouringHabitats.Where(habitat => habitat != null).ToList();
-                var neighbouringEnvironments = validNeighbouringHabitats.Select(neighbour => neighbour.Environment).ToList();
+                var neighbourCoordinates = ecosystemData.GetNeighbours(currentCoordinate, 1, false, true).ToList();
+                var validNeighbourCoordinates = neighbourCoordinates.Where(habitat => habitat != null).ToList();
+                var neighbourMeasurables = validNeighbourCoordinates.Select(ecosystemData.GetMeasurable).ToList();
 
                 // determine organism's intentions based on the environment measurements
-                var chosenEnvironment = DecisionLogic.MakeDecision(neighbouringEnvironments, organism);
+                var chosenMeasurable = DecisionLogic.MakeDecision(neighbourMeasurables, organism);
 
                 // get the habitat the environment is from - this is where the organism wants to move to
-                var chosenHabitat = validNeighbouringHabitats.Single(habitat => habitat.Environment.Equals(chosenEnvironment));
-                desiredOrganismHabitats.Add(organism, chosenHabitat);
+                var chosenCoordinate = validNeighbourCoordinates.Single(coordinate => ecosystemData.GetMeasurable(coordinate).Equals(chosenMeasurable));
+                desiredOrganismCoordinates.Add(organism, chosenCoordinate);
             }
 
-            return desiredOrganismHabitats;
+            return desiredOrganismCoordinates;
         }
 
-        public static Dictionary<Organism, Habitat> ResolveOrganismHabitats(EcosystemData ecosystemData, Dictionary<Organism, Habitat> desiredOrganismHabitats, IEnumerable<Organism> alreadyResolvedOrganisms, IBiased biasProvider)
+        public static Dictionary<Organism, Coordinate> ResolveOrganismHabitats(EcosystemData ecosystemData, Dictionary<Organism, Coordinate> desiredOrganismCoordinates, IEnumerable<Organism> alreadyResolvedOrganisms, IBiased biasProvider)
         {
-            var resolvedOrganismHabitats = new Dictionary<Organism, Habitat>();
+            var resolvedOrganismCoordinates = new Dictionary<Organism, Coordinate>();
 
             // create a copy of the organism habitats because we don't want to modify the actual set
             var organisms = ecosystemData.GetOrganisms().ToList();
@@ -56,23 +56,26 @@
                 organisms.Remove(alreadyResolvedOrganism);
             }
 
-            var occupiedHabitats = organisms.Select(ecosystemData.HabitatOf);
-            var desiredHabitats = desiredOrganismHabitats.Values.ToList();
+            var occupiedCoordinates = organisms.Select(ecosystemData.CoordinateOf).ToList();
+            var desiredCoordinates = desiredOrganismCoordinates.Values;
 
             // if there are no vacant habitats, this is our base case
             // return an empty list - i.e. no organism can move to its intended destination
-            var vacantHabitats = desiredHabitats.Except(occupiedHabitats).Where(habitat => !habitat.IsObstructed()).ToList();
-            if (vacantHabitats.Count == 0)
+            var vacantCoordinates = desiredCoordinates
+                .Except(occupiedCoordinates)
+                .Where(coordinate => !ecosystemData.HasMeasure(coordinate, Measure.Obstruction))
+                .Distinct().ToList();
+            if (vacantCoordinates.Count == 0)
             {
-                return resolvedOrganismHabitats;
+                return resolvedOrganismCoordinates;
             }
 
-            foreach (var habitat in vacantHabitats)
+            foreach (var coordinate in vacantCoordinates)
             {
                 // do not want LINQ expression to have foreach variable access, so copy to local variable
-                var vacantHabitat = habitat;
-                var conflictingOrganisms = desiredOrganismHabitats
-                    .Where(intendedOrganismDestination => intendedOrganismDestination.Value.Equals(vacantHabitat))
+                var vacantCoordinate = coordinate;
+                var conflictingOrganisms = desiredOrganismCoordinates
+                    .Where(intendedOrganismDestination => intendedOrganismDestination.Value.Equals(vacantCoordinate))
                     .Select(intendedOrganismDestination => intendedOrganismDestination.Key)
                     .ToList();
 
@@ -85,7 +88,7 @@
                     // the remaining conflicting organisms cannot move, so reset their intended destinations
                     foreach (var remainingOrganism in conflictingOrganisms)
                     {
-                        desiredOrganismHabitats[remainingOrganism] = ecosystemData.HabitatOf(remainingOrganism);
+                        desiredOrganismCoordinates[remainingOrganism] = ecosystemData.CoordinateOf(remainingOrganism);
                     }
                 }
                 else
@@ -94,20 +97,20 @@
                 }
 
                 // intended movement becomes an actual, resolved movement
-                resolvedOrganismHabitats.Add(organismToMove, desiredOrganismHabitats[organismToMove]);
-                desiredOrganismHabitats.Remove(organismToMove);
+                resolvedOrganismCoordinates.Add(organismToMove, desiredOrganismCoordinates[organismToMove]);
+                desiredOrganismCoordinates.Remove(organismToMove);
             }
 
             // need to recursively call resolve organism destinations with the knowledge of what has been resolved so far
             // so those resolved can be taken into consideration when calculating which destinations are now vacant
-            var resolvedOrganisms = resolvedOrganismHabitats.Keys.ToList();
-            var trailingOrganismHabitats = ResolveOrganismHabitats(ecosystemData, desiredOrganismHabitats, resolvedOrganisms, biasProvider);
+            var resolvedOrganisms = resolvedOrganismCoordinates.Keys.ToList();
+            var trailingOrganismHabitats = ResolveOrganismHabitats(ecosystemData, desiredOrganismCoordinates, resolvedOrganisms, biasProvider);
             foreach (var trailingOrganismHabitat in trailingOrganismHabitats)
             {
-                resolvedOrganismHabitats.Add(trailingOrganismHabitat.Key, trailingOrganismHabitat.Value);
+                resolvedOrganismCoordinates.Add(trailingOrganismHabitat.Key, trailingOrganismHabitat.Value);
             }
 
-            return resolvedOrganismHabitats;
+            return resolvedOrganismCoordinates;
         }
 
         private static Organism DecideOrganism(IBiased biasProvider, IEnumerable<Organism> organisms)
@@ -120,9 +123,9 @@
             return DecisionLogic.MakeDecision(organisms, biasProvider);
         }
 
-        public static Habitat[,] GetNeighbours(this Habitat[,] habitats, Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
+        public static Coordinate[,] GetNeighbours(this Habitat[,] habitats, Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
         {
-            var neighbouringHabitats = new Habitat[(neighbourDepth * 2) + 1, (neighbourDepth * 2) + 1];
+            var neighbouringCoordinates = new Coordinate[(neighbourDepth * 2) + 1, (neighbourDepth * 2) + 1];
 
             for (var i = -neighbourDepth; i <= neighbourDepth; i++)
             {
@@ -156,11 +159,11 @@
                         continue;
                     }
 
-                    neighbouringHabitats[i + neighbourDepth, j + neighbourDepth] = habitats[x, y];
+                    neighbouringCoordinates[i + neighbourDepth, j + neighbourDepth] = new Coordinate(x, y);
                 }
             }
 
-            return neighbouringHabitats;
+            return neighbouringCoordinates;
         }
 
         public static int CalculateHazardDiameter(this Ecosystem ecosystem)

@@ -36,14 +36,13 @@
 
         public Environment()
         {
-            var pheromone = new Condition(Measure.Pheromone, 0);
-            var nutrient = new Condition(Measure.Nutrient, 0);
-            var mineral = new Condition(Measure.Mineral, 0);
-            var obstruction = new Condition(Measure.Obstruction, 0);
-            var damp = new Condition(Measure.Damp, 0);
-            var heat = new Condition(Measure.Heat, 0);
-            var poison = new Condition(Measure.Poison, 0);
-            this.Measurement = new Measurement(new List<Condition> { pheromone, nutrient, mineral, obstruction, damp, heat, poison });
+            var conditions = new List<Condition>();
+            foreach (var measure in Measures())
+            {
+                conditions.Add(new Condition(measure, 0));
+            }
+
+            this.Measurement = new Measurement(conditions);
         }
 
         public double GetLevel(Measure measure)
@@ -69,6 +68,11 @@
         public static bool IsPotentialHazard(Measure measure)
         {
             return HazardMeasures().Any(hazardMeasure => hazardMeasure.Equals(measure));
+        }
+
+        public static IEnumerable<Measure> Measures()
+        {
+            return new List<Measure> { Measure.Pheromone, Measure.Nutrient, Measure.Mineral, Measure.Obstruction, Measure.Damp, Measure.Heat, Measure.Poison };
         }
 
         public static IEnumerable<Measure> HazardMeasures()

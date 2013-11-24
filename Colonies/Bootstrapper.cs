@@ -66,15 +66,15 @@
                 }
             }
 
-            var ecosystemData = new EcosystemData(habitats, new Dictionary<Organism, Habitat>());
+            var initialOrganismCoordinates = this.InitialOrganismCoordinates();
+            var ecosystemData = new EcosystemData(habitats, initialOrganismCoordinates);
             var ecosystem = new Ecosystem(ecosystemData);
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
-            var initialOrganismLocations = this.InitialiseOrganisms(ecosystem);
 
             // hook organism model into the ecosystem
-            foreach (var organismLocation in initialOrganismLocations)
+            foreach (var organismLocation in initialOrganismCoordinates)
             {
                 var organism = organismLocation.Key;
                 var location = organismLocation.Value;
@@ -83,7 +83,7 @@
             }
 
             // hook organism model into the organism synopsis
-            var organismSynopsis = new OrganismSynopsis(initialOrganismLocations.Keys.ToList());
+            var organismSynopsis = new OrganismSynopsis(initialOrganismCoordinates.Keys.ToList());
             var organismViewModels =
                 organismSynopsis.Organisms.Select(organism => new OrganismViewModel(organism, eventaggregator)).ToList();
             var organismSynopsisViewModel = new OrganismSynopsisViewModel(organismSynopsis, organismViewModels, eventaggregator);
@@ -96,25 +96,25 @@
 
         protected virtual void InitialiseTerrain(Ecosystem ecosystem)
         {
-            ecosystem.InsertHazard(Measure.Damp, new Coordinate(19, 0));
-            ecosystem.InsertHazard(Measure.Damp, new Coordinate(15, 3));
-            ecosystem.InsertHazard(Measure.Damp, new Coordinate(17, 4));
-            ecosystem.InsertHazard(Measure.Heat, new Coordinate(17, 5));
-            ecosystem.InsertHazard(Measure.Heat, new Coordinate(15, 6));
-            ecosystem.InsertHazard(Measure.Heat, new Coordinate(19, 9));
+            ecosystem.InsertHazard(new Coordinate(19, 0), Measure.Damp);
+            ecosystem.InsertHazard(new Coordinate(15, 3), Measure.Damp);
+            ecosystem.InsertHazard(new Coordinate(17, 4), Measure.Damp);
+            ecosystem.InsertHazard(new Coordinate(17, 5), Measure.Heat);
+            ecosystem.InsertHazard(new Coordinate(15, 6), Measure.Heat);
+            ecosystem.InsertHazard(new Coordinate(19, 9), Measure.Heat);
 
             for (var i = 12; i < ecosystem.Width; i++)
             {
                 for (var j = 4; j <= 5; j++)
                 {
-                    ecosystem.InsertHazard(Measure.Poison, new Coordinate(i, j));
+                    ecosystem.InsertHazard(new Coordinate(i, j), Measure.Poison);
                 }
             }
 
             for (var i = 0; i < 15; i++)
             {
-                ecosystem.HabitatAt(new Coordinate(i, 0)).Environment.SetLevel(Measure.Nutrient, 1.0 - (i * (1 / (double)15)));
-                ecosystem.HabitatAt(new Coordinate(i, 9)).Environment.SetLevel(Measure.Mineral, 1.0 - (i * (1 / (double)15)));
+                ecosystem.SetLevel(new Coordinate(i, 0), Measure.Nutrient, 1.0 - (i * (1 / (double)15)));
+                ecosystem.SetLevel(new Coordinate(i, 9), Measure.Mineral, 1.0 - (i * (1 / (double)15)));
             }
 
             // custom obstructed habitats (will make a square shapen with an entrance - a pen?)
@@ -150,11 +150,11 @@
 
             foreach (var coordinate in obstructedCoordinates)
             {
-                ecosystem.HabitatAt(coordinate).Environment.SetLevel(Measure.Obstruction, 1.0);
+                ecosystem.SetLevel(coordinate, Measure.Obstruction, 1.0);
             }
         }
 
-        protected virtual Dictionary<Organism, Coordinate> InitialiseOrganisms(Ecosystem ecosystem)
+        protected virtual Dictionary<Organism, Coordinate> InitialOrganismCoordinates()
         {
             var organismLocations = new Dictionary<Organism, Coordinate>
                                         {
@@ -163,11 +163,6 @@
                                             { new Organism("Lotty", Colors.Silver), new Coordinate(7, 2) },
                                             { new Organism("Dr. Louise", Colors.Silver), new Coordinate(7, 7) },
                                         };
-
-            foreach (var organismLocation in organismLocations)
-            {
-                ecosystem.AddOrganism(organismLocation.Key, organismLocation.Value);
-            }
 
             return organismLocations;
         }

@@ -10,44 +10,43 @@
 
     public static class EcosystemLogic
     {
-        public static Dictionary<Organism, Coordinate> OverrideDesiredOrganismCoordinates { get; set; }
-        public static Func<IEnumerable<Organism>, Organism> OverrideDecideOrganismFunction { get; set; } 
+        public static Dictionary<IMeasurableOrganism, Coordinate> OverrideDesiredOrganismCoordinates { get; set; }
+        public static Func<IEnumerable<IMeasurableOrganism>, IMeasurableOrganism> OverrideDecideOrganismFunction { get; set; } 
 
-        public static Dictionary<Organism, Coordinate> GetDesiredOrganismHabitats(EcosystemData ecosystemData)
+        public static Dictionary<IMeasurableOrganism, Coordinate> GetDesiredCoordinates(EcosystemData ecosystemData)
         {
             if (OverrideDesiredOrganismCoordinates != null)
             {
                 return OverrideDesiredOrganismCoordinates;
             }
 
-            var desiredOrganismCoordinates = new Dictionary<Organism, Coordinate>();
-            var aliveOrganisms = ecosystemData.GetOrganisms().Where(organism => organism.IsAlive).ToList();
-            foreach (var organism in aliveOrganisms)
+            var desiredOrganismCoordinates = new Dictionary<IMeasurableOrganism, Coordinate>();
+            var aliveOrganismsCoordinates = ecosystemData.OrganismCoordinates(true, null);
+            foreach (var organismCoordinate in aliveOrganismsCoordinates)
             {
-                var currentCoordinate = ecosystemData.CoordinateOf(organism);
-                
                 // get measurements of neighbouring environments
-                var neighbourCoordinates = ecosystemData.GetNeighbours(currentCoordinate, 1, false, true).ToList();
+                var neighbourCoordinates = ecosystemData.GetNeighbours(organismCoordinate, 1, false, true).ToList();
                 var validNeighbourCoordinates = neighbourCoordinates.Where(habitat => habitat != null).ToList();
-                var neighbourMeasurables = validNeighbourCoordinates.Select(ecosystemData.GetMeasurable).ToList();
 
                 // determine organism's intentions based on the environment measurements
-                var chosenMeasurable = DecisionLogic.MakeDecision(neighbourMeasurables, organism);
+                var measurableItems = validNeighbourCoordinates.Select(ecosystemData.GetMeasurableEnvironment).ToList();
+                var biasProvider = ecosystemData.GetBiasedOrganism(organismCoordinate);
+                var chosenMeasurable = DecisionLogic.MakeDecision(measurableItems, biasProvider);
 
                 // get the habitat the environment is from - this is where the organism wants to move to
-                var chosenCoordinate = validNeighbourCoordinates.Single(coordinate => ecosystemData.GetMeasurable(coordinate).Equals(chosenMeasurable));
-                desiredOrganismCoordinates.Add(organism, chosenCoordinate);
+                var chosenCoordinate = validNeighbourCoordinates.Single(coordinate => ecosystemData.GetMeasurableEnvironment(coordinate).Equals(chosenMeasurable));
+                desiredOrganismCoordinates.Add(ecosystemData.GetMeasurableOrganism(organismCoordinate), chosenCoordinate);
             }
 
             return desiredOrganismCoordinates;
         }
 
-        public static Dictionary<Organism, Coordinate> ResolveOrganismHabitats(EcosystemData ecosystemData, Dictionary<Organism, Coordinate> desiredOrganismCoordinates, IEnumerable<Organism> alreadyResolvedOrganisms, IBiased biasProvider)
+        public static Dictionary<IMeasurableOrganism, Coordinate> ResolveOrganismHabitats(EcosystemData ecosystemData, Dictionary<IMeasurableOrganism, Coordinate> desiredOrganismCoordinates, IEnumerable<IMeasurableOrganism> alreadyResolvedOrganisms, IBiasedEcosystem biasedEcosystem)
         {
-            var resolvedOrganismCoordinates = new Dictionary<Organism, Coordinate>();
+            var resolvedOrganismCoordinates = new Dictionary<IMeasurableOrganism, Coordinate>();
 
             // create a copy of the organism habitats because we don't want to modify the actual set
-            var organisms = ecosystemData.GetOrganisms().ToList();
+            var organisms = ecosystemData.OrganismCoordinates(null, null).Select(ecosystemData.GetMeasurableOrganism).ToList();
 
             // remove organisms that have been resolved (from previous iterations)
             // as they no longer need to be processed
@@ -79,10 +78,10 @@
                     .Select(intendedOrganismDestination => intendedOrganismDestination.Key)
                     .ToList();
 
-                Organism organismToMove;
+                IMeasurableOrganism organismToMove;
                 if (conflictingOrganisms.Count > 1)
                 {
-                    organismToMove = DecideOrganism(biasProvider, conflictingOrganisms);
+                    organismToMove = DecideOrganism(biasedEcosystem, conflictingOrganisms);
                     conflictingOrganisms.Remove(organismToMove);
 
                     // the remaining conflicting organisms cannot move, so reset their intended destinations
@@ -104,7 +103,7 @@
             // need to recursively call resolve organism destinations with the knowledge of what has been resolved so far
             // so those resolved can be taken into consideration when calculating which destinations are now vacant
             var resolvedOrganisms = resolvedOrganismCoordinates.Keys.ToList();
-            var trailingOrganismHabitats = ResolveOrganismHabitats(ecosystemData, desiredOrganismCoordinates, resolvedOrganisms, biasProvider);
+            var trailingOrganismHabitats = ResolveOrganismHabitats(ecosystemData, desiredOrganismCoordinates, resolvedOrganisms, biasedEcosystem);
             foreach (var trailingOrganismHabitat in trailingOrganismHabitats)
             {
                 resolvedOrganismCoordinates.Add(trailingOrganismHabitat.Key, trailingOrganismHabitat.Value);
@@ -113,7 +112,7 @@
             return resolvedOrganismCoordinates;
         }
 
-        private static Organism DecideOrganism(IBiased biasProvider, IEnumerable<Organism> organisms)
+        private static IMeasurableOrganism DecideOrganism(IBiasedEcosystem biasProvider, IEnumerable<IMeasurableOrganism> organisms)
         {
             if (OverrideDecideOrganismFunction != null)
             {

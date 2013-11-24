@@ -93,6 +93,10 @@
     <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Interfaces\IBiasedEcosystem.cs" />
+    <Compile Include="Interfaces\IBiasedOrganism.cs" />
+    <Compile Include="Interfaces\IMeasurableEnvironment.cs" />
+    <Compile Include="Interfaces\IMeasurableOrganism.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logic\ColorLogic.cs" />
     <Compile Include="Logic\DecisionLogic.cs" />

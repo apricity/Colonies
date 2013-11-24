@@ -57,11 +57,6 @@
             }
         }
 
-        public IEnumerable<Organism> GetOrganisms()
-        {
-            return this.OrganismHabitats.Keys.ToList();
-        }
-
         public IEnumerable<Coordinate> AllCoordinates()
         {
             return this.HabitatCoordinates.Values.ToList();
@@ -170,14 +165,19 @@
             return this.OrganismHabitats[organism];
         }
 
-        public Coordinate CoordinateOf(Habitat habitat)
+        private Coordinate CoordinateOf(Habitat habitat)
         {
             return this.HabitatCoordinates[habitat];
         }
 
-        public Coordinate CoordinateOf(Organism organism)
+        private Coordinate CoordinateOf(Organism organism)
         {
             return this.CoordinateOf(this.OrganismHabitats[organism]);
+        }
+
+        private Organism OrganismAt(Coordinate coordinate)
+        {
+            return this.HabitatAt(coordinate).Organism;
         }
 
         private void AddOrganism(Organism organism, Coordinate coordinate)
@@ -197,9 +197,9 @@
             this.OrganismHabitats.Remove(organism);
         }
 
-        public void MoveOrganism(Organism organism, Coordinate coordinate)
+        public void MoveOrganism(IMeasurableOrganism organism, Coordinate desiredHabitatCoordinate)
         {
-            this.MoveOrganism(organism, this.HabitatAt(coordinate));
+            this.MoveOrganism((Organism)organism, this.HabitatAt(desiredHabitatCoordinate));
         }
 
         private void MoveOrganism(Organism organism, Habitat destinationHabitat)
@@ -250,9 +250,37 @@
             return this.Habitats.GetNeighbours(coordinate, neighbourDepth, includeDiagonals, includeSelf);
         }
 
-        public IMeasurable GetMeasurable(Coordinate coordinate)
+        public IMeasurableEnvironment GetMeasurableEnvironment(Coordinate coordinate)
         {
             return this.HabitatAt(coordinate).Environment;
+        }
+
+        public IMeasurableOrganism GetMeasurableOrganism(Coordinate coordinate)
+        {
+            return this.HabitatAt(coordinate).Organism;
+        }
+
+        public IBiasedOrganism GetBiasedOrganism(Coordinate coordinate)
+        {
+            return this.HabitatAt(coordinate).Organism;
+        }
+
+        public Coordinate CoordinateOf(IMeasurable measurableItem)
+        {
+            var organism = measurableItem as Organism;
+            var environment = measurableItem as Environment;
+
+            if (organism != null)
+            {
+                return this.CoordinateOf(organism);
+            }
+
+            if (environment != null)
+            {
+                return this.CoordinateOf(this.Habitats.ToList().Single(habitat => habitat.Environment.Equals(environment)));
+            }
+
+            throw new ArgumentException("Unknown measurable item");
         }
     }
 }

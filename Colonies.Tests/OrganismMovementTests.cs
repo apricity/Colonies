@@ -7,6 +7,7 @@
     using NUnit.Framework;
 
     using Wacton.Colonies.Ancillary;
+    using Wacton.Colonies.Interfaces;
     using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models;
 
@@ -341,7 +342,11 @@
 
         private UpdateSummary CreateAndUpdateEcosystem(Dictionary<Organism, Coordinate> organismCoordinates, Dictionary<Organism, Coordinate> desiredOrganismCoordinates)
         {
-            EcosystemLogic.OverrideDesiredOrganismCoordinates = desiredOrganismCoordinates;
+            var desiredBiasedOrganismCoordinates = desiredOrganismCoordinates.ToDictionary(
+                desiredOrganismCoordinate => (IMeasurableOrganism)desiredOrganismCoordinate.Key,
+                desiredOrganismCoordinate => desiredOrganismCoordinate.Value);
+
+            EcosystemLogic.OverrideDesiredOrganismCoordinates = desiredBiasedOrganismCoordinates;
             EcosystemLogic.OverrideDecideOrganismFunction = organisms => organisms.First();
 
             var ecosystemData = new EcosystemData(this.habitats, organismCoordinates);

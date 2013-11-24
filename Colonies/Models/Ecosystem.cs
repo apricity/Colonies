@@ -11,7 +11,7 @@
     using Wacton.Colonies.Interfaces;
     using Wacton.Colonies.Logic;
 
-    public class Ecosystem : IBiased
+    public class Ecosystem : IBiasedEcosystem
     {
         private readonly EcosystemData ecosystemData;
 
@@ -70,8 +70,8 @@
 
         public UpdateSummary Update()
         {
-            var previousOrganismCoordinates = this.ecosystemData.GetOrganisms()
-                .ToDictionary(organism => organism, organism => this.ecosystemData.CoordinateOf(organism));
+            var previousOrganismCoordinates = this.ecosystemData.OrganismCoordinates(null, null)
+                .ToDictionary(coordinate => ecosystemData.GetMeasurableOrganism(coordinate), coordinate => coordinate);
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
@@ -86,10 +86,10 @@
             /* reduce pheromone level in all environments
              * increase pheromone, mineral, and nutrient where appropriate 
              * and demolish obstruction if they have blocked a movement */
-            alteredEnvironmentCoordinates.AddRange(this.PerformPostMovementActions(previousOrganismCoordinates));
+            alteredEnvironmentCoordinates.AddRange(this.PerformPostMovementActions());
 
-            var currentOrganismCoordinates = this.ecosystemData.GetOrganisms()
-                .ToDictionary(organism => organism, organism => this.ecosystemData.CoordinateOf(organism));
+            var currentOrganismCoordinates = this.ecosystemData.OrganismCoordinates(null, null)
+                .ToDictionary(coordinate => ecosystemData.GetMeasurableOrganism(coordinate), coordinate => coordinate);
 
             return new UpdateSummary(previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates.Distinct().ToList());
         }
@@ -105,7 +105,7 @@
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            var desiredOrganismCoordinates = EcosystemLogic.GetDesiredOrganismHabitats(this.ecosystemData);
+            var desiredOrganismCoordinates = EcosystemLogic.GetDesiredCoordinates(this.ecosystemData);
             var movedOrganismCoordinates = EcosystemLogic.ResolveOrganismHabitats(this.ecosystemData, desiredOrganismCoordinates, new List<Organism>(), this);
 
             alteredEnvironmentCoordinates.AddRange(this.IncreasePheromoneLevels());
@@ -129,7 +129,7 @@
             return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> PerformPostMovementActions(Dictionary<Organism, Coordinate> previousOrganismCoordinates)
+        private IEnumerable<Coordinate> PerformPostMovementActions()
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
@@ -333,7 +333,7 @@
 
         public override String ToString()
         {
-            return string.Format("{0}x{1} : {2} organisms", this.Width, this.Height, this.ecosystemData.GetOrganisms().Count());
+            return string.Format("{0}x{1} : {2} organisms", this.Width, this.Height, this.ecosystemData.OrganismCoordinates(null, null).Count());
         }
     }
 }

@@ -3,16 +3,17 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Wacton.Colonies.Interfaces;
     using Wacton.Colonies.Models;
 
     public class UpdateSummary
     {
-        public Dictionary<Organism, Coordinate> PreviousOrganismCoordinates { get; set; }
-        public Dictionary<Organism, Coordinate> CurrentOrganismCoordinates { get; set; }
+        public Dictionary<IMeasurableOrganism, Coordinate> PreviousOrganismCoordinates { get; set; }
+        public Dictionary<IMeasurableOrganism, Coordinate> CurrentOrganismCoordinates { get; set; }
 
         public List<Coordinate> AlteredEnvironmentCoordinates { get; private set; }
 
-        public Dictionary<Organism, Coordinate> ActiveOrganismPreviousCoordinates
+        public Dictionary<IMeasurableOrganism, Coordinate> ActiveOrganismPreviousCoordinates
         {
             get
             {
@@ -22,7 +23,7 @@
             }
         }
 
-        public Dictionary<Organism, Coordinate> ActiveOrganismCurrentCoordinates
+        public Dictionary<IMeasurableOrganism, Coordinate> ActiveOrganismCurrentCoordinates
         {
             get
             {
@@ -32,7 +33,7 @@
             }
         }
 
-        public Dictionary<Organism, Coordinate> InactiveOrganismCoordinates
+        public Dictionary<IMeasurableOrganism, Coordinate> InactiveOrganismCoordinates
         {
             get
             {
@@ -43,8 +44,8 @@
         }
 
         public UpdateSummary(
-            Dictionary<Organism, Coordinate> previousOrganismCoordinates, 
-            Dictionary<Organism, Coordinate> currentOrganismCoordinates,
+            Dictionary<IMeasurableOrganism, Coordinate> previousOrganismCoordinates,
+            Dictionary<IMeasurableOrganism, Coordinate> currentOrganismCoordinates,
             List<Coordinate> alteredEnvironmentCoordinates)
         {
             this.PreviousOrganismCoordinates = previousOrganismCoordinates;

@@ -299,7 +299,7 @@
                 var organism = activeOrganismCurrentCoordinate.Key;
 
                 var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
-                habitatViewModel.AssignOrganismModel(organism);
+                habitatViewModel.AssignOrganismModel((Organism)organism);
                 refreshedHabitatViewModels.Add(habitatViewModel);
             });
 

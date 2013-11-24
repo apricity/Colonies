@@ -75,17 +75,15 @@
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            /* perform pre movement actions e.g. take food, eat food, attack */
+            /* perform pre movement actions (e.g. take food, eat food, attack) */
             alteredEnvironmentCoordinates.AddRange(this.PerformPreMovementActions());
 
             /* find out where each organism would like to move to
-             * then analyse them to decide where the organisms will actually move to 
-             * and to resolve any conflicting intentions */
-            alteredEnvironmentCoordinates.AddRange(this.PerformMovements());
+             * then analyse them to decide where the organisms will actually move to and to resolve any conflicting intentions 
+             * and change measures related to movement (e.g. pheromone, mineral, obstruction) */
+            alteredEnvironmentCoordinates.AddRange(this.PerformMovementsActions());
 
-            /* reduce pheromone level in all environments
-             * increase pheromone, mineral, and nutrient where appropriate 
-             * and demolish obstruction if they have blocked a movement */
+            /* change measures that are globally affected (e.g. nutrient growth, pheromone fade, hazard spread, health deterioration */
             alteredEnvironmentCoordinates.AddRange(this.PerformPostMovementActions());
 
             var currentOrganismCoordinates = this.ecosystemData.OrganismCoordinates(null, null)
@@ -101,12 +99,12 @@
             return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> PerformMovements()
+        private IEnumerable<Coordinate> PerformMovementsActions()
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
             var desiredOrganismCoordinates = EcosystemLogic.GetDesiredCoordinates(this.ecosystemData);
-            var movedOrganismCoordinates = EcosystemLogic.ResolveOrganismHabitats(this.ecosystemData, desiredOrganismCoordinates, new List<Organism>(), this);
+            var movedOrganismCoordinates = EcosystemLogic.ResolveOrganismHabitats(this.ecosystemData, desiredOrganismCoordinates, new List<IOrganism>(), this);
 
             alteredEnvironmentCoordinates.AddRange(this.IncreasePheromoneLevels());
             alteredEnvironmentCoordinates.AddRange(this.IncreaseMineralLevels());
@@ -120,7 +118,8 @@
             var obstructedCoordinates = desiredOrganismCoordinates.Values.Where(coordinate => this.ecosystemData.HasMeasure(coordinate, Measure.Obstruction));
             foreach (var obstructedCoordinate in obstructedCoordinates)
             {
-                if (this.ecosystemData.DecreaseLevel(obstructedCoordinate, Measure.Obstruction, this.ObstructionDemolishRate))
+                var obstructionDecreased = this.ecosystemData.DecreaseLevel(obstructedCoordinate, Measure.Obstruction, this.ObstructionDemolishRate);
+                if (obstructionDecreased)
                 {
                     alteredEnvironmentCoordinates.Add(obstructedCoordinate);
                 }

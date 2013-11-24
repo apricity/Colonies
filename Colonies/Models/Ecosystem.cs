@@ -11,7 +11,7 @@
     using Wacton.Colonies.Interfaces;
     using Wacton.Colonies.Logic;
 
-    public class Ecosystem : IBiasedEcosystem
+    public class Ecosystem : IEcosystem
     {
         private readonly EcosystemData ecosystemData;
 
@@ -71,7 +71,7 @@
         public UpdateSummary Update()
         {
             var previousOrganismCoordinates = this.ecosystemData.OrganismCoordinates(null, null)
-                .ToDictionary(coordinate => ecosystemData.GetMeasurableOrganism(coordinate), coordinate => coordinate);
+                .ToDictionary(coordinate => ecosystemData.GetOrganism(coordinate), coordinate => coordinate);
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
@@ -89,7 +89,7 @@
             alteredEnvironmentCoordinates.AddRange(this.PerformPostMovementActions());
 
             var currentOrganismCoordinates = this.ecosystemData.OrganismCoordinates(null, null)
-                .ToDictionary(coordinate => ecosystemData.GetMeasurableOrganism(coordinate), coordinate => coordinate);
+                .ToDictionary(coordinate => ecosystemData.GetOrganism(coordinate), coordinate => coordinate);
 
             return new UpdateSummary(previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates.Distinct().ToList());
         }

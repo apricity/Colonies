@@ -343,7 +343,7 @@
         private UpdateSummary CreateAndUpdateEcosystem(Dictionary<Organism, Coordinate> organismCoordinates, Dictionary<Organism, Coordinate> desiredOrganismCoordinates)
         {
             var desiredBiasedOrganismCoordinates = desiredOrganismCoordinates.ToDictionary(
-                desiredOrganismCoordinate => (IMeasurableOrganism)desiredOrganismCoordinate.Key,
+                desiredOrganismCoordinate => (IOrganism)desiredOrganismCoordinate.Key,
                 desiredOrganismCoordinate => desiredOrganismCoordinate.Value);
 
             EcosystemLogic.OverrideDesiredOrganismCoordinates = desiredBiasedOrganismCoordinates;

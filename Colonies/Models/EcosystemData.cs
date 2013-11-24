@@ -170,14 +170,14 @@
             return this.HabitatCoordinates[habitat];
         }
 
+        public Coordinate CoordinateOf(IOrganism organism)
+        {
+            return this.CoordinateOf((Organism)organism);
+        }
+
         private Coordinate CoordinateOf(Organism organism)
         {
             return this.CoordinateOf(this.OrganismHabitats[organism]);
-        }
-
-        private Organism OrganismAt(Coordinate coordinate)
-        {
-            return this.HabitatAt(coordinate).Organism;
         }
 
         private void AddOrganism(Organism organism, Coordinate coordinate)
@@ -197,7 +197,7 @@
             this.OrganismHabitats.Remove(organism);
         }
 
-        public void MoveOrganism(IMeasurableOrganism organism, Coordinate desiredHabitatCoordinate)
+        public void MoveOrganism(IOrganism organism, Coordinate desiredHabitatCoordinate)
         {
             this.MoveOrganism((Organism)organism, this.HabitatAt(desiredHabitatCoordinate));
         }
@@ -250,37 +250,14 @@
             return this.Habitats.GetNeighbours(coordinate, neighbourDepth, includeDiagonals, includeSelf);
         }
 
-        public IMeasurableEnvironment GetMeasurableEnvironment(Coordinate coordinate)
+        public IEnvironment GetEnvironment(Coordinate coordinate)
         {
             return this.HabitatAt(coordinate).Environment;
         }
 
-        public IMeasurableOrganism GetMeasurableOrganism(Coordinate coordinate)
+        public IOrganism GetOrganism(Coordinate coordinate)
         {
             return this.HabitatAt(coordinate).Organism;
-        }
-
-        public IBiasedOrganism GetBiasedOrganism(Coordinate coordinate)
-        {
-            return this.HabitatAt(coordinate).Organism;
-        }
-
-        public Coordinate CoordinateOf(IMeasurable measurableItem)
-        {
-            var organism = measurableItem as Organism;
-            var environment = measurableItem as Environment;
-
-            if (organism != null)
-            {
-                return this.CoordinateOf(organism);
-            }
-
-            if (environment != null)
-            {
-                return this.CoordinateOf(this.Habitats.ToList().Single(habitat => habitat.Environment.Equals(environment)));
-            }
-
-            throw new ArgumentException("Unknown measurable item");
         }
     }
 }

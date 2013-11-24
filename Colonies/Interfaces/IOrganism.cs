@@ -1,6 +1,6 @@
 ﻿namespace Wacton.Colonies.Interfaces
 {
-    public interface IBiasedOrganism : IBiased
+    public interface IOrganism : IMeasurable, IBiased
     {
     }
 }

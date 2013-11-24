@@ -6,7 +6,7 @@
     using Wacton.Colonies.Ancillary;
     using Wacton.Colonies.Interfaces;
 
-    public sealed class Environment : IMeasurableEnvironment
+    public sealed class Environment : IEnvironment
     {
         public Measurement Measurement { get; private set; }
 

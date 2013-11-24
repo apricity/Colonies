@@ -6,7 +6,7 @@
     using Wacton.Colonies.Ancillary;
     using Wacton.Colonies.Interfaces;
 
-    public sealed class Organism : IMeasurableOrganism, IBiasedOrganism
+    public sealed class Organism : IOrganism
     {
         public string Name { get; private set; }
         public Color Color { get; private set; }

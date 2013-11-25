@@ -21,7 +21,7 @@
             }
 
             var desiredOrganismCoordinates = new Dictionary<IOrganism, Coordinate>();
-            var aliveOrganismsCoordinates = ecosystemData.OrganismCoordinates(true, null);
+            var aliveOrganismsCoordinates = ecosystemData.GetOrganismCoordinates(true, null);
             foreach (var organismCoordinate in aliveOrganismsCoordinates)
             {
                 // get measurements of neighbouring environments
@@ -46,7 +46,7 @@
             var resolvedOrganismCoordinates = new Dictionary<IOrganism, Coordinate>();
 
             // create a copy of the organism habitats because we don't want to modify the actual set
-            var organisms = ecosystemData.OrganismCoordinates(null, null).Select(ecosystemData.GetOrganism).ToList();
+            var organisms = ecosystemData.GetOrganismCoordinates(null, null).Select(ecosystemData.GetOrganism).ToList();
 
             // remove organisms that have been resolved (from previous iterations)
             // as they no longer need to be processed
@@ -62,7 +62,7 @@
             // return an empty list - i.e. no organism can move to its intended destination
             var vacantCoordinates = desiredCoordinates
                 .Except(occupiedCoordinates)
-                .Where(coordinate => !ecosystemData.HasMeasure(coordinate, Measure.Obstruction))
+                .Where(coordinate => !ecosystemData.HasEnvironmentMeasure(coordinate, Measure.Obstruction))
                 .Distinct().ToList();
             if (vacantCoordinates.Count == 0)
             {

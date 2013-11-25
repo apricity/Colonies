@@ -57,12 +57,12 @@
             }
         }
 
-        public IEnumerable<Coordinate> AllCoordinates()
+        public IEnumerable<Coordinate> GetAllCoordinates()
         {
             return this.HabitatCoordinates.Values.ToList();
         }
 
-        public IEnumerable<Coordinate> OrganismCoordinates(bool? isAlive, bool? isDepositingPheromone)
+        public IEnumerable<Coordinate> GetOrganismCoordinates(bool? isAlive, bool? isDepositingPheromone)
         {
             return this.OrganismHabitats.Keys.Where(organism => 
                 isAlive == null || organism.IsAlive == isAlive 
@@ -70,114 +70,79 @@
                 .Select(this.CoordinateOf);
         }
 
-        public bool HasMeasure(Coordinate coordinate, Measure measure)
+        public IEnumerable<Coordinate> GetHazardCoordinates(Measure hazardMeasure)
         {
-            if (Environment.Measures().Contains(measure))
-            {
-                return this.HabitatAt(coordinate).Environment.GetLevel(measure) > 0.0;
-            }
-            else if (Organism.Measures().Contains(measure))
-            {
-                return this.HabitatAt(coordinate).Organism.GetLevel(measure) > 0.0;
-            }
-            else
-            {
-                throw new ArgumentException("Measure was not found");
-            }
+            return this.HazardCoordinates[hazardMeasure].ToList();
         }
 
-        public double GetLevel(Coordinate coordinate, Measure measure)
+        public bool HasEnvironmentMeasure(Coordinate coordinate, Measure measure)
         {
-            if (Environment.Measures().Contains(measure))
-            {
-                return this.HabitatAt(coordinate).Environment.GetLevel(measure);
-            }
-            else if (Organism.Measures().Contains(measure))
-            {
-                return this.HabitatAt(coordinate).Organism.GetLevel(measure);
-            }
-            else
-            {
-                throw new ArgumentException("Measure was not found");
-            }
+            EnsureEnvironmentMeasure(measure);
+            return this.HabitatAt(coordinate).Environment.GetLevel(measure) > 0.0;
         }
 
-        public void SetLevel(Coordinate coordinate, Measure measure, double level)
+        public bool HasOrganismMeasure(Coordinate coordinate, Measure measure)
         {
-            if (Environment.Measures().Contains(measure))
-            {
-                this.HabitatAt(coordinate).Environment.SetLevel(measure, level);
-            }
-            else if (Organism.Measures().Contains(measure))
-            {
-                this.HabitatAt(coordinate).Organism.SetLevel(measure, level);
-            }
-            else
-            {
-                throw new ArgumentException("Measure was not found"); 
-            }
+            EnsureOrganismMeasure(measure);
+            return this.HabitatAt(coordinate).Organism.GetLevel(measure) > 0.0;
         }
 
-        public bool IncreaseLevel(Coordinate coordinate, Measure measure, double increment)
+        public double GetEnvironmentLevel(Coordinate coordinate, Measure measure)
         {
-            if (Environment.Measures().Contains(measure))
-            {
-                return this.HabitatAt(coordinate).Environment.IncreaseLevel(measure, increment);
-            }
-            else if (Organism.Measures().Contains(measure))
-            {
-                return this.HabitatAt(coordinate).Organism.IncreaseLevel(measure, increment);
-            }
-            else
-            {
-                throw new ArgumentException("Measure was not found");
-            }
+            EnsureEnvironmentMeasure(measure);
+            return this.HabitatAt(coordinate).Environment.GetLevel(measure);
         }
 
-        public bool DecreaseLevel(Coordinate coordinate, Measure measure, double decrement)
+        public double GetOrganismLevel(Coordinate coordinate, Measure measure)
         {
-            if (Environment.Measures().Contains(measure))
-            {
-                return this.HabitatAt(coordinate).Environment.DecreaseLevel(measure, decrement); 
-            }
-            else if (Organism.Measures().Contains(measure))
-            {
-                return this.HabitatAt(coordinate).Organism.DecreaseLevel(measure, decrement); 
-            }
-            else
-            {
-                throw new ArgumentException("Measure was not found");
-            }
+            EnsureOrganismMeasure(measure);
+            return this.HabitatAt(coordinate).Organism.GetLevel(measure);
+        }
+
+        public void SetEnvironmentLevel(Coordinate coordinate, Measure measure, double level)
+        {
+            EnsureEnvironmentMeasure(measure);
+            this.HabitatAt(coordinate).Environment.SetLevel(measure, level);
+        }
+
+        public void SetOrganismLevel(Coordinate coordinate, Measure measure, double level)
+        {
+            EnsureOrganismMeasure(measure);
+            this.HabitatAt(coordinate).Organism.SetLevel(measure, level);
+        }
+
+        public bool IncreaseEnvironmentLevel(Coordinate coordinate, Measure measure, double increment)
+        {
+            EnsureEnvironmentMeasure(measure);
+            return this.HabitatAt(coordinate).Environment.IncreaseLevel(measure, increment);
+        }
+
+        public bool IncreaseOrganismLevel(Coordinate coordinate, Measure measure, double increment)
+        {
+            EnsureOrganismMeasure(measure);
+            return this.HabitatAt(coordinate).Organism.IncreaseLevel(measure, increment);
+        }
+
+        public bool DecreaseEnvironmentLevel(Coordinate coordinate, Measure measure, double decrement)
+        {
+            EnsureEnvironmentMeasure(measure);
+            return this.HabitatAt(coordinate).Environment.DecreaseLevel(measure, decrement); 
+        }
+
+        public bool DecreaseOrganismLevel(Coordinate coordinate, Measure measure, double decrement)
+        {
+            EnsureOrganismMeasure(measure);
+            return this.HabitatAt(coordinate).Organism.DecreaseLevel(measure, decrement);
+        }
+
+        public void InsertHazard(Measure hazardMeasure, Coordinate coordinate)
+        {
+            this.HazardCoordinates[hazardMeasure].Add(coordinate);
         }
 
         public bool IsHazardous(Coordinate coordinate)
         {
             return this.HabitatAt(coordinate).Environment.IsHazardous;
-        }
-
-        private Habitat HabitatAt(Coordinate coordinate)
-        {
-            return this.Habitats[coordinate.X, coordinate.Y];
-        }
-
-        private Habitat HabitatOf(Organism organism)
-        {
-            return this.OrganismHabitats[organism];
-        }
-
-        private Coordinate CoordinateOf(Habitat habitat)
-        {
-            return this.HabitatCoordinates[habitat];
-        }
-
-        public Coordinate CoordinateOf(IOrganism organism)
-        {
-            return this.CoordinateOf((Organism)organism);
-        }
-
-        private Coordinate CoordinateOf(Organism organism)
-        {
-            return this.CoordinateOf(this.OrganismHabitats[organism]);
         }
 
         private void AddOrganism(Organism organism, Coordinate coordinate)
@@ -235,16 +200,6 @@
             this.OrganismHabitats[organism] = destinationHabitat;
         }
 
-        public void InsertHazard(Measure hazardMeasure, Coordinate coordinate)
-        {
-            this.HazardCoordinates[hazardMeasure].Add(coordinate);
-        }
-
-        public IEnumerable<Coordinate> GetHazardCoordinates(Measure hazardMeasure)
-        {
-            return this.HazardCoordinates[hazardMeasure].ToList();
-        }
-
         public Coordinate[,] GetNeighbours(Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
         {
             return this.Habitats.GetNeighbours(coordinate, neighbourDepth, includeDiagonals, includeSelf);
@@ -258,6 +213,47 @@
         public IOrganism GetOrganism(Coordinate coordinate)
         {
             return this.HabitatAt(coordinate).Organism;
+        }
+
+        private Habitat HabitatAt(Coordinate coordinate)
+        {
+            return this.Habitats[coordinate.X, coordinate.Y];
+        }
+
+        private Habitat HabitatOf(Organism organism)
+        {
+            return this.OrganismHabitats[organism];
+        }
+
+        private Coordinate CoordinateOf(Habitat habitat)
+        {
+            return this.HabitatCoordinates[habitat];
+        }
+
+        public Coordinate CoordinateOf(IOrganism organism)
+        {
+            return this.CoordinateOf((Organism)organism);
+        }
+
+        private Coordinate CoordinateOf(Organism organism)
+        {
+            return this.CoordinateOf(this.OrganismHabitats[organism]);
+        }
+
+        private static void EnsureEnvironmentMeasure(Measure measure)
+        {
+            if (!Environment.Measures().Contains(measure))
+            {
+                throw new ArgumentException("Measure argument is not an environment measure");
+            }
+        }
+
+        private static void EnsureOrganismMeasure(Measure measure)
+        {
+            if (!Organism.Measures().Contains(measure))
+            {
+                throw new ArgumentException("Measure argument is not an organism measure");
+            }
         }
     }
 }

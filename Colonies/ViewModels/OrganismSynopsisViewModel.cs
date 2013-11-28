@@ -4,9 +4,9 @@
 
     using Microsoft.Practices.Prism.Events;
 
-    using Wacton.Colonies.Models;
+    using Wacton.Colonies.Interfaces;
 
-    public class OrganismSynopsisViewModel : ViewModelBase<OrganismSynopsis>
+    public class OrganismSynopsisViewModel : ViewModelBase<IOrganismSynopsis>
     {
         private List<OrganismViewModel> organismViewModels;
         public List<OrganismViewModel> OrganismViewModels
@@ -22,7 +22,7 @@
             }
         }
 
-        public OrganismSynopsisViewModel(OrganismSynopsis domainModel, List<OrganismViewModel> organismViewModels, IEventAggregator eventAggregator)
+        public OrganismSynopsisViewModel(IOrganismSynopsis domainModel, List<OrganismViewModel> organismViewModels, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
             this.OrganismViewModels = organismViewModels;

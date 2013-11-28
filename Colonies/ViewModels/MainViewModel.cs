@@ -1,7 +1,6 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -11,9 +10,9 @@
     using Microsoft.Practices.Prism.Events;
 
     using Wacton.Colonies.Ancillary;
-    using Wacton.Colonies.Models;
+    using Wacton.Colonies.Interfaces;
 
-    public class MainViewModel : ViewModelBase<Main>
+    public class MainViewModel : ViewModelBase<IMain>
     {
         // if the timer interval is too small, the model update won't have finished
         // so use a lock to ensure the model isn't updated while it's updating...
@@ -198,7 +197,7 @@
             }
         }
 
-        public MainViewModel(Main domainModel, EcosystemViewModel ecosystemViewModel, OrganismSynopsisViewModel organismSynopsisViewModel, IEventAggregator eventAggregator)
+        public MainViewModel(IMain domainModel, EcosystemViewModel ecosystemViewModel, OrganismSynopsisViewModel organismSynopsisViewModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
             this.EcosystemViewModel = ecosystemViewModel;
@@ -299,7 +298,7 @@
                 var organism = activeOrganismCurrentCoordinate.Key;
 
                 var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
-                habitatViewModel.AssignOrganismModel((Organism)organism);
+                habitatViewModel.AssignOrganismModel(organism);
                 refreshedHabitatViewModels.Add(habitatViewModel);
             });
 

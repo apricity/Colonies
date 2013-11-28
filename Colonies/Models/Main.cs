@@ -1,24 +1,32 @@
 ﻿namespace Wacton.Colonies.Models
 {
     using Wacton.Colonies.Ancillary;
+    using Wacton.Colonies.Interfaces;
 
-    public class Main
+    public class Main : IMain
     {
-        public Ecosystem Ecosystem { get; private set; }
+        private readonly Ecosystem ecosystem;
+        public IEcosystem Ecosystem
+        {
+            get
+            {
+                return this.ecosystem;
+            }
+        }
 
         public Main(Ecosystem ecosystem)
         {
-            this.Ecosystem = ecosystem;
+            this.ecosystem = ecosystem;
         }
 
         public override string ToString()
         {
-            return this.Ecosystem.ToString();
+            return this.ecosystem.ToString();
         }
 
         public UpdateSummary UpdateOnce()
         {
-            return this.Ecosystem.Update();
+            return this.ecosystem.Update();
         }
     }
 }

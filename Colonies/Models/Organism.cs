@@ -11,14 +11,23 @@
         public string Name { get; private set; }
         public Color Color { get; private set; }
         public bool IsDepositingPheromones { get; private set; }
-        public Measurement Measurement { get; private set; }
+
+        private readonly Measurement measurement;
+        public IMeasurement Measurement
+        {
+            get
+            {
+                return this.measurement;
+            }
+        }
+
         public Dictionary<Measure, double> MeasureBiases { get; private set; } 
 
         public bool IsAlive
         {
             get
             {
-                return this.Measurement.GetLevel(Measure.Health) > 0.0;
+                return this.measurement.GetLevel(Measure.Health) > 0.0;
             }
         }
 
@@ -28,7 +37,7 @@
             this.Color = color;
 
             var health = new Condition(Measure.Health, 1.0);
-            this.Measurement = new Measurement(new List<Condition> { health });
+            this.measurement = new Measurement(new List<Condition> { health });
             this.MeasureBiases = new Dictionary<Measure, double>
                                      {
                                          { Measure.Pheromone, 10 },
@@ -43,22 +52,22 @@
 
         public double GetLevel(Measure measure)
         {
-            return this.Measurement.GetLevel(measure);
+            return this.measurement.GetLevel(measure);
         }
 
         public void SetLevel(Measure measure, double level)
         {
-            this.Measurement.SetLevel(measure, level);
+            this.measurement.SetLevel(measure, level);
         }
 
         public bool IncreaseLevel(Measure measure, double increment)
         {
-            return this.Measurement.IncreaseLevel(measure, increment);
+            return this.measurement.IncreaseLevel(measure, increment);
         }
 
         public bool DecreaseLevel(Measure measure, double decrement)
         {
-            return this.Measurement.DecreaseLevel(measure, decrement);
+            return this.measurement.DecreaseLevel(measure, decrement);
         }
 
         public static IEnumerable<Measure> Measures()

@@ -4,8 +4,10 @@
 
     using Wacton.Colonies.Ancillary;
 
-    public interface IBiased
+    public interface IMeasurement
     {
-        Dictionary<Measure, double> MeasureBiases { get; }
+        IEnumerable<ICondition> Conditions { get; }
+
+        double GetLevel(Measure measure);
     }
 }

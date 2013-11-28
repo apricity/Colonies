@@ -4,9 +4,9 @@
 
     using Microsoft.Practices.Prism.Events;
 
-    using Wacton.Colonies.Models;
+    using Wacton.Colonies.Interfaces;
 
-    public class HabitatViewModel : ViewModelBase<Habitat>
+    public class HabitatViewModel : ViewModelBase<IHabitat>
     {
         private EnvironmentViewModel environmentViewModel;
         public EnvironmentViewModel EnvironmentViewModel
@@ -50,7 +50,7 @@
             }
         }
 
-        public HabitatViewModel(Habitat domainModel, EnvironmentViewModel environmentViewModel, OrganismViewModel organismViewModel, IEventAggregator eventAggregator)
+        public HabitatViewModel(IHabitat domainModel, EnvironmentViewModel environmentViewModel, OrganismViewModel organismViewModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
             this.EnvironmentViewModel = environmentViewModel;
@@ -67,7 +67,7 @@
             this.OrganismViewModel.Refresh();
         }
 
-        public void AssignOrganismModel(Organism model)
+        public void AssignOrganismModel(IOrganism model)
         {
             this.OrganismViewModel.AssignModel(model);
         }

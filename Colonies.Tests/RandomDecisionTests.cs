@@ -199,12 +199,17 @@
             private readonly Condition pheromoneCondition;
             private readonly Condition healthCondition;
 
-            public Measurement Measurement
+            public IMeasurement Measurement
             {
                 get
                 {
                     return new Measurement(new List<Condition> { this.pheromoneCondition, this.healthCondition });
                 }
+            }
+
+            public double GetLevel(Measure measure)
+            {
+                return this.Measurement.GetLevel(measure);
             }
 
             public TestMeasurableItem(string identifier)

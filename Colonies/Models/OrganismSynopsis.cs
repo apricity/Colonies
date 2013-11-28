@@ -2,11 +2,13 @@
 {
     using System.Collections.Generic;
 
-    public class OrganismSynopsis
-    {
-        public List<Organism> Organisms { get; private set; }
+    using Wacton.Colonies.Interfaces;
 
-        public OrganismSynopsis(List<Organism> organisms)
+    public class OrganismSynopsis : IOrganismSynopsis
+    {
+        public List<IOrganism> Organisms { get; private set; }
+
+        public OrganismSynopsis(List<IOrganism> organisms)
         {
             this.Organisms = organisms;
         }

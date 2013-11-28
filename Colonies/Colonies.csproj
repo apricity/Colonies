@@ -93,9 +93,14 @@
     <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Interfaces\ICondition.cs" />
+    <Compile Include="Interfaces\IMeasurement.cs" />
+    <Compile Include="Interfaces\IHabitat.cs" />
+    <Compile Include="Interfaces\IMain.cs" />
     <Compile Include="Interfaces\IEcosystem.cs" />
     <Compile Include="Interfaces\IEnvironment.cs" />
     <Compile Include="Interfaces\IOrganism.cs" />
+    <Compile Include="Interfaces\IOrganismSynopsis.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logic\ColorLogic.cs" />
     <Compile Include="Logic\DecisionLogic.cs" />

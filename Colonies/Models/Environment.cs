@@ -8,21 +8,12 @@
 
     public sealed class Environment : IEnvironment
     {
-        public Measurement Measurement { get; private set; }
-
-        public bool IsObstructed
+        private readonly Measurement measurement;
+        public IMeasurement Measurement
         {
             get
             {
-                return this.GetLevel(Measure.Obstruction) > 0;
-            }
-        }
-
-        public bool HasNutrient
-        {
-            get
-            {
-                return this.GetLevel(Measure.Nutrient) > 0;
+                return this.measurement;
             }
         }
 
@@ -30,7 +21,7 @@
         {
             get
             {
-                return HazardMeasures().Any(hazardMeasure => this.Measurement.GetLevel(hazardMeasure).Equals(1.0));
+                return HazardMeasures().Any(hazardMeasure => this.measurement.GetLevel(hazardMeasure).Equals(1.0));
             }
         }
 
@@ -42,27 +33,27 @@
                 conditions.Add(new Condition(measure, 0));
             }
 
-            this.Measurement = new Measurement(conditions);
+            this.measurement = new Measurement(conditions);
         }
 
         public double GetLevel(Measure measure)
         {
-            return this.Measurement.GetLevel(measure);
+            return this.measurement.GetLevel(measure);
         }
 
         public void SetLevel(Measure measure, double level)
         {
-            this.Measurement.SetLevel(measure, level);
+            this.measurement.SetLevel(measure, level);
         }
 
         public bool IncreaseLevel(Measure measure, double increment)
         {
-            return this.Measurement.IncreaseLevel(measure, increment);
+            return this.measurement.IncreaseLevel(measure, increment);
         }
 
         public bool DecreaseLevel(Measure measure, double decrement)
         {
-            return this.Measurement.DecreaseLevel(measure, decrement);
+            return this.measurement.DecreaseLevel(measure, decrement);
         }
 
         public static bool IsPotentialHazard(Measure measure)
@@ -82,7 +73,7 @@
         
         public override string ToString()
         {
-            return this.Measurement.ToString();
+            return this.measurement.ToString();
         }
     }
 }

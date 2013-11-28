@@ -78,61 +78,61 @@
         public bool HasEnvironmentMeasure(Coordinate coordinate, Measure measure)
         {
             EnsureEnvironmentMeasure(measure);
-            return this.HabitatAt(coordinate).Environment.GetLevel(measure) > 0.0;
+            return this.HabitatAt(coordinate).GetEnvironmentLevel(measure) > 0.0;
         }
 
         public bool HasOrganismMeasure(Coordinate coordinate, Measure measure)
         {
             EnsureOrganismMeasure(measure);
-            return this.HabitatAt(coordinate).Organism.GetLevel(measure) > 0.0;
+            return this.HabitatAt(coordinate).GetOrganismLevel(measure) > 0.0;
         }
 
         public double GetEnvironmentLevel(Coordinate coordinate, Measure measure)
         {
             EnsureEnvironmentMeasure(measure);
-            return this.HabitatAt(coordinate).Environment.GetLevel(measure);
+            return this.HabitatAt(coordinate).GetEnvironmentLevel(measure);
         }
 
         public double GetOrganismLevel(Coordinate coordinate, Measure measure)
         {
             EnsureOrganismMeasure(measure);
-            return this.HabitatAt(coordinate).Organism.GetLevel(measure);
+            return this.HabitatAt(coordinate).GetOrganismLevel(measure);
         }
 
         public void SetEnvironmentLevel(Coordinate coordinate, Measure measure, double level)
         {
             EnsureEnvironmentMeasure(measure);
-            this.HabitatAt(coordinate).Environment.SetLevel(measure, level);
+            this.HabitatAt(coordinate).SetEnvironmentLevel(measure, level);
         }
 
         public void SetOrganismLevel(Coordinate coordinate, Measure measure, double level)
         {
             EnsureOrganismMeasure(measure);
-            this.HabitatAt(coordinate).Organism.SetLevel(measure, level);
+            this.HabitatAt(coordinate).SetOrganismLevel(measure, level);
         }
 
         public bool IncreaseEnvironmentLevel(Coordinate coordinate, Measure measure, double increment)
         {
             EnsureEnvironmentMeasure(measure);
-            return this.HabitatAt(coordinate).Environment.IncreaseLevel(measure, increment);
+            return this.HabitatAt(coordinate).IncreaseEnvironmentLevel(measure, increment);
         }
 
         public bool IncreaseOrganismLevel(Coordinate coordinate, Measure measure, double increment)
         {
             EnsureOrganismMeasure(measure);
-            return this.HabitatAt(coordinate).Organism.IncreaseLevel(measure, increment);
+            return this.HabitatAt(coordinate).IncreaseOrganismLevel(measure, increment);
         }
 
         public bool DecreaseEnvironmentLevel(Coordinate coordinate, Measure measure, double decrement)
         {
             EnsureEnvironmentMeasure(measure);
-            return this.HabitatAt(coordinate).Environment.DecreaseLevel(measure, decrement); 
+            return this.HabitatAt(coordinate).DecreaseEnvironmentLevel(measure, decrement); 
         }
 
         public bool DecreaseOrganismLevel(Coordinate coordinate, Measure measure, double decrement)
         {
             EnsureOrganismMeasure(measure);
-            return this.HabitatAt(coordinate).Organism.DecreaseLevel(measure, decrement);
+            return this.HabitatAt(coordinate).DecreaseOrganismLevel(measure, decrement);
         }
 
         public void InsertHazard(Measure hazardMeasure, Coordinate coordinate)
@@ -152,13 +152,13 @@
 
         private void AddOrganism(Organism organism, Habitat habitat)
         {
-            habitat.AddOrganism(organism);
+            habitat.SetOrganism(organism);
             this.OrganismHabitats.Add(organism, habitat);
         }
 
         private void RemoveOrganism(Organism organism)
         {
-            this.HabitatOf(organism).RemoveOrganism();
+            this.HabitatOf(organism).ResetOrganism();
             this.OrganismHabitats.Remove(organism);
         }
 
@@ -195,8 +195,8 @@
                                   organism, destinationHabitat, destinationHabitat.Organism));
             }
 
-            sourceHabitat.RemoveOrganism();
-            destinationHabitat.AddOrganism(organism);
+            sourceHabitat.ResetOrganism();
+            destinationHabitat.SetOrganism(organism);
             this.OrganismHabitats[organism] = destinationHabitat;
         }
 

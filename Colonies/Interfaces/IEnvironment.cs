@@ -2,5 +2,6 @@
 {
     public interface IEnvironment : IMeasurable
     {
+        bool IsHazardous { get; }
     }
 }

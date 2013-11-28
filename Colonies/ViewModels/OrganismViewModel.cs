@@ -5,9 +5,9 @@
     using Microsoft.Practices.Prism.Events;
 
     using Wacton.Colonies.Ancillary;
-    using Wacton.Colonies.Models;
+    using Wacton.Colonies.Interfaces;
 
-    public class OrganismViewModel : ViewModelBase<Organism>
+    public class OrganismViewModel : ViewModelBase<IOrganism>
     {
         // do not set domain model properties through the view model
         // use events to tell view models the model has changed
@@ -90,7 +90,7 @@
         }
 
         
-        public OrganismViewModel(Organism domainModel, IEventAggregator eventAggregator)
+        public OrganismViewModel(IOrganism domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
 
@@ -104,7 +104,7 @@
                 this.HasOrganism = true;
                 this.Color = this.DomainModel.Color;
                 this.IsAlive = this.DomainModel.IsAlive;
-                this.HealthLevel = this.DomainModel.GetLevel(Measure.Health);
+                this.HealthLevel = this.DomainModel.Measurement.GetLevel(Measure.Health);
                 this.Name = this.DomainModel.Name;
             }
             else

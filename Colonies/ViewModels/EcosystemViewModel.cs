@@ -5,9 +5,9 @@
 
     using Microsoft.Practices.Prism.Events;
 
-    using Wacton.Colonies.Models;
+    using Wacton.Colonies.Interfaces;
 
-    public class EcosystemViewModel : ViewModelBase<Ecosystem>
+    public class EcosystemViewModel : ViewModelBase<IEcosystem>
     {
         private List<List<HabitatViewModel>> habitatViewModels;
         public List<List<HabitatViewModel>> HabitatViewModels
@@ -23,7 +23,7 @@
             }
         }
 
-        public EcosystemViewModel(Ecosystem domainModel, List<List<HabitatViewModel>> habitatViewModels, IEventAggregator eventAggregator)
+        public EcosystemViewModel(IEcosystem domainModel, List<List<HabitatViewModel>> habitatViewModels, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
             this.HabitatViewModels = habitatViewModels;

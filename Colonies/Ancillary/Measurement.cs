@@ -4,13 +4,22 @@
     using System.Linq;
     using System.Text;
 
-    public class Measurement
+    using Wacton.Colonies.Interfaces;
+
+    public class Measurement : IMeasurement
     {
-        public List<Condition> Conditions { get; private set; }
+        private readonly List<Condition> conditions;
+        public IEnumerable<ICondition> Conditions
+        {
+            get
+            {
+                return this.conditions;
+            }
+        }
 
         public Measurement(List<Condition> conditions)
         {
-            this.Conditions = conditions;
+            this.conditions = conditions;
         }
 
         public double GetLevel(Measure measure)
@@ -35,18 +44,18 @@
 
         public bool HasCondition(Condition condition)
         {
-            return this.Conditions.Any(condition.Equals);
+            return this.conditions.Any(condition.Equals);
         }
 
         private Condition GetCondition(Measure measure)
         {
-            return this.Conditions.Single(condition => condition.Measure.Equals(measure));
+            return this.conditions.Single(condition => condition.Measure.Equals(measure));
         }
 
         public override string ToString()
         {
             var stringBuilder = new StringBuilder();
-            foreach (var condition in this.Conditions)
+            foreach (var condition in this.conditions)
             {
                 stringBuilder.Append(condition);
                 stringBuilder.Append("/");

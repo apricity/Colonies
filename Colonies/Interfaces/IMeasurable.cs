@@ -4,6 +4,8 @@
 
     public interface IMeasurable
     {
-        Measurement Measurement { get; }
+        IMeasurement Measurement { get; }
+
+        double GetLevel(Measure measure);
     }
 }

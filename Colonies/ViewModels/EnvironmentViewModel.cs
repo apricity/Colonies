@@ -7,11 +7,10 @@
     using Microsoft.Practices.Prism.Events;
 
     using Wacton.Colonies.Ancillary;
+    using Wacton.Colonies.Interfaces;
     using Wacton.Colonies.Logic;
 
-    using Environment = Wacton.Colonies.Models.Environment;
-
-    public class EnvironmentViewModel : ViewModelBase<Environment>
+    public class EnvironmentViewModel : ViewModelBase<IEnvironment>
     {
         private readonly Color baseColor = Colors.Tan;
         public static readonly Dictionary<Measure, Color> MeasureColors = new Dictionary<Measure, Color>
@@ -166,7 +165,7 @@
 
         public bool IsObstructed { get; private set; }
 
-        public EnvironmentViewModel(Environment domainModel, IEventAggregator eventAggregator)
+        public EnvironmentViewModel(IEnvironment domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
             this.CalculateEnvironmentColor();
@@ -174,14 +173,14 @@
 
         public override void Refresh()
         {
-            this.MineralLevel = this.DomainModel.GetLevel(Measure.Mineral);
-            this.DampLevel = this.DomainModel.GetLevel(Measure.Damp);
-            this.HeatLevel = this.DomainModel.GetLevel(Measure.Heat);
-            this.PoisonLevel = this.DomainModel.GetLevel(Measure.Poison);
+            this.MineralLevel = this.DomainModel.Measurement.GetLevel(Measure.Mineral);
+            this.DampLevel = this.DomainModel.Measurement.GetLevel(Measure.Damp);
+            this.HeatLevel = this.DomainModel.Measurement.GetLevel(Measure.Heat);
+            this.PoisonLevel = this.DomainModel.Measurement.GetLevel(Measure.Poison);
 
-            this.PheromoneOpacity = this.DomainModel.GetLevel(Measure.Pheromone);
-            this.NutrientScalar = this.DomainModel.GetLevel(Measure.Nutrient);
-            this.ObstructionLevel = this.DomainModel.GetLevel(Measure.Obstruction);
+            this.PheromoneOpacity = this.DomainModel.Measurement.GetLevel(Measure.Pheromone);
+            this.NutrientScalar = this.DomainModel.Measurement.GetLevel(Measure.Nutrient);
+            this.ObstructionLevel = this.DomainModel.Measurement.GetLevel(Measure.Obstruction);
 
             this.CalculateEnvironmentColor();
         }

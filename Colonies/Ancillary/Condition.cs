@@ -2,7 +2,9 @@
 {
     using System;
 
-    public class Condition : IEquatable<Condition>
+    using Wacton.Colonies.Interfaces;
+
+    public class Condition : ICondition, IEquatable<Condition>
     {
         public Measure Measure { get; private set; }
         public double Level { get; private set; }

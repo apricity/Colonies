@@ -8,6 +8,7 @@
     using Microsoft.Practices.Prism.Events;
 
     using Wacton.Colonies.Ancillary;
+    using Wacton.Colonies.Interfaces;
     using Wacton.Colonies.Models;
     using Wacton.Colonies.Properties;
     using Wacton.Colonies.ViewModels;
@@ -83,7 +84,7 @@
             }
 
             // hook organism model into the organism synopsis
-            var organismSynopsis = new OrganismSynopsis(initialOrganismCoordinates.Keys.ToList());
+            var organismSynopsis = new OrganismSynopsis(initialOrganismCoordinates.Keys.Select(organism => (IOrganism)organism).ToList());
             var organismViewModels =
                 organismSynopsis.Organisms.Select(organism => new OrganismViewModel(organism, eventaggregator)).ToList();
             var organismSynopsisViewModel = new OrganismSynopsisViewModel(organismSynopsis, organismViewModels, eventaggregator);

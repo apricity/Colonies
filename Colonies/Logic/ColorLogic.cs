@@ -9,35 +9,44 @@
 
     public static class ColorLogic
     {
-        public static Color EnvironmentColor(Color baseColor, WeightedColor mineral, List<WeightedColor> environmentModifiers)
+        public static Color EnvironmentColor(Color baseEnvironmentColor, WeightedColor mineralWeightedColor, List<WeightedColor> modifyingWeightedColors)
         {
-            // remove any modifiers that do not affect the environment
-            environmentModifiers = environmentModifiers.Where(weightedColor => weightedColor.Weight > 0.0).ToList();
+            // set up the base color before applying the list of modifiers
+            baseEnvironmentColor = InterpolateColor(baseEnvironmentColor, mineralWeightedColor.Color, mineralWeightedColor.Weight);
+            return ModifyColor(baseEnvironmentColor, modifyingWeightedColors);
+        }
 
-            // set up the standard default colour and modify it by how much mineral is available
-            var environmentColor = baseColor;
-            environmentColor = InterpolateColor(environmentColor, mineral.Color, mineral.Weight);
+        public static Color WeatherColor(Color baseWeatherColor, List<WeightedColor> modifyingWeightedColors)
+        {
+            return ModifyColor(baseWeatherColor, modifyingWeightedColors);
+        }
+
+        private static Color ModifyColor(Color baseColor, List<WeightedColor> modifyingWeightedColors)
+        {
+            // remove any modifiers that have no effect
+            modifyingWeightedColors = modifyingWeightedColors.Where(weightedColor => weightedColor.Weight > 0.0).ToList();
 
             // if there are no colours to apply, return the base color
-            if (environmentModifiers.Count == 0)
+            var color = baseColor;
+            if (modifyingWeightedColors.Count == 0)
             {
-                return environmentColor;
+                return color;
             }
 
             // if there is only one colour to apply, do so and return
-            if (environmentModifiers.Count == 1)
+            if (modifyingWeightedColors.Count == 1)
             {
-                var environmentModifier = environmentModifiers.Single();
-                environmentColor = InterpolateColor(environmentColor, environmentModifier.Color, environmentModifier.Weight);
-                return environmentColor;
+                var modifier = modifyingWeightedColors.Single();
+                color = InterpolateColor(color, modifier.Color, modifier.Weight);
+                return color;
             }
 
             // if there are two or more colours to apply 
-            // calculate the colour of the environment modifiers and apply it using the max weighting of all modifiers
-            var environmentModifierOpacity = environmentModifiers.Max(weightedColor => weightedColor.Weight);
-            var environmentModifierColor = InterpolateWeightedColors(environmentModifiers);
-            environmentColor = InterpolateColor(environmentColor, environmentModifierColor, environmentModifierOpacity);
-            return environmentColor;
+            // calculate the colour of the modifiers and apply it using the max weighting of all modifiers
+            var modifierOpacity = modifyingWeightedColors.Max(weightedColor => weightedColor.Weight);
+            var modifierColor = InterpolateWeightedColors(modifyingWeightedColors);
+            color = InterpolateColor(color, modifierColor, modifierOpacity);
+            return color;
         }
 
         private static Color InterpolateColor(Color baseColor, Color targetColor, double targetFactor)
@@ -61,7 +70,7 @@
             };
         }
 
-        private static Color InterpolateWeightedColors(List<WeightedColor> weightedColors)
+        private static Color InterpolateWeightedColors(IEnumerable<WeightedColor> weightedColors)
         {
             var weightedRs = new List<WeightedChannelValue>();
             var weightedGs = new List<WeightedChannelValue>();

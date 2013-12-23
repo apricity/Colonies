@@ -14,6 +14,7 @@
     public class Ecosystem : IEcosystem
     {
         private EcosystemData EcosystemData { get; set; }
+        public IWeather Weather { get; private set; }
 
         public Dictionary<Measure, double> MeasureBiases { get; private set; }
 
@@ -51,9 +52,11 @@
             }
         }
 
-        public Ecosystem(EcosystemData ecosystemData)
+        public Ecosystem(EcosystemData ecosystemData, IWeather weather)
         {
             this.EcosystemData = ecosystemData;
+            this.Weather = weather;
+
             this.MeasureBiases = new Dictionary<Measure, double> { { Measure.Health, 1 } };
 
             // work out how big any hazard spread should be based on ecosystem dimensions
@@ -135,6 +138,7 @@
             alteredEnvironmentCoordinates.AddRange(this.DecreasePheromoneLevel());
             alteredEnvironmentCoordinates.AddRange(this.IncreaseNutrientLevels());
             alteredEnvironmentCoordinates.AddRange(this.SpreadHazards());
+            alteredEnvironmentCoordinates.AddRange(this.ProgressWeather());
             alteredEnvironmentCoordinates.AddRange(this.DecreaseOrganismHealth());
 
             return alteredEnvironmentCoordinates.Distinct();
@@ -253,6 +257,14 @@
             }
 
             return alteredEnvironmentCoordinates;
+        }
+
+        private IEnumerable<Coordinate> ProgressWeather()
+        {
+            this.Weather.Progress();
+
+            // TODO: use the weather to determine hazard appear / spread / disappear
+            return new List<Coordinate>();
         }
 
         private IEnumerable<Coordinate> SpreadHazards()

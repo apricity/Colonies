@@ -18,6 +18,8 @@
 
         double HazardSpreadRate { get; set; }
 
+        IWeather Weather { get; }
+
         UpdateSummary Update();
     }
 }

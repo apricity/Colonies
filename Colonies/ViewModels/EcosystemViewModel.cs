@@ -2,10 +2,13 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Windows.Media;
 
     using Microsoft.Practices.Prism.Events;
 
+    using Wacton.Colonies.Ancillary;
     using Wacton.Colonies.Interfaces;
+    using Wacton.Colonies.Logic;
 
     public class EcosystemViewModel : ViewModelBase<IEcosystem>
     {
@@ -23,6 +26,20 @@
             }
         }
 
+        private Color weatherColor;
+        public Color WeatherColor
+        {
+            get
+            {
+                return this.weatherColor;
+            }
+            set
+            {
+                this.weatherColor = value;
+                this.OnPropertyChanged("WeatherColor");
+            }
+        }
+
         public EcosystemViewModel(IEcosystem domainModel, List<List<HabitatViewModel>> habitatViewModels, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
@@ -36,6 +53,19 @@
             {
                 habitatViewModel.Refresh();
             }
+
+            this.RefreshWeatherColor();
+        }
+
+        public void RefreshWeatherColor()
+        {
+            this.WeatherColor = ColorLogic.WeatherColor(
+                Color.FromRgb(17, 17, 17),
+                new List<WeightedColor>
+                    {
+                        new WeightedColor(Colors.CornflowerBlue, this.DomainModel.Weather.GetWeatherLevel(WeatherType.Damp)),
+                        new WeightedColor(Colors.Tomato, this.DomainModel.Weather.GetWeatherLevel(WeatherType.Heat))
+                    });
         }
     }
 }

@@ -69,7 +69,8 @@
 
             var initialOrganismCoordinates = this.InitialOrganismCoordinates();
             var ecosystemData = new EcosystemData(habitats, initialOrganismCoordinates);
-            var ecosystem = new Ecosystem(ecosystemData);
+            var weather = new Weather();
+            var ecosystem = new Ecosystem(ecosystemData, weather);
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);

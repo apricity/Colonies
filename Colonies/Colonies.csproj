@@ -101,6 +101,7 @@
     <Compile Include="Interfaces\IEnvironment.cs" />
     <Compile Include="Interfaces\IOrganism.cs" />
     <Compile Include="Interfaces\IOrganismSynopsis.cs" />
+    <Compile Include="Interfaces\IWeather.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logic\ColorLogic.cs" />
     <Compile Include="Logic\DecisionLogic.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="Ancillary\UpdateSummary.cs" />
     <Compile Include="Ancillary\RelayCommand.cs" />
     <Compile Include="DesignTime\DesignTimeViewModelLocator.cs" />
+    <Compile Include="Models\Weather.cs" />
     <Compile Include="ViewModels\OrganismSynopsisViewModel.cs" />
     <Compile Include="ViewModels\OrganismViewModel.cs" />
     <Compile Include="ViewModels\EcosystemViewModel.cs" />

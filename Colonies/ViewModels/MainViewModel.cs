@@ -305,6 +305,8 @@
             // refresh the tool tip of each distinct habitat view model that has had its child view models refreshed
             Parallel.ForEach(refreshedHabitatViewModels.Distinct(), habitatViewModel => habitatViewModel.RefreshToolTip());
 
+            this.EcosystemViewModel.RefreshWeatherColor();
+
             // refresh organism synopsis
             this.OrganismSynopsisViewModel.Refresh();
         }

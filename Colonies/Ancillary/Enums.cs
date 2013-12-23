@@ -11,4 +11,10 @@
         Obstruction,
         Health
     }
+
+    public enum WeatherType
+    {
+        Heat,
+        Damp
+    }
 }

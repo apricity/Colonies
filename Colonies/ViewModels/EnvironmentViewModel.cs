@@ -168,7 +168,7 @@
         public EnvironmentViewModel(IEnvironment domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
-            this.CalculateEnvironmentColor();
+            this.RefreshEnvironmentColor();
         }
 
         public override void Refresh()
@@ -182,10 +182,10 @@
             this.NutrientScalar = this.DomainModel.Measurement.GetLevel(Measure.Nutrient);
             this.ObstructionLevel = this.DomainModel.Measurement.GetLevel(Measure.Obstruction);
 
-            this.CalculateEnvironmentColor();
+            this.RefreshEnvironmentColor();
         }
 
-        private void CalculateEnvironmentColor()
+        private void RefreshEnvironmentColor()
         {
             this.EnvironmentColor = ColorLogic.EnvironmentColor(
                 this.baseColor,

@@ -137,8 +137,8 @@
 
             alteredEnvironmentCoordinates.AddRange(this.DecreasePheromoneLevel());
             alteredEnvironmentCoordinates.AddRange(this.IncreaseNutrientLevels());
-            alteredEnvironmentCoordinates.AddRange(this.SpreadHazards());
             alteredEnvironmentCoordinates.AddRange(this.ProgressWeather());
+            //alteredEnvironmentCoordinates.AddRange(this.SpreadHazards());
             alteredEnvironmentCoordinates.AddRange(this.DecreaseOrganismHealth());
 
             return alteredEnvironmentCoordinates.Distinct();
@@ -263,37 +263,40 @@
         {
             this.Weather.Progress();
 
-            // TODO: use the weather to determine hazard appear / spread / disappear
-            return new List<Coordinate>();
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+            foreach (var weatherType in this.Weather.WeatherTypes)
+            {
+                var spreadChance = this.HazardSpreadRate * this.Weather.GetWeatherLevel(weatherType);
+                alteredEnvironmentCoordinates.AddRange(this.SpreadHazards(this.Weather.GetWeatherHazard(weatherType), spreadChance));
+            }
+
+            return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> SpreadHazards()
+        private IEnumerable<Coordinate> SpreadHazards(Measure hazardMeasure, double spreadChance)
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            foreach (var hazardMeasure in Environment.HazardMeasures())
+            var hazardCoordinates = this.EcosystemData.GetHazardCoordinates(hazardMeasure).ToList();
+            foreach (var hazardCoordinate in hazardCoordinates)
             {
-                var hazardCoordinates = this.EcosystemData.GetHazardCoordinates(hazardMeasure).ToList();
-                foreach (var hazardCoordinate in hazardCoordinates)
+                if (!DecisionLogic.IsSuccessful(spreadChance))
                 {
-                    if (!DecisionLogic.IsSuccessful(this.HazardSpreadRate))
-                    {
-                        continue;
-                    }
-
-                    var neighbouringCoordinates = this.EcosystemData.GetNeighbours(hazardCoordinate, 1, false, false).ToList();
-                    var validNeighbouringCoordinates = neighbouringCoordinates.Where(neighbourCoordinate =>
-                        neighbourCoordinate != null 
-                        && !this.EcosystemData.HasEnvironmentMeasure(neighbourCoordinate, Measure.Obstruction)
-                        && this.EcosystemData.GetEnvironmentLevel(neighbourCoordinate, hazardMeasure) < 1).ToList();
-                    if (validNeighbouringCoordinates.Count == 0)
-                    {
-                        continue;
-                    }
-
-                    var chosenCoordinate = DecisionLogic.MakeDecision(validNeighbouringCoordinates);
-                    alteredEnvironmentCoordinates.AddRange(this.InsertHazard(chosenCoordinate, hazardMeasure));
+                    continue;
                 }
+
+                var neighbouringCoordinates = this.EcosystemData.GetNeighbours(hazardCoordinate, 1, false, false).ToList();
+                var validNeighbouringCoordinates = neighbouringCoordinates.Where(neighbourCoordinate =>
+                    neighbourCoordinate != null
+                    && !this.EcosystemData.HasEnvironmentMeasure(neighbourCoordinate, Measure.Obstruction)
+                    && this.EcosystemData.GetEnvironmentLevel(neighbourCoordinate, hazardMeasure) < 1).ToList();
+                if (validNeighbouringCoordinates.Count == 0)
+                {
+                    continue;
+                }
+
+                var chosenCoordinate = DecisionLogic.MakeDecision(validNeighbouringCoordinates);
+                alteredEnvironmentCoordinates.AddRange(this.InsertHazard(chosenCoordinate, hazardMeasure));
             }
 
             return alteredEnvironmentCoordinates;

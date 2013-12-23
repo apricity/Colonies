@@ -9,23 +9,44 @@
 
     public class Weather : IWeather
     {
-        // TODO: better naming!
+        // TODO: better naming?
+        private Dictionary<WeatherType, Measure> WeatherHazards { get; set; } 
         private Dictionary<WeatherType, double> WeatherLevels { get; set; }
-        private Dictionary<WeatherType, double> WeatherChangeRates { get; set; } 
+        private Dictionary<WeatherType, double> WeatherChangeRates { get; set; }
+
+        public IEnumerable<WeatherType> WeatherTypes
+        {
+            get
+            {
+                return this.WeatherHazards.Keys;
+            }
+        }
+
 
         public Weather()
         {
-            this.WeatherLevels = new Dictionary<WeatherType, double>
-                                     {
-                                         { WeatherType.Damp, 0 },
-                                         { WeatherType.Heat, 0 }
-                                     };
+            this.WeatherHazards = new Dictionary<WeatherType, Measure>
+                                      {
+                                          { WeatherType.Damp, Measure.Damp },
+                                          { WeatherType.Heat, Measure.Heat }
+                                      };
+
+            this.WeatherLevels = new Dictionary<WeatherType, double>();
+            foreach (var weatherType in this.WeatherTypes)
+            {
+                this.WeatherLevels.Add(weatherType, 0);
+            }
 
             this.WeatherChangeRates = new Dictionary<WeatherType, double>
                                           {
                                               { WeatherType.Damp, 1 / (double)200 },
                                               { WeatherType.Heat, 1 / (double)2000 }
                                           };
+        }
+
+        public Measure GetWeatherHazard(WeatherType weatherType)
+        {
+            return this.WeatherHazards[weatherType];
         }
 
         public double GetWeatherLevel(WeatherType weatherType)

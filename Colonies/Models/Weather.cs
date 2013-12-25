@@ -22,7 +22,6 @@
             }
         }
 
-
         public Weather()
         {
             this.WeatherHazards = new Dictionary<WeatherType, Measure>

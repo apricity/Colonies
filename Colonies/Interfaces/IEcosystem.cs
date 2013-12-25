@@ -16,9 +16,11 @@
 
         double ObstructionDemolishRate { get; set; }
 
-        double HazardSpreadRate { get; set; }
-
         IWeather Weather { get; }
+
+        HazardChance GetHazardChance(Measure hazardMeasure);
+
+        void SetHazardChance(Measure hazardMeasure, HazardChance hazardChance);
 
         UpdateSummary Update();
     }

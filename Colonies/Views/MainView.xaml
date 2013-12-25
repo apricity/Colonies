@@ -82,6 +82,7 @@
                 <Slider Grid.Row="1" Grid.Column="1" Value="{Binding EcosystemTurnInterval}" 
                         Minimum="1" Maximum="2000" AutoToolTipPlacement="BottomRight" FlowDirection="RightToLeft" Margin="3"/>
 
+                <!-- TODO: wrap each of these in a common control -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Health Deterioration Rate:"/>
                 <DockPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
                     <TextBlock Text="1 /"/>
@@ -131,17 +132,11 @@
                              Background="{Binding ObstructionColor, Converter={StaticResource ColorToBrushConverter}}"/>
                 </DockPanel>
 
-                <TextBlock Grid.Row="8" Grid.Column="0" Text="Hazard Spread Rate:"/>
+                <TextBlock Grid.Row="8" Grid.Column="0" Text="Damp Spread Rate:"/>
                 <DockPanel Grid.Row="8" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
                     <TextBlock Text="1 /"/>
-                    <TextBox Text="{Binding HazardSpreadDenominator, UpdateSourceTrigger=PropertyChanged}">
-                        <TextBox.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                <GradientStop Color="{Binding DampColor}" Offset="0.0"/>
-                                <GradientStop Color="{Binding HeatColor}" Offset="1.0"/>
-                            </LinearGradientBrush>
-                        </TextBox.Background>
-                    </TextBox>
+                    <TextBox Text="{Binding DampSpreadDenominator, UpdateSourceTrigger=PropertyChanged}"
+                             Background="{Binding DampColor, Converter={StaticResource ColorToBrushConverter}}"/>
                 </DockPanel>
             </Grid>    
         </Controls:Flyout>
@@ -149,6 +144,8 @@
         <Controls:Flyout Header="Debug" Position="Bottom">
             <Grid Margin="3">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -158,7 +155,8 @@
 
                 <Grid.Resources>
                     <Converters:BoolToActiveStringConverter x:Key="BoolToActiveStringConverter" />
-
+                    <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
+                    
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Margin" Value="3,3,3,3"/>
                         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -170,6 +168,12 @@
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Turn count:"/>
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding TurnCount}" Margin="3"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Weather damp:"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding WeatherDampLevel}" Margin="3"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Weather heat:"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding WeatherHeatLevel}" Margin="3"/>
             </Grid>
         </Controls:Flyout>
     </Controls:MetroWindow.Flyouts>

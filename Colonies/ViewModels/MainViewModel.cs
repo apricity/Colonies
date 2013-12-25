@@ -163,16 +163,19 @@
             }
         }
 
-        public double HazardSpreadDenominator
+        // TODO: needs add, spread, remove for damp, heat, poison...
+        public double DampSpreadDenominator
         {
             get
             {
-                return 1 / this.DomainModel.Ecosystem.HazardSpreadRate;
+                return 1 / this.DomainModel.Ecosystem.GetHazardChance(Measure.Damp).SpreadChance;
             }
             set
             {
-                this.DomainModel.Ecosystem.HazardSpreadRate = 1 / value;
-                this.OnPropertyChanged("HazardSpreadRate");
+                var currentHazardChance = this.DomainModel.Ecosystem.GetHazardChance(Measure.Damp);
+                var updatedHazardChance = new HazardChance(currentHazardChance.AddChance, 1 / value, currentHazardChance.RemoveChance);
+                this.DomainModel.Ecosystem.SetHazardChance(Measure.Damp, updatedHazardChance);
+                this.OnPropertyChanged("HazardSpreadChance");
             }
         }
 
@@ -182,6 +185,34 @@
         public static Color ObstructionColor { get { return EnvironmentViewModel.MeasureColors[Measure.Obstruction]; } }
         public static Color DampColor { get { return EnvironmentViewModel.MeasureColors[Measure.Damp]; } }
         public static Color HeatColor { get { return EnvironmentViewModel.MeasureColors[Measure.Heat]; } }
+
+        private string weatherDampLevel;
+        public string WeatherDampLevel
+        {
+            get
+            {
+                return this.weatherDampLevel;
+            }
+            set
+            {
+                this.weatherDampLevel = value;
+                this.OnPropertyChanged("WeatherDampLevel");
+            }
+        }
+
+        private string weatherHeatLevel;
+        public string WeatherHeatLevel
+        {
+            get
+            {
+                return this.weatherHeatLevel;
+            }
+            set
+            {
+                this.weatherHeatLevel = value;
+                this.OnPropertyChanged("WeatherHeatLevel");
+            }
+        }
 
         private int turnCount;
         public int TurnCount
@@ -238,6 +269,8 @@
                     var updateSummary = this.DomainModel.UpdateOnce();
                     this.UpdateViewModels(updateSummary);
                     this.TurnCount++;
+                    this.WeatherDampLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetWeatherLevel(WeatherType.Damp));
+                    this.WeatherHeatLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetWeatherLevel(WeatherType.Heat));
 
                     // if there's been a change in the turn interval while the previous turn was processed
                     // update the interval of the ecosystem timer

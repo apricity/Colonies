@@ -137,7 +137,18 @@
 
         public void InsertHazard(Measure hazardMeasure, Coordinate coordinate)
         {
-            this.HazardCoordinates[hazardMeasure].Add(coordinate);
+            if (!this.HazardCoordinates[hazardMeasure].Contains(coordinate))
+            {
+                this.HazardCoordinates[hazardMeasure].Add(coordinate);
+            }
+        }
+
+        public void RemoveHazard(Measure hazardMeasure, Coordinate coordinate)
+        {
+            if (this.HazardCoordinates[hazardMeasure].Contains(coordinate))
+            {
+                this.HazardCoordinates[hazardMeasure].Remove(coordinate);
+            }
         }
 
         public bool IsHazardous(Coordinate coordinate)

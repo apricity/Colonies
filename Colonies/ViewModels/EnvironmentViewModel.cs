@@ -13,16 +13,18 @@
     public class EnvironmentViewModel : ViewModelBase<IEnvironment>
     {
         private readonly Color baseColor = Colors.Tan;
-        public static readonly Dictionary<Measure, Color> MeasureColors = new Dictionary<Measure, Color>
-                                                                        {
-                                                                            { Measure.Mineral, Colors.Goldenrod },
-                                                                            { Measure.Damp, Colors.CornflowerBlue },
-                                                                            { Measure.Heat, Colors.Tomato },
-                                                                            { Measure.Poison, Colors.DimGray },
-                                                                            { Measure.Pheromone, Colors.OrangeRed },
-                                                                            { Measure.Nutrient, Colors.OliveDrab },
-                                                                            { Measure.Obstruction, Colors.Black },
-                                                                        };
+
+        public static readonly Dictionary<EnvironmentMeasure, Color> MeasureColors =
+            new Dictionary<EnvironmentMeasure, Color>
+                {
+                    { EnvironmentMeasure.Mineral, Colors.Goldenrod },
+                    { EnvironmentMeasure.Damp, Colors.CornflowerBlue },
+                    { EnvironmentMeasure.Heat, Colors.Tomato },
+                    { EnvironmentMeasure.Poison, Colors.DimGray },
+                    { EnvironmentMeasure.Pheromone, Colors.OrangeRed },
+                    { EnvironmentMeasure.Nutrient, Colors.OliveDrab },
+                    { EnvironmentMeasure.Obstruction, Colors.Black },
+                };
 
         private Color environmentColor;
         public Color EnvironmentColor
@@ -42,7 +44,7 @@
         {
             get
             {
-                return MeasureColors[Measure.Pheromone];
+                return MeasureColors[EnvironmentMeasure.Pheromone];
             }
         }
 
@@ -50,7 +52,7 @@
         {
             get
             {
-                return MeasureColors[Measure.Nutrient];
+                return MeasureColors[EnvironmentMeasure.Nutrient];
             }
         }
 
@@ -58,7 +60,7 @@
         {
             get
             {
-                return MeasureColors[Measure.Obstruction];
+                return MeasureColors[EnvironmentMeasure.Obstruction];
             }
         }
 
@@ -173,14 +175,14 @@
 
         public override void Refresh()
         {
-            this.MineralLevel = this.DomainModel.Measurement.GetLevel(Measure.Mineral);
-            this.DampLevel = this.DomainModel.Measurement.GetLevel(Measure.Damp);
-            this.HeatLevel = this.DomainModel.Measurement.GetLevel(Measure.Heat);
-            this.PoisonLevel = this.DomainModel.Measurement.GetLevel(Measure.Poison);
+            this.MineralLevel = this.DomainModel.Measurement.GetLevel(EnvironmentMeasure.Mineral);
+            this.DampLevel = this.DomainModel.Measurement.GetLevel(EnvironmentMeasure.Damp);
+            this.HeatLevel = this.DomainModel.Measurement.GetLevel(EnvironmentMeasure.Heat);
+            this.PoisonLevel = this.DomainModel.Measurement.GetLevel(EnvironmentMeasure.Poison);
 
-            this.PheromoneOpacity = this.DomainModel.Measurement.GetLevel(Measure.Pheromone);
-            this.NutrientScalar = this.DomainModel.Measurement.GetLevel(Measure.Nutrient);
-            this.ObstructionLevel = this.DomainModel.Measurement.GetLevel(Measure.Obstruction);
+            this.PheromoneOpacity = this.DomainModel.Measurement.GetLevel(EnvironmentMeasure.Pheromone);
+            this.NutrientScalar = this.DomainModel.Measurement.GetLevel(EnvironmentMeasure.Nutrient);
+            this.ObstructionLevel = this.DomainModel.Measurement.GetLevel(EnvironmentMeasure.Obstruction);
 
             this.RefreshEnvironmentColor();
         }
@@ -189,12 +191,12 @@
         {
             this.EnvironmentColor = ColorLogic.EnvironmentColor(
                 this.baseColor,
-                new WeightedColor(MeasureColors[Measure.Mineral], this.MineralLevel),
+                new WeightedColor(MeasureColors[EnvironmentMeasure.Mineral], this.MineralLevel),
                 new List<WeightedColor>
                     {
-                        new WeightedColor(MeasureColors[Measure.Damp], this.DampLevel),
-                        new WeightedColor(MeasureColors[Measure.Heat], this.HeatLevel),
-                        new WeightedColor(MeasureColors[Measure.Poison], this.PoisonLevel)
+                        new WeightedColor(MeasureColors[EnvironmentMeasure.Damp], this.DampLevel),
+                        new WeightedColor(MeasureColors[EnvironmentMeasure.Heat], this.HeatLevel),
+                        new WeightedColor(MeasureColors[EnvironmentMeasure.Poison], this.PoisonLevel)
                     });
         }
     }

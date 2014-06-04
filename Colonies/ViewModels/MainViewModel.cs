@@ -168,23 +168,23 @@
         {
             get
             {
-                return 1 / this.DomainModel.Ecosystem.GetHazardChance(Measure.Damp).SpreadChance;
+                return 1 / this.DomainModel.Ecosystem.GetHazardChance(EnvironmentMeasure.Damp).SpreadChance;
             }
             set
             {
-                var currentHazardChance = this.DomainModel.Ecosystem.GetHazardChance(Measure.Damp);
+                var currentHazardChance = this.DomainModel.Ecosystem.GetHazardChance(EnvironmentMeasure.Damp);
                 var updatedHazardChance = new HazardChance(currentHazardChance.AddChance, 1 / value, currentHazardChance.RemoveChance);
-                this.DomainModel.Ecosystem.SetHazardChance(Measure.Damp, updatedHazardChance);
+                this.DomainModel.Ecosystem.SetHazardChance(EnvironmentMeasure.Damp, updatedHazardChance);
                 this.OnPropertyChanged("HazardSpreadChance");
             }
         }
 
-        public static Color PheromoneColor { get { return EnvironmentViewModel.MeasureColors[Measure.Pheromone]; } }
-        public static Color NutrientColor { get { return EnvironmentViewModel.MeasureColors[Measure.Nutrient]; } }
-        public static Color MineralColor { get { return EnvironmentViewModel.MeasureColors[Measure.Mineral]; } }
-        public static Color ObstructionColor { get { return EnvironmentViewModel.MeasureColors[Measure.Obstruction]; } }
-        public static Color DampColor { get { return EnvironmentViewModel.MeasureColors[Measure.Damp]; } }
-        public static Color HeatColor { get { return EnvironmentViewModel.MeasureColors[Measure.Heat]; } }
+        public static Color PheromoneColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Pheromone]; } }
+        public static Color NutrientColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Nutrient]; } }
+        public static Color MineralColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Mineral]; } }
+        public static Color ObstructionColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Obstruction]; } }
+        public static Color DampColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Damp]; } }
+        public static Color HeatColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Heat]; } }
 
         private string weatherDampLevel;
         public string WeatherDampLevel

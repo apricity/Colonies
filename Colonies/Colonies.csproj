@@ -80,7 +80,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Ancillary\OrganismMeasure.cs" />
+    <Compile Include="Ancillary\Enumeration.cs" />
     <Compile Include="Ancillary\HazardChance.cs" />
+    <Compile Include="Ancillary\EnvironmentMeasure.cs" />
     <Compile Include="Ancillary\WeightedColor.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
@@ -95,6 +98,7 @@
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Interfaces\ICondition.cs" />
+    <Compile Include="Interfaces\IMeasure.cs" />
     <Compile Include="Interfaces\IMeasurement.cs" />
     <Compile Include="Interfaces\IHabitat.cs" />
     <Compile Include="Interfaces\IMain.cs" />

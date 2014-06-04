@@ -2,7 +2,7 @@
 {
     using Wacton.Colonies.Ancillary;
 
-    public interface IEcosystem : IBiased
+    public interface IEcosystem : IBiased<OrganismMeasure>
     {
         double HealthDeteriorationRate { get; set; }
 
@@ -18,9 +18,9 @@
 
         IWeather Weather { get; }
 
-        HazardChance GetHazardChance(Measure hazardMeasure);
+        HazardChance GetHazardChance(EnvironmentMeasure hazardMeasure);
 
-        void SetHazardChance(Measure hazardMeasure, HazardChance hazardChance);
+        void SetHazardChance(EnvironmentMeasure hazardMeasure, HazardChance hazardChance);
 
         UpdateSummary Update();
     }

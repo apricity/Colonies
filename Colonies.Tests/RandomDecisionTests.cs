@@ -38,7 +38,7 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add((TestMeasurableItem)DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
 
@@ -61,7 +61,7 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add((TestMeasurableItem)DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
 
@@ -81,7 +81,7 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 var measurementLevel = (i + 1) * measurementIncrement;
-                this.items[i].SetPheromoneLevel(measurementLevel);
+                this.items[i].SetXLevel(measurementLevel);
             }
 
             // set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
@@ -103,7 +103,7 @@
             for (var i = 0; i < numberOfResults; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add((TestMeasurableItem)DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / numberOfResults;
             }
 
@@ -133,8 +133,8 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 var measurementLevel = (i + 1) * measurementIncrement;
-                this.items[i].SetPheromoneLevel(measurementLevel);
-                this.items[i].SetHealthLevel(1.0 - measurementLevel);
+                this.items[i].SetXLevel(measurementLevel);
+                this.items[i].SetYLevel(1.0 - measurementLevel);
             }
 
             // set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
@@ -148,7 +148,7 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add((TestMeasurableItem)DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
 
@@ -167,8 +167,8 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 var measurementLevel = (i + 1) * measurementIncrement;
-                this.items[i].SetPheromoneLevel(measurementLevel / 2.0);
-                this.items[i].SetHealthLevel(1 - measurementLevel);
+                this.items[i].SetXLevel(measurementLevel / 2.0);
+                this.items[i].SetYLevel(1 - measurementLevel);
             }
 
             // set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
@@ -182,7 +182,7 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add((TestMeasurableItem)DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
 
@@ -191,23 +191,23 @@
             var expectedItems = this.items;
             var actualItems = chosenItems;
             Assert.That(actualItems, Is.EqualTo(expectedItems));
-        }
+        }                                                       
 
-        private class TestMeasurableItem : IMeasurable
+        private class TestMeasurableItem : IMeasurable<TestMeasure>
         {
             private readonly string identifier;
-            private readonly Condition pheromoneCondition;
-            private readonly Condition healthCondition;
+            private readonly Condition xCondition;
+            private readonly Condition yCondition;
 
             public IMeasurement Measurement
             {
                 get
                 {
-                    return new Measurement(new List<Condition> { this.pheromoneCondition, this.healthCondition });
+                    return new Measurement(new List<Condition> { this.xCondition, this.yCondition });
                 }
             }
 
-            public double GetLevel(Measure measure)
+            public double GetLevel(TestMeasure measure)
             {
                 return this.Measurement.GetLevel(measure);
             }
@@ -215,18 +215,18 @@
             public TestMeasurableItem(string identifier)
             {
                 this.identifier = identifier;
-                this.pheromoneCondition = new Condition(Measure.Pheromone, 1.0);
-                this.healthCondition = new Condition(Measure.Health, 1.0);
+                this.xCondition = new Condition(TestMeasure.X, 1.0);
+                this.yCondition = new Condition(TestMeasure.Y, 1.0);
             }
 
-            public void SetPheromoneLevel(double pheromoneLevel)
+            public void SetXLevel(double pheromoneLevel)
             {
-                this.pheromoneCondition.SetLevel(pheromoneLevel);
+                this.xCondition.SetLevel(pheromoneLevel);
             }
 
-            public void SetHealthLevel(double healthLevel)
+            public void SetYLevel(double healthLevel)
             {
-                this.healthCondition.SetLevel(healthLevel);
+                this.yCondition.SetLevel(healthLevel);
             }
 
             public override string ToString()
@@ -235,33 +235,43 @@
             }
         }
 
-        private class TestBiasedItem : IBiased
+        private class TestBiasedItem : IBiased<TestMeasure>
         {
-            private readonly double pheromoneBias;
-            private readonly double healthBias;
+            private readonly double xBias;
+            private readonly double yBias;
 
-            public Dictionary<Measure, double> MeasureBiases
+            public Dictionary<TestMeasure, double> MeasureBiases
             {
                 get
                 {
                     // there needs to be a bias for each measure (will be applied to all items)
                     // but will have no effect when there is only one measure
-                    return new Dictionary<Measure, double> { { Measure.Pheromone, this.pheromoneBias }, { Measure.Health, this.healthBias } };
+                    return new Dictionary<TestMeasure, double> { { TestMeasure.X, this.xBias }, { TestMeasure.Y, this.yBias } };
                 }
             }
 
-            public TestBiasedItem(double pheromoneBias, double healthBias)
+            public TestBiasedItem(double xBias, double yBias)
             {
-                this.pheromoneBias = pheromoneBias;
-                this.healthBias = healthBias;
+                this.xBias = xBias;
+                this.yBias = yBias;
             }
 
-            public void SetMeasureBias(Measure measure, double bias)
+            public void SetMeasureBias(TestMeasure measure, double bias)
             {
                 this.MeasureBiases[measure] = bias;
             }
         }
 
+        private class TestMeasure : Enumeration, IMeasure
+        {
+            public static readonly TestMeasure X = new TestMeasure(0, "x");
+            public static readonly TestMeasure Y = new TestMeasure(1, "y");
+
+            private TestMeasure(int value, string friendlyString)
+                : base(value, friendlyString)
+            {
+            }
+        }
     }
 }
 

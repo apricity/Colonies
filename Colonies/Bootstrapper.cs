@@ -98,25 +98,25 @@
 
         protected virtual void InitialiseTerrain(Ecosystem ecosystem)
         {
-            ecosystem.InsertHazard(new Coordinate(19, 0), Measure.Damp);
-            ecosystem.InsertHazard(new Coordinate(15, 3), Measure.Damp);
-            ecosystem.InsertHazard(new Coordinate(17, 4), Measure.Damp);
-            ecosystem.InsertHazard(new Coordinate(17, 5), Measure.Heat);
-            ecosystem.InsertHazard(new Coordinate(15, 6), Measure.Heat);
-            ecosystem.InsertHazard(new Coordinate(19, 9), Measure.Heat);
+            ecosystem.InsertHazard(new Coordinate(19, 0), EnvironmentMeasure.Damp);
+            ecosystem.InsertHazard(new Coordinate(15, 3), EnvironmentMeasure.Damp);
+            ecosystem.InsertHazard(new Coordinate(17, 4), EnvironmentMeasure.Damp);
+            ecosystem.InsertHazard(new Coordinate(17, 5), EnvironmentMeasure.Heat);
+            ecosystem.InsertHazard(new Coordinate(15, 6), EnvironmentMeasure.Heat);
+            ecosystem.InsertHazard(new Coordinate(19, 9), EnvironmentMeasure.Heat);
 
             for (var i = 12; i < ecosystem.Width; i++)
             {
                 for (var j = 4; j <= 5; j++)
                 {
-                    ecosystem.InsertHazard(new Coordinate(i, j), Measure.Poison);
+                    ecosystem.InsertHazard(new Coordinate(i, j), EnvironmentMeasure.Poison);
                 }
             }
 
             for (var i = 0; i < 15; i++)
             {
-                ecosystem.SetEnvironmentLevel(new Coordinate(i, 0), Measure.Nutrient, 1.0 - (i * (1 / (double)15)));
-                ecosystem.SetEnvironmentLevel(new Coordinate(i, 9), Measure.Mineral, 1.0 - (i * (1 / (double)15)));
+                ecosystem.SetEnvironmentLevel(new Coordinate(i, 0), EnvironmentMeasure.Nutrient, 1.0 - (i * (1 / (double)15)));
+                ecosystem.SetEnvironmentLevel(new Coordinate(i, 9), EnvironmentMeasure.Mineral, 1.0 - (i * (1 / (double)15)));
             }
 
             // custom obstructed habitats (will make a square shapen with an entrance - a pen?)
@@ -152,7 +152,7 @@
 
             foreach (var coordinate in obstructedCoordinates)
             {
-                ecosystem.SetEnvironmentLevel(coordinate, Measure.Obstruction, 1.0);
+                ecosystem.SetEnvironmentLevel(coordinate, EnvironmentMeasure.Obstruction, 1.0);
             }
         }
 

@@ -1,6 +1,8 @@
 ﻿namespace Wacton.Colonies.Interfaces
 {
-    public interface IEnvironment : IMeasurable
+    using Wacton.Colonies.Ancillary;
+
+    public interface IEnvironment : IMeasurable<EnvironmentMeasure>
     {
         bool IsHazardous { get; }
     }

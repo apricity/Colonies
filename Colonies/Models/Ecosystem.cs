@@ -16,7 +16,7 @@
         private EcosystemData EcosystemData { get; set; }
         public IWeather Weather { get; private set; }
 
-        public Dictionary<Measure, double> MeasureBiases { get; private set; }
+        public Dictionary<OrganismMeasure, double> MeasureBiases { get; private set; }
 
         // TODO: neater management of these?
         public double HealthDeteriorationRate { get; set; }
@@ -26,8 +26,8 @@
         public double MineralFormRate { get; set; }
         public double ObstructionDemolishRate { get; set; }
 
-        public Dictionary<Measure, HazardChance> WeatherHazardChances { get; private set; }
-        public Dictionary<Measure, HazardChance> NonWeatherHazardChances { get; private set; } 
+        public Dictionary<EnvironmentMeasure, HazardChance> WeatherHazardChances { get; private set; }
+        public Dictionary<EnvironmentMeasure, HazardChance> NonWeatherHazardChances { get; private set; } 
 
         private int HazardDiameter { get; set; }
         private int HazardRadius
@@ -59,7 +59,7 @@
             this.EcosystemData = ecosystemData;
             this.Weather = weather;
 
-            this.MeasureBiases = new Dictionary<Measure, double> { { Measure.Health, 1 } };
+            this.MeasureBiases = new Dictionary<OrganismMeasure, double> { { OrganismMeasure.Health, 1 } };
 
             // work out how big any hazard spread should be based on ecosystem dimensions
             this.HazardDiameter = this.CalculateHazardDiameter();
@@ -71,15 +71,15 @@
             this.MineralFormRate = 1 / 100.0;
             this.ObstructionDemolishRate = 1 / 5.0;
 
-            this.WeatherHazardChances = new Dictionary<Measure, HazardChance>
+            this.WeatherHazardChances = new Dictionary<EnvironmentMeasure, HazardChance>
                                             {
-                                                { Measure.Damp, new HazardChance(1 / 2000.0, 1 / 500.0, 1 / 1000.0) },
-                                                { Measure.Heat, new HazardChance(1 / 2000.0, 1 / 500.0, 1 / 1000.0) }
+                                                { EnvironmentMeasure.Damp, new HazardChance(1 / 2000.0, 1 / 500.0, 1 / 1000.0) },
+                                                { EnvironmentMeasure.Heat, new HazardChance(1 / 2000.0, 1 / 500.0, 1 / 1000.0) }
                                             };
 
-            this.NonWeatherHazardChances = new Dictionary<Measure, HazardChance>
+            this.NonWeatherHazardChances = new Dictionary<EnvironmentMeasure, HazardChance>
                                                {
-                                                   { Measure.Poison, new HazardChance(0.0, 1 / 50.0, 1 / 50.0) }
+                                                   { EnvironmentMeasure.Poison, new HazardChance(0.0, 1 / 50.0, 1 / 50.0) }
                                                };
         }
 
@@ -130,10 +130,10 @@
             }
 
             // for any organisms that attempted to move to an obstructed habitat, decrease obstruction level
-            var obstructedCoordinates = desiredOrganismCoordinates.Values.Where(coordinate => this.EcosystemData.HasEnvironmentMeasure(coordinate, Measure.Obstruction));
+            var obstructedCoordinates = desiredOrganismCoordinates.Values.Where(coordinate => this.EcosystemData.HasEnvironmentMeasure(coordinate, EnvironmentMeasure.Obstruction));
             foreach (var obstructedCoordinate in obstructedCoordinates)
             {
-                var obstructionDecreased = this.EcosystemData.DecreaseEnvironmentLevel(obstructedCoordinate, Measure.Obstruction, this.ObstructionDemolishRate);
+                var obstructionDecreased = this.EcosystemData.DecreaseEnvironmentLevel(obstructedCoordinate, EnvironmentMeasure.Obstruction, this.ObstructionDemolishRate);
                 if (obstructionDecreased)
                 {
                     alteredEnvironmentCoordinates.Add(obstructedCoordinate);
@@ -158,18 +158,18 @@
         private IEnumerable<Coordinate> OrganismsConsumeNutrients()
         {
             var organismCoordinates = this.EcosystemData.GetOrganismCoordinates(true, null)
-                .Where(coordinate => this.EcosystemData.HasEnvironmentMeasure(coordinate, Measure.Nutrient)).ToList();
+                .Where(coordinate => this.EcosystemData.HasEnvironmentMeasure(coordinate, EnvironmentMeasure.Nutrient)).ToList();
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
             foreach (var organismCoordinate in organismCoordinates)
             {
-                var organismHealth = this.EcosystemData.GetOrganismLevel(organismCoordinate, Measure.Health);
-                var habitatNutrient = this.EcosystemData.GetEnvironmentLevel(organismCoordinate, Measure.Nutrient);
+                var organismHealth = this.EcosystemData.GetOrganismLevel(organismCoordinate, OrganismMeasure.Health);
+                var habitatNutrient = this.EcosystemData.GetEnvironmentLevel(organismCoordinate, EnvironmentMeasure.Nutrient);
                 var desiredNutrient = 1 - organismHealth;
                 var nutrientTaken = Math.Min(desiredNutrient, habitatNutrient); 
 
-                var healthIncreased = this.EcosystemData.IncreaseOrganismLevel(organismCoordinate, Measure.Health, nutrientTaken);
-                var nutrientDecreased = this.EcosystemData.DecreaseEnvironmentLevel(organismCoordinate, Measure.Nutrient, nutrientTaken);
+                var healthIncreased = this.EcosystemData.IncreaseOrganismLevel(organismCoordinate, OrganismMeasure.Health, nutrientTaken);
+                var nutrientDecreased = this.EcosystemData.DecreaseEnvironmentLevel(organismCoordinate, EnvironmentMeasure.Nutrient, nutrientTaken);
                 if (healthIncreased || nutrientDecreased)
                 {
                     alteredEnvironmentCoordinates.Add(organismCoordinate);
@@ -182,12 +182,12 @@
         private IEnumerable<Coordinate> DecreasePheromoneLevel()
         {
             var pheromoneCoordinates = this.EcosystemData.GetAllCoordinates()
-                .Where(coordinate => this.EcosystemData.HasEnvironmentMeasure(coordinate, Measure.Pheromone)).ToList();
+                .Where(coordinate => this.EcosystemData.HasEnvironmentMeasure(coordinate, EnvironmentMeasure.Pheromone)).ToList();
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
             foreach (var pheromoneCoordinate in pheromoneCoordinates)
             {
-                var pheromoneDecreased = this.EcosystemData.DecreaseEnvironmentLevel(pheromoneCoordinate, Measure.Pheromone, this.PheromoneFadeRate);
+                var pheromoneDecreased = this.EcosystemData.DecreaseEnvironmentLevel(pheromoneCoordinate, EnvironmentMeasure.Pheromone, this.PheromoneFadeRate);
                 if (pheromoneDecreased)
                 {
                     alteredEnvironmentCoordinates.Add(pheromoneCoordinate);
@@ -204,7 +204,7 @@
             var organismCoordinates = this.EcosystemData.GetOrganismCoordinates(true, true).ToList();
             foreach (var organismCoordinate in organismCoordinates)
             {
-                var pheromoneIncreased = this.EcosystemData.IncreaseEnvironmentLevel(organismCoordinate, Measure.Pheromone, this.PheromoneDepositRate);
+                var pheromoneIncreased = this.EcosystemData.IncreaseEnvironmentLevel(organismCoordinate, EnvironmentMeasure.Pheromone, this.PheromoneDepositRate);
                 if (pheromoneIncreased)
                 {
                     alteredEnvironmentCoordinates.Add(organismCoordinate);
@@ -224,7 +224,7 @@
             var alteredEnvironmentCoordinates = new List<Coordinate>();
             foreach (var organismCoordinate in organismCoordinates)
             {
-                var mineralIncreased = this.EcosystemData.IncreaseEnvironmentLevel(organismCoordinate, Measure.Mineral, this.MineralFormRate);
+                var mineralIncreased = this.EcosystemData.IncreaseEnvironmentLevel(organismCoordinate, EnvironmentMeasure.Mineral, this.MineralFormRate);
                 if (mineralIncreased)
                 {
                     alteredEnvironmentCoordinates.Add(organismCoordinate);
@@ -237,13 +237,13 @@
         private IEnumerable<Coordinate> IncreaseNutrientLevels()
         {
             var nutrientCoordinates = this.EcosystemData.GetAllCoordinates()
-                .Where(coordinate => this.EcosystemData.HasEnvironmentMeasure(coordinate, Measure.Nutrient) 
+                .Where(coordinate => this.EcosystemData.HasEnvironmentMeasure(coordinate, EnvironmentMeasure.Nutrient) 
                                      && !this.EcosystemData.IsHazardous(coordinate)).ToList();
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
             foreach (var nutrientCoordinate in nutrientCoordinates)
             {
-                var nutrientIncreased = this.EcosystemData.IncreaseEnvironmentLevel(nutrientCoordinate, Measure.Nutrient, this.NutrientGrowthRate);
+                var nutrientIncreased = this.EcosystemData.IncreaseEnvironmentLevel(nutrientCoordinate, EnvironmentMeasure.Nutrient, this.NutrientGrowthRate);
                 if (nutrientIncreased)
                 {
                     alteredEnvironmentCoordinates.Add(nutrientCoordinate);
@@ -260,7 +260,7 @@
             var alteredEnvironmentCoordinates = new List<Coordinate>();
             foreach (var organismCoordinate in organismCoordinates)
             {
-                var healthDecreased = this.EcosystemData.DecreaseOrganismLevel(organismCoordinate, Measure.Health, this.HealthDeteriorationRate);
+                var healthDecreased = this.EcosystemData.DecreaseOrganismLevel(organismCoordinate, OrganismMeasure.Health, this.HealthDeteriorationRate);
                 if (healthDecreased)
                 {
                     alteredEnvironmentCoordinates.Add(organismCoordinate);
@@ -306,7 +306,7 @@
             return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> RandomSpreadHazards(Measure hazardMeasure, double spreadChance)
+        private IEnumerable<Coordinate> RandomSpreadHazards(EnvironmentMeasure hazardMeasure, double spreadChance)
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
@@ -321,7 +321,7 @@
                 var neighbouringCoordinates = this.EcosystemData.GetNeighbours(hazardCoordinate, 1, false, false).ToList();
                 var validNeighbouringCoordinates = neighbouringCoordinates.Where(neighbourCoordinate =>
                     neighbourCoordinate != null
-                    && !this.EcosystemData.HasEnvironmentMeasure(neighbourCoordinate, Measure.Obstruction)
+                    && !this.EcosystemData.HasEnvironmentMeasure(neighbourCoordinate, EnvironmentMeasure.Obstruction)
                     && this.EcosystemData.GetEnvironmentLevel(neighbourCoordinate, hazardMeasure) < 1).ToList();
                 if (validNeighbouringCoordinates.Count == 0)
                 {
@@ -335,7 +335,7 @@
             return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> RandomRemoveHazards(Measure hazardMeasure, double removeChance)
+        private IEnumerable<Coordinate> RandomRemoveHazards(EnvironmentMeasure hazardMeasure, double removeChance)
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
@@ -366,7 +366,7 @@
             return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> RandomAddHazards(Measure hazardMeasure, double addChance)
+        private IEnumerable<Coordinate> RandomAddHazards(EnvironmentMeasure hazardMeasure, double addChance)
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
@@ -378,7 +378,7 @@
             var hazardCoordinates = this.EcosystemData.GetHazardCoordinates(hazardMeasure).ToList();
             var nonHazardCoordinates = this.EcosystemData.GetAllCoordinates().Except(hazardCoordinates);
             var chosenNonHazardCoordinate = DecisionLogic.MakeDecision(nonHazardCoordinates);
-            if (!this.EcosystemData.HasEnvironmentMeasure(chosenNonHazardCoordinate, Measure.Obstruction))
+            if (!this.EcosystemData.HasEnvironmentMeasure(chosenNonHazardCoordinate, EnvironmentMeasure.Obstruction))
             {
                 alteredEnvironmentCoordinates.AddRange(this.InsertHazard(chosenNonHazardCoordinate, hazardMeasure));
             }
@@ -386,7 +386,7 @@
             return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> RemoveHazard(Coordinate coordinate, Measure hazardMeasure)
+        private IEnumerable<Coordinate> RemoveHazard(Coordinate coordinate, EnvironmentMeasure hazardMeasure)
         {
             if (!Environment.IsPotentialHazard(hazardMeasure))
             {
@@ -417,7 +417,7 @@
             return alteredEnvironmentCoordinates;
         }
 
-        public IEnumerable<Coordinate> InsertHazard(Coordinate coordinate, Measure hazardMeasure)
+        public IEnumerable<Coordinate> InsertHazard(Coordinate coordinate, EnvironmentMeasure hazardMeasure)
         {
             if (!Environment.IsPotentialHazard(hazardMeasure))
             {
@@ -451,17 +451,17 @@
             return alteredEnvironmentCoordinates;
         }
 
-        public void SetEnvironmentLevel(Coordinate coordinate, Measure measure, double level)
+        public void SetEnvironmentLevel(Coordinate coordinate, EnvironmentMeasure measure, double level)
         {
             this.EcosystemData.SetEnvironmentLevel(coordinate, measure, level);
         }
 
-        public void SetMeasureBias(Measure measure, double bias)
+        public void SetMeasureBias(OrganismMeasure measure, double bias)
         {
             this.MeasureBiases[measure] = bias;
         }
 
-        public HazardChance GetHazardChance(Measure hazardMeasure)
+        public HazardChance GetHazardChance(EnvironmentMeasure hazardMeasure)
         {
             if (this.WeatherHazardChances.ContainsKey(hazardMeasure))
             {
@@ -476,7 +476,7 @@
             throw new ArgumentException(string.Format("No available chance for hazard measure {0}", hazardMeasure), "hazardMeasure");
         }
 
-        public void SetHazardChance(Measure hazardMeasure, HazardChance hazardChance)
+        public void SetHazardChance(EnvironmentMeasure hazardMeasure, HazardChance hazardChance)
         {
             if (this.WeatherHazardChances.ContainsKey(hazardMeasure))
             {

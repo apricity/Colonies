@@ -10,7 +10,8 @@
     {
         private static double baseWeighting = 1.0;
 
-        public static T MakeDecision<T>(IEnumerable<T> measurableItems, IBiased biasProvider) where T : class, IMeasurable
+        public static IMeasurable<T> MakeDecision<T>(IEnumerable<IMeasurable<T>> measurableItems, IBiased<T> biasProvider)
+            where T : IMeasure
         {
             var weightedMeasuredItems = WeightMeasuredItems(measurableItems, biasProvider);
             var chosenItem = ChooseRandomItem(weightedMeasuredItems);
@@ -66,9 +67,10 @@
             return randomNumber <= successProbability;
         }
 
-        private static Dictionary<T, double> WeightMeasuredItems<T>(IEnumerable<T> measurableItems, IBiased biasProvider) where T : class, IMeasurable
+        private static Dictionary<IMeasurable<T>, double> WeightMeasuredItems<T>(IEnumerable<IMeasurable<T>> measurableItems, IBiased<T> biasProvider) 
+            where T : IMeasure
         {
-            var weightedMeasurableItems = new Dictionary<T, double>();
+            var weightedMeasurableItems = new Dictionary<IMeasurable<T>, double>();
 
             var biases = biasProvider.MeasureBiases;
             foreach (var measurableItem in measurableItems)
@@ -77,7 +79,7 @@
                 // each measurement initially has a base weighting (the greater it is, the less effect the measurement level and bias have)
                 // add further weighting according to strength of measurement with bias applied
                 var measurement = measurableItem.Measurement;
-                var weighting = baseWeighting + measurement.Conditions.Sum(condition => condition.Level * biases[condition.Measure]);
+                var weighting = baseWeighting + measurement.Conditions.Sum(condition => condition.Level * biases[(T)condition.Measure]);
 
                 weightedMeasurableItems.Add(measurableItem, weighting);
             }
@@ -85,9 +87,9 @@
             return weightedMeasurableItems;
         }
 
-        private static T ChooseRandomItem<T>(Dictionary<T, double> weightedMeasurableItems) where T : class, IMeasurable
+        private static IMeasurable<T> ChooseRandomItem<T>(Dictionary<IMeasurable<T>, double> weightedMeasurableItems) where T : IMeasure
         {
-            var chosenItem = default(T);
+            var chosenItem = default(IMeasurable<T>);
             var totalWeight = weightedMeasurableItems.Values.Sum(weight => weight);
 
             var randomNumber = RandomNumberGenerator.RandomDouble(totalWeight);

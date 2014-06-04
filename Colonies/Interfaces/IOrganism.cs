@@ -2,7 +2,9 @@
 {
     using System.Windows.Media;
 
-    public interface IOrganism : IMeasurable, IBiased
+    using Wacton.Colonies.Ancillary;
+
+    public interface IOrganism : IMeasurable<OrganismMeasure>, IBiased<EnvironmentMeasure>
     {
         string Name { get; }
 

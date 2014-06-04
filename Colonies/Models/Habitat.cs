@@ -48,45 +48,45 @@
 
         public bool IsObstructed()
         {
-            return this.GetEnvironmentLevel(Measure.Obstruction) > 0;
+            return this.GetEnvironmentLevel(EnvironmentMeasure.Obstruction) > 0;
         }
 
-        public double GetEnvironmentLevel(Measure measure)
+        public double GetEnvironmentLevel(EnvironmentMeasure measure)
         {
             return this.Environment.GetLevel(measure);
         }
 
-        public double GetOrganismLevel(Measure measure)
+        public double GetOrganismLevel(OrganismMeasure measure)
         {
             return this.Organism.GetLevel(measure);
         }
 
-        public void SetEnvironmentLevel(Measure measure, double level)
+        public void SetEnvironmentLevel(EnvironmentMeasure measure, double level)
         {
             this.environment.SetLevel(measure, level);
         }
 
-        public void SetOrganismLevel(Measure measure, double level)
+        public void SetOrganismLevel(OrganismMeasure measure, double level)
         {
             this.organism.SetLevel(measure, level);
         }
 
-        public bool IncreaseEnvironmentLevel(Measure measure, double increment)
+        public bool IncreaseEnvironmentLevel(EnvironmentMeasure measure, double increment)
         {
             return this.environment.IncreaseLevel(measure, increment);
         }
 
-        public bool IncreaseOrganismLevel(Measure measure, double increment)
+        public bool IncreaseOrganismLevel(OrganismMeasure measure, double increment)
         {
             return this.organism.IncreaseLevel(measure, increment);
         }
 
-        public bool DecreaseEnvironmentLevel(Measure measure, double decrement)
+        public bool DecreaseEnvironmentLevel(EnvironmentMeasure measure, double decrement)
         {
             return this.environment.DecreaseLevel(measure, decrement);
         }
 
-        public bool DecreaseOrganismLevel(Measure measure, double decrement)
+        public bool DecreaseOrganismLevel(OrganismMeasure measure, double decrement)
         {
             return this.organism.DecreaseLevel(measure, decrement);
         }

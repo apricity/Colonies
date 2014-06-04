@@ -8,7 +8,7 @@
     {
         IEnumerable<WeatherType> WeatherTypes { get; }
 
-        Measure GetWeatherHazard(WeatherType weatherType);
+        EnvironmentMeasure GetWeatherHazard(WeatherType weatherType);
 
         double GetWeatherLevel(WeatherType weatherType);
 

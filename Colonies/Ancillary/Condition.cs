@@ -6,10 +6,10 @@
 
     public class Condition : ICondition, IEquatable<Condition>
     {
-        public Measure Measure { get; private set; }
+        public IMeasure Measure { get; private set; }
         public double Level { get; private set; }
 
-        public Condition(Measure measure, double level)
+        public Condition(IMeasure measure, double level)
         {
             this.Measure = measure;
             this.Level = level;

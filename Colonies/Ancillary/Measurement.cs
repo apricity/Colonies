@@ -22,22 +22,22 @@
             this.conditions = conditions;
         }
 
-        public double GetLevel(Measure measure)
+        public double GetLevel(IMeasure measure)
         {
             return this.GetCondition(measure).Level;
         }
 
-        public void SetLevel(Measure measure, double level)
+        public void SetLevel(IMeasure measure, double level)
         {
             this.GetCondition(measure).SetLevel(level);
         }
 
-        public bool IncreaseLevel(Measure measure, double increment)
+        public bool IncreaseLevel(IMeasure measure, double increment)
         {
             return this.GetCondition(measure).IncreaseLevel(increment);
         }
 
-        public bool DecreaseLevel(Measure measure, double decrement)
+        public bool DecreaseLevel(IMeasure measure, double decrement)
         {
             return this.GetCondition(measure).DecreaseLevel(decrement);
         }
@@ -47,7 +47,7 @@
             return this.conditions.Any(condition.Equals);
         }
 
-        private Condition GetCondition(Measure measure)
+        private Condition GetCondition(IMeasure measure)
         {
             return this.conditions.Single(condition => condition.Measure.Equals(measure));
         }

@@ -1,11 +1,9 @@
 ﻿namespace Wacton.Colonies.Interfaces
 {
-    using Wacton.Colonies.Ancillary;
-
-    public interface IMeasurable
+    public interface IMeasurable<T> where T : IMeasure
     {
         IMeasurement Measurement { get; }
 
-        double GetLevel(Measure measure);
+        double GetLevel(T measure);
     }
 }

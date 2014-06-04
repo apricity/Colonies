@@ -36,39 +36,39 @@
             this.measurement = new Measurement(conditions);
         }
 
-        public double GetLevel(Measure measure)
+        public double GetLevel(EnvironmentMeasure measure)
         {
             return this.measurement.GetLevel(measure);
         }
 
-        public void SetLevel(Measure measure, double level)
+        public void SetLevel(EnvironmentMeasure measure, double level)
         {
             this.measurement.SetLevel(measure, level);
         }
 
-        public bool IncreaseLevel(Measure measure, double increment)
+        public bool IncreaseLevel(EnvironmentMeasure measure, double increment)
         {
             return this.measurement.IncreaseLevel(measure, increment);
         }
 
-        public bool DecreaseLevel(Measure measure, double decrement)
+        public bool DecreaseLevel(EnvironmentMeasure measure, double decrement)
         {
             return this.measurement.DecreaseLevel(measure, decrement);
         }
 
-        public static bool IsPotentialHazard(Measure measure)
+        public static bool IsPotentialHazard(EnvironmentMeasure measure)
         {
             return HazardMeasures().Any(hazardMeasure => hazardMeasure.Equals(measure));
         }
 
-        public static IEnumerable<Measure> Measures()
+        public static IEnumerable<EnvironmentMeasure> Measures()
         {
-            return new List<Measure> { Measure.Pheromone, Measure.Nutrient, Measure.Mineral, Measure.Obstruction, Measure.Damp, Measure.Heat, Measure.Poison };
+            return new List<EnvironmentMeasure> { EnvironmentMeasure.Pheromone, EnvironmentMeasure.Nutrient, EnvironmentMeasure.Mineral, EnvironmentMeasure.Obstruction, EnvironmentMeasure.Damp, EnvironmentMeasure.Heat, EnvironmentMeasure.Poison };
         }
 
-        public static IEnumerable<Measure> HazardMeasures()
+        public static IEnumerable<EnvironmentMeasure> HazardMeasures()
         {
-            return new List<Measure> { Measure.Damp, Measure.Heat, Measure.Poison };
+            return new List<EnvironmentMeasure> { EnvironmentMeasure.Damp, EnvironmentMeasure.Heat, EnvironmentMeasure.Poison };
         }
         
         public override string ToString()

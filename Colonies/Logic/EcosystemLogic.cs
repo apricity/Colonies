@@ -31,7 +31,7 @@
                 // determine organism's intentions based on the environment measurements
                 var measurableItems = validNeighbourCoordinates.Select(ecosystemData.GetEnvironment).ToList();
                 var biasProvider = ecosystemData.GetOrganism(organismCoordinate);
-                var chosenMeasurable = DecisionLogic.MakeDecision(measurableItems, biasProvider);
+                var chosenMeasurable = (IEnvironment)DecisionLogic.MakeDecision(measurableItems, biasProvider);
 
                 // get the habitat the environment is from - this is where the organism wants to move to
                 var chosenCoordinate = validNeighbourCoordinates.Single(coordinate => ecosystemData.GetEnvironment(coordinate).Equals(chosenMeasurable));
@@ -62,7 +62,7 @@
             // return an empty list - i.e. no organism can move to its intended destination
             var vacantCoordinates = desiredCoordinates
                 .Except(occupiedCoordinates)
-                .Where(coordinate => !ecosystemData.HasEnvironmentMeasure(coordinate, Measure.Obstruction))
+                .Where(coordinate => !ecosystemData.HasEnvironmentMeasure(coordinate, EnvironmentMeasure.Obstruction))
                 .Distinct().ToList();
             if (vacantCoordinates.Count == 0)
             {
@@ -119,7 +119,7 @@
                 return OverrideDecideOrganismFunction.Invoke(organisms);
             }
 
-            return DecisionLogic.MakeDecision(organisms, biasProvider);
+            return (IOrganism)DecisionLogic.MakeDecision(organisms, biasProvider);
         }
 
         public static Coordinate[,] GetNeighbours(this Habitat[,] habitats, Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)

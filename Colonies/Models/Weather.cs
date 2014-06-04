@@ -10,7 +10,7 @@
     public class Weather : IWeather
     {
         // TODO: better naming?
-        private Dictionary<WeatherType, Measure> WeatherHazards { get; set; } 
+        private Dictionary<WeatherType, EnvironmentMeasure> WeatherHazards { get; set; } 
         private Dictionary<WeatherType, double> WeatherLevels { get; set; }
         private Dictionary<WeatherType, double> WeatherChangeRates { get; set; }
 
@@ -24,10 +24,10 @@
 
         public Weather()
         {
-            this.WeatherHazards = new Dictionary<WeatherType, Measure>
+            this.WeatherHazards = new Dictionary<WeatherType, EnvironmentMeasure>
                                       {
-                                          { WeatherType.Damp, Measure.Damp },
-                                          { WeatherType.Heat, Measure.Heat }
+                                          { WeatherType.Damp, EnvironmentMeasure.Damp },
+                                          { WeatherType.Heat, EnvironmentMeasure.Heat }
                                       };
 
             this.WeatherLevels = new Dictionary<WeatherType, double>();
@@ -43,7 +43,7 @@
                                           };
         }
 
-        public Measure GetWeatherHazard(WeatherType weatherType)
+        public EnvironmentMeasure GetWeatherHazard(WeatherType weatherType)
         {
             return this.WeatherHazards[weatherType];
         }

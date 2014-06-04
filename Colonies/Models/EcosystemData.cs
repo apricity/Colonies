@@ -13,7 +13,7 @@
         private Habitat[,] Habitats { get; set; }
         private Dictionary<Organism, Habitat> OrganismHabitats { get; set; }
         private Dictionary<Habitat, Coordinate> HabitatCoordinates { get; set; }
-        private Dictionary<Measure, List<Coordinate>> HazardCoordinates { get; set; }
+        private Dictionary<EnvironmentMeasure, List<Coordinate>> HazardCoordinates { get; set; }
 
         public int Width
         {
@@ -36,7 +36,7 @@
             this.Habitats = habitats;
             this.HabitatCoordinates = new Dictionary<Habitat, Coordinate>();
             this.OrganismHabitats = new Dictionary<Organism, Habitat>();
-            this.HazardCoordinates = new Dictionary<Measure, List<Coordinate>>();
+            this.HazardCoordinates = new Dictionary<EnvironmentMeasure, List<Coordinate>>();
 
             for (var i = 0; i < this.Width; i++)
             {
@@ -70,72 +70,72 @@
                 .Select(this.CoordinateOf);
         }
 
-        public IEnumerable<Coordinate> GetHazardCoordinates(Measure hazardMeasure)
+        public IEnumerable<Coordinate> GetHazardCoordinates(EnvironmentMeasure hazardMeasure)
         {
             return this.HazardCoordinates[hazardMeasure].ToList();
         }
 
-        public bool HasEnvironmentMeasure(Coordinate coordinate, Measure measure)
+        public bool HasEnvironmentMeasure(Coordinate coordinate, EnvironmentMeasure measure)
         {
             EnsureEnvironmentMeasure(measure);
             return this.HabitatAt(coordinate).GetEnvironmentLevel(measure) > 0.0;
         }
 
-        public bool HasOrganismMeasure(Coordinate coordinate, Measure measure)
+        public bool HasOrganismMeasure(Coordinate coordinate, OrganismMeasure measure)
         {
             EnsureOrganismMeasure(measure);
             return this.HabitatAt(coordinate).GetOrganismLevel(measure) > 0.0;
         }
 
-        public double GetEnvironmentLevel(Coordinate coordinate, Measure measure)
+        public double GetEnvironmentLevel(Coordinate coordinate, EnvironmentMeasure measure)
         {
             EnsureEnvironmentMeasure(measure);
             return this.HabitatAt(coordinate).GetEnvironmentLevel(measure);
         }
 
-        public double GetOrganismLevel(Coordinate coordinate, Measure measure)
+        public double GetOrganismLevel(Coordinate coordinate, OrganismMeasure measure)
         {
             EnsureOrganismMeasure(measure);
             return this.HabitatAt(coordinate).GetOrganismLevel(measure);
         }
 
-        public void SetEnvironmentLevel(Coordinate coordinate, Measure measure, double level)
+        public void SetEnvironmentLevel(Coordinate coordinate, EnvironmentMeasure measure, double level)
         {
             EnsureEnvironmentMeasure(measure);
             this.HabitatAt(coordinate).SetEnvironmentLevel(measure, level);
         }
 
-        public void SetOrganismLevel(Coordinate coordinate, Measure measure, double level)
+        public void SetOrganismLevel(Coordinate coordinate, OrganismMeasure measure, double level)
         {
             EnsureOrganismMeasure(measure);
             this.HabitatAt(coordinate).SetOrganismLevel(measure, level);
         }
 
-        public bool IncreaseEnvironmentLevel(Coordinate coordinate, Measure measure, double increment)
+        public bool IncreaseEnvironmentLevel(Coordinate coordinate, EnvironmentMeasure measure, double increment)
         {
             EnsureEnvironmentMeasure(measure);
             return this.HabitatAt(coordinate).IncreaseEnvironmentLevel(measure, increment);
         }
 
-        public bool IncreaseOrganismLevel(Coordinate coordinate, Measure measure, double increment)
+        public bool IncreaseOrganismLevel(Coordinate coordinate, OrganismMeasure measure, double increment)
         {
             EnsureOrganismMeasure(measure);
             return this.HabitatAt(coordinate).IncreaseOrganismLevel(measure, increment);
         }
 
-        public bool DecreaseEnvironmentLevel(Coordinate coordinate, Measure measure, double decrement)
+        public bool DecreaseEnvironmentLevel(Coordinate coordinate, EnvironmentMeasure measure, double decrement)
         {
             EnsureEnvironmentMeasure(measure);
             return this.HabitatAt(coordinate).DecreaseEnvironmentLevel(measure, decrement); 
         }
 
-        public bool DecreaseOrganismLevel(Coordinate coordinate, Measure measure, double decrement)
+        public bool DecreaseOrganismLevel(Coordinate coordinate, OrganismMeasure measure, double decrement)
         {
             EnsureOrganismMeasure(measure);
             return this.HabitatAt(coordinate).DecreaseOrganismLevel(measure, decrement);
         }
 
-        public void InsertHazard(Measure hazardMeasure, Coordinate coordinate)
+        public void InsertHazard(EnvironmentMeasure hazardMeasure, Coordinate coordinate)
         {
             if (!this.HazardCoordinates[hazardMeasure].Contains(coordinate))
             {
@@ -143,7 +143,7 @@
             }
         }
 
-        public void RemoveHazard(Measure hazardMeasure, Coordinate coordinate)
+        public void RemoveHazard(EnvironmentMeasure hazardMeasure, Coordinate coordinate)
         {
             if (this.HazardCoordinates[hazardMeasure].Contains(coordinate))
             {
@@ -251,7 +251,8 @@
             return this.CoordinateOf(this.OrganismHabitats[organism]);
         }
 
-        private static void EnsureEnvironmentMeasure(Measure measure)
+        // TODO: remove these now environment measure and organism measure are distinct
+        private static void EnsureEnvironmentMeasure(EnvironmentMeasure measure)
         {
             if (!Environment.Measures().Contains(measure))
             {
@@ -259,7 +260,7 @@
             }
         }
 
-        private static void EnsureOrganismMeasure(Measure measure)
+        private static void EnsureOrganismMeasure(OrganismMeasure measure)
         {
             if (!Organism.Measures().Contains(measure))
             {

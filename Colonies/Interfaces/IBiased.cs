@@ -2,10 +2,8 @@
 {
     using System.Collections.Generic;
 
-    using Wacton.Colonies.Ancillary;
-
-    public interface IBiased
+    public interface IBiased<T> where T : IMeasure
     {
-        Dictionary<Measure, double> MeasureBiases { get; }
+        Dictionary<T, double> MeasureBiases { get; }
     }
 }

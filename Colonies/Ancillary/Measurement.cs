@@ -1,68 +1,65 @@
 ﻿namespace Wacton.Colonies.Ancillary
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
+    using System;
 
     using Wacton.Colonies.Interfaces;
 
-    public class Measurement : IMeasurement
+    public class Measurement : IMeasurement, IEquatable<Measurement>
     {
-        private readonly List<Condition> conditions;
-        public IEnumerable<ICondition> Conditions
+        public IMeasure Measure { get; private set; }
+        public double Level { get; private set; }
+
+        public Measurement(IMeasure measure, double level)
         {
-            get
+            this.Measure = measure;
+            this.Level = level;
+        }
+
+        public void SetLevel(double level)
+        {
+            this.Level = Math.Round(level, 4);
+            this.EnsureLevelWithinLimit();
+        }
+
+        public bool IncreaseLevel(double increment)
+        {
+            return this.ChangeLevel(increment);
+        }
+
+        public bool DecreaseLevel(double decrement)
+        {
+            return this.ChangeLevel(-decrement);
+        }
+
+        private bool ChangeLevel(double value)
+        {
+            // rounding is used to counteract some of the floating point arithmetic loss of precision
+            var previousLevel = this.Level;
+            this.Level = Math.Round(previousLevel + value, 4);
+            this.EnsureLevelWithinLimit();
+            return Math.Abs(previousLevel - this.Level) > 0.0;
+        }
+
+        private void EnsureLevelWithinLimit()
+        {
+            if (this.Level < 0.0)
             {
-                return this.conditions;
+                this.Level = 0.0;
+            }
+            else if (this.Level > 1.0)
+            {
+                this.Level = 1.0;
             }
         }
 
-        public Measurement(List<Condition> conditions)
+        public bool Equals(Measurement other)
         {
-            this.conditions = conditions;
-        }
-
-        public double GetLevel(IMeasure measure)
-        {
-            return this.GetCondition(measure).Level;
-        }
-
-        public void SetLevel(IMeasure measure, double level)
-        {
-            this.GetCondition(measure).SetLevel(level);
-        }
-
-        public bool IncreaseLevel(IMeasure measure, double increment)
-        {
-            return this.GetCondition(measure).IncreaseLevel(increment);
-        }
-
-        public bool DecreaseLevel(IMeasure measure, double decrement)
-        {
-            return this.GetCondition(measure).DecreaseLevel(decrement);
-        }
-
-        public bool HasCondition(Condition condition)
-        {
-            return this.conditions.Any(condition.Equals);
-        }
-
-        private Condition GetCondition(IMeasure measure)
-        {
-            return this.conditions.Single(condition => condition.Measure.Equals(measure));
+            return this.Measure.Equals(other.Measure) && this.Level.Equals(other.Level);
         }
 
         public override string ToString()
         {
-            var stringBuilder = new StringBuilder();
-            foreach (var condition in this.conditions)
-            {
-                stringBuilder.Append(condition);
-                stringBuilder.Append("/");
-            }
-
-            stringBuilder.Remove(stringBuilder.Length - 1, 1);
-            return stringBuilder.ToString();
+            return string.Format("{0}: {1}", this.Measure, this.Level);
         }
     }
 }

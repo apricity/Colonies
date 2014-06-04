@@ -80,9 +80,9 @@
         public void RefreshToolTip()
         {
             var stringBuilder = new StringBuilder();
-            foreach (var condition in this.DomainModel.Environment.Measurement.Conditions)
+            foreach (var measurement in this.DomainModel.Environment.MeasurementData.Measurements)
             {
-                stringBuilder.AppendLine(string.Format("{0}: {1:0.000}", condition.Measure, condition.Level));
+                stringBuilder.AppendLine(string.Format("{0}: {1:0.000}", measurement.Measure, measurement.Level));
             }
 
             if (this.DomainModel.ContainsOrganism())
@@ -90,9 +90,9 @@
                 stringBuilder.AppendLine("----------");
                 stringBuilder.AppendLine(this.DomainModel.Organism.Name);
 
-                foreach (var condition in this.DomainModel.Organism.Measurement.Conditions)
+                foreach (var measurement in this.DomainModel.Organism.MeasurementData.Measurements)
                 {
-                    stringBuilder.AppendLine(string.Format("{0}: {1:0.000}", condition.Measure, condition.Level));
+                    stringBuilder.AppendLine(string.Format("{0}: {1:0.000}", measurement.Measure, measurement.Level));
                 }
             }
 

@@ -175,14 +175,14 @@
 
         public override void Refresh()
         {
-            this.MineralLevel = this.DomainModel.Measurement.GetLevel(EnvironmentMeasure.Mineral);
-            this.DampLevel = this.DomainModel.Measurement.GetLevel(EnvironmentMeasure.Damp);
-            this.HeatLevel = this.DomainModel.Measurement.GetLevel(EnvironmentMeasure.Heat);
-            this.PoisonLevel = this.DomainModel.Measurement.GetLevel(EnvironmentMeasure.Poison);
+            this.MineralLevel = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Mineral);
+            this.DampLevel = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Damp);
+            this.HeatLevel = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Heat);
+            this.PoisonLevel = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Poison);
 
-            this.PheromoneOpacity = this.DomainModel.Measurement.GetLevel(EnvironmentMeasure.Pheromone);
-            this.NutrientScalar = this.DomainModel.Measurement.GetLevel(EnvironmentMeasure.Nutrient);
-            this.ObstructionLevel = this.DomainModel.Measurement.GetLevel(EnvironmentMeasure.Obstruction);
+            this.PheromoneOpacity = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Pheromone);
+            this.NutrientScalar = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Nutrient);
+            this.ObstructionLevel = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Obstruction);
 
             this.RefreshEnvironmentColor();
         }

@@ -115,8 +115,8 @@
 
             for (var i = 0; i < 15; i++)
             {
-                ecosystem.SetEnvironmentLevel(new Coordinate(i, 0), EnvironmentMeasure.Nutrient, 1.0 - (i * (1 / (double)15)));
-                ecosystem.SetEnvironmentLevel(new Coordinate(i, 9), EnvironmentMeasure.Mineral, 1.0 - (i * (1 / (double)15)));
+                ecosystem.SetLevel(new Coordinate(i, 0), EnvironmentMeasure.Nutrient, 1.0 - (i * (1 / (double)15)));
+                ecosystem.SetLevel(new Coordinate(i, 9), EnvironmentMeasure.Mineral, 1.0 - (i * (1 / (double)15)));
             }
 
             // custom obstructed habitats (will make a square shapen with an entrance - a pen?)
@@ -152,7 +152,7 @@
 
             foreach (var coordinate in obstructedCoordinates)
             {
-                ecosystem.SetEnvironmentLevel(coordinate, EnvironmentMeasure.Obstruction, 1.0);
+                ecosystem.SetLevel(coordinate, EnvironmentMeasure.Obstruction, 1.0);
             }
         }
 

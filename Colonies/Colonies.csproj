@@ -97,9 +97,9 @@
     <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
     <Compile Include="Events\OrganismsUpdatedEvent.cs" />
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="Interfaces\ICondition.cs" />
-    <Compile Include="Interfaces\IMeasure.cs" />
     <Compile Include="Interfaces\IMeasurement.cs" />
+    <Compile Include="Interfaces\IMeasure.cs" />
+    <Compile Include="Interfaces\IMeasurementData.cs" />
     <Compile Include="Interfaces\IHabitat.cs" />
     <Compile Include="Interfaces\IMain.cs" />
     <Compile Include="Interfaces\IEcosystem.cs" />
@@ -110,10 +110,10 @@
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logic\ColorLogic.cs" />
     <Compile Include="Logic\DecisionLogic.cs" />
-    <Compile Include="Ancillary\Condition.cs" />
+    <Compile Include="Ancillary\Measurement.cs" />
     <Compile Include="Interfaces\IBiased.cs" />
     <Compile Include="Interfaces\IMeasurable.cs" />
-    <Compile Include="Ancillary\Measurement.cs" />
+    <Compile Include="Ancillary\MeasurementData.cs" />
     <Compile Include="Logic\EcosystemLogic.cs" />
     <Compile Include="Logic\RandomNumberGenerator.cs" />
     <Compile Include="Models\Ecosystem.cs" />
@@ -151,7 +151,7 @@
     </Compile>
     <Compile Include="Models\Habitat.cs" />
     <Compile Include="Models\Environment.cs" />
-    <Compile Include="Ancillary\Enums.cs" />
+    <Compile Include="Ancillary\WeatherType.cs" />
     <Compile Include="Models\Organism.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Page Include="Resources\Icons.xaml">

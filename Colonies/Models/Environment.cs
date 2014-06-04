@@ -8,12 +8,12 @@
 
     public sealed class Environment : IEnvironment
     {
-        private readonly Measurement measurement;
-        public IMeasurement Measurement
+        private readonly MeasurementData measurementData;
+        public IMeasurementData MeasurementData
         {
             get
             {
-                return this.measurement;
+                return this.measurementData;
             }
         }
 
@@ -21,59 +21,45 @@
         {
             get
             {
-                return HazardMeasures().Any(hazardMeasure => this.measurement.GetLevel(hazardMeasure).Equals(1.0));
+                return EnvironmentMeasure.PotentialHazards()
+                    .Any(hazardMeasure => this.measurementData.GetLevel(hazardMeasure).Equals(1.0));
             }
         }
 
         public Environment()
         {
-            var conditions = new List<Condition>();
-            foreach (var measure in Measures())
+            var measurements = new List<Measurement>();
+            foreach (var measure in Enumeration.GetAll<EnvironmentMeasure>())
             {
-                conditions.Add(new Condition(measure, 0));
+                measurements.Add(new Measurement(measure, 0));
             }
 
-            this.measurement = new Measurement(conditions);
+            this.measurementData = new MeasurementData(measurements);
         }
 
         public double GetLevel(EnvironmentMeasure measure)
         {
-            return this.measurement.GetLevel(measure);
+            return this.measurementData.GetLevel(measure);
         }
 
         public void SetLevel(EnvironmentMeasure measure, double level)
         {
-            this.measurement.SetLevel(measure, level);
+            this.measurementData.SetLevel(measure, level);
         }
 
         public bool IncreaseLevel(EnvironmentMeasure measure, double increment)
         {
-            return this.measurement.IncreaseLevel(measure, increment);
+            return this.measurementData.IncreaseLevel(measure, increment);
         }
 
         public bool DecreaseLevel(EnvironmentMeasure measure, double decrement)
         {
-            return this.measurement.DecreaseLevel(measure, decrement);
-        }
-
-        public static bool IsPotentialHazard(EnvironmentMeasure measure)
-        {
-            return HazardMeasures().Any(hazardMeasure => hazardMeasure.Equals(measure));
-        }
-
-        public static IEnumerable<EnvironmentMeasure> Measures()
-        {
-            return new List<EnvironmentMeasure> { EnvironmentMeasure.Pheromone, EnvironmentMeasure.Nutrient, EnvironmentMeasure.Mineral, EnvironmentMeasure.Obstruction, EnvironmentMeasure.Damp, EnvironmentMeasure.Heat, EnvironmentMeasure.Poison };
-        }
-
-        public static IEnumerable<EnvironmentMeasure> HazardMeasures()
-        {
-            return new List<EnvironmentMeasure> { EnvironmentMeasure.Damp, EnvironmentMeasure.Heat, EnvironmentMeasure.Poison };
+            return this.measurementData.DecreaseLevel(measure, decrement);
         }
         
         public override string ToString()
         {
-            return this.measurement.ToString();
+            return this.measurementData.ToString();
         }
     }
 }

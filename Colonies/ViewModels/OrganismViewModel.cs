@@ -104,7 +104,7 @@
                 this.HasOrganism = true;
                 this.Color = this.DomainModel.Color;
                 this.IsAlive = this.DomainModel.IsAlive;
-                this.HealthLevel = this.DomainModel.Measurement.GetLevel(OrganismMeasure.Health);
+                this.HealthLevel = this.DomainModel.MeasurementData.GetLevel(OrganismMeasure.Health);
                 this.Name = this.DomainModel.Name;
             }
             else

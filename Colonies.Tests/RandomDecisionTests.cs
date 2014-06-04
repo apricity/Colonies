@@ -38,7 +38,7 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add((TestMeasurableItem)DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
 
@@ -61,7 +61,7 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add((TestMeasurableItem)DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
 
@@ -103,7 +103,7 @@
             for (var i = 0; i < numberOfResults; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add((TestMeasurableItem)DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / numberOfResults;
             }
 
@@ -148,7 +148,7 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add((TestMeasurableItem)DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
 
@@ -182,7 +182,7 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add((TestMeasurableItem)DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
 
@@ -196,37 +196,37 @@
         private class TestMeasurableItem : IMeasurable<TestMeasure>
         {
             private readonly string identifier;
-            private readonly Condition xCondition;
-            private readonly Condition yCondition;
+            private readonly Measurement xMeasurement;
+            private readonly Measurement yMeasurement;
 
-            public IMeasurement Measurement
+            public IMeasurementData MeasurementData
             {
                 get
                 {
-                    return new Measurement(new List<Condition> { this.xCondition, this.yCondition });
+                    return new MeasurementData(new List<Measurement> { this.xMeasurement, this.yMeasurement });
                 }
             }
 
             public double GetLevel(TestMeasure measure)
             {
-                return this.Measurement.GetLevel(measure);
+                return this.MeasurementData.GetLevel(measure);
             }
 
             public TestMeasurableItem(string identifier)
             {
                 this.identifier = identifier;
-                this.xCondition = new Condition(TestMeasure.X, 1.0);
-                this.yCondition = new Condition(TestMeasure.Y, 1.0);
+                this.xMeasurement = new Measurement(TestMeasure.X, 1.0);
+                this.yMeasurement = new Measurement(TestMeasure.Y, 1.0);
             }
 
             public void SetXLevel(double pheromoneLevel)
             {
-                this.xCondition.SetLevel(pheromoneLevel);
+                this.xMeasurement.SetLevel(pheromoneLevel);
             }
 
             public void SetYLevel(double healthLevel)
             {
-                this.yCondition.SetLevel(healthLevel);
+                this.yMeasurement.SetLevel(healthLevel);
             }
 
             public override string ToString()

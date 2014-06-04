@@ -1,5 +1,8 @@
 ﻿namespace Wacton.Colonies.Ancillary
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     using Wacton.Colonies.Interfaces;
 
     public class EnvironmentMeasure : Enumeration, IMeasure
@@ -12,9 +15,24 @@
         public static readonly EnvironmentMeasure Poison = new EnvironmentMeasure(5, "Poison");
         public static readonly EnvironmentMeasure Obstruction = new EnvironmentMeasure(6, "Obstruction");
 
+        public static IEnumerable<EnvironmentMeasure> PotentialHazards()
+        {
+            return new List<EnvironmentMeasure>
+                       {
+                           EnvironmentMeasure.Heat,
+                           EnvironmentMeasure.Damp,
+                           EnvironmentMeasure.Poison
+                       };
+        }
+
         private EnvironmentMeasure(int value, string friendlyString)
             : base(value, friendlyString)
         {
+        }
+
+        public bool IsPotentialHazard()
+        {
+            return PotentialHazards().Contains(this);
         }
     }
 }

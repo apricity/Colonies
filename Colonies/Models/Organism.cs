@@ -12,12 +12,12 @@
         public Color Color { get; private set; }
         public bool IsDepositingPheromones { get; private set; }
 
-        private readonly Measurement measurement;
-        public IMeasurement Measurement
+        private readonly MeasurementData measurementData;
+        public IMeasurementData MeasurementData
         {
             get
             {
-                return this.measurement;
+                return this.measurementData;
             }
         }
 
@@ -27,7 +27,7 @@
         {
             get
             {
-                return this.measurement.GetLevel(OrganismMeasure.Health) > 0.0;
+                return this.measurementData.GetLevel(OrganismMeasure.Health) > 0.0;
             }
         }
 
@@ -36,8 +36,8 @@
             this.Name = name;
             this.Color = color;
 
-            var health = new Condition(OrganismMeasure.Health, 1.0);
-            this.measurement = new Measurement(new List<Condition> { health });
+            var health = new Measurement(OrganismMeasure.Health, 1.0);
+            this.measurementData = new MeasurementData(new List<Measurement> { health });
             this.MeasureBiases = new Dictionary<EnvironmentMeasure, double>
                                      {
                                          { EnvironmentMeasure.Pheromone, 10 },
@@ -52,27 +52,22 @@
 
         public double GetLevel(OrganismMeasure measure)
         {
-            return this.measurement.GetLevel(measure);
+            return this.measurementData.GetLevel(measure);
         }
 
         public void SetLevel(OrganismMeasure measure, double level)
         {
-            this.measurement.SetLevel(measure, level);
+            this.measurementData.SetLevel(measure, level);
         }
 
         public bool IncreaseLevel(OrganismMeasure measure, double increment)
         {
-            return this.measurement.IncreaseLevel(measure, increment);
+            return this.measurementData.IncreaseLevel(measure, increment);
         }
 
         public bool DecreaseLevel(OrganismMeasure measure, double decrement)
         {
-            return this.measurement.DecreaseLevel(measure, decrement);
-        }
-
-        public static IEnumerable<OrganismMeasure> Measures()
-        {
-            return new List<OrganismMeasure> { OrganismMeasure.Health };
+            return this.measurementData.DecreaseLevel(measure, decrement);
         }
 
         public void SetMeasureBias(EnvironmentMeasure measure, double bias)

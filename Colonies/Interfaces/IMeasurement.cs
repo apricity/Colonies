@@ -1,11 +1,9 @@
 ﻿namespace Wacton.Colonies.Interfaces
 {
-    using System.Collections.Generic;
-
     public interface IMeasurement
     {
-        IEnumerable<ICondition> Conditions { get; }
+        IMeasure Measure { get; }
 
-        double GetLevel(IMeasure measure);
+        double Level { get; }
     }
 }

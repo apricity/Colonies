@@ -2,7 +2,7 @@
 {
     public interface IMeasurable<T> where T : IMeasure
     {
-        IMeasurement Measurement { get; }
+        IMeasurementData MeasurementData { get; }
 
         double GetLevel(T measure);
     }

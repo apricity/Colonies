@@ -10,20 +10,6 @@
     {
         private static double baseWeighting = 1.0;
 
-        public static IMeasurable<T> MakeDecision<T>(IEnumerable<IMeasurable<T>> measurableItems, IBiased<T> biasProvider)
-            where T : IMeasure
-        {
-            var weightedMeasuredItems = WeightMeasuredItems(measurableItems, biasProvider);
-            var chosenItem = ChooseRandomItem(weightedMeasuredItems);
-
-            if (chosenItem == null)
-            {
-                throw new NullReferenceException("An item has not been chosen");
-            }
-
-            return chosenItem;
-        }
-
         public static T MakeDecision<T>(IEnumerable<T> items)
         {
             var chosenItem = default(T);
@@ -67,44 +53,62 @@
             return randomNumber <= successProbability;
         }
 
-        private static Dictionary<IMeasurable<T>, double> WeightMeasuredItems<T>(IEnumerable<IMeasurable<T>> measurableItems, IBiased<T> biasProvider) 
-            where T : IMeasure
+        public static TMeasurable MakeDecision<TMeasurable, TMeasure>(IEnumerable<TMeasurable> measurables, IBiased<TMeasure> biasProvider)
+            where TMeasurable : IMeasurable<TMeasure>
+            where TMeasure : IMeasure
         {
-            var weightedMeasurableItems = new Dictionary<IMeasurable<T>, double>();
+            var weightedMeasurables = WeightMeasurables(measurables, biasProvider);
+            var chosenMeasurable = ChooseRandomMeasurable<TMeasurable, TMeasure>(weightedMeasurables);
 
-            var biases = biasProvider.MeasureBiases;
-            foreach (var measurableItem in measurableItems)
+            if (chosenMeasurable == null)
             {
-                // TODO: easy for a bug to occur if bias does not contain a measure in the measurable items
-                // each measurement initially has a base weighting (the greater it is, the less effect the measurement level and bias have)
-                // add further weighting according to strength of measurement with bias applied
-                var measurement = measurableItem.Measurement;
-                var weighting = baseWeighting + measurement.Conditions.Sum(condition => condition.Level * biases[(T)condition.Measure]);
-
-                weightedMeasurableItems.Add(measurableItem, weighting);
+                throw new NullReferenceException("A measurable has not been chosen");
             }
 
-            return weightedMeasurableItems;
+            return chosenMeasurable;
         }
 
-        private static IMeasurable<T> ChooseRandomItem<T>(Dictionary<IMeasurable<T>, double> weightedMeasurableItems) where T : IMeasure
+        private static Dictionary<TMeasurable, double> WeightMeasurables<TMeasurable, TMeasure>(IEnumerable<TMeasurable> measurables, IBiased<TMeasure> biasProvider)
+            where TMeasurable : IMeasurable<TMeasure>
+            where TMeasure : IMeasure
         {
-            var chosenItem = default(IMeasurable<T>);
-            var totalWeight = weightedMeasurableItems.Values.Sum(weight => weight);
+            var weightedMeasurables = new Dictionary<TMeasurable, double>();
+
+            var biases = biasProvider.MeasureBiases;
+            foreach (var measurable in measurables)
+            {
+                // TODO: easy for a bug to occur if bias does not contain a measure in the measurables list
+                // each measurement initially has a base weighting (the greater it is, the less effect the measurement level and bias have)
+                // add further weighting according to strength of measurement with bias applied
+                var measurementData = measurable.MeasurementData;
+                var weighting = baseWeighting + measurementData.Measurements.Sum(measurement => measurement.Level * biases[(TMeasure)measurement.Measure]);
+
+                weightedMeasurables.Add(measurable, weighting);
+            }
+
+            return weightedMeasurables;
+        }
+
+        private static TMeasurable ChooseRandomMeasurable<TMeasurable, TMeasure>(Dictionary<TMeasurable, double> weightedMeasurables)
+            where TMeasurable : IMeasurable<TMeasure>
+            where TMeasure : IMeasure
+        {
+            var chosenMeasurable = default(TMeasurable);
+            var totalWeight = weightedMeasurables.Values.Sum(weight => weight);
 
             var randomNumber = RandomNumberGenerator.RandomDouble(totalWeight);
-            foreach (var weightedMeasuredItem in weightedMeasurableItems)
+            foreach (var weightedMeasurable in weightedMeasurables)
             {
-                if (randomNumber < weightedMeasuredItem.Value)
+                if (randomNumber < weightedMeasurable.Value)
                 {
-                    chosenItem = weightedMeasuredItem.Key;
+                    chosenMeasurable = weightedMeasurable.Key;
                     break;
                 }
 
-                randomNumber -= weightedMeasuredItem.Value;
+                randomNumber -= weightedMeasurable.Value;
             }
 
-            return chosenItem;
+            return chosenMeasurable;
         }
 
         public static void SetBaseWeighting(double weighting)

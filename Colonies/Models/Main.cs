@@ -1,7 +1,7 @@
 ﻿namespace Wacton.Colonies.Models
 {
-    using Wacton.Colonies.Ancillary;
-    using Wacton.Colonies.Interfaces;
+    using Wacton.Colonies.DataTypes;
+    using Wacton.Colonies.Models.Interfaces;
 
     public class Main : IMain
     {

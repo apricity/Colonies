@@ -4,7 +4,9 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using Wacton.Colonies.Interfaces;
+    using Wacton.Colonies.DataTypes.Interfaces;
+    using Wacton.Colonies.Models.Interfaces;
+    using Wacton.Colonies.Utilities;
 
     public static class DecisionLogic
     {

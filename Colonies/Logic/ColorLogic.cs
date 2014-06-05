@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Windows.Media;
 
-    using Wacton.Colonies.Ancillary;
+    using Wacton.Colonies.DataTypes;
 
     public static class ColorLogic
     {

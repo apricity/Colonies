@@ -6,10 +6,11 @@
 
     using NUnit.Framework;
 
-    using Wacton.Colonies.Ancillary;
-    using Wacton.Colonies.Interfaces;
+    using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models;
+    using Wacton.Colonies.Models.DataProviders;
+    using Wacton.Colonies.Models.Interfaces;
 
     [TestFixture]
     public class OrganismMovementTests

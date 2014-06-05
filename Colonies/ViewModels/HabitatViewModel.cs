@@ -4,7 +4,8 @@
 
     using Microsoft.Practices.Prism.Events;
 
-    using Wacton.Colonies.Interfaces;
+    using Wacton.Colonies.Models.Interfaces;
+    using Wacton.Colonies.ViewModels.Infrastructure;
 
     public class HabitatViewModel : ViewModelBase<IHabitat>
     {

@@ -9,8 +9,10 @@
 
     using Microsoft.Practices.Prism.Events;
 
-    using Wacton.Colonies.Ancillary;
-    using Wacton.Colonies.Interfaces;
+    using Wacton.Colonies.DataTypes;
+    using Wacton.Colonies.DataTypes.Enums;
+    using Wacton.Colonies.Models.Interfaces;
+    using Wacton.Colonies.ViewModels.Infrastructure;
 
     public class MainViewModel : ViewModelBase<IMain>
     {

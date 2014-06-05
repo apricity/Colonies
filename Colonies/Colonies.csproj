@@ -53,15 +53,23 @@
     <Reference Include="MahApps.Metro.Resources">
       <HintPath>..\..\MahApps.Metro\MahApps.Metro.Resources\bin\Debug\MahApps.Metro.Resources.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Prism.4.1.0.0\lib\NET40\Microsoft.Expression.Interactions.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.Prism, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>ExternalDependencies\Microsoft.Practices.Prism.dll</HintPath>
+      <HintPath>..\packages\Prism.4.1.0.0\lib\NET40\Microsoft.Practices.Prism.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Prism.Interactivity">
+      <HintPath>..\packages\Prism.4.1.0.0\lib\NET40\Microsoft.Practices.Prism.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.0.11.0.12-ALPHA\lib\net40\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\Prism.4.1.0.0\lib\NET40\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -80,11 +88,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Ancillary\OrganismMeasure.cs" />
-    <Compile Include="Ancillary\Enumeration.cs" />
-    <Compile Include="Ancillary\HazardChance.cs" />
-    <Compile Include="Ancillary\EnvironmentMeasure.cs" />
-    <Compile Include="Ancillary\WeightedColor.cs" />
+    <Compile Include="DataTypes\Enums\OrganismMeasure.cs" />
+    <Compile Include="DataTypes\Enums\Enumeration.cs" />
+    <Compile Include="DataTypes\HazardChance.cs" />
+    <Compile Include="DataTypes\Enums\EnvironmentMeasure.cs" />
+    <Compile Include="DataTypes\WeightedColor.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\BoolToActiveStringConverter.cs" />
@@ -93,43 +101,43 @@
     <Compile Include="Converters\DoubleToObstructionDashConverter.cs" />
     <Compile Include="Converters\RelativeScaleConverter.cs" />
     <Compile Include="Converters\DoubleToHealthBrushConverter.cs" />
-    <Compile Include="Ancillary\Coordinate.cs" />
+    <Compile Include="DataTypes\Coordinate.cs" />
     <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
-    <Compile Include="Events\OrganismsUpdatedEvent.cs" />
-    <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="Interfaces\IMeasurement.cs" />
-    <Compile Include="Interfaces\IMeasure.cs" />
-    <Compile Include="Interfaces\IMeasurementData.cs" />
-    <Compile Include="Interfaces\IHabitat.cs" />
-    <Compile Include="Interfaces\IMain.cs" />
-    <Compile Include="Interfaces\IEcosystem.cs" />
-    <Compile Include="Interfaces\IEnvironment.cs" />
-    <Compile Include="Interfaces\IOrganism.cs" />
-    <Compile Include="Interfaces\IOrganismSynopsis.cs" />
-    <Compile Include="Interfaces\IWeather.cs" />
-    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="ViewModels\Infrastructure\OrganismsUpdatedEvent.cs" />
+    <Compile Include="Extensions\GenericCollectionExtensions.cs" />
+    <Compile Include="DataTypes\Interfaces\IMeasurement.cs" />
+    <Compile Include="DataTypes\Interfaces\IMeasure.cs" />
+    <Compile Include="DataTypes\Interfaces\IMeasurementData.cs" />
+    <Compile Include="Models\Interfaces\IHabitat.cs" />
+    <Compile Include="Models\Interfaces\IMain.cs" />
+    <Compile Include="Models\Interfaces\IEcosystem.cs" />
+    <Compile Include="Models\Interfaces\IEnvironment.cs" />
+    <Compile Include="Models\Interfaces\IOrganism.cs" />
+    <Compile Include="Models\Interfaces\IOrganismSynopsis.cs" />
+    <Compile Include="Models\Interfaces\IWeather.cs" />
+    <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Logic\ColorLogic.cs" />
     <Compile Include="Logic\DecisionLogic.cs" />
-    <Compile Include="Ancillary\Measurement.cs" />
-    <Compile Include="Interfaces\IBiased.cs" />
-    <Compile Include="Interfaces\IMeasurable.cs" />
-    <Compile Include="Ancillary\MeasurementData.cs" />
+    <Compile Include="DataTypes\Measurement.cs" />
+    <Compile Include="Models\Interfaces\IBiased.cs" />
+    <Compile Include="Models\Interfaces\IMeasurable.cs" />
+    <Compile Include="DataTypes\MeasurementData.cs" />
     <Compile Include="Logic\EcosystemLogic.cs" />
-    <Compile Include="Logic\RandomNumberGenerator.cs" />
+    <Compile Include="Utilities\RandomNumberGenerator.cs" />
     <Compile Include="Models\Ecosystem.cs" />
-    <Compile Include="Models\EcosystemData.cs" />
+    <Compile Include="Models\DataProviders\EcosystemData.cs" />
     <Compile Include="Models\Main.cs" />
     <Compile Include="Models\OrganismSynopsis.cs" />
-    <Compile Include="Ancillary\UpdateSummary.cs" />
-    <Compile Include="Ancillary\RelayCommand.cs" />
+    <Compile Include="DataTypes\UpdateSummary.cs" />
+    <Compile Include="ViewModels\Infrastructure\RelayCommand.cs" />
     <Compile Include="DesignTime\DesignTimeViewModelLocator.cs" />
-    <Compile Include="Models\Weather.cs" />
+    <Compile Include="Models\DataProviders\Weather.cs" />
     <Compile Include="ViewModels\OrganismSynopsisViewModel.cs" />
     <Compile Include="ViewModels\OrganismViewModel.cs" />
     <Compile Include="ViewModels\EcosystemViewModel.cs" />
     <Compile Include="ViewModels\EnvironmentViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="ViewModels\Infrastructure\ViewModelBase.cs" />
     <Compile Include="Views\OrganismDetailsView.xaml.cs">
       <DependentUpon>OrganismDetailsView.xaml</DependentUpon>
     </Compile>
@@ -151,14 +159,14 @@
     </Compile>
     <Compile Include="Models\Habitat.cs" />
     <Compile Include="Models\Environment.cs" />
-    <Compile Include="Ancillary\WeatherType.cs" />
+    <Compile Include="DataTypes\Enums\WeatherType.cs" />
     <Compile Include="Models\Organism.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Styles.xaml">
+    <Page Include="Views\Styles\HealthLevelProgressBarStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -229,7 +237,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="ExternalDependencies\Microsoft.Practices.Prism.dll" />
     <Resource Include="Resources\Icon.ico" />
     <Resource Include="Resources\Icon.png" />
     <Resource Include="Resources\Entypo-license.txt" />

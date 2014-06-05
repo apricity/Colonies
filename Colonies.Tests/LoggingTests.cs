@@ -2,7 +2,7 @@
 {
     using NUnit.Framework;
 
-    using Wacton.Colonies.Logging;
+    using Wacton.Colonies.Utilities;
 
     [TestFixture]
     public class LoggingTests

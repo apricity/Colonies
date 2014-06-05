@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    using Wacton.Colonies.Interfaces;
+    using Wacton.Colonies.Models.Interfaces;
 
     public class OrganismSynopsis : IOrganismSynopsis
     {

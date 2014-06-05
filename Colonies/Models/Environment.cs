@@ -3,8 +3,10 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using Wacton.Colonies.Ancillary;
-    using Wacton.Colonies.Interfaces;
+    using Wacton.Colonies.DataTypes;
+    using Wacton.Colonies.DataTypes.Enums;
+    using Wacton.Colonies.DataTypes.Interfaces;
+    using Wacton.Colonies.Models.Interfaces;
 
     public sealed class Environment : IEnvironment
     {

@@ -5,7 +5,6 @@
 
     using SdlDotNet.Core;
     using SdlDotNet.Graphics;
-    using SdlDotNet.Graphics.Primitives;
 
     public static class Program
     {

@@ -2,8 +2,8 @@
 {
     using System;
 
-    using Wacton.Colonies.Ancillary;
-    using Wacton.Colonies.Interfaces;
+    using Wacton.Colonies.DataTypes.Enums;
+    using Wacton.Colonies.Models.Interfaces;
 
     public sealed class Habitat : IHabitat
     {

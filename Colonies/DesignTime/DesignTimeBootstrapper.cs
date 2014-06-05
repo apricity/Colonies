@@ -3,7 +3,8 @@
     using System.Collections.Generic;
     using System.Windows.Media;
 
-    using Wacton.Colonies.Ancillary;
+    using Wacton.Colonies.DataTypes;
+    using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.Models;
     using Wacton.Colonies.ViewModels;
 
@@ -13,11 +14,6 @@
         private const int EcosystemHeight = 10;
 
         public MainViewModel MainViewModel { get; private set; }
-
-        public DesignTimeBootstrapper()
-        {
-            
-        }
 
         public override void Run()
         {

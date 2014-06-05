@@ -1,26 +1,23 @@
 ﻿namespace Wacton.Colonies
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using System.Windows.Media;
-    using System.Linq;
 
     using Microsoft.Practices.Prism.Events;
 
-    using Wacton.Colonies.Ancillary;
-    using Wacton.Colonies.Interfaces;
+    using Wacton.Colonies.DataTypes;
+    using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.Models;
+    using Wacton.Colonies.Models.DataProviders;
+    using Wacton.Colonies.Models.Interfaces;
     using Wacton.Colonies.Properties;
     using Wacton.Colonies.ViewModels;
     using Wacton.Colonies.Views;
 
     public class Bootstrapper
     {
-        public Bootstrapper()
-        {
-            
-        }
-
         public virtual void Run()
         {
             // get the version number to display on the main window title

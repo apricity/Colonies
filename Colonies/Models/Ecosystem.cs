@@ -29,8 +29,16 @@
         public double MineralFormRate { get; set; }
         public double ObstructionDemolishRate { get; set; }
 
-        public Dictionary<EnvironmentMeasure, HazardChance> WeatherHazardChances { get; private set; }
-        public Dictionary<EnvironmentMeasure, HazardChance> NonWeatherHazardChances { get; private set; } 
+        public Dictionary<EnvironmentMeasure, HazardRate> EnvironmentMeasureHazardRates { get; private set; }
+
+        private int SoundDiameter { get; set; }
+        private int SoundRadius
+        {
+            get
+            {
+                return (this.SoundDiameter - 1) / 2;
+            }
+        }
 
         private int HazardDiameter { get; set; }
         private int HazardRadius
@@ -66,6 +74,7 @@
 
             // work out how big any hazard spread should be based on ecosystem dimensions
             this.HazardDiameter = this.CalculateHazardDiameter();
+            this.SoundDiameter = (this.HazardDiameter * 2) - 1;
 
             this.HealthDeteriorationRate = 1 / 500.0;
             this.PheromoneDepositRate = 1 / 100.0;
@@ -74,16 +83,12 @@
             this.MineralFormRate = 1 / 100.0;
             this.ObstructionDemolishRate = 1 / 5.0;
 
-            this.WeatherHazardChances = new Dictionary<EnvironmentMeasure, HazardChance>
-                                            {
-                                                { EnvironmentMeasure.Damp, new HazardChance(1 / 2000.0, 1 / 500.0, 1 / 1000.0) },
-                                                { EnvironmentMeasure.Heat, new HazardChance(1 / 2000.0, 1 / 500.0, 1 / 1000.0) }
-                                            };
-
-            this.NonWeatherHazardChances = new Dictionary<EnvironmentMeasure, HazardChance>
-                                               {
-                                                   { EnvironmentMeasure.Poison, new HazardChance(0.0, 1 / 50.0, 1 / 50.0) }
-                                               };
+            this.EnvironmentMeasureHazardRates = new Dictionary<EnvironmentMeasure, HazardRate>
+                                     {
+                                         { EnvironmentMeasure.Damp, new HazardRate(1 / 2000.0, 1 / 500.0, 1 / 1000.0) },
+                                         { EnvironmentMeasure.Heat, new HazardRate(1 / 2000.0, 1 / 500.0, 1 / 1000.0) },
+                                         { EnvironmentMeasure.Poison, new HazardRate(0.0, 1 / 50.0, 1 / 50.0) }
+                                     };
         }
 
         public UpdateSummary Update()
@@ -101,7 +106,7 @@
              * and change measures related to movement (e.g. pheromone, mineral, obstruction) */
             alteredEnvironmentCoordinates.AddRange(this.PerformMovementsActions());
 
-            /* change measures that are globally affected (e.g. nutrient growth, pheromone fade, hazard spread, health deterioration */
+            /* change measures that are globally affected (e.g. nutrient growth, pheromone fade, hazard spread, health deterioration) */
             alteredEnvironmentCoordinates.AddRange(this.PerformPostMovementActions());
 
             var currentOrganismCoordinates = this.EcosystemData.GetOrganismCoordinates(null, null)
@@ -120,6 +125,8 @@
         private IEnumerable<Coordinate> PerformMovementsActions()
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
+
+            var existingSoundCoordinates = this.EcosystemData.GetOrganismsEmittingSound().ToList();
 
             var desiredOrganismCoordinates = EcosystemLogic.GetDesiredCoordinates(this.EcosystemData);
             var movedOrganismCoordinates = EcosystemLogic.ResolveOrganismHabitats(this.EcosystemData, desiredOrganismCoordinates, new List<IOrganism>(), this);
@@ -141,6 +148,17 @@
                 {
                     alteredEnvironmentCoordinates.Add(obstructedCoordinate);
                 }
+            }
+
+            foreach (var existingSoundCoordinate in existingSoundCoordinates)
+            {
+                alteredEnvironmentCoordinates.AddRange(this.RemoveSound(existingSoundCoordinate));
+            }
+
+            var updatedSoundCoordinates = this.EcosystemData.GetOrganismsEmittingSound().ToList();
+            foreach (var updatedSoundCoordinate in updatedSoundCoordinates)
+            {
+                alteredEnvironmentCoordinates.AddRange(this.InsertSound(updatedSoundCoordinate));
             }
 
             return alteredEnvironmentCoordinates;
@@ -219,10 +237,10 @@
 
         private IEnumerable<Coordinate> IncreaseMineralLevels()
         {
-            // only increase mineral where the terrain is not hazardous (even when the organism is dead!)
+            // only increase mineral where the terrain is not harmful (even when the organism is dead!)
             // TODO: need a "HasDecomposed" bool - this could stop showing organism and stop mineral form
             var organismCoordinates = this.EcosystemData.GetOrganismCoordinates(null, null)
-                .Where(coordinate => !this.EcosystemData.IsHazardous(coordinate)).ToList();
+                .Where(coordinate => !this.EcosystemData.IsHarmful(coordinate)).ToList();
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
             foreach (var organismCoordinate in organismCoordinates)
@@ -241,7 +259,7 @@
         {
             var nutrientCoordinates = this.EcosystemData.GetAllCoordinates()
                 .Where(coordinate => this.EcosystemData.HasLevel(coordinate, EnvironmentMeasure.Nutrient) 
-                                     && !this.EcosystemData.IsHazardous(coordinate)).ToList();
+                                     && !this.EcosystemData.IsHarmful(coordinate)).ToList();
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
             foreach (var nutrientCoordinate in nutrientCoordinates)
@@ -279,41 +297,37 @@
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            // weather hazards
-            foreach (var weatherType in this.Weather.WeatherTypes)
+            foreach(var environmentMeasureHazardRate in this.EnvironmentMeasureHazardRates)
             {
-                var weatherLevel = this.Weather.GetWeatherLevel(weatherType);
-                var hazardMeasure = this.Weather.GetWeatherHazard(weatherType);
-                var hazardChance = this.WeatherHazardChances[hazardMeasure];
+                var environmentMeasure = environmentMeasureHazardRate.Key;
+                var hazardRate = environmentMeasureHazardRate.Value;
 
-                var spreadChance = hazardChance.SpreadChance * weatherLevel;
-                var removeChance = hazardChance.RemoveChance * (1 - weatherLevel);
-                var addChance = hazardChance.AddChance * weatherLevel;
+                var weatherBiasedSpreadRate = hazardRate.SpreadRate;
+                var weatherBiasedRemoveRate = hazardRate.RemoveRate;
+                var weatherBiasedAddRate = hazardRate.AddRate;
 
-                alteredEnvironmentCoordinates.AddRange(this.RandomSpreadHazards(hazardMeasure, spreadChance));
-                alteredEnvironmentCoordinates.AddRange(this.RandomRemoveHazards(hazardMeasure, removeChance));
-                alteredEnvironmentCoordinates.AddRange(this.RandomAddHazards(hazardMeasure, addChance));
-            }
+                var weatherTrigger = environmentMeasure.WeatherTrigger;
+                if (weatherTrigger != WeatherType.None)
+                {
+                    var weatherLevel = this.Weather.GetLevel(weatherTrigger);
+                    weatherBiasedSpreadRate *= weatherLevel;
+                    weatherBiasedRemoveRate *= (1 - weatherLevel);
+                    weatherBiasedAddRate *= weatherLevel;
+                }
 
-            // non-weather hazards
-            foreach (var nonWeatherHazardChance in this.NonWeatherHazardChances)
-            {
-                var hazardMeasure = nonWeatherHazardChance.Key;
-                var hazardChance = nonWeatherHazardChance.Value;
-
-                alteredEnvironmentCoordinates.AddRange(this.RandomSpreadHazards(hazardMeasure, hazardChance.SpreadChance));
-                alteredEnvironmentCoordinates.AddRange(this.RandomRemoveHazards(hazardMeasure, hazardChance.RemoveChance));
-                alteredEnvironmentCoordinates.AddRange(this.RandomAddHazards(hazardMeasure, hazardChance.AddChance));
+                alteredEnvironmentCoordinates.AddRange(this.RandomSpreadHazards(environmentMeasure, weatherBiasedSpreadRate));
+                alteredEnvironmentCoordinates.AddRange(this.RandomRemoveHazards(environmentMeasure, weatherBiasedRemoveRate));
+                alteredEnvironmentCoordinates.AddRange(this.RandomAddHazards(environmentMeasure, weatherBiasedAddRate));
             }
 
             return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> RandomSpreadHazards(EnvironmentMeasure hazardMeasure, double spreadChance)
+        private IEnumerable<Coordinate> RandomSpreadHazards(EnvironmentMeasure environmentMeasure, double spreadChance)
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            var hazardCoordinates = this.EcosystemData.GetHazardCoordinates(hazardMeasure).ToList();
+            var hazardCoordinates = this.EcosystemData.GetHazardCoordinates(environmentMeasure).ToList();
             foreach (var hazardCoordinate in hazardCoordinates)
             {
                 if (!DecisionLogic.IsSuccessful(spreadChance))
@@ -325,24 +339,24 @@
                 var validNeighbouringCoordinates = neighbouringCoordinates.Where(neighbourCoordinate =>
                     neighbourCoordinate != null
                     && !this.EcosystemData.HasLevel(neighbourCoordinate, EnvironmentMeasure.Obstruction)
-                    && this.EcosystemData.GetLevel(neighbourCoordinate, hazardMeasure) < 1).ToList();
+                    && this.EcosystemData.GetLevel(neighbourCoordinate, environmentMeasure) < 1).ToList();
                 if (validNeighbouringCoordinates.Count == 0)
                 {
                     continue;
                 }
 
                 var chosenCoordinate = DecisionLogic.MakeDecision(validNeighbouringCoordinates);
-                alteredEnvironmentCoordinates.AddRange(this.InsertHazard(chosenCoordinate, hazardMeasure));
+                alteredEnvironmentCoordinates.AddRange(this.InsertHazard(chosenCoordinate, environmentMeasure));
             }
 
             return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> RandomRemoveHazards(EnvironmentMeasure hazardMeasure, double removeChance)
+        private IEnumerable<Coordinate> RandomRemoveHazards(EnvironmentMeasure environmentMeasure, double removeChance)
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            var hazardCoordinates = this.EcosystemData.GetHazardCoordinates(hazardMeasure).ToList();
+            var hazardCoordinates = this.EcosystemData.GetHazardCoordinates(environmentMeasure).ToList();
             foreach (var hazardCoordinate in hazardCoordinates)
             {
                 if (!DecisionLogic.IsSuccessful(removeChance))
@@ -350,26 +364,26 @@
                     continue;
                 }
 
-                alteredEnvironmentCoordinates.AddRange(this.RemoveHazard(hazardCoordinate, hazardMeasure));
+                alteredEnvironmentCoordinates.AddRange(this.RemoveHazard(hazardCoordinate, environmentMeasure));
             }
 
             // go through all remaining hazard coordinates and restore any remove measures that belonged to other hazards
-            var remainingHazardCoordinates = this.EcosystemData.GetHazardCoordinates(hazardMeasure).ToList();
+            var remainingHazardCoordinates = this.EcosystemData.GetHazardCoordinates(environmentMeasure).ToList();
             foreach (var remainingHazardCoordinate in remainingHazardCoordinates)
             {
                 var neighbouringCoordinates = this.EcosystemData.GetNeighbours(remainingHazardCoordinate, this.HazardRadius, true, true).ToList();
                 var validNeighbouringCoordinates = neighbouringCoordinates.Where(neighbouringCoordinate => neighbouringCoordinate != null).ToList();
                 if (validNeighbouringCoordinates.Any(neighbouringCoordinate => 
-                    this.EcosystemData.GetLevel(neighbouringCoordinate, hazardMeasure).Equals(0.0)))
+                    this.EcosystemData.GetLevel(neighbouringCoordinate, environmentMeasure).Equals(0.0)))
                 {
-                    alteredEnvironmentCoordinates.AddRange(this.InsertHazard(remainingHazardCoordinate, hazardMeasure));
+                    alteredEnvironmentCoordinates.AddRange(this.InsertHazard(remainingHazardCoordinate, environmentMeasure));
                 }
             }
 
             return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> RandomAddHazards(EnvironmentMeasure hazardMeasure, double addChance)
+        private IEnumerable<Coordinate> RandomAddHazards(EnvironmentMeasure environmentMeasure, double addChance)
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
@@ -378,22 +392,22 @@
                 return alteredEnvironmentCoordinates;
             }
 
-            var hazardCoordinates = this.EcosystemData.GetHazardCoordinates(hazardMeasure).ToList();
+            var hazardCoordinates = this.EcosystemData.GetHazardCoordinates(environmentMeasure).ToList();
             var nonHazardCoordinates = this.EcosystemData.GetAllCoordinates().Except(hazardCoordinates);
             var chosenNonHazardCoordinate = DecisionLogic.MakeDecision(nonHazardCoordinates);
             if (!this.EcosystemData.HasLevel(chosenNonHazardCoordinate, EnvironmentMeasure.Obstruction))
             {
-                alteredEnvironmentCoordinates.AddRange(this.InsertHazard(chosenNonHazardCoordinate, hazardMeasure));
+                alteredEnvironmentCoordinates.AddRange(this.InsertHazard(chosenNonHazardCoordinate, environmentMeasure));
             }
 
             return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> RemoveHazard(Coordinate coordinate, EnvironmentMeasure hazardMeasure)
+        private IEnumerable<Coordinate> RemoveHazard(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
         {
-            if (!hazardMeasure.IsPotentialHazard())
+            if (!environmentMeasure.IsHazardous)
             {
-                throw new InvalidEnumArgumentException(string.Format("{0} is not a potential hazard", hazardMeasure));
+                throw new InvalidEnumArgumentException(string.Format("{0} is not hazardous", environmentMeasure));
             }
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
@@ -410,21 +424,21 @@
                         continue;
                     }
 
-                    this.EcosystemData.SetLevel(neighbouringCoordinate, hazardMeasure, 0);
+                    this.EcosystemData.SetLevel(neighbouringCoordinate, environmentMeasure, 0);
                     alteredEnvironmentCoordinates.Add(neighbouringCoordinate);
                 }
             }
 
-            this.EcosystemData.RemoveHazard(hazardMeasure, coordinate);
+            this.EcosystemData.RemoveHazard(environmentMeasure, coordinate);
 
             return alteredEnvironmentCoordinates;
         }
 
-        public IEnumerable<Coordinate> InsertHazard(Coordinate coordinate, EnvironmentMeasure hazardMeasure)
+        public IEnumerable<Coordinate> InsertHazard(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
         {
-            if (!hazardMeasure.IsPotentialHazard())
+            if (!environmentMeasure.IsHazardous)
             {
-                throw new InvalidEnumArgumentException(string.Format("{0} is not a potential hazard", hazardMeasure));
+                throw new InvalidEnumArgumentException(string.Format("{0} is not hazardous", environmentMeasure));
             }
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
@@ -441,57 +455,100 @@
                     var neighbouringCoordinate = neighbouringCoordinates[x, y];
 
                     if (neighbouringCoordinate != null
-                        && level > this.EcosystemData.GetLevel(neighbouringCoordinate, hazardMeasure))
+                        && level > this.EcosystemData.GetLevel(neighbouringCoordinate, environmentMeasure))
                     {
-                        this.EcosystemData.SetLevel(neighbouringCoordinate, hazardMeasure, level);
+                        this.EcosystemData.SetLevel(neighbouringCoordinate, environmentMeasure, level);
                         alteredEnvironmentCoordinates.Add(neighbouringCoordinate);
                     }
                 }
             }
 
-            this.EcosystemData.InsertHazard(hazardMeasure, coordinate);
+            this.EcosystemData.InsertHazard(environmentMeasure, coordinate);
 
             return alteredEnvironmentCoordinates;
         }
 
-        public void SetLevel(Coordinate coordinate, EnvironmentMeasure measure, double level)
+        public IEnumerable<Coordinate> InsertSound(Coordinate coordinate)
         {
-            this.EcosystemData.SetLevel(coordinate, measure, level);
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+
+            var neighbouringCoordinates = this.EcosystemData.GetNeighbours(coordinate, this.SoundRadius, true, true);
+            var gaussianKernel = new GaussianBlur(0.25 * this.SoundDiameter, this.SoundDiameter).Kernel;
+
+            var gaussianCentre = (double)gaussianKernel[this.SoundRadius, this.SoundRadius];
+            for (var x = 0; x < this.SoundDiameter; x++)
+            {
+                for (var y = 0; y < this.SoundDiameter; y++)
+                {
+                    var level = gaussianKernel[x, y] / gaussianCentre;
+                    var neighbouringCoordinate = neighbouringCoordinates[x, y];
+
+                    if (neighbouringCoordinate != null
+                        && level > this.EcosystemData.GetLevel(neighbouringCoordinate, EnvironmentMeasure.Sound))
+                    {
+                        this.EcosystemData.SetLevel(neighbouringCoordinate, EnvironmentMeasure.Sound, level);
+                        alteredEnvironmentCoordinates.Add(neighbouringCoordinate);
+                    }
+                }
+            }
+
+            return alteredEnvironmentCoordinates;
         }
 
-        public void SetMeasureBias(OrganismMeasure measure, double bias)
+        private IEnumerable<Coordinate> RemoveSound(Coordinate coordinate)
         {
-            this.MeasureBiases[measure] = bias;
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+
+            var neighbouringCoordinates = this.EcosystemData.GetNeighbours(coordinate, this.SoundRadius, true, true);
+            for (var x = 0; x < this.SoundDiameter; x++)
+            {
+                for (var y = 0; y < this.SoundDiameter; y++)
+                {
+                    var neighbouringCoordinate = neighbouringCoordinates[x, y];
+
+                    if (neighbouringCoordinate == null)
+                    {
+                        continue;
+                    }
+
+                    this.EcosystemData.SetLevel(neighbouringCoordinate, EnvironmentMeasure.Sound, 0);
+                    alteredEnvironmentCoordinates.Add(neighbouringCoordinate);
+                }
+            }
+
+            return alteredEnvironmentCoordinates;
         }
 
-        public HazardChance GetHazardChance(EnvironmentMeasure hazardMeasure)
+        public void SetLevel(Coordinate coordinate, EnvironmentMeasure environmentMeasure, double level)
         {
-            if (this.WeatherHazardChances.ContainsKey(hazardMeasure))
-            {
-                return this.WeatherHazardChances[hazardMeasure];
-            }
-
-            if (this.NonWeatherHazardChances.ContainsKey(hazardMeasure))
-            {
-                return this.NonWeatherHazardChances[hazardMeasure];
-            }
-
-            throw new ArgumentException(string.Format("No available chance for hazard measure {0}", hazardMeasure), "hazardMeasure");
+            this.EcosystemData.SetLevel(coordinate, environmentMeasure, level);
         }
 
-        public void SetHazardChance(EnvironmentMeasure hazardMeasure, HazardChance hazardChance)
+        public void SetMeasureBias(OrganismMeasure organismMeasure, double bias)
         {
-            if (this.WeatherHazardChances.ContainsKey(hazardMeasure))
+            this.MeasureBiases[organismMeasure] = bias;
+        }
+
+        public HazardRate GetHazardRate(EnvironmentMeasure environmentMeasure)
+        {
+            if (this.EnvironmentMeasureHazardRates.ContainsKey(environmentMeasure))
             {
-                this.WeatherHazardChances[hazardMeasure] = hazardChance;
+                return this.EnvironmentMeasureHazardRates[environmentMeasure];
             }
 
-            if (this.NonWeatherHazardChances.ContainsKey(hazardMeasure))
-            {
-                this.NonWeatherHazardChances[hazardMeasure] = hazardChance;
-            }
+            throw new ArgumentException(string.Format("No hazard rate for environment measure {0}", environmentMeasure), "environmentMeasure");
+        }
 
-            throw new ArgumentException(string.Format("No available chance for hazard measure {0}", hazardMeasure), "hazardMeasure");
+        public void SetHazardRate(EnvironmentMeasure environmentMeasure, HazardRate hazardChance)
+        {
+            if (this.EnvironmentMeasureHazardRates.ContainsKey(environmentMeasure))
+            {
+                this.EnvironmentMeasureHazardRates[environmentMeasure] = hazardChance;
+            }
+            else
+            {
+                throw new ArgumentException(string.Format("No hazard rate for environment measure {0}", environmentMeasure), "environmentMeasure");
+            }
         }
 
         public override String ToString()

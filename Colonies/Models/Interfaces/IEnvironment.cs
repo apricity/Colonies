@@ -4,6 +4,6 @@
 
     public interface IEnvironment : IMeasurable<EnvironmentMeasure>
     {
-        bool IsHazardous { get; }
+        bool IsHarmful { get; }
     }
 }

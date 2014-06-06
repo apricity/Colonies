@@ -53,9 +53,9 @@
                 this.AddOrganism(organismCoordinate.Key, organismCoordinate.Value);
             }
 
-            foreach (var hazardMeasure in EnvironmentMeasure.PotentialHazards())
+            foreach (var environmentMeasure in EnvironmentMeasure.HazardousMeasures())
             {
-                this.HazardCoordinates.Add(hazardMeasure, new List<Coordinate>());
+                this.HazardCoordinates.Add(environmentMeasure, new List<Coordinate>());
             }
         }
 
@@ -70,6 +70,11 @@
                 isAlive == null || organism.IsAlive == isAlive 
                 && isDepositingPheromone == null || organism.IsDepositingPheromones == isDepositingPheromone)
                 .Select(this.CoordinateOf);
+        }
+
+        public IEnumerable<Coordinate> GetOrganismsEmittingSound()
+        {
+            return this.OrganismHabitats.Keys.Where(organism => organism.IsEmittingSound).Select(this.CoordinateOf);
         }
 
         public IEnumerable<Coordinate> GetHazardCoordinates(EnvironmentMeasure hazardMeasure)
@@ -127,25 +132,25 @@
             return this.HabitatAt(coordinate).DecreaseLevel(measure, decrement);
         }
 
-        public void InsertHazard(EnvironmentMeasure hazardMeasure, Coordinate coordinate)
+        public void InsertHazard(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
         {
-            if (!this.HazardCoordinates[hazardMeasure].Contains(coordinate))
+            if (!this.HazardCoordinates[environmentMeasure].Contains(coordinate))
             {
-                this.HazardCoordinates[hazardMeasure].Add(coordinate);
+                this.HazardCoordinates[environmentMeasure].Add(coordinate);
             }
         }
 
-        public void RemoveHazard(EnvironmentMeasure hazardMeasure, Coordinate coordinate)
+        public void RemoveHazard(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
         {
-            if (this.HazardCoordinates[hazardMeasure].Contains(coordinate))
+            if (this.HazardCoordinates[environmentMeasure].Contains(coordinate))
             {
-                this.HazardCoordinates[hazardMeasure].Remove(coordinate);
+                this.HazardCoordinates[environmentMeasure].Remove(coordinate);
             }
         }
 
-        public bool IsHazardous(Coordinate coordinate)
+        public bool IsHarmful(Coordinate coordinate)
         {
-            return this.HabitatAt(coordinate).Environment.IsHazardous;
+            return this.HabitatAt(coordinate).Environment.IsHarmful;
         }
 
         private void AddOrganism(Organism organism, Coordinate coordinate)

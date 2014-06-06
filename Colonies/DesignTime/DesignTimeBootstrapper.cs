@@ -24,6 +24,7 @@
         protected override void InitialiseTerrain(Ecosystem ecosystem)
         {
             ecosystem.SetLevel(new Coordinate(1, 1), EnvironmentMeasure.Obstruction, 1.0);
+            ecosystem.SetLevel(new Coordinate(1, 1), EnvironmentMeasure.Sound, 0.5);
         }
 
         protected override Dictionary<Organism, Coordinate> InitialOrganismCoordinates()

@@ -26,6 +26,7 @@
                     { EnvironmentMeasure.Pheromone, Colors.OrangeRed },
                     { EnvironmentMeasure.Nutrient, Colors.OliveDrab },
                     { EnvironmentMeasure.Obstruction, Colors.Black },
+                    { EnvironmentMeasure.Sound, Color.FromArgb(125, 255, 255, 255) }
                 };
 
         private Color environmentColor;
@@ -63,6 +64,14 @@
             get
             {
                 return MeasureColors[EnvironmentMeasure.Obstruction];
+            }
+        }
+
+        public Color SoundColor
+        {
+            get
+            {
+                return MeasureColors[EnvironmentMeasure.Sound];
             }
         }
 
@@ -169,6 +178,20 @@
 
         public bool IsObstructed { get; private set; }
 
+        private double soundLevel;
+        public double SoundLevel
+        {
+            get
+            {
+                return this.soundLevel;
+            }
+            set
+            {
+                this.soundLevel = value;
+                this.OnPropertyChanged("SoundLevel");
+            }
+        }
+
         public EnvironmentViewModel(IEnvironment domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
@@ -185,6 +208,7 @@
             this.PheromoneOpacity = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Pheromone);
             this.NutrientScalar = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Nutrient);
             this.ObstructionLevel = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Obstruction);
+            this.SoundLevel = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Sound);
 
             this.RefreshEnvironmentColor();
         }

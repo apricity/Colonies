@@ -71,6 +71,10 @@
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
+            foreach (var organismCoordinate in ecosystemData.GetOrganismsEmittingSound())
+            {
+                ecosystem.InsertSound(organismCoordinate);
+            }
 
             // hook organism model into the ecosystem
             foreach (var organismLocation in initialOrganismCoordinates)
@@ -158,9 +162,9 @@
             var organismLocations = new Dictionary<Organism, Coordinate>
                                         {
                                             { new Organism("Waffle", Colors.Silver), new Coordinate(2, 2) },
-                                            { new Organism("Wilber", Colors.Silver), new Coordinate(2, 7) },
-                                            { new Organism("Lotty", Colors.Silver), new Coordinate(7, 2) },
-                                            { new Organism("Dr. Louise", Colors.Silver), new Coordinate(7, 7) },
+                                            { new Organism("Wilber", Colors.Silver) { IsEmittingSound = true}, new Coordinate(2, 7) },
+                                            { new Organism("Stephen", Colors.Silver), new Coordinate(7, 2) },
+                                            { new Organism("Suzi", Colors.Silver), new Coordinate(7, 7) },
                                         };
 
             return organismLocations;

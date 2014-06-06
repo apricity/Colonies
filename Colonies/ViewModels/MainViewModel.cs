@@ -170,14 +170,14 @@
         {
             get
             {
-                return 1 / this.DomainModel.Ecosystem.GetHazardChance(EnvironmentMeasure.Damp).SpreadChance;
+                return 1 / this.DomainModel.Ecosystem.GetHazardRate(EnvironmentMeasure.Damp).SpreadRate;
             }
             set
             {
-                var currentHazardChance = this.DomainModel.Ecosystem.GetHazardChance(EnvironmentMeasure.Damp);
-                var updatedHazardChance = new HazardChance(currentHazardChance.AddChance, 1 / value, currentHazardChance.RemoveChance);
-                this.DomainModel.Ecosystem.SetHazardChance(EnvironmentMeasure.Damp, updatedHazardChance);
-                this.OnPropertyChanged("HazardSpreadChance");
+                var currentHazardRate = this.DomainModel.Ecosystem.GetHazardRate(EnvironmentMeasure.Damp);
+                var updatedHazardRate = new HazardRate(currentHazardRate.AddRate, 1 / value, currentHazardRate.RemoveRate);
+                this.DomainModel.Ecosystem.SetHazardRate(EnvironmentMeasure.Damp, updatedHazardRate);
+                this.OnPropertyChanged("DampSpreadDenominator");
             }
         }
 
@@ -185,6 +185,7 @@
         public static Color NutrientColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Nutrient]; } }
         public static Color MineralColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Mineral]; } }
         public static Color ObstructionColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Obstruction]; } }
+        public static Color SoundColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Sound]; } }
         public static Color DampColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Damp]; } }
         public static Color HeatColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Heat]; } }
 
@@ -271,8 +272,8 @@
                     var updateSummary = this.DomainModel.UpdateOnce();
                     this.UpdateViewModels(updateSummary);
                     this.TurnCount++;
-                    this.WeatherDampLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetWeatherLevel(WeatherType.Damp));
-                    this.WeatherHeatLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetWeatherLevel(WeatherType.Heat));
+                    this.WeatherDampLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Damp));
+                    this.WeatherHeatLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Heat));
 
                     // if there's been a change in the turn interval while the previous turn was processed
                     // update the interval of the ecosystem timer

@@ -65,8 +65,8 @@
                 Color.FromRgb(17, 17, 17),
                 new List<WeightedColor>
                     {
-                        new WeightedColor(Colors.CornflowerBlue, this.DomainModel.Weather.GetWeatherLevel(WeatherType.Damp)),
-                        new WeightedColor(Colors.Tomato, this.DomainModel.Weather.GetWeatherLevel(WeatherType.Heat))
+                        new WeightedColor(Colors.CornflowerBlue, this.DomainModel.Weather.GetLevel(WeatherType.Damp)),
+                        new WeightedColor(Colors.Tomato, this.DomainModel.Weather.GetLevel(WeatherType.Heat))
                     });
         }
     }

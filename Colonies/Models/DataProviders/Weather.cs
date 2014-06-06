@@ -10,45 +10,25 @@
     public class Weather : IWeather
     {
         // TODO: better naming?
-        private Dictionary<WeatherType, EnvironmentMeasure> WeatherHazards { get; set; } 
-        private Dictionary<WeatherType, double> WeatherLevels { get; set; }
         private Dictionary<WeatherType, double> WeatherChangeRates { get; set; }
-
-        public IEnumerable<WeatherType> WeatherTypes
-        {
-            get
-            {
-                return this.WeatherHazards.Keys;
-            }
-        }
+        private Dictionary<WeatherType, double> WeatherLevels { get; set; }
 
         public Weather()
         {
-            this.WeatherHazards = new Dictionary<WeatherType, EnvironmentMeasure>
-                                      {
-                                          { WeatherType.Damp, EnvironmentMeasure.Damp },
-                                          { WeatherType.Heat, EnvironmentMeasure.Heat }
-                                      };
-
-            this.WeatherLevels = new Dictionary<WeatherType, double>();
-            foreach (var weatherType in this.WeatherTypes)
-            {
-                this.WeatherLevels.Add(weatherType, 0);
-            }
-
             this.WeatherChangeRates = new Dictionary<WeatherType, double>
                                           {
                                               { WeatherType.Damp, 1 / (double)200 },
                                               { WeatherType.Heat, 1 / (double)2000 }
                                           };
+
+            this.WeatherLevels = new Dictionary<WeatherType, double>();
+            foreach (var weatherType in this.WeatherChangeRates.Keys.ToList())
+            {
+                this.WeatherLevels.Add(weatherType, 0);
+            }
         }
 
-        public EnvironmentMeasure GetWeatherHazard(WeatherType weatherType)
-        {
-            return this.WeatherHazards[weatherType];
-        }
-
-        public double GetWeatherLevel(WeatherType weatherType)
+        public double GetLevel(WeatherType weatherType)
         {
             return this.WeatherLevels[weatherType];
         }

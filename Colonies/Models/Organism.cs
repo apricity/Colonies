@@ -13,6 +13,7 @@
         public string Name { get; private set; }
         public Color Color { get; private set; }
         public bool IsDepositingPheromones { get; private set; }
+        public bool IsEmittingSound { get; set; }
 
         private readonly MeasurementData measurementData;
         public IMeasurementData MeasurementData
@@ -48,13 +49,14 @@
                                          { EnvironmentMeasure.Damp, 0 },
                                          { EnvironmentMeasure.Heat, 0 },
                                          { EnvironmentMeasure.Poison, 0 },
-                                         { EnvironmentMeasure.Obstruction, 0}
+                                         { EnvironmentMeasure.Obstruction, 0},
+                                         { EnvironmentMeasure.Sound, 0 }
                                      };
         }
 
-        public double GetLevel(OrganismMeasure measure)
+        public double GetLevel(OrganismMeasure testMeasure)
         {
-            return this.measurementData.GetLevel(measure);
+            return this.measurementData.GetLevel(testMeasure);
         }
 
         public void SetLevel(OrganismMeasure measure, double level)

@@ -19,12 +19,12 @@
             }
         }
 
-        public bool IsHazardous
+        public bool IsHarmful
         {
             get
             {
-                return EnvironmentMeasure.PotentialHazards()
-                    .Any(hazardMeasure => this.measurementData.GetLevel(hazardMeasure).Equals(1.0));
+                return EnvironmentMeasure.HazardousMeasures()
+                    .Any(environmentMeasure => this.measurementData.GetLevel(environmentMeasure).Equals(1.0));
             }
         }
 
@@ -39,9 +39,9 @@
             this.measurementData = new MeasurementData(measurements);
         }
 
-        public double GetLevel(EnvironmentMeasure measure)
+        public double GetLevel(EnvironmentMeasure testMeasure)
         {
-            return this.measurementData.GetLevel(measure);
+            return this.measurementData.GetLevel(testMeasure);
         }
 
         public void SetLevel(EnvironmentMeasure measure, double level)

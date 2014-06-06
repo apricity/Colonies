@@ -6,6 +6,6 @@
     {
         IMeasurementData MeasurementData { get; }
 
-        double GetLevel(T measure);
+        double GetLevel(T testMeasure);
     }
 }

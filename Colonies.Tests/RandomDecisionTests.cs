@@ -210,9 +210,9 @@
                 }
             }
 
-            public double GetLevel(TestMeasure measure)
+            public double GetLevel(TestMeasure testMeasure)
             {
-                return this.MeasurementData.GetLevel(measure);
+                return this.MeasurementData.GetLevel(testMeasure);
             }
 
             public TestMeasurableItem(string identifier)
@@ -259,9 +259,9 @@
                 this.yBias = yBias;
             }
 
-            public void SetMeasureBias(TestMeasure measure, double bias)
+            public void SetMeasureBias(TestMeasure testMeasure, double bias)
             {
-                this.MeasureBiases[measure] = bias;
+                this.MeasureBiases[testMeasure] = bias;
             }
         }
 

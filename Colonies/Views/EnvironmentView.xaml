@@ -38,6 +38,22 @@
                 </MultiBinding>
             </Rectangle.Width>
         </Rectangle>
+        
+        <Ellipse Stroke="{Binding SoundColor, Converter={StaticResource ColorToBrushConverter}}">
+            <Ellipse.Height>
+                <MultiBinding Converter="{StaticResource RelativeScaleConverter}">
+                    <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}" Path="Height"/>
+                    <Binding Path="SoundLevel"/>
+                </MultiBinding>
+            </Ellipse.Height>
+
+            <Ellipse.Width>
+                <MultiBinding Converter="{StaticResource RelativeScaleConverter}">
+                    <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Views:HabitatView}}" Path="Height"/>
+                    <Binding Path="SoundLevel"/>
+                </MultiBinding>
+            </Ellipse.Width>
+        </Ellipse>
 
         <!-- stretch lines so we don't have to care about the size of the window (e.g. currently 20x20 but could easily change) -->
         <!-- TODO: how to derive '7' (~ 1/4 of line length) using converters (multiconverter does not work for double collection...) -->

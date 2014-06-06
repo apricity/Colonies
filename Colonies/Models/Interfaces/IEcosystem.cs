@@ -19,9 +19,9 @@
 
         IWeather Weather { get; }
 
-        HazardChance GetHazardChance(EnvironmentMeasure hazardMeasure);
+        HazardRate GetHazardRate(EnvironmentMeasure environmentMeasure);
 
-        void SetHazardChance(EnvironmentMeasure hazardMeasure, HazardChance hazardChance);
+        void SetHazardRate(EnvironmentMeasure environmentMeasure, HazardRate hazardChance);
 
         UpdateSummary Update();
     }

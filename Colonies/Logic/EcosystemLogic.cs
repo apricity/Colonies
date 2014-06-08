@@ -24,7 +24,7 @@
             }
 
             var desiredOrganismCoordinates = new Dictionary<IOrganism, Coordinate>();
-            var aliveOrganismsCoordinates = ecosystemData.GetOrganismCoordinates(true, null);
+            var aliveOrganismsCoordinates = ecosystemData.AliveOrganismCoordinates();
             foreach (var organismCoordinate in aliveOrganismsCoordinates)
             {
                 // get measurements of neighbouring environments
@@ -49,7 +49,7 @@
             var resolvedOrganismCoordinates = new Dictionary<IOrganism, Coordinate>();
 
             // create a copy of the organism habitats because we don't want to modify the actual set
-            var organisms = ecosystemData.GetOrganismCoordinates(null, null).Select(ecosystemData.GetOrganism).ToList();
+            var organisms = ecosystemData.OrganismCoordinates().Select(ecosystemData.GetOrganism).ToList();
 
             // remove organisms that have been resolved (from previous iterations)
             // as they no longer need to be processed

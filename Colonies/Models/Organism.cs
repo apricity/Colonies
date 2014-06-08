@@ -31,7 +31,7 @@
         }
 
         private bool pheromoneEnabled;
-        public bool IsDepositingPheromones
+        public bool IsDepositingPheromone
         {
             get
             {

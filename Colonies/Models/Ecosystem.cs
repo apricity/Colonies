@@ -81,7 +81,7 @@
 
         public UpdateSummary Update()
         {
-            var previousOrganismCoordinates = this.EcosystemData.GetOrganismCoordinates(null, null)
+            var previousOrganismCoordinates = this.EcosystemData.OrganismCoordinates()
                 .ToDictionary(coordinate => this.EcosystemData.GetOrganism(coordinate), coordinate => coordinate);
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
@@ -97,7 +97,7 @@
             /* change measures that are globally affected (e.g. nutrient growth, pheromone fade, hazard spread, health deterioration) */
             alteredEnvironmentCoordinates.AddRange(this.PerformPostMovementActions());
 
-            var currentOrganismCoordinates = this.EcosystemData.GetOrganismCoordinates(null, null)
+            var currentOrganismCoordinates = this.EcosystemData.OrganismCoordinates()
                 .ToDictionary(coordinate => this.EcosystemData.GetOrganism(coordinate), coordinate => coordinate);
 
             return new UpdateSummary(previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates.Distinct().ToList());
@@ -114,7 +114,7 @@
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            var existingSoundCoordinates = this.EcosystemData.GetOrganismEmittingSoundCoordinates().ToList();
+            var existingSoundCoordinates = this.EcosystemData.EmittingSoundOrganismCoordinates().ToList();
 
             var desiredOrganismCoordinates = EcosystemLogic.GetDesiredCoordinates(this.EcosystemData);
             var movedOrganismCoordinates = EcosystemLogic.ResolveOrganismHabitats(this.EcosystemData, desiredOrganismCoordinates, new List<IOrganism>(), this);
@@ -143,7 +143,7 @@
                 alteredEnvironmentCoordinates.AddRange(this.RemoveDistributedMeasure(existingSoundCoordinate, EnvironmentMeasure.Sound));
             }
 
-            var updatedSoundCoordinates = this.EcosystemData.GetOrganismEmittingSoundCoordinates().ToList();
+            var updatedSoundCoordinates = this.EcosystemData.EmittingSoundOrganismCoordinates().ToList();
             foreach (var updatedSoundCoordinate in updatedSoundCoordinates)
             {
                 alteredEnvironmentCoordinates.AddRange(this.InsertDistributedMeasure(updatedSoundCoordinate, EnvironmentMeasure.Sound));
@@ -177,7 +177,7 @@
 
         private IEnumerable<Coordinate> OrganismsConsumeNutrients()
         {
-            var organismCoordinates = this.EcosystemData.GetOrganismCoordinates(true, null)
+            var organismCoordinates = this.EcosystemData.AliveOrganismCoordinates()
                 .Where(coordinate => this.EcosystemData.HasLevel(coordinate, EnvironmentMeasure.Nutrient)).ToList();
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
@@ -201,7 +201,7 @@
 
         private IEnumerable<Coordinate> DecreasePheromoneLevel()
         {
-            var pheromoneCoordinates = this.EcosystemData.GetAllCoordinates()
+            var pheromoneCoordinates = this.EcosystemData.AllCoordinates()
                 .Where(coordinate => this.EcosystemData.HasLevel(coordinate, EnvironmentMeasure.Pheromone)).ToList();
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
@@ -221,7 +221,7 @@
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            var organismCoordinates = this.EcosystemData.GetOrganismCoordinates(true, true).ToList();
+            var organismCoordinates = this.EcosystemData.DepositingPheromoneOrganismCoordinates().ToList();
             foreach (var organismCoordinate in organismCoordinates)
             {
                 var pheromoneIncreased = this.EcosystemData.IncreaseLevel(organismCoordinate, EnvironmentMeasure.Pheromone, this.PheromoneDepositRate);
@@ -238,7 +238,7 @@
         {
             // only increase mineral where the terrain is not harmful (even when the organism is dead!)
             // TODO: need a "HasDecomposed" bool - this could stop showing organism and stop mineral form
-            var organismCoordinates = this.EcosystemData.GetOrganismCoordinates(null, null)
+            var organismCoordinates = this.EcosystemData.OrganismCoordinates()
                 .Where(coordinate => !this.EcosystemData.IsHarmful(coordinate)).ToList();
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
@@ -256,7 +256,7 @@
 
         private IEnumerable<Coordinate> IncreaseNutrientLevels()
         {
-            var nutrientCoordinates = this.EcosystemData.GetAllCoordinates()
+            var nutrientCoordinates = this.EcosystemData.AllCoordinates()
                 .Where(coordinate => this.EcosystemData.HasLevel(coordinate, EnvironmentMeasure.Nutrient) 
                                      && !this.EcosystemData.IsHarmful(coordinate)).ToList();
 
@@ -275,7 +275,7 @@
 
         private IEnumerable<Coordinate> DecreaseOrganismHealth()
         {
-            var organismCoordinates = this.EcosystemData.GetOrganismCoordinates(true, null).ToList();
+            var organismCoordinates = this.EcosystemData.AliveOrganismCoordinates().ToList();
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
             foreach (var organismCoordinate in organismCoordinates)
@@ -393,7 +393,7 @@
             }
 
             var hazardCoordinates = this.EcosystemData.GetHazardCoordinates(environmentMeasure).ToList();
-            var nonHazardCoordinates = this.EcosystemData.GetAllCoordinates().Except(hazardCoordinates);
+            var nonHazardCoordinates = this.EcosystemData.AllCoordinates().Except(hazardCoordinates);
             var chosenNonHazardCoordinate = DecisionLogic.MakeDecision(nonHazardCoordinates);
             if (!this.EcosystemData.HasLevel(chosenNonHazardCoordinate, EnvironmentMeasure.Obstruction))
             {
@@ -504,7 +504,7 @@
 
         public override String ToString()
         {
-            return string.Format("{0}x{1} : {2} organisms", this.Width, this.Height, this.EcosystemData.GetOrganismCoordinates(null, null).Count());
+            return string.Format("{0}x{1} : {2} organisms", this.Width, this.Height, this.EcosystemData.OrganismCoordinates().Count());
         }
     }
 }

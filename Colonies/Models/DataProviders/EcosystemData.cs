@@ -59,20 +59,27 @@
             }
         }
 
-        public IEnumerable<Coordinate> GetAllCoordinates()
+        public IEnumerable<Coordinate> AllCoordinates()
         {
             return this.HabitatCoordinates.Values.ToList();
         }
 
-        public IEnumerable<Coordinate> GetOrganismCoordinates(bool? isAlive, bool? isDepositingPheromone)
+        public IEnumerable<Coordinate> OrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => 
-                isAlive == null || organism.IsAlive == isAlive 
-                && isDepositingPheromone == null || organism.IsDepositingPheromones == isDepositingPheromone)
-                .Select(this.CoordinateOf);
+            return this.OrganismHabitats.Keys.Select(this.CoordinateOf);
         }
 
-        public IEnumerable<Coordinate> GetOrganismEmittingSoundCoordinates()
+        public IEnumerable<Coordinate> AliveOrganismCoordinates()
+        {
+            return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive).Select(this.CoordinateOf);
+        }
+
+        public IEnumerable<Coordinate> DepositingPheromoneOrganismCoordinates()
+        {
+            return this.OrganismHabitats.Keys.Where(organism => organism.IsDepositingPheromone).Select(this.CoordinateOf);
+        }
+
+        public IEnumerable<Coordinate> EmittingSoundOrganismCoordinates()
         {
             return this.OrganismHabitats.Keys.Where(organism => organism.IsEmittingSound).Select(this.CoordinateOf);
         }

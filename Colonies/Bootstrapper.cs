@@ -71,7 +71,7 @@
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
-            foreach (var organismCoordinate in ecosystemData.GetOrganismEmittingSoundCoordinates())
+            foreach (var organismCoordinate in ecosystemData.EmittingSoundOrganismCoordinates())
             {
                 ecosystem.InsertDistributedMeasure(organismCoordinate, EnvironmentMeasure.Sound);
             }

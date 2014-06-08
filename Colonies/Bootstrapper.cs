@@ -67,13 +67,14 @@
             var initialOrganismCoordinates = this.InitialOrganismCoordinates();
             var ecosystemData = new EcosystemData(habitats, initialOrganismCoordinates);
             var weather = new Weather();
-            var ecosystem = new Ecosystem(ecosystemData, weather);
+            var environmentMeasureDistributor = new EnvironmentMeasureDistributor(ecosystemData);
+            var ecosystem = new Ecosystem(ecosystemData, weather, environmentMeasureDistributor);
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
             foreach (var organismCoordinate in ecosystemData.EmittingSoundOrganismCoordinates())
             {
-                ecosystem.InsertDistributedMeasure(organismCoordinate, EnvironmentMeasure.Sound);
+                ecosystem.EnvironmentMeasureDistributor.InsertDistribution(organismCoordinate, EnvironmentMeasure.Sound);
             }
 
             // hook organism model into the ecosystem
@@ -99,18 +100,18 @@
 
         protected virtual void InitialiseTerrain(Ecosystem ecosystem)
         {
-            ecosystem.InsertDistributedMeasure(new Coordinate(19, 0), EnvironmentMeasure.Damp);
-            ecosystem.InsertDistributedMeasure(new Coordinate(15, 3), EnvironmentMeasure.Damp);
-            ecosystem.InsertDistributedMeasure(new Coordinate(17, 4), EnvironmentMeasure.Damp);
-            ecosystem.InsertDistributedMeasure(new Coordinate(17, 5), EnvironmentMeasure.Heat);
-            ecosystem.InsertDistributedMeasure(new Coordinate(15, 6), EnvironmentMeasure.Heat);
-            ecosystem.InsertDistributedMeasure(new Coordinate(19, 9), EnvironmentMeasure.Heat);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(19, 0), EnvironmentMeasure.Damp);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(15, 3), EnvironmentMeasure.Damp);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(17, 4), EnvironmentMeasure.Damp);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(17, 5), EnvironmentMeasure.Heat);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(15, 6), EnvironmentMeasure.Heat);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(19, 9), EnvironmentMeasure.Heat);
 
             for (var i = 12; i < ecosystem.Width; i++)
             {
                 for (var j = 4; j <= 5; j++)
                 {
-                    ecosystem.InsertDistributedMeasure(new Coordinate(i, j), EnvironmentMeasure.Poison);
+                    ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(i, j), EnvironmentMeasure.Poison);
                 }
             }
 

@@ -351,7 +351,7 @@
             EcosystemLogic.OverrideDecideOrganismFunction = organisms => organisms.First();
 
             var ecosystemData = new EcosystemData(this.habitats, organismCoordinates);
-            var ecosystem = new Ecosystem(ecosystemData, new Weather());
+            var ecosystem = new Ecosystem(ecosystemData, new Weather(), new EnvironmentMeasureDistributor(ecosystemData));
             return ecosystem.Update();
         }
     }

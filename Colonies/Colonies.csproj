@@ -103,6 +103,7 @@
     <Compile Include="Converters\DoubleToHealthBrushConverter.cs" />
     <Compile Include="DataTypes\Coordinate.cs" />
     <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
+    <Compile Include="Models\DataProviders\EnvironmentMeasureDistributor.cs" />
     <Compile Include="ViewModels\Infrastructure\OrganismsUpdatedEvent.cs" />
     <Compile Include="Extensions\GenericCollectionExtensions.cs" />
     <Compile Include="DataTypes\Interfaces\IMeasurement.cs" />

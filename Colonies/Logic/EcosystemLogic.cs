@@ -168,9 +168,9 @@
             return neighbouringCoordinates;
         }
 
-        public static int CalculateHazardDiameter(this IEcosystem ecosystem)
+        public static int CalculateHazardDiameter(this EcosystemData ecosystemData)
         {
-            var ecosystemArea = (double)(ecosystem.Width * ecosystem.Height);
+            var ecosystemArea = (double)(ecosystemData.Width * ecosystemData.Height);
 
             var diameterFound = false;
             var currentDiameter = 3; // minimum is 3x3

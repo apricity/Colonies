@@ -30,24 +30,7 @@
         public double ObstructionDemolishRate { get; set; }
 
         public Dictionary<EnvironmentMeasure, HazardRate> EnvironmentMeasureHazardRates { get; private set; }
-
-        private int SoundDiameter { get; set; }
-        private int SoundRadius
-        {
-            get
-            {
-                return (this.SoundDiameter - 1) / 2;
-            }
-        }
-
-        private int HazardDiameter { get; set; }
-        private int HazardRadius
-        {
-            get
-            {
-                return (this.HazardDiameter - 1) / 2;
-            }
-        }
+        public Dictionary<EnvironmentMeasure, int> EnvironmentMeasureDiameters { get; private set; } 
 
         public int Width
         {
@@ -73,8 +56,14 @@
             this.MeasureBiases = new Dictionary<OrganismMeasure, double> { { OrganismMeasure.Health, 1 } };
 
             // work out how big any hazard spread should be based on ecosystem dimensions
-            this.HazardDiameter = this.CalculateHazardDiameter();
-            this.SoundDiameter = (this.HazardDiameter * 2) - 1;
+            var diameter = this.CalculateHazardDiameter();
+            this.EnvironmentMeasureDiameters = new Dictionary<EnvironmentMeasure, int>
+                {
+                    { EnvironmentMeasure.Damp, diameter },
+                    { EnvironmentMeasure.Heat, diameter },
+                    { EnvironmentMeasure.Poison, diameter },
+                    { EnvironmentMeasure.Sound, (diameter * 4) - 1 }
+                };
 
             this.HealthDeteriorationRate = 1 / 500.0;
             this.PheromoneDepositRate = 1 / 100.0;
@@ -84,11 +73,11 @@
             this.ObstructionDemolishRate = 1 / 5.0;
 
             this.EnvironmentMeasureHazardRates = new Dictionary<EnvironmentMeasure, HazardRate>
-                                     {
-                                         { EnvironmentMeasure.Damp, new HazardRate(1 / 2000.0, 1 / 500.0, 1 / 1000.0) },
-                                         { EnvironmentMeasure.Heat, new HazardRate(1 / 2000.0, 1 / 500.0, 1 / 1000.0) },
-                                         { EnvironmentMeasure.Poison, new HazardRate(0.0, 1 / 50.0, 1 / 50.0) }
-                                     };
+                {
+                    { EnvironmentMeasure.Damp, new HazardRate(1 / 2000.0, 1 / 500.0, 1 / 1000.0) },
+                    { EnvironmentMeasure.Heat, new HazardRate(1 / 2000.0, 1 / 500.0, 1 / 1000.0) },
+                    { EnvironmentMeasure.Poison, new HazardRate(0.0, 1 / 50.0, 1 / 50.0) }
+                };
         }
 
         public UpdateSummary Update()
@@ -126,7 +115,7 @@
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            var existingSoundCoordinates = this.EcosystemData.GetOrganismsEmittingSound().ToList();
+            var existingSoundCoordinates = this.EcosystemData.GetOrganismsEmittingSound(false).ToList();
 
             var desiredOrganismCoordinates = EcosystemLogic.GetDesiredCoordinates(this.EcosystemData);
             var movedOrganismCoordinates = EcosystemLogic.ResolveOrganismHabitats(this.EcosystemData, desiredOrganismCoordinates, new List<IOrganism>(), this);
@@ -152,13 +141,13 @@
 
             foreach (var existingSoundCoordinate in existingSoundCoordinates)
             {
-                alteredEnvironmentCoordinates.AddRange(this.RemoveSound(existingSoundCoordinate));
+                alteredEnvironmentCoordinates.AddRange(this.RemoveDistributedMeasure(existingSoundCoordinate, EnvironmentMeasure.Sound));
             }
 
-            var updatedSoundCoordinates = this.EcosystemData.GetOrganismsEmittingSound().ToList();
+            var updatedSoundCoordinates = this.EcosystemData.GetOrganismsEmittingSound(true).ToList();
             foreach (var updatedSoundCoordinate in updatedSoundCoordinates)
             {
-                alteredEnvironmentCoordinates.AddRange(this.InsertSound(updatedSoundCoordinate));
+                alteredEnvironmentCoordinates.AddRange(this.InsertDistributedMeasure(updatedSoundCoordinate, EnvironmentMeasure.Sound));
             }
 
             return alteredEnvironmentCoordinates;
@@ -346,7 +335,7 @@
                 }
 
                 var chosenCoordinate = DecisionLogic.MakeDecision(validNeighbouringCoordinates);
-                alteredEnvironmentCoordinates.AddRange(this.InsertHazard(chosenCoordinate, environmentMeasure));
+                alteredEnvironmentCoordinates.AddRange(this.InsertDistributedMeasure(chosenCoordinate, environmentMeasure));
             }
 
             return alteredEnvironmentCoordinates;
@@ -364,19 +353,20 @@
                     continue;
                 }
 
-                alteredEnvironmentCoordinates.AddRange(this.RemoveHazard(hazardCoordinate, environmentMeasure));
+                alteredEnvironmentCoordinates.AddRange(this.RemoveDistributedMeasure(hazardCoordinate, environmentMeasure));
             }
 
             // go through all remaining hazard coordinates and restore any remove measures that belonged to other hazards
             var remainingHazardCoordinates = this.EcosystemData.GetHazardCoordinates(environmentMeasure).ToList();
             foreach (var remainingHazardCoordinate in remainingHazardCoordinates)
             {
-                var neighbouringCoordinates = this.EcosystemData.GetNeighbours(remainingHazardCoordinate, this.HazardRadius, true, true).ToList();
+                var radius = (this.EnvironmentMeasureDiameters[environmentMeasure] - 1) / 2;
+                var neighbouringCoordinates = this.EcosystemData.GetNeighbours(remainingHazardCoordinate, radius, true, true).ToList();
                 var validNeighbouringCoordinates = neighbouringCoordinates.Where(neighbouringCoordinate => neighbouringCoordinate != null).ToList();
                 if (validNeighbouringCoordinates.Any(neighbouringCoordinate => 
                     this.EcosystemData.GetLevel(neighbouringCoordinate, environmentMeasure).Equals(0.0)))
                 {
-                    alteredEnvironmentCoordinates.AddRange(this.InsertHazard(remainingHazardCoordinate, environmentMeasure));
+                    alteredEnvironmentCoordinates.AddRange(this.InsertDistributedMeasure(remainingHazardCoordinate, environmentMeasure));
                 }
             }
 
@@ -397,25 +387,23 @@
             var chosenNonHazardCoordinate = DecisionLogic.MakeDecision(nonHazardCoordinates);
             if (!this.EcosystemData.HasLevel(chosenNonHazardCoordinate, EnvironmentMeasure.Obstruction))
             {
-                alteredEnvironmentCoordinates.AddRange(this.InsertHazard(chosenNonHazardCoordinate, environmentMeasure));
+                alteredEnvironmentCoordinates.AddRange(this.InsertDistributedMeasure(chosenNonHazardCoordinate, environmentMeasure));
             }
 
             return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> RemoveHazard(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
+        private IEnumerable<Coordinate> RemoveDistributedMeasure(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
         {
-            if (!environmentMeasure.IsHazardous)
-            {
-                throw new InvalidEnumArgumentException(string.Format("{0} is not hazardous", environmentMeasure));
-            }
-
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            var neighbouringCoordinates = this.EcosystemData.GetNeighbours(coordinate, this.HazardRadius, true, true);
-            for (var x = 0; x < this.HazardDiameter; x++)
+            var diameter = this.EnvironmentMeasureDiameters[environmentMeasure];
+            var radius = (diameter - 1) / 2;
+
+            var neighbouringCoordinates = this.EcosystemData.GetNeighbours(coordinate, radius, true, true);
+            for (var x = 0; x < diameter; x++)
             {
-                for (var y = 0; y < this.HazardDiameter; y++)
+                for (var y = 0; y < diameter; y++)
                 {
                     var neighbouringCoordinate = neighbouringCoordinates[x, y];
 
@@ -429,27 +417,28 @@
                 }
             }
 
-            this.EcosystemData.RemoveHazard(environmentMeasure, coordinate);
+            if (environmentMeasure.IsHazardous)
+            {
+                this.EcosystemData.RemoveHazard(environmentMeasure, coordinate);
+            }
 
             return alteredEnvironmentCoordinates;
         }
 
-        public IEnumerable<Coordinate> InsertHazard(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
+        public IEnumerable<Coordinate> InsertDistributedMeasure(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
         {
-            if (!environmentMeasure.IsHazardous)
-            {
-                throw new InvalidEnumArgumentException(string.Format("{0} is not hazardous", environmentMeasure));
-            }
-
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            var neighbouringCoordinates = this.EcosystemData.GetNeighbours(coordinate, this.HazardRadius, true, true);
-            var gaussianKernel = new GaussianBlur(0.25 * this.HazardDiameter, this.HazardDiameter).Kernel;
+            var diameter = this.EnvironmentMeasureDiameters[environmentMeasure];
+            var radius = (diameter - 1) / 2;
 
-            var gaussianCentre = (double)gaussianKernel[this.HazardRadius, this.HazardRadius];
-            for (var x = 0; x < this.HazardDiameter; x++)
+            var neighbouringCoordinates = this.EcosystemData.GetNeighbours(coordinate, radius, true, true);
+            var gaussianKernel = new GaussianBlur(0.25 * diameter, diameter).Kernel;
+
+            var gaussianCentre = (double)gaussianKernel[radius, radius];
+            for (var x = 0; x < diameter; x++)
             {
-                for (var y = 0; y < this.HazardDiameter; y++)
+                for (var y = 0; y < diameter; y++)
                 {
                     var level = gaussianKernel[x, y] / gaussianCentre;
                     var neighbouringCoordinate = neighbouringCoordinates[x, y];
@@ -463,57 +452,9 @@
                 }
             }
 
-            this.EcosystemData.InsertHazard(environmentMeasure, coordinate);
-
-            return alteredEnvironmentCoordinates;
-        }
-
-        public IEnumerable<Coordinate> InsertSound(Coordinate coordinate)
-        {
-            var alteredEnvironmentCoordinates = new List<Coordinate>();
-
-            var neighbouringCoordinates = this.EcosystemData.GetNeighbours(coordinate, this.SoundRadius, true, true);
-            var gaussianKernel = new GaussianBlur(0.25 * this.SoundDiameter, this.SoundDiameter).Kernel;
-
-            var gaussianCentre = (double)gaussianKernel[this.SoundRadius, this.SoundRadius];
-            for (var x = 0; x < this.SoundDiameter; x++)
+            if (environmentMeasure.IsHazardous)
             {
-                for (var y = 0; y < this.SoundDiameter; y++)
-                {
-                    var level = gaussianKernel[x, y] / gaussianCentre;
-                    var neighbouringCoordinate = neighbouringCoordinates[x, y];
-
-                    if (neighbouringCoordinate != null
-                        && level > this.EcosystemData.GetLevel(neighbouringCoordinate, EnvironmentMeasure.Sound))
-                    {
-                        this.EcosystemData.SetLevel(neighbouringCoordinate, EnvironmentMeasure.Sound, level);
-                        alteredEnvironmentCoordinates.Add(neighbouringCoordinate);
-                    }
-                }
-            }
-
-            return alteredEnvironmentCoordinates;
-        }
-
-        private IEnumerable<Coordinate> RemoveSound(Coordinate coordinate)
-        {
-            var alteredEnvironmentCoordinates = new List<Coordinate>();
-
-            var neighbouringCoordinates = this.EcosystemData.GetNeighbours(coordinate, this.SoundRadius, true, true);
-            for (var x = 0; x < this.SoundDiameter; x++)
-            {
-                for (var y = 0; y < this.SoundDiameter; y++)
-                {
-                    var neighbouringCoordinate = neighbouringCoordinates[x, y];
-
-                    if (neighbouringCoordinate == null)
-                    {
-                        continue;
-                    }
-
-                    this.EcosystemData.SetLevel(neighbouringCoordinate, EnvironmentMeasure.Sound, 0);
-                    alteredEnvironmentCoordinates.Add(neighbouringCoordinate);
-                }
+                this.EcosystemData.InsertHazard(environmentMeasure, coordinate);
             }
 
             return alteredEnvironmentCoordinates;

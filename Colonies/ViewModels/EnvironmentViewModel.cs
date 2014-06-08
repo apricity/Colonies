@@ -26,7 +26,7 @@
                     { EnvironmentMeasure.Pheromone, Colors.OrangeRed },
                     { EnvironmentMeasure.Nutrient, Colors.OliveDrab },
                     { EnvironmentMeasure.Obstruction, Colors.Black },
-                    { EnvironmentMeasure.Sound, Color.FromArgb(125, 255, 255, 255) }
+                    { EnvironmentMeasure.Sound, Color.FromArgb(100, 255, 255, 255) }
                 };
 
         private Color environmentColor;

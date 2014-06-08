@@ -5,6 +5,10 @@
 
     public interface IEcosystem : IBiased<OrganismMeasure>
     {
+        int Width { get; }
+
+        int Height { get; }
+
         double HealthDeteriorationRate { get; set; }
 
         double PheromoneDepositRate { get; set; }

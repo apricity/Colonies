@@ -55,13 +55,13 @@
             this.MeasureBiases = new Dictionary<OrganismMeasure, double> { { OrganismMeasure.Health, 1 } };
 
             // work out how big any hazard spread should be based on ecosystem dimensions
-            var diameter = this.CalculateHazardDiameter();
+            var hazardDiameter = this.CalculateHazardDiameter();
             this.EnvironmentMeasureDiameters = new Dictionary<EnvironmentMeasure, int>
                 {
-                    { EnvironmentMeasure.Damp, diameter },
-                    { EnvironmentMeasure.Heat, diameter },
-                    { EnvironmentMeasure.Poison, diameter },
-                    { EnvironmentMeasure.Sound, (diameter * 4) - 1 }
+                    { EnvironmentMeasure.Damp, hazardDiameter },
+                    { EnvironmentMeasure.Heat, hazardDiameter },
+                    { EnvironmentMeasure.Poison, hazardDiameter },
+                    { EnvironmentMeasure.Sound, (hazardDiameter * 4) - 1 }
                 };
 
             this.HealthDeteriorationRate = 1 / 500.0;

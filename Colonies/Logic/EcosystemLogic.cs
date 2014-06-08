@@ -168,7 +168,7 @@
             return neighbouringCoordinates;
         }
 
-        public static int CalculateHazardDiameter(this Ecosystem ecosystem)
+        public static int CalculateHazardDiameter(this IEcosystem ecosystem)
         {
             var ecosystemArea = (double)(ecosystem.Width * ecosystem.Height);
 

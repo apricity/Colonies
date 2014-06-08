@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Linq;
 
     using AForge.Imaging.Filters;
@@ -115,7 +114,7 @@
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            var existingSoundCoordinates = this.EcosystemData.GetOrganismsEmittingSound(false).ToList();
+            var existingSoundCoordinates = this.EcosystemData.GetOrganismEmittingSoundCoordinates().ToList();
 
             var desiredOrganismCoordinates = EcosystemLogic.GetDesiredCoordinates(this.EcosystemData);
             var movedOrganismCoordinates = EcosystemLogic.ResolveOrganismHabitats(this.EcosystemData, desiredOrganismCoordinates, new List<IOrganism>(), this);
@@ -144,7 +143,7 @@
                 alteredEnvironmentCoordinates.AddRange(this.RemoveDistributedMeasure(existingSoundCoordinate, EnvironmentMeasure.Sound));
             }
 
-            var updatedSoundCoordinates = this.EcosystemData.GetOrganismsEmittingSound(true).ToList();
+            var updatedSoundCoordinates = this.EcosystemData.GetOrganismEmittingSoundCoordinates().ToList();
             foreach (var updatedSoundCoordinate in updatedSoundCoordinates)
             {
                 alteredEnvironmentCoordinates.AddRange(this.InsertDistributedMeasure(updatedSoundCoordinate, EnvironmentMeasure.Sound));
@@ -160,7 +159,18 @@
             alteredEnvironmentCoordinates.AddRange(this.DecreasePheromoneLevel());
             alteredEnvironmentCoordinates.AddRange(this.IncreaseNutrientLevels());
             alteredEnvironmentCoordinates.AddRange(this.ProgressWeatherAndHazards());
-            alteredEnvironmentCoordinates.AddRange(this.DecreaseOrganismHealth());
+
+            var decreasedHealthCoordinates = this.DecreaseOrganismHealth().ToList();
+            alteredEnvironmentCoordinates.AddRange(decreasedHealthCoordinates);
+
+            // if organism has died, remove emitted sound
+            foreach (var decreasedHealthCoordinate in decreasedHealthCoordinates)
+            {
+                if (!this.EcosystemData.HasLevel(decreasedHealthCoordinate, OrganismMeasure.Health))
+                {
+                    alteredEnvironmentCoordinates.AddRange(this.RemoveDistributedMeasure(decreasedHealthCoordinate, EnvironmentMeasure.Sound));
+                }
+            }
 
             return alteredEnvironmentCoordinates.Distinct();
         }

@@ -71,7 +71,7 @@
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
-            foreach (var organismCoordinate in ecosystemData.GetOrganismsEmittingSound(true))
+            foreach (var organismCoordinate in ecosystemData.GetOrganismEmittingSoundCoordinates())
             {
                 ecosystem.InsertDistributedMeasure(organismCoordinate, EnvironmentMeasure.Sound);
             }
@@ -159,12 +159,18 @@
 
         protected virtual Dictionary<Organism, Coordinate> InitialOrganismCoordinates()
         {
+            var soundEmittingOrganism = new Organism("Lotty", Colors.Silver);
+            soundEmittingOrganism.EnableSound();
+
+            var pheromoneDepositingOrganism = new Organism("Dr. Louise", Colors.Silver);
+            pheromoneDepositingOrganism.EnablePheromone();
+
             var organismLocations = new Dictionary<Organism, Coordinate>
                                         {
                                             { new Organism("Waffle", Colors.Silver), new Coordinate(2, 2) },
-                                            { new Organism("Wilber", Colors.Silver) { IsEmittingSound = true}, new Coordinate(2, 7) },
-                                            { new Organism("Stephen", Colors.Silver), new Coordinate(7, 2) },
-                                            { new Organism("Suzi", Colors.Silver), new Coordinate(7, 7) },
+                                            { new Organism("Wilber", Colors.Silver), new Coordinate(2, 7) },
+                                            { soundEmittingOrganism, new Coordinate(7, 2) },
+                                            { pheromoneDepositingOrganism, new Coordinate(7, 7) },
                                         };
 
             return organismLocations;

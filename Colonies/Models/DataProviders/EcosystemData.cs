@@ -72,12 +72,9 @@
                 .Select(this.CoordinateOf);
         }
 
-        public IEnumerable<Coordinate> GetOrganismsEmittingSound(bool mustBeAlive)
+        public IEnumerable<Coordinate> GetOrganismEmittingSoundCoordinates()
         {
-            return
-                this.OrganismHabitats.Keys.Where(
-                    organism => mustBeAlive ? (organism.IsAlive && organism.IsEmittingSound) : organism.IsEmittingSound)
-                    .Select(this.CoordinateOf);
+            return this.OrganismHabitats.Keys.Where(organism => organism.IsEmittingSound).Select(this.CoordinateOf);
         }
 
         public IEnumerable<Coordinate> GetHazardCoordinates(EnvironmentMeasure hazardMeasure)

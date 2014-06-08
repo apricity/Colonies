@@ -12,8 +12,6 @@
     {
         public string Name { get; private set; }
         public Color Color { get; private set; }
-        public bool IsDepositingPheromones { get; private set; }
-        public bool IsEmittingSound { get; set; }
 
         private readonly MeasurementData measurementData;
         public IMeasurementData MeasurementData
@@ -24,8 +22,6 @@
             }
         }
 
-        public Dictionary<EnvironmentMeasure, double> MeasureBiases { get; private set; } 
-
         public bool IsAlive
         {
             get
@@ -33,6 +29,26 @@
                 return this.measurementData.GetLevel(OrganismMeasure.Health) > 0.0;
             }
         }
+
+        private bool pheromoneEnabled;
+        public bool IsDepositingPheromones
+        {
+            get
+            {
+                return this.pheromoneEnabled && this.IsAlive;
+            }
+        }
+
+        private bool soundEnabled;
+        public bool IsEmittingSound
+        {
+            get
+            {
+                return this.soundEnabled && this.IsAlive;
+            }
+        }
+
+        public Dictionary<EnvironmentMeasure, double> MeasureBiases { get; private set; } 
 
         public Organism(string name, Color color)
         {
@@ -72,6 +88,26 @@
         public bool DecreaseLevel(OrganismMeasure measure, double decrement)
         {
             return this.measurementData.DecreaseLevel(measure, decrement);
+        }
+
+        public void EnableSound()
+        {
+            this.soundEnabled = true;
+        }
+
+        public void DisableSound()
+        {
+            this.soundEnabled = false;
+        }
+
+        public void EnablePheromone()
+        {
+            this.pheromoneEnabled = true;
+        }
+
+        public void DisablePheromone()
+        {
+            this.pheromoneEnabled = false;
         }
 
         public void SetMeasureBias(EnvironmentMeasure measure, double bias)

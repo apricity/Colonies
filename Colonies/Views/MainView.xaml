@@ -18,11 +18,11 @@
             <DesignTime:DesignTimeViewModelLocator x:Key="DesignTimeViewModelLocator"/>
 
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Purple.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Violet.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
 
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -43,139 +43,143 @@
     </Controls:MetroWindow.WindowCommands>
 
     <Controls:MetroWindow.Flyouts>
-        <Controls:Flyout Header="Settings" Position="Bottom">
-            <Grid Margin="3">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="200"/>
-                </Grid.ColumnDefinitions>
+        <Controls:FlyoutsControl>
 
-                <Grid.Resources>
-                    <Converters:BoolToActiveStringConverter x:Key="BoolToActiveStringConverter" />
-                    <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
+            <Controls:Flyout Header="Settings" Position="Bottom">
+                <Grid Margin="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="200"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.Resources>
+                        <Converters:BoolToActiveStringConverter x:Key="BoolToActiveStringConverter" />
+                        <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
                     
-                    <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="Margin" Value="3,3,3,3"/>
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="HorizontalAlignment" Value="Right"/>
-                    </Style>   
-                </Grid.Resources>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Margin" Value="3,3,3,3"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                        </Style>   
+                    </Grid.Resources>
 
-                <!--<Grid.ShowGridLines>True</Grid.ShowGridLines>-->
+                    <!--<Grid.ShowGridLines>True</Grid.ShowGridLines>-->
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="State:"/>
-                <ToggleButton Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsEcosystemActive}"
-                              Content="{Binding IsEcosystemActive, Converter={StaticResource BoolToActiveStringConverter}}" Margin="3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="State:"/>
+                    <ToggleButton Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsEcosystemActive}"
+                                  Content="{Binding IsEcosystemActive, Converter={StaticResource BoolToActiveStringConverter}}" Margin="3"/>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Interval:"/>
-                <Slider Grid.Row="1" Grid.Column="1" Value="{Binding EcosystemTurnInterval}" 
-                        Minimum="1" Maximum="2000" AutoToolTipPlacement="BottomRight" FlowDirection="RightToLeft" Margin="3"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Interval:"/>
+                    <Slider Grid.Row="1" Grid.Column="1" Value="{Binding EcosystemTurnInterval}" 
+                            Minimum="1" Maximum="2000" AutoToolTipPlacement="BottomRight" FlowDirection="RightToLeft" Margin="3"/>
 
-                <!-- TODO: wrap each of these in a common control -->
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Health Deterioration Rate:"/>
-                <DockPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
-                    <TextBlock Text="1 /"/>
-                    <TextBox Text="{Binding HealthDeteriorationDemoninator, UpdateSourceTrigger=PropertyChanged}">
-                        <TextBox.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                <GradientStop Color="#00FF00" Offset="0.0"/>
-                                <GradientStop Color="#FFFF00" Offset="0.5"/>
-                                <GradientStop Color="#FF0000" Offset="1.0"/>
-                            </LinearGradientBrush>
-                        </TextBox.Background>
-                    </TextBox>
-                </DockPanel>
+                    <!-- TODO: wrap each of these in a common control -->
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Health Deterioration Rate:"/>
+                    <DockPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
+                        <TextBlock Text="1 /"/>
+                        <TextBox Text="{Binding HealthDeteriorationDemoninator, UpdateSourceTrigger=PropertyChanged}">
+                            <TextBox.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#00FF00" Offset="0.0"/>
+                                    <GradientStop Color="#FFFF00" Offset="0.5"/>
+                                    <GradientStop Color="#FF0000" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </TextBox.Background>
+                        </TextBox>
+                    </DockPanel>
 
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="Pheromone Deposit Rate:"/>
-                <DockPanel Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
-                    <TextBlock Text="1 /"/>
-                    <TextBox Text="{Binding PheromoneDepositDemoninator, UpdateSourceTrigger=PropertyChanged}"
-                             Background="{Binding PheromoneColor, Converter={StaticResource ColorToBrushConverter}}"/>
-                </DockPanel>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Pheromone Deposit Rate:"/>
+                    <DockPanel Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
+                        <TextBlock Text="1 /"/>
+                        <TextBox Text="{Binding PheromoneDepositDemoninator, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{Binding PheromoneColor, Converter={StaticResource ColorToBrushConverter}}"/>
+                    </DockPanel>
 
-                <TextBlock Grid.Row="4" Grid.Column="0" Text="Pheromone Fade Rate:"/>
-                <DockPanel Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
-                    <TextBlock Text="1 /"/>
-                    <TextBox Text="{Binding PheromoneFadeDemoninator, UpdateSourceTrigger=PropertyChanged}"
-                             Background="{Binding PheromoneColor, Converter={StaticResource ColorToBrushConverter}}"/>
-                </DockPanel>
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Pheromone Fade Rate:"/>
+                    <DockPanel Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
+                        <TextBlock Text="1 /"/>
+                        <TextBox Text="{Binding PheromoneFadeDemoninator, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{Binding PheromoneColor, Converter={StaticResource ColorToBrushConverter}}"/>
+                    </DockPanel>
 
-                <TextBlock Grid.Row="5" Grid.Column="0" Text="Nutrient Form Rate:"/>
-                <DockPanel Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
-                    <TextBlock Text="1 /"/>
-                    <TextBox Text="{Binding NutrientGrowthDemoninator, UpdateSourceTrigger=PropertyChanged}"
-                             Background="{Binding NutrientColor, Converter={StaticResource ColorToBrushConverter}}"/>
-                </DockPanel>
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Nutrient Form Rate:"/>
+                    <DockPanel Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
+                        <TextBlock Text="1 /"/>
+                        <TextBox Text="{Binding NutrientGrowthDemoninator, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{Binding NutrientColor, Converter={StaticResource ColorToBrushConverter}}"/>
+                    </DockPanel>
 
-                <TextBlock Grid.Row="6" Grid.Column="0" Text="Mineral Growth Rate:"/>
-                <DockPanel Grid.Row="6" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
-                    <TextBlock Text="1 /"/>
-                    <TextBox Text="{Binding MineralFormDemoninator, UpdateSourceTrigger=PropertyChanged}"
-                             Background="{Binding MineralColor, Converter={StaticResource ColorToBrushConverter}}"/>
-                </DockPanel>
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Mineral Growth Rate:"/>
+                    <DockPanel Grid.Row="6" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
+                        <TextBlock Text="1 /"/>
+                        <TextBox Text="{Binding MineralFormDemoninator, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{Binding MineralColor, Converter={StaticResource ColorToBrushConverter}}"/>
+                    </DockPanel>
 
-                <TextBlock Grid.Row="7" Grid.Column="0" Text="Obstruction Demolish Rate:"/>
-                <DockPanel Grid.Row="7" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
-                    <TextBlock Text="1 /"/>
-                    <TextBox Text="{Binding ObstructionDemolishDenominator, UpdateSourceTrigger=PropertyChanged}"
-                             Background="{Binding ObstructionColor, Converter={StaticResource ColorToBrushConverter}}"/>
-                </DockPanel>
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Obstruction Demolish Rate:"/>
+                    <DockPanel Grid.Row="7" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
+                        <TextBlock Text="1 /"/>
+                        <TextBox Text="{Binding ObstructionDemolishDenominator, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{Binding ObstructionColor, Converter={StaticResource ColorToBrushConverter}}"/>
+                    </DockPanel>
 
-                <TextBlock Grid.Row="8" Grid.Column="0" Text="Damp Spread Rate:"/>
-                <DockPanel Grid.Row="8" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
-                    <TextBlock Text="1 /"/>
-                    <TextBox Text="{Binding DampSpreadDenominator, UpdateSourceTrigger=PropertyChanged}"
-                             Background="{Binding DampColor, Converter={StaticResource ColorToBrushConverter}}"/>
-                </DockPanel>
-            </Grid>    
-        </Controls:Flyout>
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Damp Spread Rate:"/>
+                    <DockPanel Grid.Row="8" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3" Dock="Right">
+                        <TextBlock Text="1 /"/>
+                        <TextBox Text="{Binding DampSpreadDenominator, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{Binding DampColor, Converter={StaticResource ColorToBrushConverter}}"/>
+                    </DockPanel>
+                </Grid>    
+            </Controls:Flyout>
 
-        <Controls:Flyout Header="Debug" Position="Bottom">
-            <Grid Margin="3">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="200"/>
-                </Grid.ColumnDefinitions>
+            <Controls:Flyout Header="Debug" Position="Bottom">
+                <Grid Margin="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="200"/>
+                    </Grid.ColumnDefinitions>
 
-                <Grid.Resources>
-                    <Converters:BoolToActiveStringConverter x:Key="BoolToActiveStringConverter" />
-                    <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
+                    <Grid.Resources>
+                        <Converters:BoolToActiveStringConverter x:Key="BoolToActiveStringConverter" />
+                        <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
                     
-                    <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="Margin" Value="3,3,3,3"/>
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="HorizontalAlignment" Value="Right"/>
-                    </Style>
-                </Grid.Resources>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Margin" Value="3,3,3,3"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                        </Style>
+                    </Grid.Resources>
 
-                <!--<Grid.ShowGridLines>True</Grid.ShowGridLines>-->
+                    <!--<Grid.ShowGridLines>True</Grid.ShowGridLines>-->
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Turn count:"/>
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding TurnCount}" Margin="3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Turn count:"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding TurnCount}" Margin="3"/>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Weather damp:"/>
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding WeatherDampLevel}" Margin="3"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Weather damp:"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding WeatherDampLevel}" Margin="3"/>
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Weather heat:"/>
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding WeatherHeatLevel}" Margin="3"/>
-            </Grid>
-        </Controls:Flyout>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Weather heat:"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding WeatherHeatLevel}" Margin="3"/>
+                </Grid>
+            </Controls:Flyout>
+            
+        </Controls:FlyoutsControl>
     </Controls:MetroWindow.Flyouts>
 
     <Grid>

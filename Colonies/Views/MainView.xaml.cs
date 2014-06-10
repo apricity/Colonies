@@ -17,23 +17,30 @@
 
         private void ShowSettings(object sender, RoutedEventArgs e)
         {
-            this.ToggleFlyout(this.Flyouts[0]);
+            this.ToggleFlyout(0);
         }
 
         private void ShowDebug(object sender, RoutedEventArgs e)
         {
-            this.ToggleFlyout(this.Flyouts[1]);
+            this.ToggleFlyout(1);
         }
 
-        private void ToggleFlyout(Flyout flyout)
+        private void ToggleFlyout(int index)
         {
+            var flyout = this.Flyouts.Items[index] as Flyout;
+
+            if (flyout == null)
+            {
+                return;
+            }
+
             if (flyout.IsOpen)
             {
                 flyout.IsOpen = false;
             }
             else
             {
-                foreach (var otherFlyout in this.Flyouts.Except(new[] { flyout }))
+                foreach (var otherFlyout in this.Flyouts.Items.Cast<Flyout>().Where(otherFlyout => !otherFlyout.Equals(flyout)))
                 {
                     otherFlyout.IsOpen = false;
                 }

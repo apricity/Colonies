@@ -167,9 +167,8 @@
             {
                 var radius = (this.EnvironmentMeasureDiameters[environmentMeasure] - 1) / 2;
                 var neighbouringCoordinates = this.EcosystemData.GetNeighbours(remainingHazardCoordinate, radius, true, true).ToList();
-                var validNeighbouringCoordinates = neighbouringCoordinates.Where(neighbouringCoordinate => neighbouringCoordinate != null).ToList();
-                if (validNeighbouringCoordinates.Any(neighbouringCoordinate =>
-                    this.EcosystemData.GetLevel(neighbouringCoordinate, environmentMeasure).Equals(0.0)))
+                var validNeighbouringCoordinates = neighbouringCoordinates.Where(coordinate => coordinate != null).ToList();
+                if (validNeighbouringCoordinates.Any(coordinate =>!this.EcosystemData.HasLevel(coordinate, environmentMeasure)))
                 {
                     alteredEnvironmentCoordinates.AddRange(this.InsertDistribution(remainingHazardCoordinate, environmentMeasure));
                 }

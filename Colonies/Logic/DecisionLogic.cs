@@ -80,15 +80,29 @@
             foreach (var measurable in measurables)
             {
                 // TODO: easy for a bug to occur if bias does not contain a measure in the measurables list
-                // each measurement initially has a base weighting (the greater it is, the less effect the measurement level and bias have)
                 // add further weighting according to strength of measurement with bias applied
                 var measurementData = measurable.MeasurementData;
-                var weighting = baseWeighting + measurementData.Measurements.Sum(measurement => measurement.Level * biases[(TMeasure)measurement.Measure]);
+                var weighting = measurementData.Measurements.Sum(measurement => measurement.Level * biases[(TMeasure)measurement.Measure]);
 
                 weightedMeasurables.Add(measurable, weighting);
             }
 
-            return weightedMeasurables;
+            // shift weightings so they are all positive
+            var minWeight = weightedMeasurables.Values.Min();
+            var shiftedWeightedMeasurables = new Dictionary<TMeasurable, double>();
+            foreach (var weightedMeasurable in weightedMeasurables)
+            {
+                // apply a base weighting per measurement data (the greater it is, the less effect the measurement level and bias have)
+                var shiftedWeighting = weightedMeasurable.Value + baseWeighting;
+                if (minWeight < 0)
+                {
+                    shiftedWeighting += Math.Abs(minWeight);
+                }
+
+                shiftedWeightedMeasurables.Add(weightedMeasurable.Key, shiftedWeighting);
+            }
+
+            return shiftedWeightedMeasurables;
         }
 
         private static TMeasurable ChooseRandomMeasurable<TMeasurable, TMeasure>(Dictionary<TMeasurable, double> weightedMeasurables)
@@ -97,6 +111,14 @@
         {
             var chosenMeasurable = default(TMeasurable);
             var totalWeight = weightedMeasurables.Values.Sum(weight => weight);
+
+            // this occurs when there is no base weighting, and no bias towards any present measures
+            // but base weight of zero should probably only be used for testing
+            if (totalWeight.Equals(0.0))
+            {
+                throw new InvalidOperationException("The total weight of the measurables is 0; no bias and no base weighting?");
+                //return MakeDecision(weightedMeasurables.Keys);
+            }
 
             var randomNumber = RandomNumberGenerator.RandomDouble(totalWeight);
             foreach (var weightedMeasurable in weightedMeasurables)

@@ -59,7 +59,7 @@
             this.measurementData = new MeasurementData(new List<Measurement> { health });
             this.MeasureBiases = new Dictionary<EnvironmentMeasure, double>
                                      {
-                                         { EnvironmentMeasure.Pheromone, 10 },
+                                         { EnvironmentMeasure.Pheromone, 0 },
                                          { EnvironmentMeasure.Nutrient, 0 },
                                          { EnvironmentMeasure.Mineral, 0 },
                                          { EnvironmentMeasure.Damp, 0 },

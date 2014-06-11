@@ -8,14 +8,14 @@
 
         public static double? OverrideNextDouble { get; set; }
 
-        public static double RandomDouble(double multiplier)
+        public static double RandomDouble(double range)
         {
             if (OverrideNextDouble.HasValue)
             {
-                return (double)OverrideNextDouble * multiplier;
+                return (double)OverrideNextDouble * range;
             }
 
-            return random.NextDouble() * multiplier;
+            return random.NextDouble() * range;
         }
     }
 }

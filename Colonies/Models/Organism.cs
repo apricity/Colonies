@@ -48,7 +48,14 @@
             }
         }
 
-        public Dictionary<EnvironmentMeasure, double> MeasureBiases { get; private set; } 
+        public Intention Intention { get; private set; }
+        public Dictionary<EnvironmentMeasure, double> MeasureBiases
+        {
+            get
+            {
+                return this.Intention.EnvironmentBiases;
+            }
+        }
 
         public Organism(string name, Color color)
         {
@@ -57,17 +64,7 @@
 
             var health = new Measurement(OrganismMeasure.Health, 1.0);
             this.measurementData = new MeasurementData(new List<Measurement> { health });
-            this.MeasureBiases = new Dictionary<EnvironmentMeasure, double>
-                                     {
-                                         { EnvironmentMeasure.Pheromone, 0 },
-                                         { EnvironmentMeasure.Nutrient, 0 },
-                                         { EnvironmentMeasure.Mineral, 0 },
-                                         { EnvironmentMeasure.Damp, 0 },
-                                         { EnvironmentMeasure.Heat, 0 },
-                                         { EnvironmentMeasure.Poison, 0 },
-                                         { EnvironmentMeasure.Obstruction, 0},
-                                         { EnvironmentMeasure.Sound, 0 }
-                                     };
+            this.Intention = Intention.Eat;
         }
 
         public double GetLevel(OrganismMeasure testMeasure)

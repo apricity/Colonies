@@ -21,11 +21,24 @@
             return new List<EnvironmentMeasure> { Heat, Damp, Poison };
         }
 
+        public static IEnumerable<EnvironmentMeasure> TransportableMeasures()
+        {
+            return new List<EnvironmentMeasure> { Nutrient, Mineral };
+        }
+
         public bool IsHazardous
         {
             get
             {
                 return HazardousMeasures().Contains(this);
+            }
+        }
+
+        public bool IsTransportable
+        {
+            get
+            {
+                return TransportableMeasures().Contains(this);
             }
         }
 

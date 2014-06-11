@@ -2,6 +2,7 @@
 {
     using System.Windows.Media;
 
+    using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
 
     public interface IOrganism : IMeasurable<OrganismMeasure>, IBiased<EnvironmentMeasure>
@@ -11,5 +12,7 @@
         Color Color { get; }
 
         bool IsAlive { get; }
+
+        Inventory Inventory { get; }
     }
 }

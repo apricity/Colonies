@@ -315,11 +315,6 @@
             this.EcosystemData.SetLevel(coordinate, environmentMeasure, level);
         }
 
-        public void SetMeasureBias(OrganismMeasure organismMeasure, double bias)
-        {
-            this.MeasureBiases[organismMeasure] = bias;
-        }
-
         public HazardRate GetHazardRate(EnvironmentMeasure environmentMeasure)
         {
             if (this.EnvironmentMeasureHazardRates.ContainsKey(environmentMeasure))

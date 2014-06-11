@@ -258,11 +258,6 @@
                 this.xBias = xBias;
                 this.yBias = yBias;
             }
-
-            public void SetMeasureBias(TestMeasure testMeasure, double bias)
-            {
-                this.MeasureBiases[testMeasure] = bias;
-            }
         }
 
         private class TestMeasure : Enumeration, IMeasure

@@ -1,5 +1,6 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
+    using System.Collections.Generic;
     using System.Windows.Media;
 
     using Microsoft.Practices.Prism.Events;
@@ -10,6 +11,13 @@
 
     public class OrganismViewModel : ViewModelBase<IOrganism>
     {
+        public static readonly Dictionary<EnvironmentMeasure, Color> InventoryColors =
+            new Dictionary<EnvironmentMeasure, Color>
+                {
+                    { EnvironmentMeasure.Mineral, Colors.Goldenrod },
+                    { EnvironmentMeasure.Nutrient, Colors.OliveDrab }
+                };
+
         // do not set domain model properties through the view model
         // use events to tell view models the model has changed
         private bool hasOrganism;
@@ -82,6 +90,34 @@
             }
         }
 
+        public Color inventoryColor;
+        public Color InventoryColor
+        {
+            get
+            {
+                return this.inventoryColor;
+            }
+            set
+            {
+                this.inventoryColor = value;
+                this.OnPropertyChanged("InventoryColor");
+            }
+        }
+
+        private double inventoryScalar;
+        public double InventoryScalar
+        {
+            get
+            {
+                return this.inventoryScalar;
+            }
+            set
+            {
+                this.inventoryScalar = value;
+                this.OnPropertyChanged("InventoryScalar");
+            }
+        }
+
         public static double HabitatScale
         {
             get
@@ -89,7 +125,6 @@
                 return 0.5;
             }
         }
-
         
         public OrganismViewModel(IOrganism domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
@@ -107,6 +142,17 @@
                 this.IsAlive = this.DomainModel.IsAlive;
                 this.HealthLevel = this.DomainModel.MeasurementData.GetLevel(OrganismMeasure.Health);
                 this.Name = this.DomainModel.Name;
+
+                if (this.DomainModel.Inventory != null)
+                {
+                    this.InventoryColor = InventoryColors[this.DomainModel.Inventory.EnvironmentMeasure];
+                    this.InventoryScalar = this.DomainModel.Inventory.Amount / 2.0;
+                }
+                else
+                {
+                    this.InventoryColor = default(Color);
+                    this.InventoryScalar = default(double);
+                }
             }
             else
             {
@@ -115,7 +161,9 @@
                 this.Color = default(Color);
                 this.IsAlive = default(bool);
                 this.HealthLevel = default(double);
-                this.Name = default(string); 
+                this.Name = default(string);
+                this.InventoryColor = default(Color);
+                this.InventoryScalar = default(double);
             }
         }
     }

@@ -13,6 +13,7 @@
         <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
         <Converters:BoolToAliveOpacityConverter x:Key="AliveToOpacityConverter" />
         <Converters:DoubleToHealthLevelBrushConverter x:Key="DoubleToHealthLevelBrushConverter" />
+        <Converters:RelativeScaleConverter x:Key="RelativeScaleConverter"/>
         <DesignTime:DesignTimeViewModelLocator x:Key="DesignTimeViewModelLocator" />
     </UserControl.Resources>
 
@@ -25,10 +26,30 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+
+        <Grid Grid.Column="0" Width="20" Height="20">
+            <Rectangle Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}" 
+                       Opacity="{Binding IsAlive, Converter={StaticResource AliveToOpacityConverter}}" />
+
+            <Rectangle Fill="{Binding InventoryColor, Converter={StaticResource ColorToBrushConverter}}" 
+                       Stroke="Black" StrokeThickness="0.25" Opacity="0.5">
+                <Rectangle.Height>
+                    <MultiBinding Converter="{StaticResource RelativeScaleConverter}">
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}" Path="ActualHeight"/>
+                        <Binding Path="InventoryScalar"/>
+                    </MultiBinding>
+                </Rectangle.Height>
+
+                <Rectangle.Width>
+                    <MultiBinding Converter="{StaticResource RelativeScaleConverter}">
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}" Path="ActualWidth"/>
+                        <Binding Path="InventoryScalar"/>
+                    </MultiBinding>
+                </Rectangle.Width>
+            </Rectangle>
+        </Grid>
         
-        <Rectangle Grid.Column="0" Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}" 
-                   Opacity="{Binding IsAlive, Converter={StaticResource AliveToOpacityConverter}}" Width="20" Height="20"/>
-        
+
         <TextBlock Grid.Column="1" Text="{Binding Name}" Padding="2, 0" MinWidth="50"/>
         
         <ProgressBar Grid.Column="2" Minimum="0" Maximum="1" Value="{Binding HealthLevel, Mode=OneWay}" BorderThickness="0"

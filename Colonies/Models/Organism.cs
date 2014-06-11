@@ -6,6 +6,7 @@
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.DataTypes.Interfaces;
+    using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models.Interfaces;
 
     public sealed class Organism : IOrganism
@@ -57,6 +58,8 @@
             }
         }
 
+        public Inventory Inventory { get; private set; }
+
         public Organism(string name, Color color)
         {
             this.Name = name;
@@ -65,6 +68,9 @@
             var health = new Measurement(OrganismMeasure.Health, 1.0);
             this.measurementData = new MeasurementData(new List<Measurement> { health });
             this.Intention = Intention.Eat;
+
+            var measure = DecisionLogic.MakeDecision(EnvironmentMeasure.TransportableMeasures());
+            this.Inventory = new Inventory(measure, 0.5);
         }
 
         public double GetLevel(OrganismMeasure testMeasure)
@@ -87,6 +93,7 @@
             return this.measurementData.DecreaseLevel(measure, decrement);
         }
 
+        // TODO: these should be based on intentions and organism type
         public void EnableSound()
         {
             this.soundEnabled = true;
@@ -107,14 +114,9 @@
             this.pheromoneEnabled = false;
         }
 
-        public void SetMeasureBias(EnvironmentMeasure measure, double bias)
-        {
-            this.MeasureBiases[measure] = bias;
-        }
-
         public override string ToString()
         {
-            return string.Format("{0}: {1} {2}", this.Name, this.GetLevel(OrganismMeasure.Health), this.Color);
+            return string.Format("{0}: {1} {2} {3}", this.Name, this.GetLevel(OrganismMeasure.Health), this.Intention, this.Color);
         }
     }
 }

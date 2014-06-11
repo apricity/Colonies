@@ -93,6 +93,7 @@
     <Compile Include="DataTypes\Enums\Enumeration.cs" />
     <Compile Include="DataTypes\HazardRate.cs" />
     <Compile Include="DataTypes\Enums\EnvironmentMeasure.cs" />
+    <Compile Include="DataTypes\Inventory.cs" />
     <Compile Include="DataTypes\WeightedColor.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />

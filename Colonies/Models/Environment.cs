@@ -39,9 +39,9 @@
             this.measurementData = new MeasurementData(measurements);
         }
 
-        public double GetLevel(EnvironmentMeasure testMeasure)
+        public double GetLevel(EnvironmentMeasure measure)
         {
-            return this.measurementData.GetLevel(testMeasure);
+            return this.measurementData.GetLevel(measure);
         }
 
         public void SetLevel(EnvironmentMeasure measure, double level)

@@ -210,9 +210,9 @@
                 }
             }
 
-            public double GetLevel(TestMeasure testMeasure)
+            public double GetLevel(TestMeasure measure)
             {
-                return this.MeasurementData.GetLevel(testMeasure);
+                return this.MeasurementData.GetLevel(measure);
             }
 
             public TestMeasurableItem(string identifier)

@@ -15,6 +15,27 @@
                     { EnvironmentMeasure.Poison, -50 }
                 });
 
+        public static readonly Intention Harvest = new Intention(1, "Harvest",
+            new Dictionary<EnvironmentMeasure, double>
+                {
+                    { EnvironmentMeasure.Nutrient, 10 },
+                    { EnvironmentMeasure.Pheromone, 10 },
+                    { EnvironmentMeasure.Damp, -10 },
+                    { EnvironmentMeasure.Heat, -10 },
+                    { EnvironmentMeasure.Poison, -50 }
+                });
+
+        public static readonly Intention Feed = new Intention(2, "Feed",
+            new Dictionary<EnvironmentMeasure, double>
+                {
+ 
+                    { EnvironmentMeasure.Sound, 10 },
+                    { EnvironmentMeasure.Pheromone, -25 },
+                    { EnvironmentMeasure.Damp, -10 },
+                    { EnvironmentMeasure.Heat, -10 },
+                    { EnvironmentMeasure.Poison, -50 }
+                });
+
         //public static readonly Intention Gather = new Intention(1, "Harvest");
         //public static readonly Intention Feed = new Intention(2, "Feed");
         //public static readonly Intention Extract = new Intention(3, "Mine");

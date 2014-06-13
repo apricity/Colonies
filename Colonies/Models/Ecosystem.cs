@@ -53,7 +53,7 @@
             this.MeasureBiases = new Dictionary<OrganismMeasure, double> { { OrganismMeasure.Health, 1 } };
 
             this.HealthDeteriorationRate = 1 / 500.0;
-            this.PheromoneDepositRate = 1 / 100.0;
+            this.PheromoneDepositRate = 1 / 10.0;
             this.PheromoneFadeRate = 1 / 500.0;
             this.NutrientGrowthRate = 1 / 500.0;
             this.MineralFormRate = 1 / 100.0;
@@ -91,10 +91,29 @@
             return new UpdateSummary(previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates.Distinct().ToList());
         }
 
+        private IEnumerable<Coordinate> PerformOrganismIntentionActions()
+        {
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+            foreach (var organismCoordinate in this.EcosystemData.AliveOrganismCoordinates())
+            {
+                var organism = this.EcosystemData.GetOrganism(organismCoordinate);
+                var environment = this.EcosystemData.GetEnvironment(organismCoordinate);
+                var reducedMeasures = organism.PerformIntentionAction(environment);
+                foreach (var reducedMeasure in reducedMeasures)
+                {
+                    this.EcosystemData.DecreaseLevel(organismCoordinate, reducedMeasure.Key, reducedMeasure.Value);
+                }
+
+                alteredEnvironmentCoordinates.Add(organismCoordinate);
+            }
+
+            return alteredEnvironmentCoordinates;
+        }
+
         private IEnumerable<Coordinate> PerformPreMovementActions()
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
-            alteredEnvironmentCoordinates.AddRange(this.OrganismsConsumeNutrients());
+            alteredEnvironmentCoordinates.AddRange(this.PerformOrganismIntentionActions());
             return alteredEnvironmentCoordinates;
         }
 
@@ -171,14 +190,17 @@
             var alteredEnvironmentCoordinates = new List<Coordinate>();
             foreach (var organismCoordinate in organismCoordinates)
             {
-                var organismHealth = this.EcosystemData.GetLevel(organismCoordinate, OrganismMeasure.Health);
+                var organism = this.EcosystemData.GetOrganism(organismCoordinate);
                 var habitatNutrient = this.EcosystemData.GetLevel(organismCoordinate, EnvironmentMeasure.Nutrient);
-                var desiredNutrient = 1 - organismHealth;
-                var nutrientTaken = Math.Min(desiredNutrient, habitatNutrient); 
+                var nutrientTaken = organism.ProcessNutrient(habitatNutrient);
 
-                var healthIncreased = this.EcosystemData.IncreaseLevel(organismCoordinate, OrganismMeasure.Health, nutrientTaken);
+                if (nutrientTaken.Equals(0.0))
+                {
+                    continue;
+                }
+
                 var nutrientDecreased = this.EcosystemData.DecreaseLevel(organismCoordinate, EnvironmentMeasure.Nutrient, nutrientTaken);
-                if (healthIncreased || nutrientDecreased)
+                if (nutrientDecreased)
                 {
                     alteredEnvironmentCoordinates.Add(organismCoordinate);
                 }

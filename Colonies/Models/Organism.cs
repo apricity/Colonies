@@ -7,13 +7,13 @@
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.DataTypes.Interfaces;
-    using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models.Interfaces;
 
-    public sealed class Organism : IOrganism
+    public abstract class Organism : IOrganism
     {
         public string Name { get; private set; }
         public Color Color { get; private set; }
+        protected Intention Intention { get; set; }
 
         private readonly MeasurementData measurementData;
         public IMeasurementData MeasurementData
@@ -32,7 +32,6 @@
             }
         }
 
-        private bool pheromoneEnabled;
         public bool IsDepositingPheromone
         {
             get
@@ -50,7 +49,6 @@
             }
         }
 
-        public Intention Intention { get; private set; }
         public Dictionary<EnvironmentMeasure, double> MeasureBiases
         {
             get
@@ -59,9 +57,9 @@
             }
         }
 
-        public Inventory Inventory { get; private set; }
+        public Measurement Inventory { get; private set; }
 
-        public Organism(string name, Color color)
+        protected Organism(string name, Color color)
         {
             this.Name = name;
             this.Color = color;
@@ -71,51 +69,12 @@
             this.Intention = Intention.Harvest;
 
             //var measure = DecisionLogic.MakeDecision(EnvironmentMeasure.TransportableMeasures());
-            this.Inventory = new Inventory(EnvironmentMeasure.Nutrient, 0.0);
+            this.Inventory = new Measurement(EnvironmentMeasure.Nutrient, 0.0);
         }
 
-        public void RefreshIntention()
-        {
-            if (this.GetLevel(OrganismMeasure.Health) < 0.25)
-            {
-                this.Intention = Intention.Eat;
-            }
-            else
-            {
-                this.Intention = this.Inventory.Amount < 0.75 ? Intention.Harvest : Intention.Feed;
-            }
-        }
+        public abstract double ProcessNutrient(double availableNutrient);
 
-        public double ProcessNutrient(double availableNutrient)
-        {
-            double nutrientTaken = 0.0;
-
-            if (availableNutrient.Equals(0.0))
-            {
-                return nutrientTaken;
-            }
-
-            if (this.Intention.Equals(Intention.Harvest))
-            {
-                var desiredNutrient = 1 - this.Inventory.Amount;
-                nutrientTaken = Math.Min(desiredNutrient, availableNutrient);
-                this.Inventory = new Inventory(EnvironmentMeasure.Nutrient, this.Inventory.Amount + nutrientTaken);
-            }
-
-            if (this.Intention.Equals(Intention.Eat))
-            {
-                var desiredNutrient = 1 - this.GetLevel(OrganismMeasure.Health);
-                nutrientTaken = Math.Min(desiredNutrient, availableNutrient);
-                this.IncreaseLevel(OrganismMeasure.Health, nutrientTaken);
-            }
-
-            return nutrientTaken;
-        }
-
-        public double ProcessMineral(double availableMineral)
-        {
-            return 0;
-        }
+        public abstract double ProcessMineral(double availableMineral);
 
         public Dictionary<EnvironmentMeasure, double> PerformIntentionAction(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
@@ -124,16 +83,13 @@
             if (this.Intention.Equals(Intention.Eat))
             {
                 // TODO: move to method
-                if (this.Inventory.EnvironmentMeasure.Equals(EnvironmentMeasure.Nutrient))
+                if (this.Inventory.Measure.Equals(EnvironmentMeasure.Nutrient))
                 {
-                    var availableInventoryNutrient = this.Inventory.Amount;
+                    var availableInventoryNutrient = this.Inventory.Level;
                     var desiredInventoryNutrient = 1 - this.GetLevel(OrganismMeasure.Health);
                     var inventoryNutrientTaken = Math.Min(desiredInventoryNutrient, availableInventoryNutrient);
                     this.IncreaseLevel(OrganismMeasure.Health, inventoryNutrientTaken);
-
-                    // TODO: make inventory easier to use!
-                    var remainingAmount = availableInventoryNutrient - inventoryNutrientTaken;
-                    this.Inventory = new Inventory(EnvironmentMeasure.Nutrient, remainingAmount);
+                    this.Inventory.DecreaseLevel(inventoryNutrientTaken);
                 }
             }
 
@@ -151,10 +107,10 @@
                 reducedMeasures.Add(EnvironmentMeasure.Mineral, mineralTaken);
             }
 
-            //this.RefreshIntention();
-
             return reducedMeasures;
         }
+
+        protected abstract void RefreshIntention();
 
         public double GetLevel(OrganismMeasure measure)
         {
@@ -185,16 +141,6 @@
         public void DisableSound()
         {
             this.soundEnabled = false;
-        }
-
-        public void EnablePheromone()
-        {
-            this.pheromoneEnabled = true;
-        }
-
-        public void DisablePheromone()
-        {
-            this.pheromoneEnabled = false;
         }
 
         public override string ToString()

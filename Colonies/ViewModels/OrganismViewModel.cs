@@ -11,7 +11,7 @@
 
     public class OrganismViewModel : ViewModelBase<IOrganism>
     {
-        public static readonly Dictionary<EnvironmentMeasure, Color> InventoryColors =
+        private static readonly Dictionary<EnvironmentMeasure, Color> InventoryColors =
             new Dictionary<EnvironmentMeasure, Color>
                 {
                     { EnvironmentMeasure.Mineral, Colors.Goldenrod },
@@ -145,8 +145,8 @@
 
                 if (this.DomainModel.Inventory != null)
                 {
-                    this.InventoryColor = InventoryColors[this.DomainModel.Inventory.EnvironmentMeasure];
-                    this.InventoryScalar = this.DomainModel.Inventory.Amount / 2.0;
+                    this.InventoryColor = InventoryColors[(EnvironmentMeasure)this.DomainModel.Inventory.Measure];
+                    this.InventoryScalar = this.DomainModel.Inventory.Level / 2.0;
                 }
                 else
                 {

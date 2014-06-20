@@ -31,8 +31,8 @@
         {
             var organismLocations = new Dictionary<Organism, Coordinate>
                                         {
-                                            { new Organism("DesignTimeOrganism-01", Colors.Silver), new Coordinate(0, 0) },
-                                            { new Organism("DesignTimeOrganism-02", Colors.Silver), new Coordinate(EcosystemWidth - 1, EcosystemHeight - 1) }
+                                            { new Gatherer("DesignTimeOrganism-01", Colors.Silver), new Coordinate(0, 0) },
+                                            { new Gatherer("DesignTimeOrganism-02", Colors.Silver), new Coordinate(EcosystemWidth - 1, EcosystemHeight - 1) }
                                         };
 
             return organismLocations;

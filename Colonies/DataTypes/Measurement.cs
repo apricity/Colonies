@@ -4,6 +4,7 @@
 
     using Wacton.Colonies.DataTypes.Interfaces;
 
+    // TODO: make generic to specify whether Environment or Organism measure?
     public class Measurement : IMeasurement, IEquatable<Measurement>
     {
         public IMeasure Measure { get; private set; }

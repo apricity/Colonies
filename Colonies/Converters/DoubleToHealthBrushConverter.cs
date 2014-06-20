@@ -25,7 +25,7 @@
                 byte green;
                 byte red;
 
-                if (health >= 0.5)
+                if (health > 0.5)
                 {
                     green = 255;
                     red = (byte)(255 - (health * 2) * 255);

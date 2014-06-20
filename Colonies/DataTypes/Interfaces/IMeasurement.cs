@@ -1,8 +1,8 @@
 ﻿namespace Wacton.Colonies.DataTypes.Interfaces
 {
-    public interface IMeasurement
+    public interface IMeasurement<T> where T : IMeasure
     {
-        IMeasure Measure { get; }
+        T Measure { get; }
 
         double Level { get; }
     }

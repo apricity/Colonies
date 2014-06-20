@@ -10,8 +10,8 @@
 
     public sealed class Environment : IEnvironment
     {
-        private readonly MeasurementData measurementData;
-        public IMeasurementData MeasurementData
+        private readonly MeasurementData<EnvironmentMeasure> measurementData;
+        public IMeasurementData<EnvironmentMeasure> MeasurementData
         {
             get
             {
@@ -30,13 +30,13 @@
 
         public Environment()
         {
-            var measurements = new List<Measurement>();
+            var measurements = new List<Measurement<EnvironmentMeasure>>();
             foreach (var measure in Enumeration.GetAll<EnvironmentMeasure>())
             {
-                measurements.Add(new Measurement(measure, 0));
+                measurements.Add(new Measurement<EnvironmentMeasure>(measure, 0));
             }
 
-            this.measurementData = new MeasurementData(measurements);
+            this.measurementData = new MeasurementData<EnvironmentMeasure>(measurements);
         }
 
         public double GetLevel(EnvironmentMeasure measure)

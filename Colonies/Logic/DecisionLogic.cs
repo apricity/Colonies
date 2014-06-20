@@ -82,7 +82,7 @@
                 // TODO: easy for a bug to occur if bias does not contain a measure in the measurables list
                 // add further weighting according to strength of measurement with bias applied
                 var measurementData = measurable.MeasurementData;
-                var weighting = measurementData.Measurements.Sum(measurement => measurement.Level * biases[(TMeasure)measurement.Measure]);
+                var weighting = measurementData.Measurements.Sum(measurement => measurement.Level * biases[measurement.Measure]);
 
                 weightedMeasurables.Add(measurable, weighting);
             }

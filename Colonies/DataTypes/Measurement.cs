@@ -5,12 +5,12 @@
     using Wacton.Colonies.DataTypes.Interfaces;
 
     // TODO: make generic to specify whether Environment or Organism measure?
-    public class Measurement : IMeasurement, IEquatable<Measurement>
+    public class Measurement<T> : IMeasurement<T>, IEquatable<Measurement<T>> where T : IMeasure
     {
-        public IMeasure Measure { get; private set; }
+        public T Measure { get; private set; }
         public double Level { get; private set; }
 
-        public Measurement(IMeasure measure, double level)
+        public Measurement(T measure, double level)
         {
             this.Measure = measure;
             this.Level = level;
@@ -53,7 +53,7 @@
             }
         }
 
-        public bool Equals(Measurement other)
+        public bool Equals(Measurement<T> other)
         {
             return this.Measure.Equals(other.Measure) && this.Level.Equals(other.Level);
         }

@@ -6,10 +6,10 @@
 
     using Wacton.Colonies.DataTypes.Interfaces;
 
-    public class MeasurementData : IMeasurementData
+    public class MeasurementData<T> : IMeasurementData<T> where T : IMeasure
     {
-        private readonly List<Measurement> measurements;
-        public IEnumerable<IMeasurement> Measurements
+        private readonly List<Measurement<T>> measurements;
+        public IEnumerable<IMeasurement<T>> Measurements
         {
             get
             {
@@ -17,7 +17,7 @@
             }
         }
 
-        public MeasurementData(List<Measurement> measurements)
+        public MeasurementData(List<Measurement<T>> measurements)
         {
             this.measurements = measurements;
         }
@@ -42,7 +42,7 @@
             return this.GetMeasurement(measure).DecreaseLevel(decrement);
         }
 
-        private Measurement GetMeasurement(IMeasure measure)
+        private Measurement<T> GetMeasurement(IMeasure measure)
         {
             return this.measurements.Single(measurement => measurement.Measure.Equals(measure));
         }

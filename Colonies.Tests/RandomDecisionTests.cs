@@ -199,14 +199,14 @@
         private class TestMeasurableItem : IMeasurable<TestMeasure>
         {
             private readonly string identifier;
-            private readonly Measurement xMeasurement;
-            private readonly Measurement yMeasurement;
+            private readonly Measurement<TestMeasure> xMeasurement;
+            private readonly Measurement<TestMeasure> yMeasurement;
 
-            public IMeasurementData MeasurementData
+            public IMeasurementData<TestMeasure> MeasurementData
             {
                 get
                 {
-                    return new MeasurementData(new List<Measurement> { this.xMeasurement, this.yMeasurement });
+                    return new MeasurementData<TestMeasure>(new List<Measurement<TestMeasure>> { this.xMeasurement, this.yMeasurement });
                 }
             }
 
@@ -218,8 +218,8 @@
             public TestMeasurableItem(string identifier)
             {
                 this.identifier = identifier;
-                this.xMeasurement = new Measurement(TestMeasure.X, 1.0);
-                this.yMeasurement = new Measurement(TestMeasure.Y, 1.0);
+                this.xMeasurement = new Measurement<TestMeasure>(TestMeasure.X, 1.0);
+                this.yMeasurement = new Measurement<TestMeasure>(TestMeasure.Y, 1.0);
             }
 
             public void SetXLevel(double pheromoneLevel)

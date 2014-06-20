@@ -4,7 +4,7 @@
 
     public interface IMeasurable<T> where T : IMeasure
     {
-        IMeasurementData MeasurementData { get; }
+        IMeasurementData<T> MeasurementData { get; }
 
         double GetLevel(T measure);
     }

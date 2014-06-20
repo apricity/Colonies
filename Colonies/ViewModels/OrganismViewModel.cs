@@ -145,7 +145,7 @@
 
                 if (this.DomainModel.Inventory != null)
                 {
-                    this.InventoryColor = InventoryColors[(EnvironmentMeasure)this.DomainModel.Inventory.Measure];
+                    this.InventoryColor = InventoryColors[this.DomainModel.Inventory.Measure];
                     this.InventoryScalar = this.DomainModel.Inventory.Level / 2.0;
                 }
                 else

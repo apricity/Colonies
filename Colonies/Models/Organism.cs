@@ -15,8 +15,8 @@
         public Color Color { get; private set; }
         protected Intention Intention { get; set; }
 
-        private readonly MeasurementData measurementData;
-        public IMeasurementData MeasurementData
+        private readonly MeasurementData<OrganismMeasure> measurementData;
+        public IMeasurementData<OrganismMeasure> MeasurementData
         {
             get
             {
@@ -57,19 +57,19 @@
             }
         }
 
-        public Measurement Inventory { get; private set; }
+        public Measurement<EnvironmentMeasure> Inventory { get; private set; }
 
         protected Organism(string name, Color color)
         {
             this.Name = name;
             this.Color = color;
 
-            var health = new Measurement(OrganismMeasure.Health, 1.0);
-            this.measurementData = new MeasurementData(new List<Measurement> { health });
+            var health = new Measurement<OrganismMeasure>(OrganismMeasure.Health, 1.0);
+            this.measurementData = new MeasurementData<OrganismMeasure>(new List<Measurement<OrganismMeasure>> { health });
             this.Intention = Intention.Harvest;
 
             //var measure = DecisionLogic.MakeDecision(EnvironmentMeasure.TransportableMeasures());
-            this.Inventory = new Measurement(EnvironmentMeasure.Nutrient, 0.0);
+            this.Inventory = new Measurement<EnvironmentMeasure>(EnvironmentMeasure.Nutrient, 0.0);
         }
 
         public abstract double ProcessNutrient(double availableNutrient);

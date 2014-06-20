@@ -2,9 +2,9 @@
 {
     using System.Collections.Generic;
 
-    public interface IMeasurementData
+    public interface IMeasurementData<T> where T : IMeasure
     {
-        IEnumerable<IMeasurement> Measurements { get; }
+        IEnumerable<IMeasurement<T>> Measurements { get; }
 
         double GetLevel(IMeasure measure);
     }

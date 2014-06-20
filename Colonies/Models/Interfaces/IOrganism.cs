@@ -14,7 +14,7 @@
 
         bool IsAlive { get; }
 
-        Measurement Inventory { get; }
+        Measurement<EnvironmentMeasure> Inventory { get; }
 
         double ProcessNutrient(double availableNutrient);
 

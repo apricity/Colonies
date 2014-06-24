@@ -15,6 +15,14 @@
         public Color Color { get; private set; }
         protected Intention Intention { get; set; }
 
+        public string IntentionString
+        {
+            get
+            {
+                return this.Intention.ToString();
+            }
+        }
+
         private readonly MeasurementData<OrganismMeasure> measurementData;
         public IMeasurementData<OrganismMeasure> MeasurementData
         {
@@ -32,20 +40,19 @@
             }
         }
 
+        public bool IsReproducing
+        {
+            get
+            {
+                return this.IsAlive && this.Intention.Equals(Intention.Reproduce);
+            }
+        }
+
         public bool IsDepositingPheromone
         {
             get
             {
-                return this.IsAlive && this.Intention.Equals(Intention.Feed);
-            }
-        }
-
-        private bool soundEnabled;
-        public bool IsEmittingSound
-        {
-            get
-            {
-                return this.soundEnabled && this.IsAlive;
+                return this.IsAlive && this.Intention.Equals(Intention.Nourish);
             }
         }
 
@@ -66,9 +73,6 @@
 
             var health = new Measurement<OrganismMeasure>(OrganismMeasure.Health, 1.0);
             this.measurementData = new MeasurementData<OrganismMeasure>(new List<Measurement<OrganismMeasure>> { health });
-            this.Intention = Intention.Harvest;
-
-            //var measure = DecisionLogic.MakeDecision(EnvironmentMeasure.TransportableMeasures());
             this.Inventory = new Measurement<EnvironmentMeasure>(EnvironmentMeasure.Nutrient, 0.0);
         }
 
@@ -130,17 +134,6 @@
         public bool DecreaseLevel(OrganismMeasure measure, double decrement)
         {
             return this.measurementData.DecreaseLevel(measure, decrement);
-        }
-
-        // TODO: these should be based on intentions and organism type
-        public void EnableSound()
-        {
-            this.soundEnabled = true;
-        }
-
-        public void DisableSound()
-        {
-            this.soundEnabled = false;
         }
 
         public override string ToString()

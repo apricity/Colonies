@@ -14,6 +14,10 @@
 
         bool IsAlive { get; }
 
+        bool IsReproducing { get; }
+
+        string IntentionString { get; }
+
         Measurement<EnvironmentMeasure> Inventory { get; }
 
         double ProcessNutrient(double availableNutrient);

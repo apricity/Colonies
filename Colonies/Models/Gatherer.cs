@@ -10,11 +10,12 @@
         public Gatherer(string name, Color color)
             : base(name, color)
         {
+            this.Intention = Intention.Harvest;
         }
 
         public override double ProcessNutrient(double availableNutrient)
         {
-            double nutrientTaken = 0.0;
+            var nutrientTaken = 0.0;
 
             if (availableNutrient.Equals(0.0))
             {
@@ -51,7 +52,7 @@
             }
             else
             {
-                this.Intention = this.Inventory.Level < 0.75 ? Intention.Harvest : Intention.Feed;
+                this.Intention = this.Inventory.Level < 0.75 ? Intention.Harvest : Intention.Nourish;
             }
         }
     }

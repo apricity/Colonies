@@ -90,6 +90,7 @@
             {
                 stringBuilder.AppendLine("----------");
                 stringBuilder.AppendLine(this.DomainModel.Organism.Name);
+                stringBuilder.AppendLine(this.DomainModel.Organism.IntentionString);
 
                 foreach (var measurement in this.DomainModel.Organism.MeasurementData.Measurements)
                 {

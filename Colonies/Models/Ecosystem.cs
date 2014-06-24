@@ -54,7 +54,7 @@
 
             this.HealthDeteriorationRate = 1 / 500.0;
             this.PheromoneDepositRate = 1 / 10.0;
-            this.PheromoneFadeRate = 1 / 500.0;
+            this.PheromoneFadeRate = 1 / 300.0;
             this.NutrientGrowthRate = 1 / 500.0;
             this.MineralFormRate = 1 / 100.0;
             this.ObstructionDemolishRate = 1 / 5.0;
@@ -113,6 +113,14 @@
         private IEnumerable<Coordinate> PerformPreMovementActions()
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
+
+            // remove all existing sound before updating intentions (and therefore deciding if continuing to emit sound)
+            var soundSourceCoordinates = this.EcosystemData.EmittingSoundOrganismCoordinates();
+            foreach (var soundSourceCoordinate in soundSourceCoordinates)
+            {
+                alteredEnvironmentCoordinates.AddRange(this.EnvironmentMeasureDistributor.RemoveDistribution(soundSourceCoordinate, EnvironmentMeasure.Sound));
+            }
+
             alteredEnvironmentCoordinates.AddRange(this.PerformOrganismIntentionActions());
             return alteredEnvironmentCoordinates;
         }
@@ -120,8 +128,6 @@
         private IEnumerable<Coordinate> PerformMovementsActions()
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
-
-            var existingSoundSourceCoordinate = this.EcosystemData.EmittingSoundOrganismCoordinates().ToList();
 
             var desiredOrganismCoordinates = EcosystemLogic.GetDesiredCoordinates(this.EcosystemData);
             var movedOrganismCoordinates = EcosystemLogic.ResolveOrganismHabitats(this.EcosystemData, desiredOrganismCoordinates, new List<IOrganism>(), this);
@@ -145,15 +151,10 @@
                 }
             }
 
-            foreach (var sourceCoordinate in existingSoundSourceCoordinate)
+            var soundSourceCoordinates = this.EcosystemData.EmittingSoundOrganismCoordinates();
+            foreach (var soundSourceCoordinate in soundSourceCoordinates)
             {
-                alteredEnvironmentCoordinates.AddRange(this.EnvironmentMeasureDistributor.RemoveDistribution(sourceCoordinate, EnvironmentMeasure.Sound));
-            }
-
-            var updatedSoundSourceCoordinates = this.EcosystemData.EmittingSoundOrganismCoordinates().ToList();
-            foreach (var sourceCoordinate in updatedSoundSourceCoordinates)
-            {
-                alteredEnvironmentCoordinates.AddRange(this.EnvironmentMeasureDistributor.InsertDistribution(sourceCoordinate, EnvironmentMeasure.Sound));
+                alteredEnvironmentCoordinates.AddRange(this.EnvironmentMeasureDistributor.InsertDistribution(soundSourceCoordinate, EnvironmentMeasure.Sound));
             }
 
             return alteredEnvironmentCoordinates;
@@ -180,33 +181,6 @@
             }
 
             return alteredEnvironmentCoordinates.Distinct();
-        }
-
-        private IEnumerable<Coordinate> OrganismsConsumeNutrients()
-        {
-            var organismCoordinates = this.EcosystemData.AliveOrganismCoordinates()
-                .Where(coordinate => this.EcosystemData.HasLevel(coordinate, EnvironmentMeasure.Nutrient)).ToList();
-
-            var alteredEnvironmentCoordinates = new List<Coordinate>();
-            foreach (var organismCoordinate in organismCoordinates)
-            {
-                var organism = this.EcosystemData.GetOrganism(organismCoordinate);
-                var habitatNutrient = this.EcosystemData.GetLevel(organismCoordinate, EnvironmentMeasure.Nutrient);
-                var nutrientTaken = organism.ProcessNutrient(habitatNutrient);
-
-                if (nutrientTaken.Equals(0.0))
-                {
-                    continue;
-                }
-
-                var nutrientDecreased = this.EcosystemData.DecreaseLevel(organismCoordinate, EnvironmentMeasure.Nutrient, nutrientTaken);
-                if (nutrientDecreased)
-                {
-                    alteredEnvironmentCoordinates.Add(organismCoordinate);
-                }
-            }
-
-            return alteredEnvironmentCoordinates;
         }
 
         private IEnumerable<Coordinate> DecreasePheromoneLevel()

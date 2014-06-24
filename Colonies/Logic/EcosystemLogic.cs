@@ -24,9 +24,18 @@
             }
 
             var desiredOrganismCoordinates = new Dictionary<IOrganism, Coordinate>();
-            var aliveOrganismsCoordinates = ecosystemData.AliveOrganismCoordinates();
-            foreach (var organismCoordinate in aliveOrganismsCoordinates)
+            var aliveOrganismCoordinates = ecosystemData.AliveOrganismCoordinates().ToList();
+
+            foreach (var organismCoordinate in aliveOrganismCoordinates)
             {
+                // remain stationary if organism is reproducing
+                var organism = ecosystemData.GetOrganism(organismCoordinate);
+                if (organism.IsReproducing)
+                {
+                    desiredOrganismCoordinates.Add(organism, organismCoordinate);
+                    continue;
+                }
+
                 // get measurements of neighbouring environments
                 var neighbourCoordinates = ecosystemData.GetNeighbours(organismCoordinate, 1, false, true).ToList();
                 var validNeighbourCoordinates = neighbourCoordinates.Where(habitat => habitat != null).ToList();
@@ -38,7 +47,7 @@
 
                 // get the habitat the environment is from - this is where the organism wants to move to
                 var chosenCoordinate = validNeighbourCoordinates.Single(coordinate => ecosystemData.GetEnvironment(coordinate).Equals(chosenMeasurable));
-                desiredOrganismCoordinates.Add(ecosystemData.GetOrganism(organismCoordinate), chosenCoordinate);
+                desiredOrganismCoordinates.Add(organism, chosenCoordinate);
             }
 
             return desiredOrganismCoordinates;

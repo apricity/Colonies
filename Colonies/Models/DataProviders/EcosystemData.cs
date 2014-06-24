@@ -74,6 +74,11 @@
             return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive).Select(this.CoordinateOf);
         }
 
+        public IEnumerable<Coordinate> MoveableOrganismCoordinates()
+        {
+            return this.OrganismHabitats.Keys.Where(organism => !organism.IsReproducing).Select(this.CoordinateOf);
+        }
+
         public IEnumerable<Coordinate> DepositingPheromoneOrganismCoordinates()
         {
             return this.OrganismHabitats.Keys.Where(organism => organism.IsDepositingPheromone).Select(this.CoordinateOf);
@@ -81,7 +86,7 @@
 
         public IEnumerable<Coordinate> EmittingSoundOrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => organism.IsEmittingSound).Select(this.CoordinateOf);
+            return this.OrganismHabitats.Keys.Where(organism => organism.IsReproducing).Select(this.CoordinateOf);
         }
 
         public IEnumerable<Coordinate> GetHazardCoordinates(EnvironmentMeasure hazardMeasure)

@@ -10,6 +10,7 @@
         public Defender(string name, Color color)
             : base(name, color)
         {
+            this.Intention = Intention.Harvest;
         }
 
         public override double ProcessNutrient(double availableNutrient)

@@ -62,6 +62,20 @@
             }
         }
 
+        private string nameAndIntention;
+        public string NameAndIntention
+        {
+            get
+            {
+                return this.nameAndIntention;
+            }
+            set
+            {
+                this.nameAndIntention = value;
+                this.OnPropertyChanged("NameAndIntention");
+            }
+        }
+
         private double healthLevel;
         public double HealthLevel
         {
@@ -90,7 +104,7 @@
             }
         }
 
-        public Color inventoryColor;
+        private Color inventoryColor;
         public Color InventoryColor
         {
             get
@@ -142,6 +156,7 @@
                 this.IsAlive = this.DomainModel.IsAlive;
                 this.HealthLevel = this.DomainModel.MeasurementData.GetLevel(OrganismMeasure.Health);
                 this.Name = this.DomainModel.Name;
+                this.NameAndIntention = string.Format("{0} ({1})", this.DomainModel.Name, this.DomainModel.IntentionString);
 
                 if (this.DomainModel.Inventory != null)
                 {
@@ -162,6 +177,7 @@
                 this.IsAlive = default(bool);
                 this.HealthLevel = default(double);
                 this.Name = default(string);
+                this.NameAndIntention = default(string);
                 this.InventoryColor = default(Color);
                 this.InventoryScalar = default(double);
             }

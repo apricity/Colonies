@@ -160,15 +160,12 @@
 
         protected virtual Dictionary<Organism, Coordinate> InitialOrganismCoordinates()
         {
-            var soundEmittingOrganism = new Gatherer("Lotty", Colors.Silver);
-            soundEmittingOrganism.EnableSound();
-
             var organismLocations = new Dictionary<Organism, Coordinate>
                                         {
-                                            { new Gatherer("Waffle", Colors.Silver), new Coordinate(2, 2) },
+                                            { new Defender("Waffle", Colors.Silver), new Coordinate(2, 2) },
                                             { new Gatherer("Wilber", Colors.Silver), new Coordinate(2, 7) },
-                                            { soundEmittingOrganism, new Coordinate(7, 2) },
-                                            { new Gatherer("Dr. Louise", Colors.Silver), new Coordinate(7, 7) },
+                                            { new Gatherer("Lotty", Colors.Silver), new Coordinate(7, 2) },
+                                            { new Queen("Dr. Louise", Colors.Silver), new Coordinate(7, 7) },
                                         };
 
             return organismLocations;

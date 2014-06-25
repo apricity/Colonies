@@ -28,7 +28,6 @@
         public static readonly Intention Nourish = new Intention(2, "Nourish",
             new Dictionary<EnvironmentMeasure, double>
                 {
- 
                     { EnvironmentMeasure.Sound, 25 },
                     { EnvironmentMeasure.Pheromone, -25 },
                     { EnvironmentMeasure.Damp, -10 },
@@ -36,10 +35,29 @@
                     { EnvironmentMeasure.Poison, -50 }
                 });
 
+        public static readonly Intention Mine = new Intention(3, "Mine",
+            new Dictionary<EnvironmentMeasure, double>
+                {
+                    { EnvironmentMeasure.Mineral, 25 },
+                    { EnvironmentMeasure.Damp, -10 },
+                    { EnvironmentMeasure.Heat, -10 },
+                    { EnvironmentMeasure.Poison, -50 },
+                    { EnvironmentMeasure.Obstruction, -50 }
+                });
+
+        public static readonly Intention Build = new Intention(4, "Build",
+            new Dictionary<EnvironmentMeasure, double>
+                {
+                    { EnvironmentMeasure.Sound, 50 },
+                    { EnvironmentMeasure.Damp, 10 },
+                    { EnvironmentMeasure.Heat, 10 },
+                    { EnvironmentMeasure.Poison, 25 },
+                    { EnvironmentMeasure.Obstruction, -50 }
+                });
+
         public static readonly Intention Nest = new Intention(5, "Nest",
             new Dictionary<EnvironmentMeasure, double>
                 {
- 
                     { EnvironmentMeasure.Mineral, 25 },
                     { EnvironmentMeasure.Damp, -10 },
                     { EnvironmentMeasure.Heat, -10 },
@@ -48,14 +66,6 @@
 
         public static readonly Intention Reproduce = new Intention(6, "Reproduce",
             new Dictionary<EnvironmentMeasure, double>());
-
-        //public static readonly Intention Gather = new Intention(1, "Harvest");
-        //public static readonly Intention Nourish = new Intention(2, "Nourish");
-        //public static readonly Intention Extract = new Intention(3, "Mine");
-        //public static readonly Intention Defend = new Intention(4, "Build");
-        //public static readonly Intention Search = new Intention(5, "Nest");
-        //public static readonly Intention Nest = new Intention(6, "Reproduce");
-
 
         public Dictionary<EnvironmentMeasure, double> EnvironmentBiases { get; private set; } 
 

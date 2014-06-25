@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Windows.Media;
 
     using Wacton.Colonies.DataTypes;
@@ -64,7 +65,7 @@
             }
         }
 
-        public Measurement<EnvironmentMeasure> Inventory { get; private set; }
+        public Measurement<EnvironmentMeasure> Inventory { get; protected set; }
 
         protected Organism(string name, Color color)
         {
@@ -73,12 +74,13 @@
 
             var health = new Measurement<OrganismMeasure>(OrganismMeasure.Health, 1.0);
             this.measurementData = new MeasurementData<OrganismMeasure>(new List<Measurement<OrganismMeasure>> { health });
-            this.Inventory = new Measurement<EnvironmentMeasure>(EnvironmentMeasure.Nutrient, 0.0);
         }
 
-        public abstract double ProcessNutrient(double availableNutrient);
+        protected abstract double ProcessNutrient(double availableNutrient);
 
-        public abstract double ProcessMineral(double availableMineral);
+        protected abstract double ProcessMineral(double availableMineral);
+
+        protected abstract double ProcessHazards(IEnumerable<IMeasurement<EnvironmentMeasure>> presentHazardousMeasurements);
 
         public Dictionary<EnvironmentMeasure, double> PerformIntentionAction(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
@@ -97,21 +99,31 @@
                 }
             }
 
-            var reducedMeasures = new Dictionary<EnvironmentMeasure, double>();
+            // TODO: merge into single method (subclasses can break into separate methods if they wish)
+            var modifiedMeasures = new Dictionary<EnvironmentMeasure, double>();
 
             var nutrientTaken = this.ProcessNutrient(measurableEnvironment.GetLevel(EnvironmentMeasure.Nutrient));
             if (nutrientTaken > 0.0)
             {
-                reducedMeasures.Add(EnvironmentMeasure.Nutrient, nutrientTaken);
+                modifiedMeasures.Add(EnvironmentMeasure.Nutrient, -nutrientTaken);
             }
 
             var mineralTaken = this.ProcessMineral(measurableEnvironment.GetLevel(EnvironmentMeasure.Mineral));
             if (mineralTaken > 0.0)
             {
-                reducedMeasures.Add(EnvironmentMeasure.Mineral, mineralTaken);
+                modifiedMeasures.Add(EnvironmentMeasure.Mineral, -mineralTaken);
             }
 
-            return reducedMeasures;
+            var hazardousMeasurements = measurableEnvironment.MeasurementData.Measurements.Where(measurement => measurement.Measure.IsHazardous).ToList();
+            var obstructionCreated = this.ProcessHazards(hazardousMeasurements);
+            if (obstructionCreated > 0.0)
+            {
+                modifiedMeasures.Add(EnvironmentMeasure.Obstruction, obstructionCreated);
+            }
+
+            this.RefreshIntention();
+
+            return modifiedMeasures;
         }
 
         protected abstract void RefreshIntention();

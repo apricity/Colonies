@@ -20,10 +20,6 @@
 
         Measurement<EnvironmentMeasure> Inventory { get; }
 
-        double ProcessNutrient(double availableNutrient);
-
-        double ProcessMineral(double availableMineral);
-
         Dictionary<EnvironmentMeasure, double> PerformIntentionAction(IMeasurable<EnvironmentMeasure> measurableEnvironment);
     }
 }

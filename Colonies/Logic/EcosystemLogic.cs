@@ -38,7 +38,7 @@
 
                 // get measurements of neighbouring environments
                 var neighbourCoordinates = ecosystemData.GetNeighbours(organismCoordinate, 1, false, true).ToList();
-                var validNeighbourCoordinates = neighbourCoordinates.Where(habitat => habitat != null).ToList();
+                var validNeighbourCoordinates = neighbourCoordinates.Where(coordinate => coordinate != null).ToList();
 
                 // determine organism's intentions based on the environment measurements
                 var measurableItems = validNeighbourCoordinates.Select(ecosystemData.GetEnvironment).ToList();

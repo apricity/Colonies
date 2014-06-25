@@ -1,9 +1,12 @@
 ﻿namespace Wacton.Colonies.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.Windows.Media;
 
+    using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
+    using Wacton.Colonies.DataTypes.Interfaces;
 
     public class Gatherer : Organism
     {
@@ -11,9 +14,10 @@
             : base(name, color)
         {
             this.Intention = Intention.Harvest;
+            this.Inventory = new Measurement<EnvironmentMeasure>(EnvironmentMeasure.Nutrient, 0.0);
         }
 
-        public override double ProcessNutrient(double availableNutrient)
+        protected override double ProcessNutrient(double availableNutrient)
         {
             var nutrientTaken = 0.0;
 
@@ -39,7 +43,12 @@
             return nutrientTaken;
         }
 
-        public override double ProcessMineral(double availableMineral)
+        protected override double ProcessMineral(double availableMineral)
+        {
+            return 0;
+        }
+
+        protected override double ProcessHazards(IEnumerable<IMeasurement<EnvironmentMeasure>> presentHazardousMeasurements)
         {
             return 0;
         }

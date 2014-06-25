@@ -6,6 +6,7 @@
 
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
+    using Wacton.Colonies.Extensions;
     using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models.DataProviders;
     using Wacton.Colonies.Models.Interfaces;
@@ -52,7 +53,7 @@
 
             this.MeasureBiases = new Dictionary<OrganismMeasure, double> { { OrganismMeasure.Health, 1 } };
 
-            this.HealthDeteriorationRate = 1 / 500.0;
+            this.HealthDeteriorationRate = 1 / 750.0;
             this.PheromoneDepositRate = 1 / 10.0;
             this.PheromoneFadeRate = 1 / 300.0;
             this.NutrientGrowthRate = 1 / 500.0;
@@ -98,10 +99,26 @@
             {
                 var organism = this.EcosystemData.GetOrganism(organismCoordinate);
                 var environment = this.EcosystemData.GetEnvironment(organismCoordinate);
-                var reducedMeasures = organism.PerformIntentionAction(environment);
-                foreach (var reducedMeasure in reducedMeasures)
+                var modifiedMeasures = organism.PerformIntentionAction(environment);
+                foreach (var modifiedMeasure in modifiedMeasures)
                 {
-                    this.EcosystemData.DecreaseLevel(organismCoordinate, reducedMeasure.Key, reducedMeasure.Value);
+                    this.EcosystemData.IncreaseLevel(organismCoordinate, modifiedMeasure.Key, modifiedMeasure.Value);
+                }
+
+                if (organism.IntentionString.Equals("Nourish"))
+                {
+                    var validNeighbourCoordinates = this.EcosystemData.GetNeighbours(organismCoordinate, 1, false, false).ToList().Where(coordinate => coordinate != null);
+                    var neighbourOrganisms = validNeighbourCoordinates.Select(coordinate => this.EcosystemData.GetOrganism(coordinate)).Where(result => result != null).ToList();
+                    var reproducingNeighbours = neighbourOrganisms.Where(neighbourOrganism => neighbourOrganism.IsReproducing).ToList();
+                    if (reproducingNeighbours.Any())
+                    {
+                        var nourishedOrganism = (Organism)(reproducingNeighbours.FirstOrDefault() ?? DecisionLogic.MakeDecision(reproducingNeighbours));
+                        var desiredNutrient = 1 - nourishedOrganism.GetLevel(OrganismMeasure.Health);
+                        var nutrientLevel = organism.Inventory.Level;
+                        var givenNutrient = Math.Min(desiredNutrient, nutrientLevel);
+                        organism.Inventory.DecreaseLevel(givenNutrient);
+                        nourishedOrganism.IncreaseLevel(OrganismMeasure.Health, givenNutrient);
+                    }
                 }
 
                 alteredEnvironmentCoordinates.Add(organismCoordinate);

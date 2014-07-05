@@ -75,16 +75,10 @@
 
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
-            /* perform pre movement actions (e.g. take food, eat food, attack) */
-            alteredEnvironmentCoordinates.AddRange(this.PerformPreMovementActions());
-
-            /* find out where each organism would like to move to
-             * then analyse them to decide where the organisms will actually move to and to resolve any conflicting intentions 
-             * and change measures related to movement (e.g. pheromone, mineral, obstruction) */
+            alteredEnvironmentCoordinates.AddRange(this.PerformEnvironmentInteractions());
             alteredEnvironmentCoordinates.AddRange(this.PerformMovementsActions());
-
-            /* change measures that are globally affected (e.g. nutrient growth, pheromone fade, hazard spread, health deterioration) */
-            alteredEnvironmentCoordinates.AddRange(this.PerformPostMovementActions());
+            alteredEnvironmentCoordinates.AddRange(this.PerformOrganismInteractions());
+            alteredEnvironmentCoordinates.AddRange(this.PerformEcosystemModifiers());
 
             var currentOrganismCoordinates = this.EcosystemData.OrganismCoordinates()
                 .ToDictionary(coordinate => this.EcosystemData.GetOrganism(coordinate), coordinate => coordinate);
@@ -92,42 +86,7 @@
             return new UpdateSummary(previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates.Distinct().ToList());
         }
 
-        private IEnumerable<Coordinate> PerformOrganismIntentionActions()
-        {
-            var alteredEnvironmentCoordinates = new List<Coordinate>();
-            foreach (var organismCoordinate in this.EcosystemData.AliveOrganismCoordinates())
-            {
-                var organism = this.EcosystemData.GetOrganism(organismCoordinate);
-                var environment = this.EcosystemData.GetEnvironment(organismCoordinate);
-                var modifiedMeasures = organism.PerformIntentionAction(environment);
-                foreach (var modifiedMeasure in modifiedMeasures)
-                {
-                    this.EcosystemData.IncreaseLevel(organismCoordinate, modifiedMeasure.Key, modifiedMeasure.Value);
-                }
-
-                if (organism.IntentionString.Equals("Nourish"))
-                {
-                    var validNeighbourCoordinates = this.EcosystemData.GetNeighbours(organismCoordinate, 1, false, false).ToList().Where(coordinate => coordinate != null);
-                    var neighbourOrganisms = validNeighbourCoordinates.Select(coordinate => this.EcosystemData.GetOrganism(coordinate)).Where(result => result != null).ToList();
-                    var reproducingNeighbours = neighbourOrganisms.Where(neighbourOrganism => neighbourOrganism.IsReproducing).ToList();
-                    if (reproducingNeighbours.Any())
-                    {
-                        var nourishedOrganism = (Organism)(reproducingNeighbours.FirstOrDefault() ?? DecisionLogic.MakeDecision(reproducingNeighbours));
-                        var desiredNutrient = 1 - nourishedOrganism.GetLevel(OrganismMeasure.Health);
-                        var nutrientLevel = organism.Inventory.Level;
-                        var givenNutrient = Math.Min(desiredNutrient, nutrientLevel);
-                        organism.Inventory.DecreaseLevel(givenNutrient);
-                        nourishedOrganism.IncreaseLevel(OrganismMeasure.Health, givenNutrient);
-                    }
-                }
-
-                alteredEnvironmentCoordinates.Add(organismCoordinate);
-            }
-
-            return alteredEnvironmentCoordinates;
-        }
-
-        private IEnumerable<Coordinate> PerformPreMovementActions()
+        private IEnumerable<Coordinate> PerformEnvironmentInteractions()
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 
@@ -138,7 +97,20 @@
                 alteredEnvironmentCoordinates.AddRange(this.EnvironmentMeasureDistributor.RemoveDistribution(soundSourceCoordinate, EnvironmentMeasure.Sound));
             }
 
-            alteredEnvironmentCoordinates.AddRange(this.PerformOrganismIntentionActions());
+            var aliveOrganismCoordinates = this.EcosystemData.AliveOrganismCoordinates();
+            foreach (var aliveOrganismCoordinate in aliveOrganismCoordinates)
+            {
+                var organism = this.EcosystemData.GetOrganism(aliveOrganismCoordinate);
+                var environment = this.EcosystemData.GetEnvironment(aliveOrganismCoordinate);
+                var modifiedMeasures = organism.PerformIntentionAction(environment);
+                foreach (var modifiedMeasure in modifiedMeasures)
+                {
+                    this.EcosystemData.IncreaseLevel(aliveOrganismCoordinate, modifiedMeasure.Key, modifiedMeasure.Value);
+                }
+
+                alteredEnvironmentCoordinates.Add(aliveOrganismCoordinate);
+            }
+
             return alteredEnvironmentCoordinates;
         }
 
@@ -177,7 +149,35 @@
             return alteredEnvironmentCoordinates;
         }
 
-        private IEnumerable<Coordinate> PerformPostMovementActions()
+        private IEnumerable<Coordinate> PerformOrganismInteractions()
+        {
+            var alteredEnvironmentCoordinates = new List<Coordinate>();
+            foreach (var organismCoordinate in this.EcosystemData.AliveOrganismCoordinates())
+            {
+                var organism = this.EcosystemData.GetOrganism(organismCoordinate);
+                if (organism.IntentionString.Equals("Nourish"))
+                {
+                    var validNeighbourCoordinates = this.EcosystemData.GetNeighbours(organismCoordinate, 1, false, false).ToList().Where(coordinate => coordinate != null);
+                    var neighbourOrganisms = validNeighbourCoordinates.Select(coordinate => this.EcosystemData.GetOrganism(coordinate)).Where(result => result != null).ToList();
+                    var reproducingNeighbours = neighbourOrganisms.Where(neighbourOrganism => neighbourOrganism.IsReproducing).ToList();
+                    if (reproducingNeighbours.Any())
+                    {
+                        var nourishedOrganism = (Organism)(reproducingNeighbours.FirstOrDefault() ?? DecisionLogic.MakeDecision(reproducingNeighbours));
+                        var desiredNutrient = 1 - nourishedOrganism.GetLevel(OrganismMeasure.Health);
+                        var nutrientLevel = organism.Inventory.Level;
+                        var givenNutrient = Math.Min(desiredNutrient, nutrientLevel);
+                        organism.Inventory.DecreaseLevel(givenNutrient);
+                        nourishedOrganism.IncreaseLevel(OrganismMeasure.Health, givenNutrient);
+                    }
+                }
+
+                alteredEnvironmentCoordinates.Add(organismCoordinate);
+            }
+
+            return alteredEnvironmentCoordinates;
+        }
+
+        private IEnumerable<Coordinate> PerformEcosystemModifiers()
         {
             var alteredEnvironmentCoordinates = new List<Coordinate>();
 

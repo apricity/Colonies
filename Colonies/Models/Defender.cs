@@ -8,6 +8,7 @@
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.DataTypes.Interfaces;
+    using Wacton.Colonies.Models.Interfaces;
 
     public class Defender : Organism
     {
@@ -16,6 +17,14 @@
         {
             this.Intention = Intention.Mine;
             this.Inventory = new Measurement<EnvironmentMeasure>(EnvironmentMeasure.Mineral, 0.0);
+        }
+
+        public override bool NeedsAssistance
+        {
+            get
+            {
+                return false;
+            }
         }
 
         protected override double ProcessNutrient(double availableNutrient)
@@ -74,7 +83,7 @@
             return obstructionCreated;
         }
 
-        protected override void RefreshIntention()
+        public override void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             if (this.GetLevel(OrganismMeasure.Health) < 0.33)
             {

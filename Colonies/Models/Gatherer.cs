@@ -7,6 +7,7 @@
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.DataTypes.Interfaces;
+    using Wacton.Colonies.Models.Interfaces;
 
     public class Gatherer : Organism
     {
@@ -15,6 +16,14 @@
         {
             this.Intention = Intention.Harvest;
             this.Inventory = new Measurement<EnvironmentMeasure>(EnvironmentMeasure.Nutrient, 0.0);
+        }
+
+        public override bool NeedsAssistance
+        {
+            get
+            {
+                return false;
+            }
         }
 
         protected override double ProcessNutrient(double availableNutrient)
@@ -53,7 +62,7 @@
             return 0;
         }
 
-        protected override void RefreshIntention()
+        public override void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             if (this.GetLevel(OrganismMeasure.Health) < 0.25)
             {

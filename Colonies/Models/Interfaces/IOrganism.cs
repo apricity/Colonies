@@ -16,10 +16,14 @@
 
         bool IsReproducing { get; }
 
+        bool NeedsAssistance { get; }
+
         string IntentionString { get; }
 
         Measurement<EnvironmentMeasure> Inventory { get; }
 
         Dictionary<EnvironmentMeasure, double> PerformIntentionAction(IMeasurable<EnvironmentMeasure> measurableEnvironment);
+
+        void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);
     }
 }

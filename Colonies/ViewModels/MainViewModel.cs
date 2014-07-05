@@ -1,6 +1,7 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -269,8 +270,35 @@
             {
                 try
                 {
-                    var updateSummary = this.DomainModel.UpdateOnce();
+                    Dictionary<IOrganism, Coordinate> previousOrganismCoordinates;
+                    List<Coordinate> alteredEnvironmentCoordinates;
+                    Dictionary<IOrganism, Coordinate> currentOrganismCoordinates;
+                    UpdateSummary updateSummary;
+
+                    previousOrganismCoordinates = this.DomainModel.Ecosystem.OrganismCoordinates();
+                    alteredEnvironmentCoordinates = this.DomainModel.Ecosystem.PerformEnvironmentInteractions().ToList();
+                    currentOrganismCoordinates = this.DomainModel.Ecosystem.OrganismCoordinates();
+                    updateSummary = new UpdateSummary(previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates);
                     this.UpdateViewModels(updateSummary);
+
+                    previousOrganismCoordinates = this.DomainModel.Ecosystem.OrganismCoordinates();
+                    alteredEnvironmentCoordinates = this.DomainModel.Ecosystem.PerformMovementsActions().ToList();
+                    currentOrganismCoordinates = this.DomainModel.Ecosystem.OrganismCoordinates();
+                    updateSummary = new UpdateSummary(previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates);
+                    this.UpdateViewModels(updateSummary);
+
+                    previousOrganismCoordinates = this.DomainModel.Ecosystem.OrganismCoordinates();
+                    alteredEnvironmentCoordinates = this.DomainModel.Ecosystem.PerformOrganismInteractions().ToList();
+                    currentOrganismCoordinates = this.DomainModel.Ecosystem.OrganismCoordinates();
+                    updateSummary = new UpdateSummary(previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates);
+                    this.UpdateViewModels(updateSummary);
+
+                    previousOrganismCoordinates = this.DomainModel.Ecosystem.OrganismCoordinates();
+                    alteredEnvironmentCoordinates = this.DomainModel.Ecosystem.PerformEcosystemModifiers().ToList();
+                    currentOrganismCoordinates = this.DomainModel.Ecosystem.OrganismCoordinates();
+                    updateSummary = new UpdateSummary(previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates);
+                    this.UpdateViewModels(updateSummary);
+
                     this.TurnCount++;
                     this.WeatherDampLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Damp));
                     this.WeatherHeatLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Heat));

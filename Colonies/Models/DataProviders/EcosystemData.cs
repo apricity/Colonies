@@ -86,7 +86,7 @@
 
         public IEnumerable<Coordinate> EmittingSoundOrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => organism.IsReproducing).Select(this.CoordinateOf);
+            return this.OrganismHabitats.Keys.Where(organism => organism.IsReproducing && organism.NeedsAssistance).Select(this.CoordinateOf);
         }
 
         public IEnumerable<Coordinate> GetHazardCoordinates(EnvironmentMeasure hazardMeasure)

@@ -7,6 +7,7 @@
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.DataTypes.Interfaces;
+    using Wacton.Colonies.Models.Interfaces;
 
     public class Queen : Organism
     {
@@ -15,6 +16,14 @@
         {
             this.Intention = Intention.Nest;
             this.Inventory = new Measurement<EnvironmentMeasure>(EnvironmentMeasure.Nutrient, 0.0);
+        }
+
+        public override bool NeedsAssistance
+        {
+            get
+            {
+                return this.Intention.Equals(Intention.Reproduce) && this.GetLevel(OrganismMeasure.Health) <= 0.75;
+            }
         }
 
         protected override double ProcessNutrient(double availableNutrient)
@@ -40,20 +49,13 @@
         {
             var mineralTaken = 0.0;
 
-            if (!availableMineral.Equals(1.0) || this.Intention.Equals(Intention.Eat))
+            if (this.Intention.Equals(Intention.Eat) || this.Intention.Equals(Intention.Nest))
             {
-                return mineralTaken;
-            }
-
-            if (this.Intention.Equals(Intention.Nest))
-            {
-                this.Intention = Intention.Reproduce;
                 return mineralTaken;
             }
 
             if (this.Intention.Equals(Intention.Reproduce) && this.GetLevel(OrganismMeasure.Health) > 0.75)
             {
-                this.Intention = Intention.Nest;
                 mineralTaken = availableMineral;
             }
 
@@ -65,15 +67,22 @@
             return 0;
         }
 
-        protected override void RefreshIntention()
+        public override void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             if (this.GetLevel(OrganismMeasure.Health) < 0.33)
             {
                 this.Intention = Intention.Eat;
             }
-            else if (this.Intention.Equals(Intention.Eat))
+            else
             {
-                this.Intention = Intention.Nest;
+                if (measurableEnvironment.MeasurementData.GetLevel(EnvironmentMeasure.Mineral) < 1.0)
+                {
+                    this.Intention = Intention.Nest;
+                }
+                else
+                {
+                    this.Intention = Intention.Reproduce;
+                }
             }
         }
     }

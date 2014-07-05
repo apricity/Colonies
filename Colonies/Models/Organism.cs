@@ -49,6 +49,8 @@
             }
         }
 
+        public abstract bool NeedsAssistance { get; }
+
         public bool IsDepositingPheromone
         {
             get
@@ -84,8 +86,6 @@
 
         public Dictionary<EnvironmentMeasure, double> PerformIntentionAction(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
-            this.RefreshIntention();
-
             if (this.Intention.Equals(Intention.Eat))
             {
                 // TODO: move to method
@@ -121,12 +121,10 @@
                 modifiedMeasures.Add(EnvironmentMeasure.Obstruction, obstructionCreated);
             }
 
-            this.RefreshIntention();
-
             return modifiedMeasures;
         }
 
-        protected abstract void RefreshIntention();
+        public abstract void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);
 
         public double GetLevel(OrganismMeasure measure)
         {

@@ -14,6 +14,8 @@
         public Queen(string name, Color color)
             : base(name, color)
         {
+            // TODO: should be able to specify no inventory available?
+
             this.Intention = Intention.Nest;
             this.Inventory = new Measurement<EnvironmentMeasure>(EnvironmentMeasure.Nutrient, 0.0);
         }

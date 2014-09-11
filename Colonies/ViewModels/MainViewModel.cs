@@ -275,6 +275,9 @@
                     Dictionary<IOrganism, Coordinate> currentOrganismCoordinates;
                     UpdateSummary updateSummary;
 
+                    // TODO: move back to Main having an "Update()" function, yields a result after each stage?
+                    // TODO: [while (DomainModel.IsMidTurn) { updateSummary = DomainModel.Update() } ... or maybe even yield?]
+
                     previousOrganismCoordinates = this.DomainModel.Ecosystem.OrganismCoordinates();
                     alteredEnvironmentCoordinates = this.DomainModel.Ecosystem.PerformEnvironmentInteractions().ToList();
                     currentOrganismCoordinates = this.DomainModel.Ecosystem.OrganismCoordinates();

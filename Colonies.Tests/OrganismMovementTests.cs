@@ -362,7 +362,16 @@
             public TestOrganism(string name, Color color)
                 : base(name, color)
             {
-                
+                this.Intention = Intention.Eat;
+                this.Inventory = new Measurement<EnvironmentMeasure>(EnvironmentMeasure.Nutrient, 0.0);
+            }
+
+            public override bool NeedsAssistance
+            {
+                get
+                {
+                    return false;
+                }
             }
 
             protected override double ProcessNutrient(double availableNutrient)
@@ -380,8 +389,9 @@
                 return 0;
             }
 
-            protected override void RefreshIntention()
+            public override void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
             {
+                return;
             }
         }
     }

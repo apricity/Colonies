@@ -22,18 +22,17 @@
             {
                 var health = (double)value;
 
-                byte green;
-                byte red;
+                byte green = 255;
+                byte red = 255;
 
+                // account for red/green only applying to half of health by doubling
                 if (health > 0.5)
                 {
-                    green = 255;
-                    red = (byte)(255 - (health * 2) * 255);
+                    red = (byte)((1 - health) * 255 * 2);
                 }
-                else
+                else if (health < 0.5)
                 {
-                    green = (byte)((health * 2) * 255);
-                    red = 255;
+                    green = (byte)(health * 255 * 2);
                 }
 
                 return new SolidColorBrush(Color.FromRgb(red, green, 0));

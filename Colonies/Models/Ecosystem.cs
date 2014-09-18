@@ -45,6 +45,10 @@
             }
         }
 
+        private readonly List<Func<IEnumerable<Coordinate>>> updateFunctions;
+        public int UpdateStages { get { return updateFunctions.Count; } }
+        private int updateCount = 0;
+
         public Ecosystem(EcosystemData ecosystemData, IWeather weather, EnvironmentMeasureDistributor environmentMeasureDistributor)
         {
             this.EcosystemData = ecosystemData;
@@ -66,30 +70,26 @@
                     { EnvironmentMeasure.Heat, new HazardRate(1 / 2000.0, 1 / 500.0, 1 / 1000.0) },
                     { EnvironmentMeasure.Poison, new HazardRate(0.0, 1 / 50.0, 1 / 50.0) }
                 };
+
+            this.updateFunctions = new List<Func<IEnumerable<Coordinate>>>
+                                       {
+                                           this.PerformEnvironmentInteractions,
+                                           this.PerformMovementsActions,
+                                           this.PerformOrganismInteractions,
+                                           this.PerformEcosystemModifiers
+                                       };
         }
 
-        public Dictionary<IOrganism, Coordinate> OrganismCoordinates()
+        public UpdateSummary UpdateOneStage()
         {
-            return this.EcosystemData.OrganismCoordinates()
-                .ToDictionary(coordinate => this.EcosystemData.GetOrganism(coordinate), coordinate => coordinate);
-        }
-
-        public UpdateSummary Update()
-        {
-            var previousOrganismCoordinates = this.EcosystemData.OrganismCoordinates()
-                .ToDictionary(coordinate => this.EcosystemData.GetOrganism(coordinate), coordinate => coordinate);
-
-            var alteredEnvironmentCoordinates = new List<Coordinate>();
-
-            alteredEnvironmentCoordinates.AddRange(this.PerformEnvironmentInteractions());
-            alteredEnvironmentCoordinates.AddRange(this.PerformMovementsActions());
-            alteredEnvironmentCoordinates.AddRange(this.PerformOrganismInteractions());
-            alteredEnvironmentCoordinates.AddRange(this.PerformEcosystemModifiers());
-
-            var currentOrganismCoordinates = this.EcosystemData.OrganismCoordinates()
-                .ToDictionary(coordinate => this.EcosystemData.GetOrganism(coordinate), coordinate => coordinate);
-
-            return new UpdateSummary(previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates.Distinct().ToList());
+            var updateIndex = this.updateCount % this.UpdateStages;
+            var updateFunction = this.updateFunctions[updateIndex];
+            var previousOrganismCoordinates = this.EcosystemData.OrganismCoordinatePairs();
+            var alteredEnvironmentCoordinates = updateFunction.Invoke().ToList();
+            var currentOrganismCoordinates = this.EcosystemData.OrganismCoordinatePairs();
+            var updateSummary = new UpdateSummary(this.updateCount, previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates);
+            this.updateCount++;
+            return updateSummary;
         }
 
         public IEnumerable<Coordinate> RefreshOrganismIntentions()

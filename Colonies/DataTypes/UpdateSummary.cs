@@ -7,9 +7,9 @@
 
     public class UpdateSummary
     {
-        public Dictionary<IOrganism, Coordinate> PreviousOrganismCoordinates { get; set; }
-        public Dictionary<IOrganism, Coordinate> CurrentOrganismCoordinates { get; set; }
-
+        public int ReferenceNumber { get; private set; }
+        public Dictionary<IOrganism, Coordinate> PreviousOrganismCoordinates { get; private set; }
+        public Dictionary<IOrganism, Coordinate> CurrentOrganismCoordinates { get; private set; }
         public List<Coordinate> AlteredEnvironmentCoordinates { get; private set; }
 
         public Dictionary<IOrganism, Coordinate> ActiveOrganismPreviousCoordinates
@@ -43,10 +43,12 @@
         }
 
         public UpdateSummary(
+            int updateReferenceNumber,
             Dictionary<IOrganism, Coordinate> previousOrganismCoordinates,
             Dictionary<IOrganism, Coordinate> currentOrganismCoordinates,
             List<Coordinate> alteredEnvironmentCoordinates)
         {
+            this.ReferenceNumber = updateReferenceNumber;
             this.PreviousOrganismCoordinates = previousOrganismCoordinates;
             this.CurrentOrganismCoordinates = currentOrganismCoordinates;
             this.AlteredEnvironmentCoordinates = alteredEnvironmentCoordinates;
@@ -55,7 +57,8 @@
         public override string ToString()
         {
             return string.Format(
-                "# previous organisms: {0} | # current organisms: {1} | # altered environments: {2}",
+                "# ref: {0} | # previous organisms: {1} | # current organisms: {2} | # altered environments: {3}",
+                this.ReferenceNumber,
                 this.PreviousOrganismCoordinates.Count,
                 this.CurrentOrganismCoordinates.Count,
                 this.AlteredEnvironmentCoordinates.Count);

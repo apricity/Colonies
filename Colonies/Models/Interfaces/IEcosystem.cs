@@ -1,7 +1,5 @@
 ﻿namespace Wacton.Colonies.Models.Interfaces
 {
-    using System.Collections.Generic;
-
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
 
@@ -25,20 +23,12 @@
 
         IWeather Weather { get; }
 
+        int UpdateStages { get; }
+
         HazardRate GetHazardRate(EnvironmentMeasure environmentMeasure);
 
         void SetHazardRate(EnvironmentMeasure environmentMeasure, HazardRate hazardChance);
 
-        UpdateSummary Update();
-
-        Dictionary<IOrganism, Coordinate> OrganismCoordinates();
-
-        IEnumerable<Coordinate> PerformEnvironmentInteractions();
-
-        IEnumerable<Coordinate> PerformMovementsActions();
-
-        IEnumerable<Coordinate> PerformOrganismInteractions();
-
-        IEnumerable<Coordinate> PerformEcosystemModifiers();
+        UpdateSummary UpdateOneStage();
     }
 }

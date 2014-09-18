@@ -59,6 +59,11 @@
             }
         }
 
+        public Dictionary<IOrganism, Coordinate> OrganismCoordinatePairs()
+        {
+            return this.OrganismCoordinates().ToDictionary(this.GetOrganism, coordinate => coordinate);
+        }
+
         public IEnumerable<Coordinate> AllCoordinates()
         {
             return this.HabitatCoordinates.Values.ToList();

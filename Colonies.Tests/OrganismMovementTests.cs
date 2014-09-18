@@ -354,7 +354,10 @@
 
             var ecosystemData = new EcosystemData(this.habitats, organismCoordinates);
             var ecosystem = new Ecosystem(ecosystemData, new Weather(), new EnvironmentMeasureDistributor(ecosystemData));
-            return ecosystem.Update();
+
+            var environmentInteractionUpdateSummary = ecosystem.UpdateOneStage();
+            var movementUpdateSummary = ecosystem.UpdateOneStage();
+            return movementUpdateSummary;
         }
 
         private class TestOrganism : Organism

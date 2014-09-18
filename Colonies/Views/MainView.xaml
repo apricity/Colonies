@@ -149,6 +149,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -168,14 +169,17 @@
 
                     <!--<Grid.ShowGridLines>True</Grid.ShowGridLines>-->
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Turn count:"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding TurnCount}" Margin="3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Update count:"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding UpdateCount}" Margin="3"/>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Turn count:"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding TurnCount}" Margin="3"/>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Weather damp:"/>
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding WeatherDampLevel}" Margin="3"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Weather damp:"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding WeatherDampLevel}" Margin="3"/>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Weather heat:"/>
-                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding WeatherHeatLevel}" Margin="3"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Weather heat:"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding WeatherHeatLevel}" Margin="3"/>
                 </Grid>
             </Controls:Flyout>
             

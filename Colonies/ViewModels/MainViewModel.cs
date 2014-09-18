@@ -1,7 +1,6 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -232,6 +231,20 @@
             }
         }
 
+        private int updateCount;
+        public int UpdateCount
+        {
+            get
+            {
+                return this.updateCount;
+            }
+            private set
+            {
+                this.updateCount = value;
+                this.OnPropertyChanged("UpdateCount");
+            }
+        }
+
         public MainViewModel(IMain domainModel, EcosystemViewModel ecosystemViewModel, OrganismSynopsisViewModel organismSynopsisViewModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
@@ -240,6 +253,7 @@
 
             // initally set the ecosystem up to be not running
             this.TurnCount = 0;
+            this.UpdateCount = 0;
             this.ecosystemTimer = new Timer(this.OnEcosystemTimerTick);
             this.IsEcosystemActive = false;
             var initialUpdateInterval = Properties.Settings.Default.UpdateFrequencyInMs;
@@ -270,12 +284,12 @@
             {
                 try
                 {
-                    foreach (var updateSummary in this.DomainModel.PerformUpdates())
-                    {
-                        this.UpdateViewModels(updateSummary);
-                    }
+                    var updateSummary = this.DomainModel.PerformUpdate();
+                    this.UpdateViewModels(updateSummary);
+                    this.UpdateCount = updateSummary.ReferenceNumber + 1;
 
-                    this.TurnCount++;
+                    // TODO: only do these after all stages have been performed?
+                    this.TurnCount = this.UpdateCount / this.DomainModel.Ecosystem.UpdateStages;
                     this.WeatherDampLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Damp));
                     this.WeatherHeatLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Heat));
 

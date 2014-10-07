@@ -65,7 +65,7 @@
                 return nutrientTaken;
             }
 
-            if (organism.Intention.Equals(Intention.Harvest))
+            if (organism.Intention.Equals(Intention.Harvest) && organism.Inventory.Measure.Equals(EnvironmentMeasure.Nutrient))
             {
                 var desiredNutrient = 1 - organism.Inventory.Level;
                 nutrientTaken = Math.Min(desiredNutrient, availableNutrient);
@@ -92,7 +92,7 @@
                 return mineralTaken;
             }
 
-            if (organism.Intention.Equals(Intention.Mine))
+            if (organism.Intention.Equals(Intention.Mine) && organism.Inventory.Measure.Equals(EnvironmentMeasure.Mineral))
             {
                 var desiredMineral = 1 - organism.Inventory.Level;
                 mineralTaken = Math.Min(desiredMineral, availableMineral);
@@ -116,7 +116,9 @@
             var hazardousMeasurements = measurableEnvironment.MeasurementData.Measurements.Where(measurement => measurement.Measure.IsHazardous).ToList();
             var obstructionCreated = 0.0;
 
-            if (!organism.Intention.Equals(Intention.Build) || organism.Inventory.Level < 1.0)
+            if (!organism.Intention.Equals(Intention.Build)
+                || !organism.Inventory.Measure.Equals(EnvironmentMeasure.Mineral) 
+                || organism.Inventory.Level < 1.0)
             {
                 return obstructionCreated;
             }

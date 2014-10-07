@@ -1,20 +1,19 @@
 ﻿namespace Wacton.Colonies.Models
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Windows.Media;
 
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.DataTypes.Interfaces;
+    using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models.Interfaces;
 
     public abstract class Organism : IOrganism
     {
         public string Name { get; private set; }
         public Color Color { get; private set; }
-        protected Intention Intention { get; set; }
+        public Intention Intention { get; protected set; }
 
         public string IntentionString
         {
@@ -78,50 +77,9 @@
             this.measurementData = new MeasurementData<OrganismMeasure>(new List<Measurement<OrganismMeasure>> { health });
         }
 
-        protected abstract double ProcessNutrient(double availableNutrient);
-
-        protected abstract double ProcessMineral(double availableMineral);
-
-        protected abstract double ProcessHazards(IEnumerable<IMeasurement<EnvironmentMeasure>> presentHazardousMeasurements);
-
         public Dictionary<EnvironmentMeasure, double> PerformIntentionAction(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
-            if (this.Intention.Equals(Intention.Eat))
-            {
-                // TODO: move to method
-                if (this.Inventory.Measure.Equals(EnvironmentMeasure.Nutrient))
-                {
-                    var availableInventoryNutrient = this.Inventory.Level;
-                    var desiredInventoryNutrient = 1 - this.GetLevel(OrganismMeasure.Health);
-                    var inventoryNutrientTaken = Math.Min(desiredInventoryNutrient, availableInventoryNutrient);
-                    this.IncreaseLevel(OrganismMeasure.Health, inventoryNutrientTaken);
-                    this.Inventory.DecreaseLevel(inventoryNutrientTaken);
-                }
-            }
-
-            // TODO: merge into single method (subclasses can break into separate methods if they wish)
-            var modifiedMeasures = new Dictionary<EnvironmentMeasure, double>();
-
-            var nutrientTaken = this.ProcessNutrient(measurableEnvironment.GetLevel(EnvironmentMeasure.Nutrient));
-            if (nutrientTaken > 0.0)
-            {
-                modifiedMeasures.Add(EnvironmentMeasure.Nutrient, -nutrientTaken);
-            }
-
-            var mineralTaken = this.ProcessMineral(measurableEnvironment.GetLevel(EnvironmentMeasure.Mineral));
-            if (mineralTaken > 0.0)
-            {
-                modifiedMeasures.Add(EnvironmentMeasure.Mineral, -mineralTaken);
-            }
-
-            var hazardousMeasurements = measurableEnvironment.MeasurementData.Measurements.Where(measurement => measurement.Measure.IsHazardous).ToList();
-            var obstructionCreated = this.ProcessHazards(hazardousMeasurements);
-            if (obstructionCreated > 0.0)
-            {
-                modifiedMeasures.Add(EnvironmentMeasure.Obstruction, obstructionCreated);
-            }
-
-            return modifiedMeasures;
+            return OrganismLogic.ProcessMeasurableEnvironment(this, measurableEnvironment);
         }
 
         public abstract void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);

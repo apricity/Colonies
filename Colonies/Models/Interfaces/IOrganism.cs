@@ -12,6 +12,8 @@
 
         Color Color { get; }
 
+        Intention Intention { get; }
+
         bool IsAlive { get; }
 
         bool IsReproducing { get; }

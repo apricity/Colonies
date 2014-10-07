@@ -8,7 +8,6 @@
 
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
-    using Wacton.Colonies.DataTypes.Interfaces;
     using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models;
     using Wacton.Colonies.Models.DataProviders;
@@ -375,21 +374,6 @@
                 {
                     return false;
                 }
-            }
-
-            protected override double ProcessNutrient(double availableNutrient)
-            {
-                return 0;
-            }
-
-            protected override double ProcessMineral(double availableMineral)
-            {
-                return 0;
-            }
-
-            protected override double ProcessHazards(IEnumerable<IMeasurement<EnvironmentMeasure>> presentHazardousMeasurements)
-            {
-                return 0;
             }
 
             public override void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)

@@ -1,5 +1,6 @@
 ﻿namespace Wacton.Colonies.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.Windows.Media;
 
@@ -13,15 +14,9 @@
     {
         public string Name { get; private set; }
         public Color Color { get; private set; }
-        public Intention Intention { get; protected set; }
+        public Inventory Inventory { get; private set; }
 
-        public string IntentionString
-        {
-            get
-            {
-                return this.Intention.ToString();
-            }
-        }
+        public Intention Intention { get; private set; }
 
         private readonly MeasurementData<OrganismMeasure> measurementData;
         public IMeasurementData<OrganismMeasure> MeasurementData
@@ -66,20 +61,32 @@
             }
         }
 
-        public Measurement<EnvironmentMeasure> Inventory { get; protected set; }
-
-        protected Organism(string name, Color color)
+        protected Organism(string name, Color color, Inventory inventoryType, Intention initialIntention)
         {
             this.Name = name;
             this.Color = color;
+            this.Inventory = inventoryType;
+            this.UpdateIntention(initialIntention);
 
             var health = new Measurement<OrganismMeasure>(OrganismMeasure.Health, 1.0);
-            this.measurementData = new MeasurementData<OrganismMeasure>(new List<Measurement<OrganismMeasure>> { health });
+            var inventory = new Measurement<OrganismMeasure>(OrganismMeasure.Inventory, 0.0);
+            this.measurementData = new MeasurementData<OrganismMeasure>(new List<Measurement<OrganismMeasure>> { health, inventory });
         }
 
         public Dictionary<EnvironmentMeasure, double> PerformIntentionAction(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             return OrganismLogic.ProcessMeasurableEnvironment(this, measurableEnvironment);
+        }
+
+        public void UpdateIntention(Intention intention)
+        {
+            if (intention.RequiresInventory && !intention.RequiredInventory.Equals(this.Inventory))
+            {
+                throw new InvalidOperationException(
+                    string.Format("Intention {0} requires inventory {1}", intention, intention.RequiredInventory));
+            }
+
+            this.Intention = intention;
         }
 
         public abstract void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);

@@ -2,17 +2,14 @@
 {
     using System.Windows.Media;
 
-    using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.Models.Interfaces;
 
     public class Gatherer : Organism
     {
         public Gatherer(string name, Color color)
-            : base(name, color)
+            : base(name, color, Inventory.Nutrient, Intention.Harvest)
         {
-            this.Intention = Intention.Harvest;
-            this.Inventory = new Measurement<EnvironmentMeasure>(EnvironmentMeasure.Nutrient, 0.0);
         }
 
         public override bool NeedsAssistance
@@ -27,11 +24,11 @@
         {
             if (this.GetLevel(OrganismMeasure.Health) < 0.25)
             {
-                this.Intention = Intention.Eat;
+                this.UpdateIntention(Intention.Eat);
             }
             else
             {
-                this.Intention = this.Inventory.Level < 0.75 ? Intention.Harvest : Intention.Nourish;
+                this.UpdateIntention(this.GetLevel(OrganismMeasure.Inventory) < 0.75 ? Intention.Harvest : Intention.Nourish);
             }
         }
     }

@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using System.Windows.Media;
 
-    using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
 
     public interface IOrganism : IMeasurable<OrganismMeasure>, IBiased<EnvironmentMeasure>
@@ -12,6 +11,8 @@
 
         Color Color { get; }
 
+        Inventory Inventory { get; }
+
         Intention Intention { get; }
 
         bool IsAlive { get; }
@@ -19,10 +20,6 @@
         bool IsReproducing { get; }
 
         bool NeedsAssistance { get; }
-
-        string IntentionString { get; }
-
-        Measurement<EnvironmentMeasure> Inventory { get; }
 
         Dictionary<EnvironmentMeasure, double> PerformIntentionAction(IMeasurable<EnvironmentMeasure> measurableEnvironment);
 

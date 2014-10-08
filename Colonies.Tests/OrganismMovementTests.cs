@@ -362,10 +362,8 @@
         private class TestOrganism : Organism
         {
             public TestOrganism(string name, Color color)
-                : base(name, color)
+                : base(name, color, Inventory.Nutrient, Intention.Eat)
             {
-                this.Intention = Intention.Eat;
-                this.Inventory = new Measurement<EnvironmentMeasure>(EnvironmentMeasure.Nutrient, 0.0);
             }
 
             public override bool NeedsAssistance

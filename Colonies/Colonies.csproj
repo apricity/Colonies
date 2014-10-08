@@ -89,6 +89,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DataTypes\Enums\Intention.cs" />
+    <Compile Include="DataTypes\Enums\Inventory.cs" />
     <Compile Include="DataTypes\Enums\OrganismMeasure.cs" />
     <Compile Include="DataTypes\Enums\Enumeration.cs" />
     <Compile Include="DataTypes\HazardRate.cs" />

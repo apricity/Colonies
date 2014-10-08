@@ -43,16 +43,16 @@
 
         private static void ConsumeInventoryNutrients(Organism organism)
         {
-            if (!organism.Inventory.Measure.Equals(EnvironmentMeasure.Nutrient))
+            if (!organism.Inventory.Equals(Inventory.Nutrient))
             {
                 return;
             }
 
-            var availableInventoryNutrient = organism.Inventory.Level;
+            var availableInventoryNutrient = organism.GetLevel(OrganismMeasure.Inventory);
             var desiredInventoryNutrient = 1 - organism.GetLevel(OrganismMeasure.Health);
             var inventoryNutrientTaken = Math.Min(desiredInventoryNutrient, availableInventoryNutrient);
             organism.IncreaseLevel(OrganismMeasure.Health, inventoryNutrientTaken);
-            organism.Inventory.DecreaseLevel(inventoryNutrientTaken);
+            organism.DecreaseLevel(OrganismMeasure.Inventory, inventoryNutrientTaken);
         }
 
         private static double ProcessNutrient(Organism organism, IMeasurable<EnvironmentMeasure> measurableEnvironment)
@@ -65,11 +65,11 @@
                 return nutrientTaken;
             }
 
-            if (organism.Intention.Equals(Intention.Harvest) && organism.Inventory.Measure.Equals(EnvironmentMeasure.Nutrient))
+            if (organism.Intention.Equals(Intention.Harvest) && organism.Inventory.Equals(Inventory.Nutrient))
             {
-                var desiredNutrient = 1 - organism.Inventory.Level;
+                var desiredNutrient = 1 - organism.GetLevel(OrganismMeasure.Inventory);
                 nutrientTaken = Math.Min(desiredNutrient, availableNutrient);
-                organism.Inventory.IncreaseLevel(nutrientTaken);
+                organism.IncreaseLevel(OrganismMeasure.Inventory, nutrientTaken);
             }
 
             if (organism.Intention.Equals(Intention.Eat))
@@ -92,11 +92,11 @@
                 return mineralTaken;
             }
 
-            if (organism.Intention.Equals(Intention.Mine) && organism.Inventory.Measure.Equals(EnvironmentMeasure.Mineral))
+            if (organism.Intention.Equals(Intention.Mine) && organism.Inventory.Equals(Inventory.Mineral))
             {
-                var desiredMineral = 1 - organism.Inventory.Level;
+                var desiredMineral = 1 - organism.GetLevel(OrganismMeasure.Inventory);
                 mineralTaken = Math.Min(desiredMineral, availableMineral);
-                organism.Inventory.IncreaseLevel(mineralTaken);
+                organism.IncreaseLevel(OrganismMeasure.Inventory, mineralTaken);
             }
 
             // reproduction requirements (first pass: mineral level 1.0, health level 0.75)
@@ -117,15 +117,15 @@
             var obstructionCreated = 0.0;
 
             if (!organism.Intention.Equals(Intention.Build)
-                || !organism.Inventory.Measure.Equals(EnvironmentMeasure.Mineral) 
-                || organism.Inventory.Level < 1.0)
+                || !organism.Inventory.Equals(Inventory.Mineral)
+                || organism.GetLevel(OrganismMeasure.Inventory) < 1.0)
             {
                 return obstructionCreated;
             }
 
             if (hazardousMeasurements.Any(measurement => measurement.Level > 0.0))
             {
-                organism.Inventory.DecreaseLevel(1.0);
+                organism.DecreaseLevel(OrganismMeasure.Inventory, 1.0);
                 obstructionCreated = 1.0;
             }
 

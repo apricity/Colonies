@@ -11,11 +11,12 @@
 
     public class OrganismViewModel : ViewModelBase<IOrganism>
     {
-        private static readonly Dictionary<EnvironmentMeasure, Color> InventoryColors =
-            new Dictionary<EnvironmentMeasure, Color>
+        private static readonly Dictionary<Inventory, Color> InventoryColors =
+            new Dictionary<Inventory, Color>
                 {
-                    { EnvironmentMeasure.Mineral, Colors.Goldenrod },
-                    { EnvironmentMeasure.Nutrient, Colors.OliveDrab }
+                    { Inventory.Mineral, Colors.Goldenrod },
+                    { Inventory.Nutrient, Colors.OliveDrab },
+                    { Inventory.Spawn, Colors.Black }
                 };
 
         // do not set domain model properties through the view model
@@ -156,18 +157,10 @@
                 this.IsAlive = this.DomainModel.IsAlive;
                 this.HealthLevel = this.DomainModel.MeasurementData.GetLevel(OrganismMeasure.Health);
                 this.Name = this.DomainModel.Name;
-                this.NameAndIntention = string.Format("{0} ({1})", this.DomainModel.Name, this.DomainModel.IntentionString);
+                this.NameAndIntention = string.Format("{0} ({1})", this.DomainModel.Name, this.DomainModel.Intention);
+                this.InventoryColor = InventoryColors[this.DomainModel.Inventory];
+                this.InventoryScalar = this.DomainModel.GetLevel(OrganismMeasure.Inventory) / 2.0;
 
-                if (this.DomainModel.Inventory != null)
-                {
-                    this.InventoryColor = InventoryColors[this.DomainModel.Inventory.Measure];
-                    this.InventoryScalar = this.DomainModel.Inventory.Level / 2.0;
-                }
-                else
-                {
-                    this.InventoryColor = default(Color);
-                    this.InventoryScalar = default(double);
-                }
             }
             else
             {

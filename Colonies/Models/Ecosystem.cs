@@ -55,7 +55,7 @@
             this.Weather = weather;
             this.EnvironmentMeasureDistributor = environmentMeasureDistributor;
 
-            this.MeasureBiases = new Dictionary<OrganismMeasure, double> { { OrganismMeasure.Health, 1 } };
+            this.MeasureBiases = new Dictionary<OrganismMeasure, double> { { OrganismMeasure.Health, 1 }, { OrganismMeasure.Inventory, 0} };
 
             this.HealthDeteriorationRate = 1 / 750.0;
             this.PheromoneDepositRate = 1 / 10.0;
@@ -189,8 +189,9 @@
 
             foreach (var organismCoordinate in this.EcosystemData.AliveOrganismCoordinates())
             {
-                var organism = this.EcosystemData.GetOrganism(organismCoordinate);
-                if (organism.IntentionString.Equals("Nourish"))
+                // TODO: stop casting! fix this method!  needs moving?
+                var organism = (Organism)this.EcosystemData.GetOrganism(organismCoordinate);
+                if (organism.Intention.Equals(Intention.Nourish))
                 {
                     var validNeighbourCoordinates = this.EcosystemData.GetNeighbours(organismCoordinate, 1, false, false).ToList().Where(coordinate => coordinate != null);
                     var neighbourOrganisms = validNeighbourCoordinates.Select(coordinate => this.EcosystemData.GetOrganism(coordinate)).Where(result => result != null).ToList();
@@ -199,9 +200,9 @@
                     {
                         var nourishedOrganism = (Organism)(reproducingNeighbours.FirstOrDefault() ?? DecisionLogic.MakeDecision(reproducingNeighbours));
                         var desiredNutrient = 1 - nourishedOrganism.GetLevel(OrganismMeasure.Health);
-                        var nutrientLevel = organism.Inventory.Level;
+                        var nutrientLevel = organism.GetLevel(OrganismMeasure.Inventory);
                         var givenNutrient = Math.Min(desiredNutrient, nutrientLevel);
-                        organism.Inventory.DecreaseLevel(givenNutrient);
+                        organism.DecreaseLevel(OrganismMeasure.Inventory, givenNutrient);
                         nourishedOrganism.IncreaseLevel(OrganismMeasure.Health, givenNutrient);
 
                         if (!nourishedOrganism.NeedsAssistance)

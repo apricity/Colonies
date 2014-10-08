@@ -101,7 +101,7 @@
 
             // reproduction requirements (first pass: mineral level 1.0, health level 0.75)
             if (organism.Intention.Equals(Intention.Reproduce)
-                && measurableEnvironment.MeasurementData.GetLevel(EnvironmentMeasure.Mineral) < 1.0
+                && measurableEnvironment.MeasurementData.GetLevel(EnvironmentMeasure.Mineral).Equals(1.0)
                 && organism.GetLevel(OrganismMeasure.Health) > 0.75)
             {
                 // TODO: create the result of using the mineral during reproduction!  a child organism?!

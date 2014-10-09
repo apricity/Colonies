@@ -16,7 +16,18 @@
         public Color Color { get; private set; }
         public Inventory Inventory { get; private set; }
 
-        public Intention Intention { get; private set; }
+        private Intention intention;
+        public Intention Intention
+        {
+            get
+            {
+                return this.IsAlive ? this.intention : Intention.Dead;
+            }
+            private set
+            {
+                this.intention = value;
+            }
+        }
 
         private readonly MeasurementData<OrganismMeasure> measurementData;
         public IMeasurementData<OrganismMeasure> MeasurementData
@@ -35,21 +46,13 @@
             }
         }
 
-        public bool IsReproducing
-        {
-            get
-            {
-                return this.IsAlive && this.Intention.Equals(Intention.Reproduce);
-            }
-        }
-
         public abstract bool NeedsAssistance { get; }
 
         public bool IsDepositingPheromone
         {
             get
             {
-                return this.IsAlive && this.Intention.Equals(Intention.Nourish);
+                return this.Intention.Equals(Intention.Nourish);
             }
         }
 
@@ -78,15 +81,16 @@
             return OrganismLogic.ProcessMeasurableEnvironment(this, measurableEnvironment);
         }
 
-        public void UpdateIntention(Intention intention)
+        public void UpdateIntention(Intention newIntention)
         {
-            if (intention.RequiresInventory && !intention.RequiredInventory.Equals(this.Inventory))
+            if (!newIntention.IsCompatibleWith(this.Inventory))
             {
                 throw new InvalidOperationException(
-                    string.Format("Intention {0} requires inventory {1}", intention, intention.RequiredInventory));
+                    string.Format("Intention {0} is incompatible with inventory {1} (requires inventory {2})", 
+                                  newIntention, this.Inventory, newIntention.RequiredInventory));
             }
 
-            this.Intention = intention;
+            this.Intention = newIntention;
         }
 
         public abstract void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);

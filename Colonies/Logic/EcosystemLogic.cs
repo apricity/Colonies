@@ -30,23 +30,22 @@
             {
                 // remain stationary if organism is reproducing
                 var organism = ecosystemData.GetOrganism(organismCoordinate);
-                if (organism.IsReproducing)
+                if (organism.Intention.Equals(Intention.Reproduce))
                 {
                     desiredOrganismCoordinates.Add(organism, organismCoordinate);
                     continue;
                 }
 
                 // get measurements of neighbouring environments
-                var neighbourCoordinates = ecosystemData.GetNeighbours(organismCoordinate, 1, false, true).ToList();
-                var validNeighbourCoordinates = neighbourCoordinates.Where(coordinate => coordinate != null).ToList();
+                var neighbourCoordinates = ecosystemData.GetValidNeighbours(organismCoordinate, 1, false, true).ToList();
 
                 // determine organism's intentions based on the environment measurements
-                var measurableItems = validNeighbourCoordinates.Select(ecosystemData.GetEnvironment).ToList();
+                var measurableItems = neighbourCoordinates.Select(ecosystemData.GetEnvironment).ToList();
                 var biasProvider = ecosystemData.GetOrganism(organismCoordinate);
                 var chosenMeasurable = DecisionLogic.MakeDecision(measurableItems, biasProvider);
 
                 // get the habitat the environment is from - this is where the organism wants to move to
-                var chosenCoordinate = validNeighbourCoordinates.Single(coordinate => ecosystemData.GetEnvironment(coordinate).Equals(chosenMeasurable));
+                var chosenCoordinate = neighbourCoordinates.Single(coordinate => ecosystemData.GetEnvironment(coordinate).Equals(chosenMeasurable));
                 desiredOrganismCoordinates.Add(organism, chosenCoordinate);
             }
 

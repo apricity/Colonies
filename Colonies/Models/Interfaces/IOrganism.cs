@@ -17,8 +17,6 @@
 
         bool IsAlive { get; }
 
-        bool IsReproducing { get; }
-
         bool NeedsAssistance { get; }
 
         Dictionary<EnvironmentMeasure, double> PerformIntentionAction(IMeasurable<EnvironmentMeasure> measurableEnvironment);

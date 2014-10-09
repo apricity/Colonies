@@ -74,6 +74,11 @@
             return this.OrganismHabitats.Keys.Select(this.CoordinateOf);
         }
 
+        public IEnumerable<Coordinate> OrganismCoordinates(Intention intention)
+        {
+            return this.OrganismHabitats.Keys.Where(organism => organism.Intention.Equals(intention)).Select(this.CoordinateOf);
+        }
+
         public IEnumerable<Coordinate> AliveOrganismCoordinates()
         {
             return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive).Select(this.CoordinateOf);
@@ -81,7 +86,7 @@
 
         public IEnumerable<Coordinate> MoveableOrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => !organism.IsReproducing).Select(this.CoordinateOf);
+            return this.OrganismHabitats.Keys.Where(organism => !organism.Intention.Equals(Intention.Reproduce)).Select(this.CoordinateOf);
         }
 
         public IEnumerable<Coordinate> DepositingPheromoneOrganismCoordinates()
@@ -91,7 +96,7 @@
 
         public IEnumerable<Coordinate> EmittingSoundOrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => organism.IsReproducing && organism.NeedsAssistance).Select(this.CoordinateOf);
+            return this.OrganismHabitats.Keys.Where(organism => organism.Intention.Equals(Intention.Reproduce) && organism.NeedsAssistance).Select(this.CoordinateOf);
         }
 
         public IEnumerable<Coordinate> GetHazardCoordinates(EnvironmentMeasure hazardMeasure)
@@ -228,6 +233,12 @@
         public Coordinate[,] GetNeighbours(Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
         {
             return this.Habitats.GetNeighbours(coordinate, neighbourDepth, includeDiagonals, includeSelf);
+        }
+
+        public IEnumerable<Coordinate> GetValidNeighbours(Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
+        {
+            var neighbourCoordinates = this.GetNeighbours(coordinate, neighbourDepth, includeDiagonals, includeSelf).ToList();
+            return neighbourCoordinates.Where(neighbourCoordinate => neighbourCoordinate != null);
         }
 
         public IEnvironment GetEnvironment(Coordinate coordinate)

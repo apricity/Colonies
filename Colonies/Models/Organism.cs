@@ -76,11 +76,6 @@
             this.measurementData = new MeasurementData<OrganismMeasure>(new List<Measurement<OrganismMeasure>> { health, inventory });
         }
 
-        public Dictionary<EnvironmentMeasure, double> PerformIntentionAction(IMeasurable<EnvironmentMeasure> measurableEnvironment)
-        {
-            return OrganismLogic.ProcessMeasurableEnvironment(this, measurableEnvironment);
-        }
-
         public void UpdateIntention(Intention newIntention)
         {
             if (!newIntention.IsCompatibleWith(this.Inventory))

@@ -1,6 +1,5 @@
 ﻿namespace Wacton.Colonies.Models.Interfaces
 {
-    using System.Collections.Generic;
     using System.Windows.Media;
 
     using Wacton.Colonies.DataTypes.Enums;
@@ -18,8 +17,6 @@
         bool IsAlive { get; }
 
         bool NeedsAssistance { get; }
-
-        Dictionary<EnvironmentMeasure, double> PerformIntentionAction(IMeasurable<EnvironmentMeasure> measurableEnvironment);
 
         void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);
     }

@@ -133,7 +133,7 @@
             return DecisionLogic.MakeDecision(organisms, biasProvider);
         }
 
-        public static Coordinate[,] GetNeighbours(this Habitat[,] habitats, Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
+        public static Coordinate[,] GetNeighbours(this IEcosystemData ecosystemData, Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
         {
             var neighbouringCoordinates = new Coordinate[(neighbourDepth * 2) + 1, (neighbourDepth * 2) + 1];
 
@@ -142,7 +142,7 @@
                 var x = i + coordinate.X;
 
                 // do not carry on if x is out-of-bounds
-                if (x < 0 || x >= habitats.Width())
+                if (x < 0 || x >= ecosystemData.Width)
                 {
                     continue;
                 }
@@ -152,7 +152,7 @@
                     var y = j + coordinate.Y;
 
                     // do not carry on if y is out-of-bounds
-                    if (y < 0 || y >= habitats.Height())
+                    if (y < 0 || y >= ecosystemData.Height)
                     {
                         continue;
                     }
@@ -176,7 +176,7 @@
             return neighbouringCoordinates;
         }
 
-        public static int CalculateHazardDiameter(this EcosystemData ecosystemData)
+        public static int CalculateHazardDiameter(this IEcosystemData ecosystemData)
         {
             var ecosystemArea = (double)(ecosystemData.Width * ecosystemData.Height);
 

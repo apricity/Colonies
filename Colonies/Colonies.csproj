@@ -88,6 +88,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataTypes\EcosystemModification.cs" />
+    <Compile Include="DataTypes\EnvironmentModification.cs" />
+    <Compile Include="DataTypes\OrganismModification.cs" />
     <Compile Include="DataTypes\Enums\Intention.cs" />
     <Compile Include="DataTypes\Enums\Inventory.cs" />
     <Compile Include="DataTypes\Enums\OrganismMeasure.cs" />
@@ -105,7 +108,8 @@
     <Compile Include="Converters\DoubleToHealthBrushConverter.cs" />
     <Compile Include="DataTypes\Coordinate.cs" />
     <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
-    <Compile Include="Logic\OrganismLogic.cs" />
+    <Compile Include="Models\DataProviders\OrganismEnvironmentProcessor.cs" />
+    <Compile Include="Models\Interfaces\IEcosystemData.cs" />
     <Compile Include="Models\Queen.cs" />
     <Compile Include="Models\Defender.cs" />
     <Compile Include="Models\DataProviders\EnvironmentMeasureDistributor.cs" />

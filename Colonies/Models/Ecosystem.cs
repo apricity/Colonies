@@ -6,7 +6,6 @@
 
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
-    using Wacton.Colonies.Extensions;
     using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models.DataProviders;
     using Wacton.Colonies.Models.Interfaces;
@@ -16,6 +15,7 @@
         private EcosystemData EcosystemData { get; set; }
         public IWeather Weather { get; private set; }
         public EnvironmentMeasureDistributor EnvironmentMeasureDistributor { get; private set; }
+        private OrganismEnvironmentProcessor OrganismEnvironmentProcessor { get; set; }
 
         public Dictionary<OrganismMeasure, double> MeasureBiases { get; private set; }
 
@@ -49,11 +49,12 @@
         public int UpdateStages { get { return updateFunctions.Count; } }
         private int updateCount = 0;
 
-        public Ecosystem(EcosystemData ecosystemData, IWeather weather, EnvironmentMeasureDistributor environmentMeasureDistributor)
+        public Ecosystem(EcosystemData ecosystemData, IWeather weather, EnvironmentMeasureDistributor environmentMeasureDistributor, OrganismEnvironmentProcessor organismEnvironmentProcessor)
         {
             this.EcosystemData = ecosystemData;
             this.Weather = weather;
             this.EnvironmentMeasureDistributor = environmentMeasureDistributor;
+            this.OrganismEnvironmentProcessor = organismEnvironmentProcessor;
 
             this.MeasureBiases = new Dictionary<OrganismMeasure, double> { { OrganismMeasure.Health, 1 }, { OrganismMeasure.Inventory, 0} };
 
@@ -118,7 +119,9 @@
                 var organism = this.EcosystemData.GetOrganism(aliveOrganismCoordinate);
                 if (organism.NeedsAssistance)
                 {
-                    alteredEnvironmentCoordinates.AddRange(this.EnvironmentMeasureDistributor.RemoveDistribution(aliveOrganismCoordinate, EnvironmentMeasure.Sound));
+                    var ecosystemModification = this.EnvironmentMeasureDistributor.RemoveDistribution(aliveOrganismCoordinate, EnvironmentMeasure.Sound);
+                    var modifiedCoordinates = this.Modify(ecosystemModification);
+                    alteredEnvironmentCoordinates.AddRange(modifiedCoordinates);
                 }
 
                 alteredEnvironmentCoordinates.Add(aliveOrganismCoordinate);
@@ -129,16 +132,15 @@
             foreach (var aliveOrganismCoordinate in aliveOrganismCoordinates)
             {
                 var organism = this.EcosystemData.GetOrganism(aliveOrganismCoordinate);
-                var modifiedMeasures = OrganismLogic.ProcessMeasurableEnvironment(aliveOrganismCoordinate, this.EcosystemData);
-
-                foreach (var modifiedMeasure in modifiedMeasures)
-                {
-                    this.EcosystemData.IncreaseLevel(aliveOrganismCoordinate, modifiedMeasure.Key, modifiedMeasure.Value);
-                }
+                var ecosystemModification = this.OrganismEnvironmentProcessor.Process(aliveOrganismCoordinate);
+                var modifiedCoordinates = this.Modify(ecosystemModification);
+                alteredEnvironmentCoordinates.AddRange(modifiedCoordinates);
 
                 if (organism.NeedsAssistance)
                 {
-                    alteredEnvironmentCoordinates.AddRange(this.EnvironmentMeasureDistributor.InsertDistribution(aliveOrganismCoordinate, EnvironmentMeasure.Sound));
+                    ecosystemModification = this.EnvironmentMeasureDistributor.InsertDistribution(aliveOrganismCoordinate, EnvironmentMeasure.Sound);
+                    modifiedCoordinates = this.Modify(ecosystemModification);
+                    alteredEnvironmentCoordinates.AddRange(modifiedCoordinates);
                 }
 
                 alteredEnvironmentCoordinates.Add(aliveOrganismCoordinate);
@@ -176,7 +178,9 @@
             var soundSourceCoordinates = this.EcosystemData.EmittingSoundOrganismCoordinates();
             foreach (var soundSourceCoordinate in soundSourceCoordinates)
             {
-                alteredEnvironmentCoordinates.AddRange(this.EnvironmentMeasureDistributor.InsertDistribution(soundSourceCoordinate, EnvironmentMeasure.Sound));
+                var ecosystemModification = this.EnvironmentMeasureDistributor.InsertDistribution(soundSourceCoordinate, EnvironmentMeasure.Sound);
+                var modifiedCoordinates = this.Modify(ecosystemModification);
+                alteredEnvironmentCoordinates.AddRange(modifiedCoordinates);
             }
 
             return alteredEnvironmentCoordinates;
@@ -206,7 +210,9 @@
             {
                 if (!this.EcosystemData.HasLevel(decreasedHealthCoordinate, OrganismMeasure.Health))
                 {
-                    alteredEnvironmentCoordinates.AddRange(this.EnvironmentMeasureDistributor.RemoveDistribution(decreasedHealthCoordinate, EnvironmentMeasure.Sound));
+                    var ecosystemModification = this.EnvironmentMeasureDistributor.RemoveDistribution(decreasedHealthCoordinate, EnvironmentMeasure.Sound);
+                    var modifiedCoordinates = this.Modify(ecosystemModification);
+                    alteredEnvironmentCoordinates.AddRange(modifiedCoordinates);
                 }
             }
 
@@ -234,7 +240,9 @@
                     alteredEnvironmentCoordinates.Add(nourishedOrganismCoordinate);
                     if (!nourishedOrganism.NeedsAssistance)
                     {
-                        alteredEnvironmentCoordinates.AddRange(this.EnvironmentMeasureDistributor.RemoveDistribution(nourishedOrganismCoordinate, EnvironmentMeasure.Sound));
+                        var ecosystemModification = this.EnvironmentMeasureDistributor.RemoveDistribution(nourishedOrganismCoordinate, EnvironmentMeasure.Sound);
+                        var modifiedCoordinates = this.Modify(ecosystemModification);
+                        alteredEnvironmentCoordinates.AddRange(modifiedCoordinates);
                     }
                 }
 
@@ -367,9 +375,13 @@
                     weatherBiasedAddRate *= weatherLevel;
                 }
 
-                alteredEnvironmentCoordinates.AddRange(this.EnvironmentMeasureDistributor.RandomSpreadHazards(environmentMeasure, weatherBiasedSpreadRate));
-                alteredEnvironmentCoordinates.AddRange(this.EnvironmentMeasureDistributor.RandomRemoveHazards(environmentMeasure, weatherBiasedRemoveRate));
-                alteredEnvironmentCoordinates.AddRange(this.EnvironmentMeasureDistributor.RandomAddHazards(environmentMeasure, weatherBiasedAddRate));
+                // TODO: repair broken hazards should not be needed - must be able to find a way while calculating removing hazards...
+                var modifiedCoordinates = new List<Coordinate>();
+                modifiedCoordinates.AddRange(this.Modify(this.EnvironmentMeasureDistributor.RandomSpreadHazards(environmentMeasure, weatherBiasedSpreadRate)));
+                modifiedCoordinates.AddRange(this.Modify(this.EnvironmentMeasureDistributor.RandomRemoveHazards(environmentMeasure, weatherBiasedRemoveRate)));
+                modifiedCoordinates.AddRange(this.Modify(this.EnvironmentMeasureDistributor.RepairBrokenHazards(environmentMeasure)));
+                modifiedCoordinates.AddRange(this.Modify(this.EnvironmentMeasureDistributor.RandomAddHazards(environmentMeasure, weatherBiasedAddRate)));
+                alteredEnvironmentCoordinates.AddRange(modifiedCoordinates);
             }
 
             return alteredEnvironmentCoordinates;
@@ -400,6 +412,16 @@
             {
                 throw new ArgumentException(string.Format("No hazard rate for environment measure {0}", environmentMeasure), "environmentMeasure");
             }
+        }
+
+        public IEnumerable<Coordinate> Modify(EcosystemModification ecosystemModification)
+        {
+            this.EcosystemData.Modify(ecosystemModification);
+
+            var modifiedCoordinates = new List<Coordinate>();
+            modifiedCoordinates.AddRange(ecosystemModification.EnvironmentModifications.Select(mod => mod.Coordinate));
+            modifiedCoordinates.AddRange(ecosystemModification.OrganismModifications.Select(mod => mod.Coordinate));
+            return modifiedCoordinates;
         }
 
         public override String ToString()

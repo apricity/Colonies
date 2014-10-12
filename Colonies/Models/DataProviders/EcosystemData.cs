@@ -10,12 +10,12 @@
     using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models.Interfaces;
 
-    public class EcosystemData
+    public class EcosystemData : IEcosystemData
     {
         private Habitat[,] Habitats { get; set; }
         private Dictionary<Organism, Habitat> OrganismHabitats { get; set; }
         private Dictionary<Habitat, Coordinate> HabitatCoordinates { get; set; }
-        private Dictionary<EnvironmentMeasure, List<Coordinate>> HazardCoordinates { get; set; }
+        private Dictionary<EnvironmentMeasure, List<Coordinate>> HazardSourceCoordinates { get; set; }
 
         public int Width
         {
@@ -38,7 +38,7 @@
             this.Habitats = habitats;
             this.HabitatCoordinates = new Dictionary<Habitat, Coordinate>();
             this.OrganismHabitats = new Dictionary<Organism, Habitat>();
-            this.HazardCoordinates = new Dictionary<EnvironmentMeasure, List<Coordinate>>();
+            this.HazardSourceCoordinates = new Dictionary<EnvironmentMeasure, List<Coordinate>>();
 
             for (var i = 0; i < this.Width; i++)
             {
@@ -55,7 +55,7 @@
 
             foreach (var environmentMeasure in EnvironmentMeasure.HazardousMeasures())
             {
-                this.HazardCoordinates.Add(environmentMeasure, new List<Coordinate>());
+                this.HazardSourceCoordinates.Add(environmentMeasure, new List<Coordinate>());
             }
         }
 
@@ -99,9 +99,9 @@
             return this.OrganismHabitats.Keys.Where(organism => organism.Intention.Equals(Intention.Reproduce) && organism.NeedsAssistance).Select(this.CoordinateOf);
         }
 
-        public IEnumerable<Coordinate> GetHazardCoordinates(EnvironmentMeasure hazardMeasure)
+        public IEnumerable<Coordinate> GetHazardSourceCoordinates(EnvironmentMeasure hazardMeasure)
         {
-            return this.HazardCoordinates[hazardMeasure].ToList();
+            return this.HazardSourceCoordinates[hazardMeasure].ToList();
         }
 
         public bool HasLevel(Coordinate coordinate, EnvironmentMeasure measure)
@@ -154,19 +154,58 @@
             return this.HabitatAt(coordinate).DecreaseLevel(measure, decrement);
         }
 
-        public void InsertHazard(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
+        public bool Modify(EnvironmentModification environmentModification)
         {
-            if (!this.HazardCoordinates[environmentMeasure].Contains(coordinate))
+            var isModified = this.IncreaseLevel(environmentModification.Coordinate, environmentModification.Measure, environmentModification.Delta);
+            //this.CheckHazardStatus(environmentModification.Coordinate, environmentModification.Measure);
+            return isModified;
+        }
+
+        public bool Modify(OrganismModification organismModification)
+        {
+            return this.IncreaseLevel(organismModification.Coordinate, organismModification.Measure, organismModification.Delta);
+        }
+
+        public bool Modify(EcosystemModification ecosystemModification)
+        {
+            var actualModifications = new List<bool>();
+            actualModifications.AddRange(ecosystemModification.EnvironmentModifications.Select(this.Modify));
+            actualModifications.AddRange(ecosystemModification.OrganismModifications.Select(this.Modify));
+            return actualModifications.Any();
+        }
+
+        // TODO: can this be used?
+        //private void CheckHazardStatus(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
+        //{
+        //    if (!environmentMeasure.IsHazardous)
+        //    {
+        //        return;
+        //    }
+
+        //    var hazardLevel = this.GetLevel(coordinate, environmentMeasure);
+        //    if (hazardLevel.Equals(1.0))
+        //    {
+        //        this.InsertHazardSource(environmentMeasure, coordinate);
+        //    }
+        //    else
+        //    {
+        //        this.RemoveHazardSource(environmentMeasure, coordinate);
+        //    }
+        //}
+
+        public void InsertHazardSource(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
+        {
+            if (!this.HazardSourceCoordinates[environmentMeasure].Contains(coordinate))
             {
-                this.HazardCoordinates[environmentMeasure].Add(coordinate);
+                this.HazardSourceCoordinates[environmentMeasure].Add(coordinate);
             }
         }
 
-        public void RemoveHazard(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
+        public void RemoveHazardSource(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
         {
-            if (this.HazardCoordinates[environmentMeasure].Contains(coordinate))
+            if (this.HazardSourceCoordinates[environmentMeasure].Contains(coordinate))
             {
-                this.HazardCoordinates[environmentMeasure].Remove(coordinate);
+                this.HazardSourceCoordinates[environmentMeasure].Remove(coordinate);
             }
         }
 
@@ -230,10 +269,10 @@
             this.OrganismHabitats[organism] = destinationHabitat;
         }
 
-        public Coordinate[,] GetNeighbours(Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
-        {
-            return this.Habitats.GetNeighbours(coordinate, neighbourDepth, includeDiagonals, includeSelf);
-        }
+        //public Coordinate[,] GetNeighbours(Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
+        //{
+        //    return this.GetNeighbours(coordinate, neighbourDepth, includeDiagonals, includeSelf);
+        //}
 
         public IEnumerable<Coordinate> GetValidNeighbours(Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
         {

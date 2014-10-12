@@ -9,13 +9,14 @@
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.Extensions;
     using Wacton.Colonies.Logic;
+    using Wacton.Colonies.Models.Interfaces;
 
     public class EnvironmentMeasureDistributor
     {
-        private EcosystemData EcosystemData { get; set; }
+        private IEcosystemData EcosystemData { get; set; }
         private Dictionary<EnvironmentMeasure, int> EnvironmentMeasureDiameters { get; set; } 
 
-        public EnvironmentMeasureDistributor(EcosystemData ecosystemData)
+        public EnvironmentMeasureDistributor(IEcosystemData ecosystemData)
         {
             this.EcosystemData = ecosystemData;
 
@@ -29,9 +30,9 @@
                 };
         }
 
-        public IEnumerable<Coordinate> InsertDistribution(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
+        public EcosystemModification InsertDistribution(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
         {
-            var alteredEnvironmentCoordinates = new List<Coordinate>();
+            var ecosystemModifcation = new EcosystemModification();
 
             var diameter = this.EnvironmentMeasureDiameters[environmentMeasure];
             var radius = (diameter - 1) / 2;
@@ -44,29 +45,34 @@
             {
                 for (var y = 0; y < diameter; y++)
                 {
-                    var level = gaussianKernel[x, y] / gaussianCentre;
                     var neighbouringCoordinate = neighbouringCoordinates[x, y];
-
-                    if (neighbouringCoordinate != null
-                        && level > this.EcosystemData.GetLevel(neighbouringCoordinate, environmentMeasure))
+                    if (neighbouringCoordinate == null)
                     {
-                        this.EcosystemData.SetLevel(neighbouringCoordinate, environmentMeasure, level);
-                        alteredEnvironmentCoordinates.Add(neighbouringCoordinate);
+                        continue;
+                    }
+
+                    var requiredLevel = gaussianKernel[x, y] / gaussianCentre;
+                    var currentLevel = this.EcosystemData.GetLevel(neighbouringCoordinate, environmentMeasure);
+                    if (requiredLevel > currentLevel)
+                    {
+                        var levelDelta = requiredLevel - currentLevel;
+                        ecosystemModifcation.Add(new EnvironmentModification(neighbouringCoordinate, environmentMeasure, levelDelta));
                     }
                 }
             }
 
+            // TODO: not good!  is there a good way round using CheckHazardStatus?
             if (environmentMeasure.IsHazardous)
             {
-                this.EcosystemData.InsertHazard(environmentMeasure, coordinate);
+                this.EcosystemData.InsertHazardSource(environmentMeasure, coordinate);
             }
 
-            return alteredEnvironmentCoordinates;
+            return ecosystemModifcation;
         }
 
-        public IEnumerable<Coordinate> RemoveDistribution(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
+        public EcosystemModification RemoveDistribution(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
         {
-            var alteredEnvironmentCoordinates = new List<Coordinate>();
+            var ecosystemModifcation = new EcosystemModification();
 
             var diameter = this.EnvironmentMeasureDiameters[environmentMeasure];
             var radius = (diameter - 1) / 2;
@@ -77,50 +83,55 @@
                 for (var y = 0; y < diameter; y++)
                 {
                     var neighbouringCoordinate = neighbouringCoordinates[x, y];
-
                     if (neighbouringCoordinate == null)
                     {
                         continue;
                     }
 
-                    this.EcosystemData.SetLevel(neighbouringCoordinate, environmentMeasure, 0);
-                    alteredEnvironmentCoordinates.Add(neighbouringCoordinate);
+                    var requiredLevel = 0;
+                    var currentLevel = this.EcosystemData.GetLevel(neighbouringCoordinate, environmentMeasure);
+                    if (currentLevel > requiredLevel)
+                    {
+                        var levelDelta = requiredLevel - currentLevel;
+                        ecosystemModifcation.Add(new EnvironmentModification(neighbouringCoordinate, environmentMeasure, levelDelta));
+                    }
                 }
             }
 
+            // TODO: not good!  is there a good way round using CheckHazardStatus?
             if (environmentMeasure.IsHazardous)
             {
-                this.EcosystemData.RemoveHazard(environmentMeasure, coordinate);
+                this.EcosystemData.RemoveHazardSource(environmentMeasure, coordinate);
             }
 
-            return alteredEnvironmentCoordinates;
+            return ecosystemModifcation;
         }
 
-        public IEnumerable<Coordinate> RandomAddHazards(EnvironmentMeasure environmentMeasure, double addChance)
+        public EcosystemModification RandomAddHazards(EnvironmentMeasure environmentMeasure, double addChance)
         {
-            var alteredEnvironmentCoordinates = new List<Coordinate>();
+            var ecosystemModification = new EcosystemModification();
 
             if (!DecisionLogic.IsSuccessful(addChance))
             {
-                return alteredEnvironmentCoordinates;
+                return ecosystemModification;
             }
 
-            var hazardCoordinates = this.EcosystemData.GetHazardCoordinates(environmentMeasure).ToList();
+            var hazardCoordinates = this.EcosystemData.GetHazardSourceCoordinates(environmentMeasure).ToList();
             var nonHazardCoordinates = this.EcosystemData.AllCoordinates().Except(hazardCoordinates);
             var chosenNonHazardCoordinate = DecisionLogic.MakeDecision(nonHazardCoordinates);
             if (!this.EcosystemData.HasLevel(chosenNonHazardCoordinate, EnvironmentMeasure.Obstruction))
             {
-                alteredEnvironmentCoordinates.AddRange(this.InsertDistribution(chosenNonHazardCoordinate, environmentMeasure));
+                ecosystemModification.Add(this.InsertDistribution(chosenNonHazardCoordinate, environmentMeasure));
             }
 
-            return alteredEnvironmentCoordinates;
+            return ecosystemModification;
         }
 
-        public IEnumerable<Coordinate> RandomSpreadHazards(EnvironmentMeasure environmentMeasure, double spreadChance)
+        public EcosystemModification RandomSpreadHazards(EnvironmentMeasure environmentMeasure, double spreadChance)
         {
-            var alteredEnvironmentCoordinates = new List<Coordinate>();
+            var ecosystemModification = new EcosystemModification();
 
-            var hazardCoordinates = this.EcosystemData.GetHazardCoordinates(environmentMeasure).ToList();
+            var hazardCoordinates = this.EcosystemData.GetHazardSourceCoordinates(environmentMeasure).ToList();
             foreach (var hazardCoordinate in hazardCoordinates)
             {
                 if (!DecisionLogic.IsSuccessful(spreadChance))
@@ -140,17 +151,17 @@
                 }
 
                 var chosenCoordinate = DecisionLogic.MakeDecision(validNeighbouringCoordinates);
-                alteredEnvironmentCoordinates.AddRange(this.InsertDistribution(chosenCoordinate, environmentMeasure));
+                ecosystemModification.Add(this.InsertDistribution(chosenCoordinate, environmentMeasure));
             }
 
-            return alteredEnvironmentCoordinates;
+            return ecosystemModification;
         }
 
-        public IEnumerable<Coordinate> RandomRemoveHazards(EnvironmentMeasure environmentMeasure, double removeChance)
+        public EcosystemModification RandomRemoveHazards(EnvironmentMeasure environmentMeasure, double removeChance)
         {
-            var alteredEnvironmentCoordinates = new List<Coordinate>();
+            var ecosystemModification = new EcosystemModification();
 
-            var hazardCoordinates = this.EcosystemData.GetHazardCoordinates(environmentMeasure).ToList();
+            var hazardCoordinates = this.EcosystemData.GetHazardSourceCoordinates(environmentMeasure).ToList();
             foreach (var hazardCoordinate in hazardCoordinates)
             {
                 if (!DecisionLogic.IsSuccessful(removeChance))
@@ -158,23 +169,30 @@
                     continue;
                 }
 
-                alteredEnvironmentCoordinates.AddRange(this.RemoveDistribution(hazardCoordinate, environmentMeasure));
+                ecosystemModification.Add(this.RemoveDistribution(hazardCoordinate, environmentMeasure));
             }
 
+            return ecosystemModification;
+        }
+
+        public EcosystemModification RepairBrokenHazards(EnvironmentMeasure environmentMeasure)
+        {
+            var ecosystemModification = new EcosystemModification();
+
             // go through all remaining hazard coordinates and restore any remove measures that belonged to other hazards
-            var remainingHazardCoordinates = this.EcosystemData.GetHazardCoordinates(environmentMeasure).ToList();
+            var remainingHazardCoordinates = this.EcosystemData.GetHazardSourceCoordinates(environmentMeasure).ToList();
             foreach (var remainingHazardCoordinate in remainingHazardCoordinates)
             {
                 var radius = (this.EnvironmentMeasureDiameters[environmentMeasure] - 1) / 2;
                 var neighbouringCoordinates = this.EcosystemData.GetNeighbours(remainingHazardCoordinate, radius, true, true).ToList();
                 var validNeighbouringCoordinates = neighbouringCoordinates.Where(coordinate => coordinate != null).ToList();
-                if (validNeighbouringCoordinates.Any(coordinate =>!this.EcosystemData.HasLevel(coordinate, environmentMeasure)))
+                if (validNeighbouringCoordinates.Any(coordinate => !this.EcosystemData.HasLevel(coordinate, environmentMeasure)))
                 {
-                    alteredEnvironmentCoordinates.AddRange(this.InsertDistribution(remainingHazardCoordinate, environmentMeasure));
+                    ecosystemModification.Add(this.InsertDistribution(remainingHazardCoordinate, environmentMeasure));
                 }
             }
 
-            return alteredEnvironmentCoordinates;
+            return ecosystemModification;
         }
     }
 }

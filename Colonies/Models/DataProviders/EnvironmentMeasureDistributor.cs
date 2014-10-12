@@ -186,11 +186,33 @@
                 var radius = (this.EnvironmentMeasureDiameters[environmentMeasure] - 1) / 2;
                 var neighbouringCoordinates = this.EcosystemData.GetNeighbours(remainingHazardCoordinate, radius, true, true).ToList();
                 var validNeighbouringCoordinates = neighbouringCoordinates.Where(coordinate => coordinate != null).ToList();
-                if (validNeighbouringCoordinates.Any(coordinate => !this.EcosystemData.HasLevel(coordinate, environmentMeasure)))
+                if (validNeighbouringCoordinates.All(coordinate => this.EcosystemData.HasLevel(coordinate, environmentMeasure)))
                 {
-                    ecosystemModification.Add(this.InsertDistribution(remainingHazardCoordinate, environmentMeasure));
+                    continue;
+                }
+
+                var potentialModifications = this.InsertDistribution(remainingHazardCoordinate, environmentMeasure).EnvironmentModifications;
+                foreach (var potentialModification in potentialModifications)
+                {
+                    var existingModification = ecosystemModification.EnvironmentModifications.SingleOrDefault(mod => mod.Coordinate.Equals(potentialModification.Coordinate));
+                    if (existingModification != null)
+                    {
+                        var existingDelta = existingModification.Delta;
+                        var potentialDelta = potentialModification.Delta;
+
+                        if (potentialDelta > existingDelta)
+                        {
+                            ecosystemModification.Remove(existingModification);
+                            ecosystemModification.Add(potentialModification);
+                        }
+                    }
+                    else
+                    {
+                        ecosystemModification.Add(potentialModification);
+                    }
                 }
             }
+
 
             return ecosystemModification;
         }

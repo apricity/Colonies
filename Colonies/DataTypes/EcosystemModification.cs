@@ -18,6 +18,11 @@
             this.OrganismModifications.Add(organismModification);
         }
 
+        public void Remove(OrganismModification organismModification)
+        {
+            this.OrganismModifications.Remove(organismModification);
+        }
+
         public void Add(IEnumerable<OrganismModification> organismModifications)
         {
             this.OrganismModifications.AddRange(organismModifications);
@@ -26,6 +31,11 @@
         public void Add(EnvironmentModification environmentModification)
         {
             this.EnvironmentModifications.Add(environmentModification);
+        }
+
+        public void Remove(EnvironmentModification environmentModification)
+        {
+            this.EnvironmentModifications.Remove(environmentModification);
         }
 
         public void Add(IEnumerable<EnvironmentModification> environmentModifications)

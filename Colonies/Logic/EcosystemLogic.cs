@@ -133,7 +133,7 @@
             return DecisionLogic.MakeDecision(organisms, biasProvider);
         }
 
-        public static Coordinate[,] GetNeighbours(this IEcosystemData ecosystemData, Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
+        public static Coordinate[,] GetNeighbours(this EcosystemData ecosystemData, Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
         {
             var neighbouringCoordinates = new Coordinate[(neighbourDepth * 2) + 1, (neighbourDepth * 2) + 1];
 
@@ -176,7 +176,7 @@
             return neighbouringCoordinates;
         }
 
-        public static int CalculateHazardDiameter(this IEcosystemData ecosystemData)
+        public static int CalculateHazardDiameter(this EcosystemData ecosystemData)
         {
             var ecosystemArea = (double)(ecosystemData.Width * ecosystemData.Height);
 

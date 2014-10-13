@@ -330,6 +330,7 @@
 
                     var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
                     habitatViewModel.RefreshOrganism();
+                    habitatViewModel.RefreshEnvironment();
                     refreshedHabitatViewModels.Add(habitatViewModel);
                 });
 
@@ -341,6 +342,7 @@
 
                 var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
                 habitatViewModel.UnassignOrganismModel();
+                habitatViewModel.RefreshEnvironment();
                 refreshedHabitatViewModels.Add(habitatViewModel);
             });
 
@@ -353,6 +355,7 @@
 
                 var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
                 habitatViewModel.AssignOrganismModel(organism);
+                habitatViewModel.RefreshEnvironment();
                 refreshedHabitatViewModels.Add(habitatViewModel);
             });
 

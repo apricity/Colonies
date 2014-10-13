@@ -95,17 +95,17 @@
             return this.measurementData.GetLevel(measure);
         }
 
-        public void SetLevel(OrganismMeasure measure, double level)
+        public double SetLevel(OrganismMeasure measure, double level)
         {
-            this.measurementData.SetLevel(measure, level);
+           return this.measurementData.SetLevel(measure, level);
         }
 
-        public bool IncreaseLevel(OrganismMeasure measure, double increment)
+        public double IncreaseLevel(OrganismMeasure measure, double increment)
         {
             return this.measurementData.IncreaseLevel(measure, increment);
         }
 
-        public bool DecreaseLevel(OrganismMeasure measure, double decrement)
+        public double DecreaseLevel(OrganismMeasure measure, double decrement)
         {
             return this.measurementData.DecreaseLevel(measure, decrement);
         }

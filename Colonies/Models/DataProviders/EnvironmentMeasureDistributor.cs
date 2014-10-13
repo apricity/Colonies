@@ -9,14 +9,13 @@
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.Extensions;
     using Wacton.Colonies.Logic;
-    using Wacton.Colonies.Models.Interfaces;
 
     public class EnvironmentMeasureDistributor
     {
-        private IEcosystemData EcosystemData { get; set; }
+        private EcosystemData EcosystemData { get; set; }
         private Dictionary<EnvironmentMeasure, int> EnvironmentMeasureDiameters { get; set; } 
 
-        public EnvironmentMeasureDistributor(IEcosystemData ecosystemData)
+        public EnvironmentMeasureDistributor(EcosystemData ecosystemData)
         {
             this.EcosystemData = ecosystemData;
 
@@ -30,10 +29,8 @@
                 };
         }
 
-        public EcosystemModification InsertDistribution(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
+        public void InsertDistribution(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
         {
-            var ecosystemModifcation = new EcosystemModification();
-
             var diameter = this.EnvironmentMeasureDiameters[environmentMeasure];
             var radius = (diameter - 1) / 2;
 
@@ -55,8 +52,7 @@
                     var currentLevel = this.EcosystemData.GetLevel(neighbouringCoordinate, environmentMeasure);
                     if (requiredLevel > currentLevel)
                     {
-                        var levelDelta = requiredLevel - currentLevel;
-                        ecosystemModifcation.Add(new EnvironmentModification(neighbouringCoordinate, environmentMeasure, levelDelta));
+                        this.EcosystemData.SetLevel(neighbouringCoordinate, environmentMeasure, requiredLevel);
                     }
                 }
             }
@@ -66,14 +62,10 @@
             {
                 this.EcosystemData.InsertHazardSource(environmentMeasure, coordinate);
             }
-
-            return ecosystemModifcation;
         }
 
-        public EcosystemModification RemoveDistribution(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
+        public void RemoveDistribution(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
         {
-            var ecosystemModifcation = new EcosystemModification();
-
             var diameter = this.EnvironmentMeasureDiameters[environmentMeasure];
             var radius = (diameter - 1) / 2;
 
@@ -92,8 +84,7 @@
                     var currentLevel = this.EcosystemData.GetLevel(neighbouringCoordinate, environmentMeasure);
                     if (currentLevel > requiredLevel)
                     {
-                        var levelDelta = requiredLevel - currentLevel;
-                        ecosystemModifcation.Add(new EnvironmentModification(neighbouringCoordinate, environmentMeasure, levelDelta));
+                        this.EcosystemData.SetLevel(neighbouringCoordinate, environmentMeasure, requiredLevel);
                     }
                 }
             }
@@ -102,18 +93,15 @@
             if (environmentMeasure.IsHazardous)
             {
                 this.EcosystemData.RemoveHazardSource(environmentMeasure, coordinate);
+                this.RepairBrokenHazards(environmentMeasure);
             }
-
-            return ecosystemModifcation;
         }
 
-        public EcosystemModification RandomAddHazards(EnvironmentMeasure environmentMeasure, double addChance)
+        public void RandomAddHazards(EnvironmentMeasure environmentMeasure, double addChance)
         {
-            var ecosystemModification = new EcosystemModification();
-
             if (!DecisionLogic.IsSuccessful(addChance))
             {
-                return ecosystemModification;
+                return;
             }
 
             var hazardCoordinates = this.EcosystemData.GetHazardSourceCoordinates(environmentMeasure).ToList();
@@ -121,16 +109,12 @@
             var chosenNonHazardCoordinate = DecisionLogic.MakeDecision(nonHazardCoordinates);
             if (!this.EcosystemData.HasLevel(chosenNonHazardCoordinate, EnvironmentMeasure.Obstruction))
             {
-                ecosystemModification.Add(this.InsertDistribution(chosenNonHazardCoordinate, environmentMeasure));
+                this.InsertDistribution(chosenNonHazardCoordinate, environmentMeasure);
             }
-
-            return ecosystemModification;
         }
 
-        public EcosystemModification RandomSpreadHazards(EnvironmentMeasure environmentMeasure, double spreadChance)
+        public void RandomSpreadHazards(EnvironmentMeasure environmentMeasure, double spreadChance)
         {
-            var ecosystemModification = new EcosystemModification();
-
             var hazardCoordinates = this.EcosystemData.GetHazardSourceCoordinates(environmentMeasure).ToList();
             foreach (var hazardCoordinate in hazardCoordinates)
             {
@@ -151,16 +135,12 @@
                 }
 
                 var chosenCoordinate = DecisionLogic.MakeDecision(validNeighbouringCoordinates);
-                ecosystemModification.Add(this.InsertDistribution(chosenCoordinate, environmentMeasure));
+                this.InsertDistribution(chosenCoordinate, environmentMeasure);
             }
-
-            return ecosystemModification;
         }
 
-        public EcosystemModification RandomRemoveHazards(EnvironmentMeasure environmentMeasure, double removeChance)
+        public void RandomRemoveHazards(EnvironmentMeasure environmentMeasure, double removeChance)
         {
-            var ecosystemModification = new EcosystemModification();
-
             var hazardCoordinates = this.EcosystemData.GetHazardSourceCoordinates(environmentMeasure).ToList();
             foreach (var hazardCoordinate in hazardCoordinates)
             {
@@ -169,16 +149,13 @@
                     continue;
                 }
 
-                ecosystemModification.Add(this.RemoveDistribution(hazardCoordinate, environmentMeasure));
+                this.RemoveDistribution(hazardCoordinate, environmentMeasure);
             }
-
-            return ecosystemModification;
         }
 
-        public EcosystemModification RepairBrokenHazards(EnvironmentMeasure environmentMeasure)
+        // TODO: not just hazards will be affected - also sound... any distributed measure...
+        private void RepairBrokenHazards(EnvironmentMeasure environmentMeasure)
         {
-            var ecosystemModification = new EcosystemModification();
-
             // go through all remaining hazard coordinates and restore any remove measures that belonged to other hazards
             var remainingHazardCoordinates = this.EcosystemData.GetHazardSourceCoordinates(environmentMeasure).ToList();
             foreach (var remainingHazardCoordinate in remainingHazardCoordinates)
@@ -191,30 +168,8 @@
                     continue;
                 }
 
-                var potentialModifications = this.InsertDistribution(remainingHazardCoordinate, environmentMeasure).EnvironmentModifications;
-                foreach (var potentialModification in potentialModifications)
-                {
-                    var existingModification = ecosystemModification.EnvironmentModifications.SingleOrDefault(mod => mod.Coordinate.Equals(potentialModification.Coordinate));
-                    if (existingModification != null)
-                    {
-                        var existingDelta = existingModification.Delta;
-                        var potentialDelta = potentialModification.Delta;
-
-                        if (potentialDelta > existingDelta)
-                        {
-                            ecosystemModification.Remove(existingModification);
-                            ecosystemModification.Add(potentialModification);
-                        }
-                    }
-                    else
-                    {
-                        ecosystemModification.Add(potentialModification);
-                    }
-                }
+                this.InsertDistribution(remainingHazardCoordinate, environmentMeasure);
             }
-
-
-            return ecosystemModification;
         }
     }
 }

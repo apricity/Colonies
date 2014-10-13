@@ -61,32 +61,32 @@
             return this.Organism.GetLevel(measure);
         }
 
-        public void SetLevel(EnvironmentMeasure measure, double level)
+        public double SetLevel(EnvironmentMeasure measure, double level)
         {
-            this.environment.SetLevel(measure, level);
+            return this.environment.SetLevel(measure, level);
         }
 
-        public void SetLevel(OrganismMeasure measure, double level)
+        public double SetLevel(OrganismMeasure measure, double level)
         {
-            this.organism.SetLevel(measure, level);
+            return this.organism.SetLevel(measure, level);
         }
 
-        public bool IncreaseLevel(EnvironmentMeasure measure, double increment)
+        public double IncreaseLevel(EnvironmentMeasure measure, double increment)
         {
             return this.environment.IncreaseLevel(measure, increment);
         }
 
-        public bool IncreaseLevel(OrganismMeasure measure, double increment)
+        public double IncreaseLevel(OrganismMeasure measure, double increment)
         {
             return this.organism.IncreaseLevel(measure, increment);
         }
 
-        public bool DecreaseLevel(EnvironmentMeasure measure, double decrement)
+        public double DecreaseLevel(EnvironmentMeasure measure, double decrement)
         {
             return this.environment.DecreaseLevel(measure, decrement);
         }
 
-        public bool DecreaseLevel(OrganismMeasure measure, double decrement)
+        public double DecreaseLevel(OrganismMeasure measure, double decrement)
         {
             return this.organism.DecreaseLevel(measure, decrement);
         }
@@ -95,7 +95,5 @@
         {
             return String.Format("{0}, {1}", this.environment, this.organism);
         }
-
-        
     }
 }

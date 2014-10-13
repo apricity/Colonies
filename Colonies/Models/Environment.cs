@@ -44,17 +44,17 @@
             return this.measurementData.GetLevel(measure);
         }
 
-        public void SetLevel(EnvironmentMeasure measure, double level)
+        public double SetLevel(EnvironmentMeasure measure, double level)
         {
-            this.measurementData.SetLevel(measure, level);
+            return this.measurementData.SetLevel(measure, level);
         }
 
-        public bool IncreaseLevel(EnvironmentMeasure measure, double increment)
+        public double IncreaseLevel(EnvironmentMeasure measure, double increment)
         {
             return this.measurementData.IncreaseLevel(measure, increment);
         }
 
-        public bool DecreaseLevel(EnvironmentMeasure measure, double decrement)
+        public double DecreaseLevel(EnvironmentMeasure measure, double decrement)
         {
             return this.measurementData.DecreaseLevel(measure, decrement);
         }

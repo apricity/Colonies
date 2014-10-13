@@ -65,11 +65,12 @@
             }
 
             var initialOrganismCoordinates = this.InitialOrganismCoordinates();
-            var ecosystemData = new EcosystemData(habitats, initialOrganismCoordinates);
+            var ecosystemHistory = new EcosystemHistory();
+            var ecosystemData = new EcosystemData(habitats, initialOrganismCoordinates, ecosystemHistory);
             var weather = new Weather();
             var environmentMeasureDistributor = new EnvironmentMeasureDistributor(ecosystemData);
             var organismEnvironmentProcessor = new OrganismEnvironmentProcessor(ecosystemData);
-            var ecosystem = new Ecosystem(ecosystemData, weather, environmentMeasureDistributor, organismEnvironmentProcessor);
+            var ecosystem = new Ecosystem(ecosystemData, ecosystemHistory, weather, environmentMeasureDistributor, organismEnvironmentProcessor);
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
@@ -101,26 +102,25 @@
 
         protected virtual void InitialiseTerrain(Ecosystem ecosystem)
         {
-            ecosystem.Modify(ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(19, 0), EnvironmentMeasure.Damp));
-            ecosystem.Modify(ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(15, 3), EnvironmentMeasure.Damp));
-            ecosystem.Modify(ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(17, 4), EnvironmentMeasure.Damp));
-            ecosystem.Modify(ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(17, 5), EnvironmentMeasure.Heat));
-            ecosystem.Modify(ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(15, 6), EnvironmentMeasure.Heat));
-            ecosystem.Modify(ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(19, 9), EnvironmentMeasure.Heat));
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(19, 0), EnvironmentMeasure.Damp);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(15, 3), EnvironmentMeasure.Damp);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(17, 4), EnvironmentMeasure.Damp);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(17, 5), EnvironmentMeasure.Heat);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(15, 6), EnvironmentMeasure.Heat);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(19, 9), EnvironmentMeasure.Heat);
 
             for (var i = 12; i < ecosystem.Width; i++)
             {
                 for (var j = 4; j <= 5; j++)
                 {
-                    ecosystem.Modify(ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(i, j), EnvironmentMeasure.Poison));
+                    ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(i, j), EnvironmentMeasure.Poison);
                 }
             }
 
-            var ecosystemModification = new EcosystemModification();
             for (var i = 0; i < 15; i++)
             {
-                ecosystemModification.Add(new EnvironmentModification(new Coordinate(i, 0), EnvironmentMeasure.Nutrient, 1.0 - (i * (1 / (double)15))));
-                ecosystemModification.Add(new EnvironmentModification(new Coordinate(i, 9), EnvironmentMeasure.Mineral, 1.0 - (i * (1 / (double)15))));
+                ecosystem.SetLevel(new Coordinate(i, 0), EnvironmentMeasure.Nutrient, 1.0 - (i * (1 / (double)15)));
+                ecosystem.SetLevel(new Coordinate(i, 9), EnvironmentMeasure.Mineral, 1.0 - (i * (1 / (double)15)));
             }
 
             // custom obstructed habitats (will make a square shapen with an entrance - a pen?)
@@ -156,10 +156,8 @@
 
             foreach (var coordinate in obstructedCoordinates)
             {
-                ecosystemModification.Add(new EnvironmentModification(coordinate, EnvironmentMeasure.Obstruction, 1.0));
+                ecosystem.SetLevel(coordinate, EnvironmentMeasure.Obstruction, 1.0);
             }
-
-            ecosystem.Modify(ecosystemModification);
         }
 
         protected virtual Dictionary<Organism, Coordinate> InitialOrganismCoordinates()

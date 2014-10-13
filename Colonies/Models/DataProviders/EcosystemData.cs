@@ -6,16 +6,18 @@
 
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
+    using Wacton.Colonies.DataTypes.Interfaces;
     using Wacton.Colonies.Extensions;
     using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models.Interfaces;
 
-    public class EcosystemData : IEcosystemData
+    public class EcosystemData
     {
         private Habitat[,] Habitats { get; set; }
         private Dictionary<Organism, Habitat> OrganismHabitats { get; set; }
         private Dictionary<Habitat, Coordinate> HabitatCoordinates { get; set; }
         private Dictionary<EnvironmentMeasure, List<Coordinate>> HazardSourceCoordinates { get; set; }
+        private EcosystemHistory EcosystemHistory { get; set; }
 
         public int Width
         {
@@ -33,12 +35,13 @@
             }
         }
 
-        public EcosystemData(Habitat[,] habitats, Dictionary<Organism, Coordinate> organismCoordinates)
+        public EcosystemData(Habitat[,] habitats, Dictionary<Organism, Coordinate> organismCoordinates, EcosystemHistory ecosystemHistory)
         {
             this.Habitats = habitats;
             this.HabitatCoordinates = new Dictionary<Habitat, Coordinate>();
             this.OrganismHabitats = new Dictionary<Organism, Habitat>();
             this.HazardSourceCoordinates = new Dictionary<EnvironmentMeasure, List<Coordinate>>();
+            this.EcosystemHistory = ecosystemHistory;
 
             for (var i = 0; i < this.Width; i++)
             {
@@ -84,6 +87,11 @@
             return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive).Select(this.CoordinateOf);
         }
 
+        public IEnumerable<Coordinate> DeadOrganismCoordinates()
+        {
+            return this.OrganismHabitats.Keys.Where(organism => !organism.IsAlive).Select(this.CoordinateOf);
+        }
+
         public IEnumerable<Coordinate> MoveableOrganismCoordinates()
         {
             return this.OrganismHabitats.Keys.Where(organism => !organism.Intention.Equals(Intention.Reproduce)).Select(this.CoordinateOf);
@@ -126,52 +134,49 @@
 
         public void SetLevel(Coordinate coordinate, EnvironmentMeasure measure, double level)
         {
-            this.HabitatAt(coordinate).SetLevel(measure, level);
+            var previousLevel = this.GetLevel(coordinate, measure);
+            var updatedLevel = this.HabitatAt(coordinate).SetLevel(measure, level);
+            this.RecordHistory(coordinate, measure, previousLevel, updatedLevel);
         }
 
         public void SetLevel(Coordinate coordinate, OrganismMeasure measure, double level)
         {
-            this.HabitatAt(coordinate).SetLevel(measure, level);
+            var previousLevel = this.GetLevel(coordinate, measure);
+            var updatedLevel = this.HabitatAt(coordinate).SetLevel(measure, level);
+            this.RecordHistory(coordinate, measure, previousLevel, updatedLevel);
         }
 
-        public bool IncreaseLevel(Coordinate coordinate, EnvironmentMeasure measure, double increment)
+        public void IncreaseLevel(Coordinate coordinate, EnvironmentMeasure measure, double increment)
         {
-            return this.HabitatAt(coordinate).IncreaseLevel(measure, increment);
+            var previousLevel = this.GetLevel(coordinate, measure);
+            var updatedLevel = this.HabitatAt(coordinate).IncreaseLevel(measure, increment);
+            this.RecordHistory(coordinate, measure, previousLevel, updatedLevel);
         }
 
-        public bool IncreaseLevel(Coordinate coordinate, OrganismMeasure measure, double increment)
+        public void IncreaseLevel(Coordinate coordinate, OrganismMeasure measure, double increment)
         {
-            return this.HabitatAt(coordinate).IncreaseLevel(measure, increment);
+            var previousLevel = this.GetLevel(coordinate, measure);
+            var updatedLevel = this.HabitatAt(coordinate).IncreaseLevel(measure, increment);
+            this.RecordHistory(coordinate, measure, previousLevel, updatedLevel);
         }
 
-        public bool DecreaseLevel(Coordinate coordinate, EnvironmentMeasure measure, double decrement)
+        public void DecreaseLevel(Coordinate coordinate, EnvironmentMeasure measure, double decrement)
         {
-            return this.HabitatAt(coordinate).DecreaseLevel(measure, decrement); 
+            var previousLevel = this.GetLevel(coordinate, measure);
+            var updatedLevel = this.HabitatAt(coordinate).DecreaseLevel(measure, decrement);
+            this.RecordHistory(coordinate, measure, previousLevel, updatedLevel);
         }
 
-        public bool DecreaseLevel(Coordinate coordinate, OrganismMeasure measure, double decrement)
+        public void DecreaseLevel(Coordinate coordinate, OrganismMeasure measure, double decrement)
         {
-            return this.HabitatAt(coordinate).DecreaseLevel(measure, decrement);
+            var previousLevel = this.GetLevel(coordinate, measure);
+            var updatedLevel = this.HabitatAt(coordinate).DecreaseLevel(measure, decrement);
+            this.RecordHistory(coordinate, measure, previousLevel, updatedLevel);
         }
 
-        public bool Modify(EnvironmentModification environmentModification)
+        private void RecordHistory(Coordinate coordinate, IMeasure measure, double previousLevel, double updatedLevel)
         {
-            var isModified = this.IncreaseLevel(environmentModification.Coordinate, environmentModification.Measure, environmentModification.Delta);
-            //this.CheckHazardStatus(environmentModification.Coordinate, environmentModification.Measure);
-            return isModified;
-        }
-
-        public bool Modify(OrganismModification organismModification)
-        {
-            return this.IncreaseLevel(organismModification.Coordinate, organismModification.Measure, organismModification.Delta);
-        }
-
-        public bool Modify(EcosystemModification ecosystemModification)
-        {
-            var actualModifications = new List<bool>();
-            actualModifications.AddRange(ecosystemModification.EnvironmentModifications.Select(this.Modify));
-            actualModifications.AddRange(ecosystemModification.OrganismModifications.Select(this.Modify));
-            return actualModifications.Any();
+            this.EcosystemHistory.Record(new Modification(coordinate, measure, previousLevel, updatedLevel));
         }
 
         // TODO: can this be used?

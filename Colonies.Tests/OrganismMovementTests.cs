@@ -351,8 +351,9 @@
             EcosystemLogic.OverrideDesiredOrganismCoordinates = desiredBiasedOrganismCoordinates;
             EcosystemLogic.OverrideDecideOrganismFunction = organisms => organisms.First();
 
-            var ecosystemData = new EcosystemData(this.habitats, organismCoordinates);
-            var ecosystem = new Ecosystem(ecosystemData, new Weather(), new EnvironmentMeasureDistributor(ecosystemData), new OrganismEnvironmentProcessor(ecosystemData));
+            var ecosystemHistory = new EcosystemHistory();
+            var ecosystemData = new EcosystemData(this.habitats, organismCoordinates, ecosystemHistory);
+            var ecosystem = new Ecosystem(ecosystemData, ecosystemHistory, new Weather(), new EnvironmentMeasureDistributor(ecosystemData), new OrganismEnvironmentProcessor(ecosystemData));
 
             var environmentInteractionUpdateSummary = ecosystem.UpdateOneStage();
             var movementUpdateSummary = ecosystem.UpdateOneStage();

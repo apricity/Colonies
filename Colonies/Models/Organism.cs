@@ -7,7 +7,6 @@
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.DataTypes.Interfaces;
-    using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models.Interfaces;
 
     public abstract class Organism : IOrganism

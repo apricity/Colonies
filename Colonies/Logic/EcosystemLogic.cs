@@ -6,8 +6,6 @@
 
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
-    using Wacton.Colonies.Extensions;
-    using Wacton.Colonies.Models;
     using Wacton.Colonies.Models.DataProviders;
     using Wacton.Colonies.Models.Interfaces;
 

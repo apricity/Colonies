@@ -153,7 +153,7 @@
             }
         }
 
-        // TODO: not just hazards will be affected - also sound... any distributed measure...
+        // TODO: not just hazards will be affected - also sound... any distributed measure... will need to deal with this when multiple queens
         private void RepairBrokenHazards(EnvironmentMeasure environmentMeasure)
         {
             // go through all remaining hazard coordinates and restore any remove measures that belonged to other hazards

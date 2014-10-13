@@ -13,7 +13,7 @@
     public class Ecosystem : IEcosystem
     {
         private EcosystemData EcosystemData { get; set; }
-        private EcosystemHistory EcosystemHistory { get; set; }
+        private IEcosystemHistoryPullOnly EcosystemHistory { get; set; }
         public IWeather Weather { get; private set; }
         public EnvironmentMeasureDistributor EnvironmentMeasureDistributor { get; private set; }
         private OrganismEnvironmentProcessor OrganismEnvironmentProcessor { get; set; }
@@ -46,11 +46,11 @@
             }
         }
 
-        private readonly List<Func<IEnumerable<Coordinate>>> updateFunctions;
+        private readonly List<Action> updateFunctions;
         public int UpdateStages { get { return updateFunctions.Count; } }
         private int updateCount = 0;
 
-        public Ecosystem(EcosystemData ecosystemData, EcosystemHistory ecosystemHistory, IWeather weather, EnvironmentMeasureDistributor environmentMeasureDistributor, OrganismEnvironmentProcessor organismEnvironmentProcessor)
+        public Ecosystem(EcosystemData ecosystemData, IEcosystemHistoryPullOnly ecosystemHistory, IWeather weather, EnvironmentMeasureDistributor environmentMeasureDistributor, OrganismEnvironmentProcessor organismEnvironmentProcessor)
         {
             this.EcosystemData = ecosystemData;
             this.EcosystemHistory = ecosystemHistory;
@@ -74,7 +74,7 @@
                     { EnvironmentMeasure.Poison, new HazardRate(0.0, 1 / 50.0, 1 / 50.0) }
                 };
 
-            this.updateFunctions = new List<Func<IEnumerable<Coordinate>>>
+            this.updateFunctions = new List<Action>
                                        {
                                            this.PerformEnvironmentInteractions,
                                            this.PerformMovementsActions,
@@ -88,7 +88,8 @@
             var updateIndex = this.updateCount % this.UpdateStages;
             var updateFunction = this.updateFunctions[updateIndex];
             var previousOrganismCoordinates = this.EcosystemData.OrganismCoordinatePairs();
-            var alteredEnvironmentCoordinates = updateFunction.Invoke().ToList();
+            updateFunction.Invoke();
+            var alteredEnvironmentCoordinates = this.GetCoordinatesFromHistory().ToList();
             var currentOrganismCoordinates = this.EcosystemData.OrganismCoordinatePairs();
             var updateSummary = new UpdateSummary(this.updateCount, previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates);
             this.updateCount++;
@@ -106,10 +107,10 @@
             }
         }
 
-        private IEnumerable<Coordinate> PerformEnvironmentInteractions()
+        private void PerformEnvironmentInteractions()
         {
             // remove sound distribution before refreshing intentions, insert them again afterwards if still need assistance
-            var aliveOrganismCoordinates = this.EcosystemData.AliveOrganismCoordinates();
+            var aliveOrganismCoordinates = this.EcosystemData.AliveOrganismCoordinates().ToList();
             foreach (var aliveOrganismCoordinate in aliveOrganismCoordinates)
             {
                 var organism = this.EcosystemData.GetOrganism(aliveOrganismCoordinate);
@@ -131,11 +132,9 @@
                     this.EnvironmentMeasureDistributor.InsertDistribution(aliveOrganismCoordinate, EnvironmentMeasure.Sound);
                 }
             }
-
-            return this.GetCoordinatesFromHistory();
         }
 
-        private IEnumerable<Coordinate> PerformMovementsActions()
+        private void PerformMovementsActions()
         {
             var desiredOrganismCoordinates = EcosystemLogic.GetDesiredCoordinates(this.EcosystemData);
             var movedOrganismCoordinates = EcosystemLogic.ResolveOrganismHabitats(this.EcosystemData, desiredOrganismCoordinates, new List<IOrganism>(), this);
@@ -160,18 +159,15 @@
             {
                 this.EnvironmentMeasureDistributor.InsertDistribution(soundSourceCoordinate, EnvironmentMeasure.Sound);
             }
-
-            return this.GetCoordinatesFromHistory();
         }
 
-        private IEnumerable<Coordinate> PerformOrganismInteractions()
+        private void PerformOrganismInteractions()
         {
             this.RefreshOrganismIntentions();
             this.NourishNeighbours();
-            return this.GetCoordinatesFromHistory();
         }
 
-        private IEnumerable<Coordinate> PerformEcosystemModifiers()
+        private void PerformEcosystemModifiers()
         {
             this.DecreasePheromoneLevel();
             this.IncreaseNutrientLevels();
@@ -186,8 +182,6 @@
             {
                 this.EnvironmentMeasureDistributor.RemoveDistribution(recentlyDiedOrganismCoordinate, EnvironmentMeasure.Sound);
             }
-
-            return this.GetCoordinatesFromHistory();
         }
 
         private void NourishNeighbours()

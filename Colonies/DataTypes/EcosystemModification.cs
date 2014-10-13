@@ -1,57 +1,34 @@
 ﻿namespace Wacton.Colonies.DataTypes
 {
-    using System.Collections.Generic;
+    using Wacton.Colonies.DataTypes.Interfaces;
 
     public class EcosystemModification
     {
-        public List<OrganismModification> OrganismModifications { get; private set; }
-        public List<EnvironmentModification> EnvironmentModifications { get; private set; }
+        public Coordinate Coordinate { get; private set; }
+        public IMeasure Measure { get; private set; }
+        public double PreviousLevel { get; private set; }
+        public double UpdatedLevel { get; private set; }
 
-        public EcosystemModification()
+        public double Delta
         {
-            this.OrganismModifications = new List<OrganismModification>();
-            this.EnvironmentModifications = new List<EnvironmentModification>();
+            get
+            {
+                // TODO: rounding?
+                return this.UpdatedLevel - this.PreviousLevel;
+            }
         }
 
-        public void Add(OrganismModification organismModification)
+        public EcosystemModification(Coordinate coordinate, IMeasure measure, double previousLevel, double updatedLevel)
         {
-            this.OrganismModifications.Add(organismModification);
-        }
-
-        public void Remove(OrganismModification organismModification)
-        {
-            this.OrganismModifications.Remove(organismModification);
-        }
-
-        public void Add(IEnumerable<OrganismModification> organismModifications)
-        {
-            this.OrganismModifications.AddRange(organismModifications);
-        }
-
-        public void Add(EnvironmentModification environmentModification)
-        {
-            this.EnvironmentModifications.Add(environmentModification);
-        }
-
-        public void Remove(EnvironmentModification environmentModification)
-        {
-            this.EnvironmentModifications.Remove(environmentModification);
-        }
-
-        public void Add(IEnumerable<EnvironmentModification> environmentModifications)
-        {
-            this.EnvironmentModifications.AddRange(environmentModifications);
-        }
-
-        public void Add(EcosystemModification ecosystemModification)
-        {
-            this.Add(ecosystemModification.OrganismModifications);
-            this.Add(ecosystemModification.EnvironmentModifications);
+            this.Coordinate = coordinate;
+            this.Measure = measure;
+            this.PreviousLevel = previousLevel;
+            this.UpdatedLevel = updatedLevel;
         }
 
         public override string ToString()
         {
-            return string.Format("Organism mods: {0} | Environment mods: {1}", this.OrganismModifications.Count, this.EnvironmentModifications.Count);
+            return string.Format("{0}: {1} {2}->{3}", this.Coordinate, this.Measure, this.PreviousLevel, this.UpdatedLevel);
         }
     }
 }

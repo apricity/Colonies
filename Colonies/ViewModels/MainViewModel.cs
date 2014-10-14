@@ -311,11 +311,11 @@
         {
             var refreshedHabitatViewModels = new ConcurrentBag<HabitatViewModel>();
 
-            // refresh properties of all altered environments
-            Parallel.ForEach(updateSummary.AlteredEnvironmentCoordinates, alteredEnvironmentCoordinate =>
+            // refresh properties of all modifications
+            Parallel.ForEach(updateSummary.EcosystemHistory.Modifications, modification =>
                 {
-                    var x = alteredEnvironmentCoordinate.X;
-                    var y = alteredEnvironmentCoordinate.Y;
+                    var x = modification.Coordinate.X;
+                    var y = modification.Coordinate.Y;
 
                     var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
                     habitatViewModel.RefreshEnvironment();
@@ -323,10 +323,17 @@
                 });
 
             // refresh properties of all organisms that have not moved
-            Parallel.ForEach(updateSummary.InactiveOrganismCoordinates, inactiveOrganismCoordinate =>
+            Parallel.ForEach(updateSummary.OrganismCoordinates, organismCoordinate =>
                 {
-                    var x = inactiveOrganismCoordinate.Value.X;
-                    var y = inactiveOrganismCoordinate.Value.Y;
+                    var organism = organismCoordinate.Key;
+
+                    if (updateSummary.EcosystemHistory.Relocations.Any(relocation => relocation.Organism.Equals(organism)))
+                    {
+                        return;
+                    }
+
+                    var x = organismCoordinate.Value.X;
+                    var y = organismCoordinate.Value.Y;
 
                     var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
                     habitatViewModel.RefreshOrganism();
@@ -335,10 +342,10 @@
                 });
 
             // unassign moving organisms from their previous view models
-            Parallel.ForEach(updateSummary.ActiveOrganismPreviousCoordinates, activeOrganismPreviousCoordinate =>
+            Parallel.ForEach(updateSummary.EcosystemHistory.Relocations, relocation =>
             {
-                var x = activeOrganismPreviousCoordinate.Value.X;
-                var y = activeOrganismPreviousCoordinate.Value.Y;
+                var x = relocation.PreviousCoordinate.X;
+                var y = relocation.PreviousCoordinate.Y;
 
                 var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
                 habitatViewModel.UnassignOrganismModel();
@@ -347,14 +354,13 @@
             });
 
             // assign moving organisms to their current view models
-            Parallel.ForEach(updateSummary.ActiveOrganismCurrentCoordinates, activeOrganismCurrentCoordinate =>
+            Parallel.ForEach(updateSummary.EcosystemHistory.Relocations, relocation =>
             {
-                var x = activeOrganismCurrentCoordinate.Value.X;
-                var y = activeOrganismCurrentCoordinate.Value.Y;
-                var organism = activeOrganismCurrentCoordinate.Key;
+                var x = relocation.UpdatedCoordinate.X;
+                var y = relocation.UpdatedCoordinate.Y;
 
                 var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
-                habitatViewModel.AssignOrganismModel(organism);
+                habitatViewModel.AssignOrganismModel(relocation.Organism);
                 habitatViewModel.RefreshEnvironment();
                 refreshedHabitatViewModels.Add(habitatViewModel);
             });

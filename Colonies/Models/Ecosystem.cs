@@ -13,7 +13,7 @@
     public class Ecosystem : IEcosystem
     {
         private EcosystemData EcosystemData { get; set; }
-        private IEcosystemHistoryPull EcosystemHistory { get; set; }
+        private IEcosystemHistoryPuller EcosystemHistoryPuller { get; set; }
         public IWeather Weather { get; private set; }
         public EnvironmentMeasureDistributor EnvironmentMeasureDistributor { get; private set; }
         private OrganismEnvironmentProcessor OrganismEnvironmentProcessor { get; set; }
@@ -50,10 +50,10 @@
         public int UpdateStages { get { return updateFunctions.Count; } }
         private int updateCount = 0;
 
-        public Ecosystem(EcosystemData ecosystemData, IEcosystemHistoryPull ecosystemHistory, IWeather weather, EnvironmentMeasureDistributor environmentMeasureDistributor, OrganismEnvironmentProcessor organismEnvironmentProcessor)
+        public Ecosystem(EcosystemData ecosystemData, IEcosystemHistoryPuller ecosystemHistory, IWeather weather, EnvironmentMeasureDistributor environmentMeasureDistributor, OrganismEnvironmentProcessor organismEnvironmentProcessor)
         {
             this.EcosystemData = ecosystemData;
-            this.EcosystemHistory = ecosystemHistory;
+            this.EcosystemHistoryPuller = ecosystemHistory;
             this.Weather = weather;
             this.EnvironmentMeasureDistributor = environmentMeasureDistributor;
             this.OrganismEnvironmentProcessor = organismEnvironmentProcessor;
@@ -87,12 +87,9 @@
         {
             var updateIndex = this.updateCount % this.UpdateStages;
             var updateFunction = this.updateFunctions[updateIndex];
-            var previousOrganismCoordinates = this.EcosystemData.OrganismCoordinatePairs();
             updateFunction.Invoke();
-            var history = this.EcosystemHistory.Pull();
-            var alteredEnvironmentCoordinates = history.Select(item => item.Coordinate).Distinct().ToList();
-            var currentOrganismCoordinates = this.EcosystemData.OrganismCoordinatePairs();
-            var updateSummary = new UpdateSummary(this.updateCount, previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates);
+            var ecosystemHistory = this.EcosystemHistoryPuller.Pull();
+            var updateSummary = new UpdateSummary(this.updateCount, ecosystemHistory, this.EcosystemData.OrganismCoordinatePairs());
             this.updateCount++;
             return updateSummary;
         }

@@ -2,8 +2,10 @@
 {
     using Wacton.Colonies.DataTypes;
 
-    public interface IEcosystemHistoryPush
+    public interface IEcosystemHistoryPusher
     {
         void Push(EcosystemModification modification);
+
+        void Push(EcosystemRelocation relocation);
     }
 }

@@ -1,35 +1,54 @@
 ﻿namespace Wacton.Colonies.Models.DataProviders
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.Models.Interfaces;
 
-    public class EcosystemHistory : IEcosystemHistoryPull, IEcosystemHistoryPush
+    public class EcosystemHistory : IEcosystemHistory, IEcosystemHistoryPuller, IEcosystemHistoryPusher
     {
-        private readonly List<EcosystemModification> modifications;
+        public List<EcosystemModification> Modifications { get; private set; }
+        public List<EcosystemRelocation> Relocations { get; private set; }
 
         public EcosystemHistory()
         {
-            this.modifications = new List<EcosystemModification>();
+            this.Modifications = new List<EcosystemModification>();
+            this.Relocations = new List<EcosystemRelocation>();
+        }
+
+        public EcosystemHistory(List<EcosystemModification> modifications, List<EcosystemRelocation> relocations)
+        {
+            this.Modifications = modifications;
+            this.Relocations = relocations;
         }
 
         public void Push(EcosystemModification modification)
         {
-            this.modifications.Add(modification);
+            this.Modifications.Add(modification);
         }
 
-        public IEnumerable<EcosystemModification> Pull()
+        public void Push(EcosystemRelocation relocation)
         {
-            var duplicate = new EcosystemModification[this.modifications.Count];
-            this.modifications.CopyTo(duplicate);
-            this.modifications.Clear();
-            return duplicate;
+            this.Relocations.Add(relocation);
+        }
+
+        public IEcosystemHistory Pull()
+        {
+            var modifications = new EcosystemModification[this.Modifications.Count];
+            this.Modifications.CopyTo(modifications);
+            this.Modifications.Clear();
+
+            var relocations = new EcosystemRelocation[this.Relocations.Count];
+            this.Relocations.CopyTo(relocations);
+            this.Relocations.Clear();
+
+            return new EcosystemHistory(modifications.ToList(), relocations.ToList());
         }
 
         public override string ToString()
         {
-            return string.Format("Modifications: {0}", this.modifications.Count);
+            return string.Format("Modifications: {0}", this.Modifications.Count);
         }
     }
 }

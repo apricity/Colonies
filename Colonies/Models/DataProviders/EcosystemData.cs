@@ -17,7 +17,7 @@
         private Dictionary<Organism, Habitat> OrganismHabitats { get; set; }
         private Dictionary<Habitat, Coordinate> HabitatCoordinates { get; set; }
         private Dictionary<EnvironmentMeasure, List<Coordinate>> HazardSourceCoordinates { get; set; }
-        private IEcosystemHistoryPush EcosystemHistory { get; set; }
+        private IEcosystemHistoryPusher EcosystemHistoryPusher { get; set; }
 
         public int Width
         {
@@ -35,13 +35,13 @@
             }
         }
 
-        public EcosystemData(Habitat[,] habitats, Dictionary<Organism, Coordinate> organismCoordinates, IEcosystemHistoryPush ecosystemHistory)
+        public EcosystemData(Habitat[,] habitats, Dictionary<Organism, Coordinate> organismCoordinates, IEcosystemHistoryPusher ecosystemHistory)
         {
             this.Habitats = habitats;
             this.HabitatCoordinates = new Dictionary<Habitat, Coordinate>();
             this.OrganismHabitats = new Dictionary<Organism, Habitat>();
             this.HazardSourceCoordinates = new Dictionary<EnvironmentMeasure, List<Coordinate>>();
-            this.EcosystemHistory = ecosystemHistory;
+            this.EcosystemHistoryPusher = ecosystemHistory;
 
             for (var i = 0; i < this.Width; i++)
             {
@@ -176,7 +176,7 @@
 
         private void RecordHistory(Coordinate coordinate, IMeasure measure, double previousLevel, double updatedLevel)
         {
-            this.EcosystemHistory.Push(new EcosystemModification(coordinate, measure, previousLevel, updatedLevel));
+            this.EcosystemHistoryPusher.Push(new EcosystemModification(coordinate, measure, previousLevel, updatedLevel));
         }
 
         // TODO: can this be used?
@@ -272,12 +272,8 @@
             sourceHabitat.ResetOrganism();
             destinationHabitat.SetOrganism(organism);
             this.OrganismHabitats[organism] = destinationHabitat;
+            this.EcosystemHistoryPusher.Push(new EcosystemRelocation(organism, this.CoordinateOf(sourceHabitat), this.CoordinateOf(destinationHabitat)));
         }
-
-        //public Coordinate[,] GetNeighbours(Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
-        //{
-        //    return this.GetNeighbours(coordinate, neighbourDepth, includeDiagonals, includeSelf);
-        //}
 
         public IEnumerable<Coordinate> GetValidNeighbours(Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
         {

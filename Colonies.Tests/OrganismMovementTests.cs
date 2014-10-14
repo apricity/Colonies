@@ -72,7 +72,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismCoordinates, desiredOrganismCoordinates);
 
             var expectedCoordinates = expectedOrganismCoordinates.Values.ToList();
-            var actualCoordinates = updateSummary.CurrentOrganismCoordinates.Values.ToList();
+            var actualCoordinates = updateSummary.OrganismCoordinates;
             Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
@@ -107,7 +107,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismCoordinates, desiredOrganismCoordinates);
 
             var expectedCoordinates = expectedOrganismCoordinates.Values.ToList();
-            var actualCoordinates = updateSummary.CurrentOrganismCoordinates.Values.ToList();
+            var actualCoordinates = updateSummary.OrganismCoordinates;
             Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
@@ -149,7 +149,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismCoordinates, desiredOrganismCoordinates);
 
             var expectedCoordinates = expectedOrganismCoordinates.Values.ToList();
-            var actualCoordinates = updateSummary.CurrentOrganismCoordinates.Values.ToList();
+            var actualCoordinates = updateSummary.OrganismCoordinates;
             Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
@@ -184,7 +184,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismCoordinates, desiredOrganismCoordinates);
 
             var expectedCoordinates = expectedOrganismCoordinates.Values.ToList();
-            var actualCoordinates = updateSummary.CurrentOrganismCoordinates.Values.ToList();
+            var actualCoordinates = updateSummary.OrganismCoordinates;
             Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
@@ -228,7 +228,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismCoordinates, desiredOrganismCoordinates);
 
             var expectedCoordinates = expectedOrganismCoordinates.Values.ToList();
-            var actualCoordinates = updateSummary.CurrentOrganismCoordinates.Values.ToList();
+            var actualCoordinates = updateSummary.OrganismCoordinates;
             Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
@@ -269,7 +269,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismCoordinates, desiredOrganismCoordinates);
 
             var expectedCoordinates = expectedOrganismCoordinates.Values.ToList();
-            var actualCoordinates = updateSummary.CurrentOrganismCoordinates.Values.ToList();
+            var actualCoordinates = updateSummary.OrganismCoordinates;
             Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 
@@ -323,7 +323,7 @@
             var updateSummary = this.CreateAndUpdateEcosystem(organismCoordinates, desiredOrganismCoordinates);
 
             var expectedCoordinates = expectedOrganismCoordinates.Values.ToList();
-            var actualCoordinates = updateSummary.CurrentOrganismCoordinates.Values.ToList();
+            var actualCoordinates = updateSummary.OrganismCoordinates;
             Assert.AreEqual(actualCoordinates, expectedCoordinates);
         }
 

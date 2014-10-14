@@ -17,7 +17,7 @@
         private Dictionary<Organism, Habitat> OrganismHabitats { get; set; }
         private Dictionary<Habitat, Coordinate> HabitatCoordinates { get; set; }
         private Dictionary<EnvironmentMeasure, List<Coordinate>> HazardSourceCoordinates { get; set; }
-        private IEcosystemHistoryPushOnly EcosystemHistory { get; set; }
+        private IEcosystemHistoryPush EcosystemHistory { get; set; }
 
         public int Width
         {
@@ -35,7 +35,7 @@
             }
         }
 
-        public EcosystemData(Habitat[,] habitats, Dictionary<Organism, Coordinate> organismCoordinates, IEcosystemHistoryPushOnly ecosystemHistory)
+        public EcosystemData(Habitat[,] habitats, Dictionary<Organism, Coordinate> organismCoordinates, IEcosystemHistoryPush ecosystemHistory)
         {
             this.Habitats = habitats;
             this.HabitatCoordinates = new Dictionary<Habitat, Coordinate>();
@@ -176,7 +176,7 @@
 
         private void RecordHistory(Coordinate coordinate, IMeasure measure, double previousLevel, double updatedLevel)
         {
-            this.EcosystemHistory.Record(new EcosystemModification(coordinate, measure, previousLevel, updatedLevel));
+            this.EcosystemHistory.Push(new EcosystemModification(coordinate, measure, previousLevel, updatedLevel));
         }
 
         // TODO: can this be used?

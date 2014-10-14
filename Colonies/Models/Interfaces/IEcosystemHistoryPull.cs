@@ -4,8 +4,8 @@
 
     using Wacton.Colonies.DataTypes;
 
-    public interface IEcosystemHistoryPullOnly
+    public interface IEcosystemHistoryPull
     {
-        IEnumerable<EcosystemModification> Retrieve();
+        IEnumerable<EcosystemModification> Pull();
     }
 }

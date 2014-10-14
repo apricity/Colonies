@@ -13,7 +13,7 @@
     public class Ecosystem : IEcosystem
     {
         private EcosystemData EcosystemData { get; set; }
-        private IEcosystemHistoryPullOnly EcosystemHistory { get; set; }
+        private IEcosystemHistoryPull EcosystemHistory { get; set; }
         public IWeather Weather { get; private set; }
         public EnvironmentMeasureDistributor EnvironmentMeasureDistributor { get; private set; }
         private OrganismEnvironmentProcessor OrganismEnvironmentProcessor { get; set; }
@@ -50,7 +50,7 @@
         public int UpdateStages { get { return updateFunctions.Count; } }
         private int updateCount = 0;
 
-        public Ecosystem(EcosystemData ecosystemData, IEcosystemHistoryPullOnly ecosystemHistory, IWeather weather, EnvironmentMeasureDistributor environmentMeasureDistributor, OrganismEnvironmentProcessor organismEnvironmentProcessor)
+        public Ecosystem(EcosystemData ecosystemData, IEcosystemHistoryPull ecosystemHistory, IWeather weather, EnvironmentMeasureDistributor environmentMeasureDistributor, OrganismEnvironmentProcessor organismEnvironmentProcessor)
         {
             this.EcosystemData = ecosystemData;
             this.EcosystemHistory = ecosystemHistory;
@@ -89,7 +89,8 @@
             var updateFunction = this.updateFunctions[updateIndex];
             var previousOrganismCoordinates = this.EcosystemData.OrganismCoordinatePairs();
             updateFunction.Invoke();
-            var alteredEnvironmentCoordinates = this.GetCoordinatesFromHistory().ToList();
+            var history = this.EcosystemHistory.Pull();
+            var alteredEnvironmentCoordinates = history.Select(item => item.Coordinate).Distinct().ToList();
             var currentOrganismCoordinates = this.EcosystemData.OrganismCoordinatePairs();
             var updateSummary = new UpdateSummary(this.updateCount, previousOrganismCoordinates, currentOrganismCoordinates, alteredEnvironmentCoordinates);
             this.updateCount++;
@@ -328,12 +329,6 @@
             {
                 throw new ArgumentException(string.Format("No hazard rate for environment measure {0}", environmentMeasure), "environmentMeasure");
             }
-        }
-
-        private IEnumerable<Coordinate> GetCoordinatesFromHistory()
-        {
-            var history = this.EcosystemHistory.Retrieve();
-            return history.Select(item => item.Coordinate).Distinct();
         }
 
         public override String ToString()

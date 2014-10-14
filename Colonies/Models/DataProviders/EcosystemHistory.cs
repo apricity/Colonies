@@ -5,7 +5,7 @@
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.Models.Interfaces;
 
-    public class EcosystemHistory : IEcosystemHistoryPullOnly, IEcosystemHistoryPushOnly
+    public class EcosystemHistory : IEcosystemHistoryPull, IEcosystemHistoryPush
     {
         private readonly List<EcosystemModification> modifications;
 
@@ -14,12 +14,12 @@
             this.modifications = new List<EcosystemModification>();
         }
 
-        public void Record(EcosystemModification modification)
+        public void Push(EcosystemModification modification)
         {
             this.modifications.Add(modification);
         }
 
-        public IEnumerable<EcosystemModification> Retrieve()
+        public IEnumerable<EcosystemModification> Pull()
         {
             var duplicate = new EcosystemModification[this.modifications.Count];
             this.modifications.CopyTo(duplicate);

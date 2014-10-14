@@ -108,8 +108,8 @@
     <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
     <Compile Include="Models\DataProviders\EcosystemHistory.cs" />
     <Compile Include="Models\DataProviders\OrganismEnvironmentProcessor.cs" />
-    <Compile Include="Models\Interfaces\IEcosystemHistoryPushOnly.cs" />
-    <Compile Include="Models\Interfaces\IEcosystemHistoryPullOnly.cs" />
+    <Compile Include="Models\Interfaces\IEcosystemHistoryPush.cs" />
+    <Compile Include="Models\Interfaces\IEcosystemHistoryPull.cs" />
     <Compile Include="Models\Queen.cs" />
     <Compile Include="Models\Defender.cs" />
     <Compile Include="Models\DataProviders\EnvironmentMeasureDistributor.cs" />

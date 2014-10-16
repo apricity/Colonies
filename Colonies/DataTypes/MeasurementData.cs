@@ -32,14 +32,9 @@
             return this.GetMeasurement(measure).SetLevel(level);
         }
 
-        public double IncreaseLevel(IMeasure measure, double increment)
+        public double AdjustLevel(IMeasure measure, double adjustment)
         {
-            return this.GetMeasurement(measure).IncreaseLevel(increment);
-        }
-
-        public double DecreaseLevel(IMeasure measure, double decrement)
-        {
-            return this.GetMeasurement(measure).DecreaseLevel(decrement);
+            return this.GetMeasurement(measure).AdjustLevel(adjustment);
         }
 
         private Measurement<T> GetMeasurement(IMeasure measure)

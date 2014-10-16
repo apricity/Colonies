@@ -35,8 +35,8 @@
             var desiredInventoryNutrient = 1 - organism.GetLevel(OrganismMeasure.Health);
             var inventoryNutrientTaken = Math.Min(desiredInventoryNutrient, availableInventoryNutrient);
 
-            this.ecosystemData.IncreaseLevel(organismCoordinate, OrganismMeasure.Health, inventoryNutrientTaken);
-            this.ecosystemData.DecreaseLevel(organismCoordinate, OrganismMeasure.Inventory, inventoryNutrientTaken);
+            this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Health, inventoryNutrientTaken);
+            this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, -inventoryNutrientTaken);
         }
 
         private void ProcessEnvironmentNutrient(Coordinate organismCoordinate)
@@ -53,16 +53,16 @@
             {
                 var desiredNutrient = 1 - organism.GetLevel(OrganismMeasure.Inventory);
                 var nutrientTaken = Math.Min(desiredNutrient, availableNutrient);
-                this.ecosystemData.IncreaseLevel(organismCoordinate, OrganismMeasure.Inventory, nutrientTaken);
-                this.ecosystemData.DecreaseLevel(organismCoordinate, EnvironmentMeasure.Nutrient, nutrientTaken);
+                this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, nutrientTaken);
+                this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Nutrient, -nutrientTaken);
             }
 
             if (organism.Intention.Equals(Intention.Eat))
             {
                 var desiredNutrient = 1 - organism.GetLevel(OrganismMeasure.Health);
                 var nutrientTaken = Math.Min(desiredNutrient, availableNutrient);
-                this.ecosystemData.IncreaseLevel(organismCoordinate, OrganismMeasure.Health, nutrientTaken);
-                this.ecosystemData.DecreaseLevel(organismCoordinate, EnvironmentMeasure.Nutrient, nutrientTaken);
+                this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Health, nutrientTaken);
+                this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Nutrient, -nutrientTaken);
             }
         }
 
@@ -80,8 +80,8 @@
             {
                 var desiredMineral = 1 - organism.GetLevel(OrganismMeasure.Inventory);
                 var mineralTaken = Math.Min(desiredMineral, availableMineral);
-                this.ecosystemData.IncreaseLevel(organismCoordinate, OrganismMeasure.Inventory, mineralTaken);
-                this.ecosystemData.DecreaseLevel(organismCoordinate, EnvironmentMeasure.Mineral, mineralTaken);
+                this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, mineralTaken);
+                this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Mineral, -mineralTaken);
             }
 
             // reproduction requirements (first pass: mineral level 1.0, health level 0.75)
@@ -91,7 +91,7 @@
             {
                 // TODO: create the result of using the mineral during reproduction!  a child organism?!
                 var mineralTaken = availableMineral;
-                this.ecosystemData.DecreaseLevel(organismCoordinate, EnvironmentMeasure.Mineral, mineralTaken);
+                this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Mineral, -mineralTaken);
             }
         }
 
@@ -108,8 +108,8 @@
             var hazardousMeasurements = environment.MeasurementData.Measurements.Where(measurement => measurement.Measure.IsHazardous).ToList();
             if (hazardousMeasurements.Any(measurement => measurement.Level > 0.0))
             {
-                this.ecosystemData.DecreaseLevel(organismCoordinate, OrganismMeasure.Inventory, 1.0);
-                this.ecosystemData.IncreaseLevel(organismCoordinate, EnvironmentMeasure.Obstruction, 1.0);
+                this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, -1.0);
+                this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Obstruction, 1.0);
             }
         }
     }

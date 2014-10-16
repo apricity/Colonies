@@ -74,12 +74,13 @@
                     { EnvironmentMeasure.Poison, new HazardRate(0.0, 1 / 50.0, 1 / 50.0) }
                 };
 
+            // TODO: one class per stage?
             this.updateFunctions = new List<Action>
                                        {
                                            this.PerformEnvironmentInteractions,
                                            this.PerformMovementsActions,
                                            this.PerformOrganismInteractions,
-                                           this.PerformEcosystemModifiers
+                                           this.PerformEcosystemAdjustments
                                        };
         }
 
@@ -92,17 +93,6 @@
             var updateSummary = new UpdateSummary(this.updateCount, ecosystemHistory, this.EcosystemData.OrganismCoordinatePairs());
             this.updateCount++;
             return updateSummary;
-        }
-
-        private void RefreshOrganismIntentions()
-        {
-            var aliveOrganismCoordinates = this.EcosystemData.AliveOrganismCoordinates();
-            foreach (var aliveOrganismCoordinate in aliveOrganismCoordinates)
-            {
-                var organism = this.EcosystemData.GetOrganism(aliveOrganismCoordinate);
-                var environment = this.EcosystemData.GetEnvironment(aliveOrganismCoordinate);
-                organism.RefreshIntention(environment);
-            }
         }
 
         private void PerformEnvironmentInteractions()
@@ -118,7 +108,7 @@
                 }
             }
 
-            this.RefreshOrganismIntentions();
+            this.EcosystemData.RefreshOrganismIntentions();
 
             foreach (var aliveOrganismCoordinate in aliveOrganismCoordinates)
             {
@@ -134,6 +124,7 @@
 
         private void PerformMovementsActions()
         {
+            // TODO: some kind of OrganismMovementProcessor?
             var desiredOrganismCoordinates = EcosystemLogic.GetDesiredCoordinates(this.EcosystemData);
             var movedOrganismCoordinates = EcosystemLogic.ResolveOrganismHabitats(this.EcosystemData, desiredOrganismCoordinates, new List<IOrganism>(), this);
 
@@ -149,7 +140,7 @@
             var obstructedCoordinates = desiredOrganismCoordinates.Values.Where(coordinate => this.EcosystemData.HasLevel(coordinate, EnvironmentMeasure.Obstruction));
             foreach (var obstructedCoordinate in obstructedCoordinates)
             {
-                this.EcosystemData.DecreaseLevel(obstructedCoordinate, EnvironmentMeasure.Obstruction, this.ObstructionDemolishRate);
+                this.EcosystemData.AdjustLevel(obstructedCoordinate, EnvironmentMeasure.Obstruction, -this.ObstructionDemolishRate);
             }
 
             var soundSourceCoordinates = this.EcosystemData.EmittingSoundOrganismCoordinates();
@@ -161,11 +152,11 @@
 
         private void PerformOrganismInteractions()
         {
-            this.RefreshOrganismIntentions();
+            this.EcosystemData.RefreshOrganismIntentions();
             this.NourishNeighbours();
         }
 
-        private void PerformEcosystemModifiers()
+        private void PerformEcosystemAdjustments()
         {
             this.DecreasePheromoneLevel();
             this.IncreaseNutrientLevels();
@@ -182,10 +173,9 @@
             }
         }
 
+        // TODO: some kind of OrganismInteractionProcessor?
         private void NourishNeighbours()
         {
-            var alteredEnvironmentCoordinates = new List<Coordinate>();
-
             foreach (var organismCoordinate in this.EcosystemData.OrganismCoordinates(Intention.Nourish))
             {
                 var neighboursRequestingNutrient = this.GetNeighboursRequestingNutrient(organismCoordinate);
@@ -197,17 +187,14 @@
                     var desiredNutrient = 1 - this.EcosystemData.GetLevel(nourishedOrganismCoordinate, OrganismMeasure.Health);
                     var availableNutrient = this.EcosystemData.GetLevel(organismCoordinate, OrganismMeasure.Inventory);
                     var givenNutrient = Math.Min(desiredNutrient, availableNutrient);
-                    this.EcosystemData.DecreaseLevel(organismCoordinate, OrganismMeasure.Inventory, givenNutrient);
-                    this.EcosystemData.IncreaseLevel(nourishedOrganismCoordinate, OrganismMeasure.Health, givenNutrient);
+                    this.EcosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, -givenNutrient);
+                    this.EcosystemData.AdjustLevel(nourishedOrganismCoordinate, OrganismMeasure.Health, givenNutrient);
                         
-                    alteredEnvironmentCoordinates.Add(nourishedOrganismCoordinate);
                     if (!nourishedOrganism.NeedsAssistance)
                     {
                         this.EnvironmentMeasureDistributor.RemoveDistribution(nourishedOrganismCoordinate, EnvironmentMeasure.Sound);
                     }
                 }
-
-                alteredEnvironmentCoordinates.Add(organismCoordinate);
             }
         }
 
@@ -223,20 +210,13 @@
         {
             var pheromoneCoordinates = this.EcosystemData.AllCoordinates()
                 .Where(coordinate => this.EcosystemData.HasLevel(coordinate, EnvironmentMeasure.Pheromone)).ToList();
-
-            foreach (var pheromoneCoordinate in pheromoneCoordinates)
-            {
-                this.EcosystemData.DecreaseLevel(pheromoneCoordinate, EnvironmentMeasure.Pheromone, this.PheromoneFadeRate);
-            }
+            this.EcosystemData.AdjustLevels(pheromoneCoordinates, EnvironmentMeasure.Pheromone, -this.PheromoneFadeRate);
         }
 
         private void IncreasePheromoneLevels()
         {
             var organismCoordinates = this.EcosystemData.DepositingPheromoneOrganismCoordinates().ToList();
-            foreach (var organismCoordinate in organismCoordinates)
-            {
-                this.EcosystemData.IncreaseLevel(organismCoordinate, EnvironmentMeasure.Pheromone, this.PheromoneDepositRate);
-            }
+            this.EcosystemData.AdjustLevels(organismCoordinates, EnvironmentMeasure.Pheromone, this.PheromoneDepositRate);
         }
 
         private void IncreaseMineralLevels()
@@ -245,11 +225,7 @@
             // TODO: need a "HasDecomposed" bool - this could stop showing organism and stop mineral form
             var organismCoordinates = this.EcosystemData.OrganismCoordinates()
                 .Where(coordinate => !this.EcosystemData.IsHarmful(coordinate)).ToList();
-
-            foreach (var organismCoordinate in organismCoordinates)
-            {
-                this.EcosystemData.IncreaseLevel(organismCoordinate, EnvironmentMeasure.Mineral, this.MineralFormRate);
-            }
+            this.EcosystemData.AdjustLevels(organismCoordinates, EnvironmentMeasure.Mineral, this.MineralFormRate);
         }
 
         private void IncreaseNutrientLevels()
@@ -257,20 +233,13 @@
             var nutrientCoordinates = this.EcosystemData.AllCoordinates()
                 .Where(coordinate => this.EcosystemData.HasLevel(coordinate, EnvironmentMeasure.Nutrient) 
                                      && !this.EcosystemData.IsHarmful(coordinate)).ToList();
-
-            foreach (var nutrientCoordinate in nutrientCoordinates)
-            {
-                this.EcosystemData.IncreaseLevel(nutrientCoordinate, EnvironmentMeasure.Nutrient, this.NutrientGrowthRate);
-            }
+            this.EcosystemData.AdjustLevels(nutrientCoordinates, EnvironmentMeasure.Nutrient, this.NutrientGrowthRate);
         }
 
         private void DecreaseOrganismHealth()
         {
             var organismCoordinates = this.EcosystemData.AliveOrganismCoordinates().ToList();
-            foreach (var organismCoordinate in organismCoordinates)
-            {
-                this.EcosystemData.DecreaseLevel(organismCoordinate, OrganismMeasure.Health, this.HealthDeteriorationRate);
-            }
+            this.EcosystemData.AdjustLevels(organismCoordinates, OrganismMeasure.Health, -this.HealthDeteriorationRate);
         }
 
         private void ProgressWeatherAndHazards()

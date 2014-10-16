@@ -16,7 +16,6 @@
         private Habitat[,] Habitats { get; set; }
         private Dictionary<Organism, Habitat> OrganismHabitats { get; set; }
         private Dictionary<Habitat, Coordinate> HabitatCoordinates { get; set; }
-        private Dictionary<EnvironmentMeasure, List<Coordinate>> HazardSourceCoordinates { get; set; }
         private IEcosystemHistoryPusher EcosystemHistoryPusher { get; set; }
 
         public int Width
@@ -40,7 +39,6 @@
             this.Habitats = habitats;
             this.HabitatCoordinates = new Dictionary<Habitat, Coordinate>();
             this.OrganismHabitats = new Dictionary<Organism, Habitat>();
-            this.HazardSourceCoordinates = new Dictionary<EnvironmentMeasure, List<Coordinate>>();
             this.EcosystemHistoryPusher = ecosystemHistory;
 
             for (var i = 0; i < this.Width; i++)
@@ -54,11 +52,6 @@
             foreach (var organismCoordinate in organismCoordinates)
             {
                 this.AddOrganism(organismCoordinate.Key, organismCoordinate.Value);
-            }
-
-            foreach (var environmentMeasure in EnvironmentMeasure.HazardousMeasures())
-            {
-                this.HazardSourceCoordinates.Add(environmentMeasure, new List<Coordinate>());
             }
         }
 
@@ -92,11 +85,6 @@
             return this.OrganismHabitats.Keys.Where(organism => !organism.IsAlive).Select(this.CoordinateOf);
         }
 
-        public IEnumerable<Coordinate> MoveableOrganismCoordinates()
-        {
-            return this.OrganismHabitats.Keys.Where(organism => !organism.Intention.Equals(Intention.Reproduce)).Select(this.CoordinateOf);
-        }
-
         public IEnumerable<Coordinate> DepositingPheromoneOrganismCoordinates()
         {
             return this.OrganismHabitats.Keys.Where(organism => organism.IsDepositingPheromone).Select(this.CoordinateOf);
@@ -105,11 +93,6 @@
         public IEnumerable<Coordinate> EmittingSoundOrganismCoordinates()
         {
             return this.OrganismHabitats.Keys.Where(organism => organism.Intention.Equals(Intention.Reproduce) && organism.NeedsAssistance).Select(this.CoordinateOf);
-        }
-
-        public IEnumerable<Coordinate> GetHazardSourceCoordinates(EnvironmentMeasure hazardMeasure)
-        {
-            return this.HazardSourceCoordinates[hazardMeasure].ToList();
         }
 
         public bool HasLevel(Coordinate coordinate, EnvironmentMeasure measure)
@@ -146,72 +129,39 @@
             this.RecordHistory(coordinate, measure, previousLevel, updatedLevel);
         }
 
-        public void IncreaseLevel(Coordinate coordinate, EnvironmentMeasure measure, double increment)
+        public void AdjustLevel(Coordinate coordinate, EnvironmentMeasure measure, double adjustment)
         {
             var previousLevel = this.GetLevel(coordinate, measure);
-            var updatedLevel = this.HabitatAt(coordinate).IncreaseLevel(measure, increment);
+            var updatedLevel = this.HabitatAt(coordinate).AdjustLevel(measure, adjustment);
             this.RecordHistory(coordinate, measure, previousLevel, updatedLevel);
         }
 
-        public void IncreaseLevel(Coordinate coordinate, OrganismMeasure measure, double increment)
+        public void AdjustLevel(Coordinate coordinate, OrganismMeasure measure, double adjustment)
         {
             var previousLevel = this.GetLevel(coordinate, measure);
-            var updatedLevel = this.HabitatAt(coordinate).IncreaseLevel(measure, increment);
+            var updatedLevel = this.HabitatAt(coordinate).AdjustLevel(measure, adjustment);
             this.RecordHistory(coordinate, measure, previousLevel, updatedLevel);
         }
 
-        public void DecreaseLevel(Coordinate coordinate, EnvironmentMeasure measure, double decrement)
+        public void AdjustLevels(IEnumerable<Coordinate> coordinates, EnvironmentMeasure measure, double adjustment)
         {
-            var previousLevel = this.GetLevel(coordinate, measure);
-            var updatedLevel = this.HabitatAt(coordinate).DecreaseLevel(measure, decrement);
-            this.RecordHistory(coordinate, measure, previousLevel, updatedLevel);
+            foreach (var coordinate in coordinates)
+            {
+                this.AdjustLevel(coordinate, measure, adjustment);
+            }
         }
 
-        public void DecreaseLevel(Coordinate coordinate, OrganismMeasure measure, double decrement)
+        public void AdjustLevels(IEnumerable<Coordinate> coordinates, OrganismMeasure measure, double adjustment)
         {
-            var previousLevel = this.GetLevel(coordinate, measure);
-            var updatedLevel = this.HabitatAt(coordinate).DecreaseLevel(measure, decrement);
-            this.RecordHistory(coordinate, measure, previousLevel, updatedLevel);
+            foreach (var coordinate in coordinates)
+            {
+                this.AdjustLevel(coordinate, measure, adjustment);
+            }
         }
 
         private void RecordHistory(Coordinate coordinate, IMeasure measure, double previousLevel, double updatedLevel)
         {
             this.EcosystemHistoryPusher.Push(new EcosystemModification(coordinate, measure, previousLevel, updatedLevel));
-        }
-
-        // TODO: can this be used?
-        //private void CheckHazardStatus(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
-        //{
-        //    if (!environmentMeasure.IsHazardous)
-        //    {
-        //        return;
-        //    }
-
-        //    var hazardLevel = this.GetLevel(coordinate, environmentMeasure);
-        //    if (hazardLevel.Equals(1.0))
-        //    {
-        //        this.InsertHazardSource(environmentMeasure, coordinate);
-        //    }
-        //    else
-        //    {
-        //        this.RemoveHazardSource(environmentMeasure, coordinate);
-        //    }
-        //}
-
-        public void InsertHazardSource(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
-        {
-            if (!this.HazardSourceCoordinates[environmentMeasure].Contains(coordinate))
-            {
-                this.HazardSourceCoordinates[environmentMeasure].Add(coordinate);
-            }
-        }
-
-        public void RemoveHazardSource(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
-        {
-            if (this.HazardSourceCoordinates[environmentMeasure].Contains(coordinate))
-            {
-                this.HazardSourceCoordinates[environmentMeasure].Remove(coordinate);
-            }
         }
 
         public bool IsHarmful(Coordinate coordinate)
@@ -314,6 +264,17 @@
         private Coordinate CoordinateOf(Organism organism)
         {
             return this.CoordinateOf(this.OrganismHabitats[organism]);
+        }
+
+        public void RefreshOrganismIntentions()
+        {
+            var aliveOrganismCoordinates = this.AliveOrganismCoordinates();
+            foreach (var aliveOrganismCoordinate in aliveOrganismCoordinates)
+            {
+                var organism = this.GetOrganism(aliveOrganismCoordinate);
+                var environment = this.GetEnvironment(aliveOrganismCoordinate);
+                organism.RefreshIntention(environment);
+            }
         }
     }
 }

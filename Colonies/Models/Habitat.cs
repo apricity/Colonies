@@ -71,24 +71,14 @@
             return this.organism.SetLevel(measure, level);
         }
 
-        public double IncreaseLevel(EnvironmentMeasure measure, double increment)
+        public double AdjustLevel(EnvironmentMeasure measure, double adjustment)
         {
-            return this.environment.IncreaseLevel(measure, increment);
+            return this.environment.AdjustLevel(measure, adjustment);
         }
 
-        public double IncreaseLevel(OrganismMeasure measure, double increment)
+        public double AdjustLevel(OrganismMeasure measure, double adjustment)
         {
-            return this.organism.IncreaseLevel(measure, increment);
-        }
-
-        public double DecreaseLevel(EnvironmentMeasure measure, double decrement)
-        {
-            return this.environment.DecreaseLevel(measure, decrement);
-        }
-
-        public double DecreaseLevel(OrganismMeasure measure, double decrement)
-        {
-            return this.organism.DecreaseLevel(measure, decrement);
+            return this.organism.AdjustLevel(measure, adjustment);
         }
 
         public override String ToString()

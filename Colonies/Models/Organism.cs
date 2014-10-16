@@ -99,14 +99,9 @@
            return this.measurementData.SetLevel(measure, level);
         }
 
-        public double IncreaseLevel(OrganismMeasure measure, double increment)
+        public double AdjustLevel(OrganismMeasure measure, double adjustment)
         {
-            return this.measurementData.IncreaseLevel(measure, increment);
-        }
-
-        public double DecreaseLevel(OrganismMeasure measure, double decrement)
-        {
-            return this.measurementData.DecreaseLevel(measure, decrement);
+            return this.measurementData.AdjustLevel(measure, adjustment);
         }
 
         public override string ToString()

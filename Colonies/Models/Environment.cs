@@ -49,14 +49,9 @@
             return this.measurementData.SetLevel(measure, level);
         }
 
-        public double IncreaseLevel(EnvironmentMeasure measure, double increment)
+        public double AdjustLevel(EnvironmentMeasure measure, double adjustment)
         {
-            return this.measurementData.IncreaseLevel(measure, increment);
-        }
-
-        public double DecreaseLevel(EnvironmentMeasure measure, double decrement)
-        {
-            return this.measurementData.DecreaseLevel(measure, decrement);
+            return this.measurementData.AdjustLevel(measure, adjustment);
         }
         
         public override string ToString()

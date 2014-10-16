@@ -22,21 +22,11 @@
             return this.Level;
         }
 
-        public double IncreaseLevel(double increment)
-        {
-            return this.ChangeLevel(increment);
-        }
-
-        public double DecreaseLevel(double decrement)
-        {
-            return this.ChangeLevel(-decrement);
-        }
-
-        private double ChangeLevel(double value)
+        public double AdjustLevel(double adjustment)
         {
             // rounding is used to counteract some of the floating point arithmetic loss of precision
             var previousLevel = this.Level;
-            this.Level = Math.Round(previousLevel + value, 4);
+            this.Level = Math.Round(previousLevel + adjustment, 4);
             this.EnsureLevelWithinLimit();
             return this.Level;
         }

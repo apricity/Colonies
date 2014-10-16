@@ -14,6 +14,7 @@
     using Wacton.Colonies.Models.Interfaces;
     using Wacton.Colonies.ViewModels.Infrastructure;
 
+    // TODO: stop breaking the law of demeter so badly :(
     public class MainViewModel : ViewModelBase<IMain>
     {
         // if the timer interval is too small, the model update won't have finished
@@ -91,11 +92,11 @@
         {
             get
             {
-                return 1 / this.DomainModel.Ecosystem.HealthDeteriorationRate;
+                return 1 / this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[OrganismMeasure.Health];
             }
             set
             {
-                this.DomainModel.Ecosystem.HealthDeteriorationRate = 1 / value;
+                this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[OrganismMeasure.Health] = 1 / value;
                 this.OnPropertyChanged("HealthDeteriorationDemoninator");
             }
         }
@@ -104,11 +105,11 @@
         {
             get
             {
-                return 1 / this.DomainModel.Ecosystem.PheromoneDepositRate;
+                return 1 / this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Pheromone];
             }
             set
             {
-                this.DomainModel.Ecosystem.PheromoneDepositRate = 1 / value;
+                this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Pheromone] = 1 / value;
                 this.OnPropertyChanged("PheromoneDepositDemoninator");
             }
         }
@@ -117,11 +118,11 @@
         {
             get
             {
-                return 1 / this.DomainModel.Ecosystem.PheromoneFadeRate;
+                return 1 / this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[EnvironmentMeasure.Pheromone];
             }
             set
             {
-                this.DomainModel.Ecosystem.PheromoneFadeRate = 1 / value;
+                this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[EnvironmentMeasure.Pheromone] = 1 / value;
                 this.OnPropertyChanged("PheromoneFadeDemoninator");
             }
         }
@@ -130,11 +131,11 @@
         {
             get
             {
-                return 1 / this.DomainModel.Ecosystem.NutrientGrowthRate;
+                return 1 / this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Nutrient];
             }
             set
             {
-                this.DomainModel.Ecosystem.NutrientGrowthRate = 1 / value;
+                this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Nutrient] = 1 / value;
                 this.OnPropertyChanged("NutrientGrowthRate");
             }
         }
@@ -143,11 +144,11 @@
         {
             get
             {
-                return 1 / this.DomainModel.Ecosystem.MineralFormRate;
+                return 1 / this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Nutrient];
             }
             set
             {
-                this.DomainModel.Ecosystem.MineralFormRate = 1 / value;
+                this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Nutrient] = 1 / value;
                 this.OnPropertyChanged("MineralFormRate");
             }
         }
@@ -156,11 +157,11 @@
         {
             get
             {
-                return 1 / this.DomainModel.Ecosystem.ObstructionDemolishRate;
+                return 1 / this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[EnvironmentMeasure.Obstruction];
             }
             set
             {
-                this.DomainModel.Ecosystem.ObstructionDemolishRate = 1 / value;
+                this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[EnvironmentMeasure.Obstruction] = 1 / value;
                 this.OnPropertyChanged("ObstructionDemolishRate");
             }
         }
@@ -170,13 +171,13 @@
         {
             get
             {
-                return 1 / this.DomainModel.Ecosystem.GetHazardRate(EnvironmentMeasure.Damp).SpreadRate;
+                return 1 / this.DomainModel.Ecosystem.EcosystemRates.HazardRates[EnvironmentMeasure.Damp].SpreadRate;
             }
             set
             {
-                var currentHazardRate = this.DomainModel.Ecosystem.GetHazardRate(EnvironmentMeasure.Damp);
+                var currentHazardRate = this.DomainModel.Ecosystem.EcosystemRates.HazardRates[EnvironmentMeasure.Damp];
                 var updatedHazardRate = new HazardRate(currentHazardRate.AddRate, 1 / value, currentHazardRate.RemoveRate);
-                this.DomainModel.Ecosystem.SetHazardRate(EnvironmentMeasure.Damp, updatedHazardRate);
+                this.DomainModel.Ecosystem.EcosystemRates.HazardRates[EnvironmentMeasure.Damp] = updatedHazardRate;
                 this.OnPropertyChanged("DampSpreadDenominator");
             }
         }

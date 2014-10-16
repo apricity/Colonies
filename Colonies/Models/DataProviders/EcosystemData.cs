@@ -87,12 +87,12 @@
 
         public IEnumerable<Coordinate> DepositingPheromoneOrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => organism.IsDepositingPheromone).Select(this.CoordinateOf);
+            return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsDepositingPheromone).Select(this.CoordinateOf);
         }
 
-        public IEnumerable<Coordinate> EmittingSoundOrganismCoordinates()
+        public IEnumerable<Coordinate> NeedingAssistanceOrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => organism.Intention.Equals(Intention.Reproduce) && organism.NeedsAssistance).Select(this.CoordinateOf);
+            return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive && organism.NeedsAssistance).Select(this.CoordinateOf);
         }
 
         public bool HasLevel(Coordinate coordinate, EnvironmentMeasure measure)

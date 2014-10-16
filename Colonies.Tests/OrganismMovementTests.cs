@@ -353,7 +353,14 @@
 
             var ecosystemHistory = new EcosystemHistory();
             var ecosystemData = new EcosystemData(this.habitats, organismCoordinates, ecosystemHistory);
-            var ecosystem = new Ecosystem(ecosystemData, ecosystemHistory, new Weather(), new EnvironmentMeasureDistributor(ecosystemData), new OrganismEnvironmentProcessor(ecosystemData));
+            var ecosystemRates = new EcosystemRates();
+            var weather = new Weather();
+            var environmentMeasureDistributor = new EnvironmentMeasureDistributor(ecosystemData);
+            var environmentInteraction = new EnvironmentInteraction(ecosystemData, environmentMeasureDistributor);
+            var organismMovement = new OrganismMovement(ecosystemData, ecosystemRates, environmentMeasureDistributor);
+            var organismInteraction = new OrganismInteraction(ecosystemData, environmentMeasureDistributor);
+            var ecosystemAdjustment = new EcosystemAdjustment(ecosystemData, ecosystemRates, environmentMeasureDistributor, weather);
+            var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, environmentMeasureDistributor, environmentInteraction, organismMovement, organismInteraction, ecosystemAdjustment);
 
             var environmentInteractionUpdateSummary = ecosystem.UpdateOneStage();
             var movementUpdateSummary = ecosystem.UpdateOneStage();

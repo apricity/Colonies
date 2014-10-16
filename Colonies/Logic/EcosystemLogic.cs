@@ -50,7 +50,7 @@
             return desiredOrganismCoordinates;
         }
 
-        public static Dictionary<IOrganism, Coordinate> ResolveOrganismHabitats(EcosystemData ecosystemData, Dictionary<IOrganism, Coordinate> desiredOrganismCoordinates, IEnumerable<IOrganism> alreadyResolvedOrganisms, IEcosystem biasedEcosystem)
+        public static Dictionary<IOrganism, Coordinate> ResolveOrganismHabitats(EcosystemData ecosystemData, Dictionary<IOrganism, Coordinate> desiredOrganismCoordinates, IEnumerable<IOrganism> alreadyResolvedOrganisms, IBiased<OrganismMeasure> organismBias)
         {
             var resolvedOrganismCoordinates = new Dictionary<IOrganism, Coordinate>();
 
@@ -90,7 +90,7 @@
                 IOrganism organismToMove;
                 if (conflictingOrganisms.Count > 1)
                 {
-                    organismToMove = DecideOrganism(biasedEcosystem, conflictingOrganisms);
+                    organismToMove = DecideOrganism(organismBias, conflictingOrganisms);
                     conflictingOrganisms.Remove(organismToMove);
 
                     // the remaining conflicting organisms cannot move, so reset their intended destinations
@@ -112,7 +112,7 @@
             // need to recursively call resolve organism destinations with the knowledge of what has been resolved so far
             // so those resolved can be taken into consideration when calculating which destinations are now vacant
             var resolvedOrganisms = resolvedOrganismCoordinates.Keys.ToList();
-            var trailingOrganismHabitats = ResolveOrganismHabitats(ecosystemData, desiredOrganismCoordinates, resolvedOrganisms, biasedEcosystem);
+            var trailingOrganismHabitats = ResolveOrganismHabitats(ecosystemData, desiredOrganismCoordinates, resolvedOrganisms, organismBias);
             foreach (var trailingOrganismHabitat in trailingOrganismHabitats)
             {
                 resolvedOrganismCoordinates.Add(trailingOrganismHabitat.Key, trailingOrganismHabitat.Value);
@@ -121,7 +121,7 @@
             return resolvedOrganismCoordinates;
         }
 
-        private static IOrganism DecideOrganism(IEcosystem biasProvider, IEnumerable<IOrganism> organisms)
+        private static IOrganism DecideOrganism(IBiased<OrganismMeasure> biasProvider, IEnumerable<IOrganism> organisms)
         {
             if (OverrideDecideOrganismFunction != null)
             {

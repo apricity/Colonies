@@ -5,25 +5,56 @@
 
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
+    using Wacton.Colonies.Models.Interfaces;
 
-    public class OrganismEnvironmentProcessor
+    public class EnvironmentInteraction : IEcosystemStage
     {
         private readonly EcosystemData ecosystemData;
+        private readonly EnvironmentMeasureDistributor environmentMeasureDistributor;
 
-        public OrganismEnvironmentProcessor(EcosystemData ecosystemData)
+        public EnvironmentInteraction(EcosystemData ecosystemData, EnvironmentMeasureDistributor environmentMeasureDistributor)
         {
             this.ecosystemData = ecosystemData;
+            this.environmentMeasureDistributor = environmentMeasureDistributor;
         }
 
-        public void Process(Coordinate organismCoordinate)
+        public void Execute()
         {
-            this.ProcessInventoryNutrient(organismCoordinate);
-            this.ProcessEnvironmentNutrient(organismCoordinate);
-            this.ProcessEnvironmentMineral(organismCoordinate);
-            this.ProcessEnvironmentHazards(organismCoordinate);
+            // remove sound distribution before refreshing intentions, insert them again afterwards if still need assistance
+            this.RemoveSoundDistribution();
+            this.ecosystemData.RefreshOrganismIntentions();
+            this.PerformInteractions();
+            this.InsertSoundDistribution();
         }
 
-        private void ProcessInventoryNutrient(Coordinate organismCoordinate)
+        private void RemoveSoundDistribution()
+        {
+            foreach (var organismCoordinate in this.ecosystemData.NeedingAssistanceOrganismCoordinates())
+            {
+                this.environmentMeasureDistributor.RemoveDistribution(organismCoordinate, EnvironmentMeasure.Sound);
+            }
+        }
+
+        private void InsertSoundDistribution()
+        {
+            foreach (var organismCoordinate in this.ecosystemData.NeedingAssistanceOrganismCoordinates())
+            {
+                this.environmentMeasureDistributor.InsertDistribution(organismCoordinate, EnvironmentMeasure.Sound);
+            }
+        }
+
+        private void PerformInteractions()
+        {
+            foreach (var organismCoordinate in this.ecosystemData.AliveOrganismCoordinates())
+            {
+                this.InventoryNutrientInteraction(organismCoordinate);
+                this.EnvironmentNutrientInteraction(organismCoordinate);
+                this.EnvironmentMineralInteraction(organismCoordinate);
+                this.EnvironmentHazardInteraction(organismCoordinate);
+            }
+        }
+
+        private void InventoryNutrientInteraction(Coordinate organismCoordinate)
         {
             var organism = this.ecosystemData.GetOrganism(organismCoordinate);
             if (!organism.Intention.Equals(Intention.Eat) || !organism.Inventory.Equals(Inventory.Nutrient))
@@ -39,7 +70,7 @@
             this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, -inventoryNutrientTaken);
         }
 
-        private void ProcessEnvironmentNutrient(Coordinate organismCoordinate)
+        private void EnvironmentNutrientInteraction(Coordinate organismCoordinate)
         {
             var organism = this.ecosystemData.GetOrganism(organismCoordinate);
             var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
@@ -66,7 +97,7 @@
             }
         }
 
-        private void ProcessEnvironmentMineral(Coordinate organismCoordinate)
+        private void EnvironmentMineralInteraction(Coordinate organismCoordinate)
         {
             var organism = this.ecosystemData.GetOrganism(organismCoordinate);
             var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
@@ -95,7 +126,7 @@
             }
         }
 
-        private void ProcessEnvironmentHazards(Coordinate organismCoordinate)
+        private void EnvironmentHazardInteraction(Coordinate organismCoordinate)
         {
             var organism = this.ecosystemData.GetOrganism(organismCoordinate);
             var environment = this.ecosystemData.GetEnvironment(organismCoordinate);

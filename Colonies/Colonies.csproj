@@ -88,6 +88,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataTypes\EcosystemRates.cs" />
     <Compile Include="DataTypes\EcosystemRelocation.cs" />
     <Compile Include="DataTypes\EcosystemModification.cs" />
     <Compile Include="DataTypes\Enums\Intention.cs" />
@@ -107,11 +108,15 @@
     <Compile Include="Converters\DoubleToHealthBrushConverter.cs" />
     <Compile Include="DataTypes\Coordinate.cs" />
     <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
+    <Compile Include="Models\DataProviders\EcosystemAdjustment.cs" />
+    <Compile Include="Models\DataProviders\OrganismInteraction.cs" />
+    <Compile Include="Models\DataProviders\OrganismMovement.cs" />
     <Compile Include="Models\DataProviders\EcosystemHistory.cs" />
-    <Compile Include="Models\DataProviders\OrganismEnvironmentProcessor.cs" />
+    <Compile Include="Models\DataProviders\EnvironmentInteraction.cs" />
     <Compile Include="Models\Interfaces\IEcosystemHistory.cs" />
     <Compile Include="Models\Interfaces\IEcosystemHistoryPusher.cs" />
     <Compile Include="Models\Interfaces\IEcosystemHistoryPuller.cs" />
+    <Compile Include="Models\Interfaces\IEcosystemStage.cs" />
     <Compile Include="Models\Queen.cs" />
     <Compile Include="Models\Defender.cs" />
     <Compile Include="Models\DataProviders\EnvironmentMeasureDistributor.cs" />

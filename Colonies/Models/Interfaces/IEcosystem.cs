@@ -1,33 +1,18 @@
 ﻿namespace Wacton.Colonies.Models.Interfaces
 {
     using Wacton.Colonies.DataTypes;
-    using Wacton.Colonies.DataTypes.Enums;
 
-    public interface IEcosystem : IBiased<OrganismMeasure>
+    public interface IEcosystem
     {
         int Width { get; }
 
         int Height { get; }
 
-        double HealthDeteriorationRate { get; set; }
-
-        double PheromoneDepositRate { get; set; }
-
-        double PheromoneFadeRate { get; set; }
-
-        double NutrientGrowthRate { get; set; }
-
-        double MineralFormRate { get; set; }
-
-        double ObstructionDemolishRate { get; set; }
+        EcosystemRates EcosystemRates { get; }
 
         IWeather Weather { get; }
 
         int UpdateStages { get; }
-
-        HazardRate GetHazardRate(EnvironmentMeasure environmentMeasure);
-
-        void SetHazardRate(EnvironmentMeasure environmentMeasure, HazardRate hazardChance);
 
         UpdateSummary UpdateOneStage();
     }

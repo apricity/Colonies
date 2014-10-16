@@ -67,14 +67,18 @@
             var initialOrganismCoordinates = this.InitialOrganismCoordinates();
             var ecosystemHistory = new EcosystemHistory();
             var ecosystemData = new EcosystemData(habitats, initialOrganismCoordinates, ecosystemHistory);
+            var ecosystemRates = new EcosystemRates();
             var weather = new Weather();
             var environmentMeasureDistributor = new EnvironmentMeasureDistributor(ecosystemData);
-            var organismEnvironmentProcessor = new OrganismEnvironmentProcessor(ecosystemData);
-            var ecosystem = new Ecosystem(ecosystemData, ecosystemHistory, weather, environmentMeasureDistributor, organismEnvironmentProcessor);
+            var environmentInteraction = new EnvironmentInteraction(ecosystemData, environmentMeasureDistributor);
+            var organismMovement = new OrganismMovement(ecosystemData, ecosystemRates, environmentMeasureDistributor);
+            var organismInteraction = new OrganismInteraction(ecosystemData, environmentMeasureDistributor);
+            var ecosystemAdjustment = new EcosystemAdjustment(ecosystemData, ecosystemRates, environmentMeasureDistributor, weather);
+            var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, environmentMeasureDistributor, environmentInteraction, organismMovement, organismInteraction, ecosystemAdjustment);
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
-            foreach (var organismCoordinate in ecosystemData.EmittingSoundOrganismCoordinates())
+            foreach (var organismCoordinate in ecosystemData.NeedingAssistanceOrganismCoordinates())
             {
                 ecosystem.EnvironmentMeasureDistributor.InsertDistribution(organismCoordinate, EnvironmentMeasure.Sound);
             }

@@ -71,6 +71,7 @@
             }
         }
 
+        // TODO: review this closely - recently saw a damp of 0.4 with no source next to it...
         public void RemoveDistribution(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
         {
             var diameter = this.EnvironmentMeasureDiameters[environmentMeasure];

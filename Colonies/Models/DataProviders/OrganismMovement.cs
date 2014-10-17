@@ -1,5 +1,6 @@
 ﻿namespace Wacton.Colonies.Models.DataProviders
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -16,6 +17,9 @@
 
         public Dictionary<OrganismMeasure, double> MeasureBiases { get; private set; }
 
+        public Dictionary<IOrganism, Coordinate> OverrideDesiredOrganismCoordinates { get; set; }
+        public Func<IEnumerable<IOrganism>, IOrganism> OverrideDecideOrganismFunction { get; set; } 
+
         public OrganismMovement(EcosystemData ecosystemData, EcosystemRates ecosystemRates, EnvironmentMeasureDistributor environmentMeasureDistributor)
         {
             this.ecosystemData = ecosystemData;
@@ -31,9 +35,8 @@
 
         public void Execute()
         {
-            // TODO: pull movement logic into this class, break up ecosystem logic
-            var desiredOrganismCoordinates = EcosystemLogic.GetDesiredCoordinates(this.ecosystemData);
-            var movedOrganismCoordinates = EcosystemLogic.ResolveOrganismHabitats(this.ecosystemData, desiredOrganismCoordinates, new List<IOrganism>(), this);
+            var desiredOrganismCoordinates = this.GetDesiredCoordinates();
+            var movedOrganismCoordinates = this.ResolveOrganismHabitats(desiredOrganismCoordinates, new List<IOrganism>());
 
             this.IncreasePheromoneLevels();
             this.IncreaseMineralLevels();
@@ -48,6 +51,123 @@
             this.ecosystemData.AdjustLevels(obstructedCoordinates, EnvironmentMeasure.Obstruction, -this.ecosystemRates.DecreasingRates[EnvironmentMeasure.Obstruction]);
 
             this.InsertSoundDistribution();
+        }
+
+        public Dictionary<IOrganism, Coordinate> GetDesiredCoordinates()
+        {
+            if (this.OverrideDesiredOrganismCoordinates != null)
+            {
+                return this.OverrideDesiredOrganismCoordinates;
+            }
+
+            var desiredOrganismCoordinates = new Dictionary<IOrganism, Coordinate>();
+            var aliveOrganismCoordinates = this.ecosystemData.AliveOrganismCoordinates().ToList();
+
+            foreach (var organismCoordinate in aliveOrganismCoordinates)
+            {
+                // remain stationary if organism is reproducing
+                var organism = this.ecosystemData.GetOrganism(organismCoordinate);
+                if (organism.Intention.Equals(Intention.Reproduce))
+                {
+                    desiredOrganismCoordinates.Add(organism, organismCoordinate);
+                    continue;
+                }
+
+                // get measurements of neighbouring environments
+                var neighbourCoordinates = this.ecosystemData.GetValidNeighbours(organismCoordinate, 1, false, true).ToList();
+
+                // determine organism's intentions based on the environment measurements
+                var measurableItems = neighbourCoordinates.Select(this.ecosystemData.GetEnvironment).ToList();
+                var biasProvider = this.ecosystemData.GetOrganism(organismCoordinate);
+                var chosenMeasurable = DecisionLogic.MakeDecision(measurableItems, biasProvider);
+
+                // get the habitat the environment is from - this is where the organism wants to move to
+                var chosenCoordinate = neighbourCoordinates.Single(coordinate => this.ecosystemData.GetEnvironment(coordinate).Equals(chosenMeasurable));
+                desiredOrganismCoordinates.Add(organism, chosenCoordinate);
+            }
+
+            return desiredOrganismCoordinates;
+        }
+
+        public Dictionary<IOrganism, Coordinate> ResolveOrganismHabitats(Dictionary<IOrganism, Coordinate> desiredOrganismCoordinates, IEnumerable<IOrganism> alreadyResolvedOrganisms)
+        {
+            var resolvedOrganismCoordinates = new Dictionary<IOrganism, Coordinate>();
+
+            // create a copy of the organism habitats because we don't want to modify the actual set
+            var organisms = this.ecosystemData.OrganismCoordinates().Select(this.ecosystemData.GetOrganism).ToList();
+
+            // remove organisms that have been resolved (from previous iterations)
+            // as they no longer need to be processed
+            foreach (var alreadyResolvedOrganism in alreadyResolvedOrganisms)
+            {
+                organisms.Remove(alreadyResolvedOrganism);
+            }
+
+            var occupiedCoordinates = organisms.Select(this.ecosystemData.CoordinateOf).ToList();
+            var desiredCoordinates = desiredOrganismCoordinates.Values;
+
+            // if there are no vacant habitats, this is our base case
+            // return an empty list - i.e. no organism can move to its intended destination
+            var vacantCoordinates = desiredCoordinates
+                .Except(occupiedCoordinates)
+                .Where(coordinate => !this.ecosystemData.HasLevel(coordinate, EnvironmentMeasure.Obstruction))
+                .Distinct().ToList();
+            if (vacantCoordinates.Count == 0)
+            {
+                return resolvedOrganismCoordinates;
+            }
+
+            foreach (var coordinate in vacantCoordinates)
+            {
+                // do not want LINQ expression to have foreach variable access, so copy to local variable
+                var vacantCoordinate = coordinate;
+                var conflictingOrganisms = desiredOrganismCoordinates
+                    .Where(intendedOrganismDestination => intendedOrganismDestination.Value.Equals(vacantCoordinate))
+                    .Select(intendedOrganismDestination => intendedOrganismDestination.Key)
+                    .ToList();
+
+                IOrganism organismToMove;
+                if (conflictingOrganisms.Count > 1)
+                {
+                    organismToMove = this.DecideOrganism(conflictingOrganisms);
+                    conflictingOrganisms.Remove(organismToMove);
+
+                    // the remaining conflicting organisms cannot move, so reset their intended destinations
+                    foreach (var remainingOrganism in conflictingOrganisms)
+                    {
+                        desiredOrganismCoordinates[remainingOrganism] = this.ecosystemData.CoordinateOf(remainingOrganism);
+                    }
+                }
+                else
+                {
+                    organismToMove = conflictingOrganisms.Single();
+                }
+
+                // intended movement becomes an actual, resolved movement
+                resolvedOrganismCoordinates.Add(organismToMove, desiredOrganismCoordinates[organismToMove]);
+                desiredOrganismCoordinates.Remove(organismToMove);
+            }
+
+            // need to recursively call resolve organism destinations with the knowledge of what has been resolved so far
+            // so those resolved can be taken into consideration when calculating which destinations are now vacant
+            var resolvedOrganisms = resolvedOrganismCoordinates.Keys.ToList();
+            var trailingOrganismHabitats = this.ResolveOrganismHabitats(desiredOrganismCoordinates, resolvedOrganisms);
+            foreach (var trailingOrganismHabitat in trailingOrganismHabitats)
+            {
+                resolvedOrganismCoordinates.Add(trailingOrganismHabitat.Key, trailingOrganismHabitat.Value);
+            }
+
+            return resolvedOrganismCoordinates;
+        }
+
+        private IOrganism DecideOrganism(IEnumerable<IOrganism> organisms)
+        {
+            if (this.OverrideDecideOrganismFunction != null)
+            {
+                return this.OverrideDecideOrganismFunction.Invoke(organisms);
+            }
+
+            return DecisionLogic.MakeDecision(organisms, this);
         }
 
         private void IncreasePheromoneLevels()

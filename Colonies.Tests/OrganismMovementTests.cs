@@ -70,10 +70,7 @@
                 organismCoordinate => organismCoordinate.Value);
 
             var updateSummary = this.CreateAndUpdateEcosystem(organismCoordinates, desiredOrganismCoordinates);
-
-            var expectedCoordinates = expectedOrganismCoordinates.Values.ToList();
-            var actualCoordinates = updateSummary.OrganismCoordinates;
-            Assert.AreEqual(actualCoordinates, expectedCoordinates);
+            Assert.AreEqual(updateSummary.OrganismCoordinates, expectedOrganismCoordinates);
         }
 
         [Test]
@@ -105,10 +102,7 @@
             expectedOrganismCoordinates[this.organismsById["B"]] = organismCoordinates[this.organismsById["B"]];
 
             var updateSummary = this.CreateAndUpdateEcosystem(organismCoordinates, desiredOrganismCoordinates);
-
-            var expectedCoordinates = expectedOrganismCoordinates.Values.ToList();
-            var actualCoordinates = updateSummary.OrganismCoordinates;
-            Assert.AreEqual(actualCoordinates, expectedCoordinates);
+            Assert.AreEqual(updateSummary.OrganismCoordinates, expectedOrganismCoordinates);
         }
 
         [Test]
@@ -147,10 +141,7 @@
             expectedOrganismCoordinates[this.organismsById["Z"]] = organismCoordinates[this.organismsById["Z"]];
 
             var updateSummary = this.CreateAndUpdateEcosystem(organismCoordinates, desiredOrganismCoordinates);
-
-            var expectedCoordinates = expectedOrganismCoordinates.Values.ToList();
-            var actualCoordinates = updateSummary.OrganismCoordinates;
-            Assert.AreEqual(actualCoordinates, expectedCoordinates);
+            Assert.AreEqual(updateSummary.OrganismCoordinates, expectedOrganismCoordinates);
         }
 
         [Test]
@@ -182,10 +173,7 @@
                 organismCoordinate => organismCoordinate.Value);
 
             var updateSummary = this.CreateAndUpdateEcosystem(organismCoordinates, desiredOrganismCoordinates);
-
-            var expectedCoordinates = expectedOrganismCoordinates.Values.ToList();
-            var actualCoordinates = updateSummary.OrganismCoordinates;
-            Assert.AreEqual(actualCoordinates, expectedCoordinates);
+            Assert.AreEqual(updateSummary.OrganismCoordinates, expectedOrganismCoordinates);
         }
 
         [Test]
@@ -226,10 +214,7 @@
                 organismCoordinate => organismCoordinate.Value);
 
             var updateSummary = this.CreateAndUpdateEcosystem(organismCoordinates, desiredOrganismCoordinates);
-
-            var expectedCoordinates = expectedOrganismCoordinates.Values.ToList();
-            var actualCoordinates = updateSummary.OrganismCoordinates;
-            Assert.AreEqual(actualCoordinates, expectedCoordinates);
+            Assert.AreEqual(updateSummary.OrganismCoordinates, expectedOrganismCoordinates);
         }
 
         [Test]
@@ -267,10 +252,7 @@
             expectedOrganismCoordinates[this.organismsById["D"]] = organismCoordinates[this.organismsById["D"]];
 
             var updateSummary = this.CreateAndUpdateEcosystem(organismCoordinates, desiredOrganismCoordinates);
-
-            var expectedCoordinates = expectedOrganismCoordinates.Values.ToList();
-            var actualCoordinates = updateSummary.OrganismCoordinates;
-            Assert.AreEqual(actualCoordinates, expectedCoordinates);
+            Assert.AreEqual(updateSummary.OrganismCoordinates, expectedOrganismCoordinates);
         }
 
         [Test]
@@ -321,10 +303,7 @@
             expectedOrganismCoordinates[this.organismsById["Y"]] = organismCoordinates[this.organismsById["Y"]];
 
             var updateSummary = this.CreateAndUpdateEcosystem(organismCoordinates, desiredOrganismCoordinates);
-
-            var expectedCoordinates = expectedOrganismCoordinates.Values.ToList();
-            var actualCoordinates = updateSummary.OrganismCoordinates;
-            Assert.AreEqual(actualCoordinates, expectedCoordinates);
+            Assert.AreEqual(updateSummary.OrganismCoordinates, expectedOrganismCoordinates);
         }
 
         private static Habitat[,] GenerateBaseHabitats(int width, int height)
@@ -348,9 +327,6 @@
                 desiredOrganismCoordinate => (IOrganism)desiredOrganismCoordinate.Key,
                 desiredOrganismCoordinate => desiredOrganismCoordinate.Value);
 
-            EcosystemLogic.OverrideDesiredOrganismCoordinates = desiredBiasedOrganismCoordinates;
-            EcosystemLogic.OverrideDecideOrganismFunction = organisms => organisms.First();
-
             var ecosystemHistory = new EcosystemHistory();
             var ecosystemData = new EcosystemData(this.habitats, organismCoordinates, ecosystemHistory);
             var ecosystemRates = new EcosystemRates();
@@ -361,6 +337,9 @@
             var organismInteraction = new OrganismInteraction(ecosystemData, environmentMeasureDistributor);
             var ecosystemAdjustment = new EcosystemAdjustment(ecosystemData, ecosystemRates, environmentMeasureDistributor, weather);
             var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, environmentMeasureDistributor, environmentInteraction, organismMovement, organismInteraction, ecosystemAdjustment);
+
+            organismMovement.OverrideDesiredOrganismCoordinates = desiredBiasedOrganismCoordinates;
+            organismMovement.OverrideDecideOrganismFunction = organisms => organisms.First();
 
             var environmentInteractionUpdateSummary = ecosystem.UpdateOneStage();
             var movementUpdateSummary = ecosystem.UpdateOneStage();

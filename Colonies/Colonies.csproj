@@ -108,6 +108,7 @@
     <Compile Include="Converters\DoubleToHealthBrushConverter.cs" />
     <Compile Include="DataTypes\Coordinate.cs" />
     <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
+    <Compile Include="Extensions\EcosystemDataExtensions.cs" />
     <Compile Include="Models\DataProviders\EcosystemAdjustment.cs" />
     <Compile Include="Models\DataProviders\OrganismInteraction.cs" />
     <Compile Include="Models\DataProviders\OrganismMovement.cs" />
@@ -140,7 +141,6 @@
     <Compile Include="Models\Interfaces\IBiased.cs" />
     <Compile Include="Models\Interfaces\IMeasurable.cs" />
     <Compile Include="DataTypes\MeasurementData.cs" />
-    <Compile Include="Logic\EcosystemLogic.cs" />
     <Compile Include="Utilities\RandomNumberGenerator.cs" />
     <Compile Include="Models\Ecosystem.cs" />
     <Compile Include="Models\DataProviders\EcosystemData.cs" />

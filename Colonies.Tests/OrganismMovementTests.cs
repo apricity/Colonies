@@ -8,9 +8,8 @@
 
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
-    using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models;
-    using Wacton.Colonies.Models.DataProviders;
+    using Wacton.Colonies.Models.DataAgents;
     using Wacton.Colonies.Models.Interfaces;
 
     [TestFixture]
@@ -336,7 +335,8 @@
             var organismMovement = new OrganismMovement(ecosystemData, ecosystemRates, environmentMeasureDistributor);
             var organismInteraction = new OrganismInteraction(ecosystemData, environmentMeasureDistributor);
             var ecosystemAdjustment = new EcosystemAdjustment(ecosystemData, ecosystemRates, environmentMeasureDistributor, weather);
-            var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, environmentMeasureDistributor, environmentInteraction, organismMovement, organismInteraction, ecosystemAdjustment);
+            var ecosystemStages = new EcosystemStages(new List<IEcosystemStage> { environmentInteraction, organismMovement, organismInteraction, ecosystemAdjustment });
+            var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, environmentMeasureDistributor, ecosystemStages);
 
             organismMovement.OverrideDesiredOrganismCoordinates = desiredBiasedOrganismCoordinates;
             organismMovement.OverrideDecideOrganismFunction = organisms => organisms.First();

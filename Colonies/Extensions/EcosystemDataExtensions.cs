@@ -3,7 +3,7 @@
     using System;
 
     using Wacton.Colonies.DataTypes;
-    using Wacton.Colonies.Models.DataProviders;
+    using Wacton.Colonies.Models.DataAgents;
 
     public static class EcosystemDataExtensions
     {

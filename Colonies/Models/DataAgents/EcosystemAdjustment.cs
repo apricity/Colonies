@@ -1,4 +1,4 @@
-﻿namespace Wacton.Colonies.Models.DataProviders
+﻿namespace Wacton.Colonies.Models.DataAgents
 {
     using System.Linq;
 

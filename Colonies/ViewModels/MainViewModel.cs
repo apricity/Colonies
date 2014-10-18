@@ -287,10 +287,10 @@
                 {
                     var updateSummary = this.DomainModel.PerformUpdate();
                     this.UpdateViewModels(updateSummary);
-                    this.UpdateCount = updateSummary.ReferenceNumber + 1;
+                    this.UpdateCount = updateSummary.UpdateNumber;
 
                     // TODO: only do these after all stages have been performed?
-                    this.TurnCount = this.UpdateCount / this.DomainModel.Ecosystem.UpdateStages;
+                    this.TurnCount = this.UpdateCount / updateSummary.UpdatesPerTurn;
                     this.WeatherDampLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Damp));
                     this.WeatherHeatLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Heat));
 

@@ -1,12 +1,11 @@
 ﻿namespace Wacton.Colonies.Models
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
-    using Wacton.Colonies.Models.DataProviders;
+    using Wacton.Colonies.Models.DataAgents;
     using Wacton.Colonies.Models.Interfaces;
 
     public class Ecosystem : IEcosystem
@@ -16,12 +15,7 @@
         private IEcosystemHistoryPuller EcosystemHistoryPuller { get; set; }
         public IWeather Weather { get; private set; }
         public EnvironmentMeasureDistributor EnvironmentMeasureDistributor { get; private set; }
-
-        // TODO: perhaps encapsulate within an "EcosystemStages" wrapper 
-        private EnvironmentInteraction EnvironmentInteraction { get; set; }
-        private OrganismMovement OrganismMovement { get; set; }
-        private OrganismInteraction OrganismInteraction { get; set; }
-        private EcosystemAdjustment EcosystemAdjustment { get; set; }
+        private EcosystemStages EcosystemStages { get; set; }
 
         public int Width
         {
@@ -39,39 +33,24 @@
             }
         }
 
-        private readonly List<IEcosystemStage> ecosystemStages;
-        public int UpdateStages { get { return this.ecosystemStages.Count; } }
-        private int updateCount = 0;
-
-        // TODO: parameter list is now a bit too long after refactoring...
-        public Ecosystem(EcosystemData ecosystemData, EcosystemRates ecosystemRates, IEcosystemHistoryPuller ecosystemHistory, IWeather weather, EnvironmentMeasureDistributor environmentMeasureDistributor, EnvironmentInteraction environmentInteraction, OrganismMovement organismMovement, OrganismInteraction organismInteraction, EcosystemAdjustment ecosystemAdjustment)
+        // TODO: param list still a bit too long?
+        public Ecosystem(EcosystemData ecosystemData, EcosystemRates ecosystemRates, IEcosystemHistoryPuller ecosystemHistoryPuller, IWeather weather, EnvironmentMeasureDistributor environmentMeasureDistributor, EcosystemStages ecosystemStages)
         {
             this.EcosystemData = ecosystemData;
             this.EcosystemRates = ecosystemRates;
-            this.EcosystemHistoryPuller = ecosystemHistory;
+            this.EcosystemHistoryPuller = ecosystemHistoryPuller;
             this.Weather = weather;
             this.EnvironmentMeasureDistributor = environmentMeasureDistributor;
-            this.EnvironmentInteraction = environmentInteraction;
-            this.OrganismMovement = organismMovement;
-            this.OrganismInteraction = organismInteraction;
-            this.EcosystemAdjustment = ecosystemAdjustment;
-
-            this.ecosystemStages = new List<IEcosystemStage>
-                                       {
-                                           this.EnvironmentInteraction,
-                                           this.OrganismMovement,
-                                           this.OrganismInteraction,
-                                           this.EcosystemAdjustment
-                                       };
+            this.EcosystemStages = ecosystemStages;
         }
 
         public UpdateSummary UpdateOneStage()
         {
-            var updateStageIndex = this.updateCount % this.UpdateStages;
-            this.ecosystemStages[updateStageIndex].Execute();
+            var updateNumber = this.EcosystemStages.UpdateCount + 1; // because ecosystem stages is zero-based
+            var updatesPerTurn = this.EcosystemStages.StageCount;
+            this.EcosystemStages.ExecuteStage();
             var ecosystemHistory = this.EcosystemHistoryPuller.Pull();
-            var updateSummary = new UpdateSummary(this.updateCount, ecosystemHistory, this.EcosystemData.OrganismCoordinatePairs());
-            this.updateCount++;
+            var updateSummary = new UpdateSummary(updateNumber, updatesPerTurn, ecosystemHistory, this.EcosystemData.OrganismCoordinatePairs());
             return updateSummary;
         }
 

@@ -12,8 +12,6 @@
 
         IWeather Weather { get; }
 
-        int UpdateStages { get; }
-
         UpdateSummary UpdateOneStage();
     }
 }

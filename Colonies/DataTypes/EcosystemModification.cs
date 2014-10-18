@@ -13,7 +13,6 @@
         {
             get
             {
-                // TODO: rounding?
                 return this.UpdatedLevel - this.PreviousLevel;
             }
         }

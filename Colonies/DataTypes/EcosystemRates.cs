@@ -1,9 +1,6 @@
 ﻿namespace Wacton.Colonies.DataTypes
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.DataTypes.Interfaces;

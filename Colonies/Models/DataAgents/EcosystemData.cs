@@ -1,4 +1,4 @@
-﻿namespace Wacton.Colonies.Models.DataProviders
+﻿namespace Wacton.Colonies.Models.DataAgents
 {
     using System;
     using System.Collections.Generic;
@@ -8,7 +8,6 @@
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.DataTypes.Interfaces;
     using Wacton.Colonies.Extensions;
-    using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models.Interfaces;
 
     public class EcosystemData
@@ -268,11 +267,10 @@
 
         public void RefreshOrganismIntentions()
         {
-            var aliveOrganismCoordinates = this.AliveOrganismCoordinates();
-            foreach (var aliveOrganismCoordinate in aliveOrganismCoordinates)
+            foreach (var organismCoordinate in this.AliveOrganismCoordinates())
             {
-                var organism = this.GetOrganism(aliveOrganismCoordinate);
-                var environment = this.GetEnvironment(aliveOrganismCoordinate);
+                var organism = this.GetOrganism(organismCoordinate);
+                var environment = this.GetEnvironment(organismCoordinate);
                 organism.RefreshIntention(environment);
             }
         }

@@ -75,7 +75,10 @@
                     { EnvironmentMeasure.Poison, -50 }
                 });
 
-        public static readonly Intention Dead = new Intention(7, "Dead", null,
+        public static readonly Intention Reproduce = new Intention(7, "Reproduce", Inventory.Spawn,
+            new Dictionary<EnvironmentMeasure, double>());
+
+        public static readonly Intention Dead = new Intention(8, "Dead", null,
             new Dictionary<EnvironmentMeasure, double>
                 {
                     { EnvironmentMeasure.Nutrient, 0 },
@@ -85,9 +88,6 @@
                     { EnvironmentMeasure.Heat, 0 },
                     { EnvironmentMeasure.Poison, 0 }
                 });
-
-        public static readonly Intention Reproduce = new Intention(7, "Reproduce", Inventory.Spawn,
-            new Dictionary<EnvironmentMeasure, double>());
 
         public Inventory RequiredInventory { get; private set; }
         public Dictionary<EnvironmentMeasure, double> EnvironmentBiases { get; private set; } 

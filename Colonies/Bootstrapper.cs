@@ -10,7 +10,7 @@
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.Models;
-    using Wacton.Colonies.Models.DataProviders;
+    using Wacton.Colonies.Models.DataAgents;
     using Wacton.Colonies.Models.Interfaces;
     using Wacton.Colonies.Properties;
     using Wacton.Colonies.ViewModels;
@@ -74,7 +74,8 @@
             var organismMovement = new OrganismMovement(ecosystemData, ecosystemRates, environmentMeasureDistributor);
             var organismInteraction = new OrganismInteraction(ecosystemData, environmentMeasureDistributor);
             var ecosystemAdjustment = new EcosystemAdjustment(ecosystemData, ecosystemRates, environmentMeasureDistributor, weather);
-            var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, environmentMeasureDistributor, environmentInteraction, organismMovement, organismInteraction, ecosystemAdjustment);
+            var ecosystemStages = new EcosystemStages(new List<IEcosystemStage> { environmentInteraction, organismMovement, organismInteraction, ecosystemAdjustment });
+            var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, environmentMeasureDistributor, ecosystemStages);
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
@@ -100,6 +101,9 @@
 
             var main = new Main(ecosystem);
             var mainViewModel = new MainViewModel(main, ecosystemViewModel, organismSynopsisViewModel, eventaggregator);
+
+            // clear the history so this setup is not shown in the first pull of the history
+            ecosystemHistory.Pull();
 
             return mainViewModel;
         }

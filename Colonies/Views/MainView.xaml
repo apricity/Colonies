@@ -34,13 +34,13 @@
         <KeyBinding Key="Space" Command="{Binding ToggleEcosystemCommand}"/>
     </Window.InputBindings>
 
-    <Controls:MetroWindow.WindowCommands>
+    <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
             <Button Content="Settings" Click="ShowSettings"/>
             <Button Content="Debug" Click="ShowDebug"/>
             <Button Content="God Mode" IsEnabled="False"/>
         </Controls:WindowCommands>
-    </Controls:MetroWindow.WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
 
     <Controls:MetroWindow.Flyouts>
         <Controls:FlyoutsControl>
@@ -192,7 +192,7 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
-        
+
         <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Right">
             <Viewbox Stretch="Uniform">
                 <Views:EcosystemView DataContext="{Binding EcosystemViewModel}"/>

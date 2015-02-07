@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Windows.Media;
 
-    using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.PubSubEvents;
 
     using Wacton.Colonies.DataTypes;

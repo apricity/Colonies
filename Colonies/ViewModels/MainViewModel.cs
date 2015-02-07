@@ -7,12 +7,10 @@
     using System.Windows.Input;
     using System.Windows.Media;
 
-    using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.PubSubEvents;
 
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
-    using Wacton.Colonies.Models;
     using Wacton.Colonies.Models.Interfaces;
     using Wacton.Colonies.ViewModels.Infrastructure;
 

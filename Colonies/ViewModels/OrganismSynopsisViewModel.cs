@@ -5,7 +5,6 @@
     using System.Collections.ObjectModel;
     using System.Windows;
 
-    using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.PubSubEvents;
 
     using Wacton.Colonies.Models.Interfaces;

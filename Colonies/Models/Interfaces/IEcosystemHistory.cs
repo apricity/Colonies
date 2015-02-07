@@ -9,5 +9,7 @@
         List<EcosystemModification> Modifications { get; }
 
         List<EcosystemRelocation> Relocations { get; }
+
+        List<EcosystemAddition> Additions { get; }
     }
 }

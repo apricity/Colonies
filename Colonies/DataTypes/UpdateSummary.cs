@@ -26,10 +26,11 @@
         public override string ToString()
         {
             return string.Format(
-                "# update: {0} | # modifications: {1} | # relocations: {2}",
+                "# update: {0} | # modifications: {1} | # relocations: {2} | # additions: {3}",
                 this.UpdateNumber,
                 this.EcosystemHistory.Modifications.Count,
-                this.EcosystemHistory.Relocations.Count);
+                this.EcosystemHistory.Relocations.Count,
+                this.EcosystemHistory.Additions.Count);
         }
     }
 }

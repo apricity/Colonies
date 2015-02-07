@@ -12,11 +12,11 @@
         {
         }
 
-        public override bool NeedsAssistance
+        public override bool IsCalling
         {
             get
             {
-                return this.Intention.Equals(Intention.Reproduce) && this.GetLevel(OrganismMeasure.Health) <= 0.75;
+                return this.Intention.Equals(Intention.Reproduce) && this.GetLevel(OrganismMeasure.Health) < 0.995;
             }
         }
 
@@ -25,6 +25,10 @@
             if (this.GetLevel(OrganismMeasure.Health) < 0.33)
             {
                 this.UpdateIntention(Intention.Eat);
+            }
+            else if (this.GetLevel(OrganismMeasure.Inventory).Equals(1.0))
+            {
+                this.UpdateIntention(Intention.Birth);
             }
             else
             {

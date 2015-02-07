@@ -12,7 +12,7 @@
         {
         }
 
-        public override bool NeedsAssistance
+        public override bool IsCalling
         {
             get
             {

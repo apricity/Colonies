@@ -16,7 +16,7 @@
 
         bool IsAlive { get; }
 
-        bool NeedsAssistance { get; }
+        bool IsCalling { get; }
 
         void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);
     }

@@ -32,6 +32,10 @@
 
     <Window.InputBindings>
         <KeyBinding Key="Space" Command="{Binding ToggleEcosystemCommand}"/>
+        <KeyBinding Key="Add" Command="{Binding IncreaseTurnIntervalCommand}"/>
+        <KeyBinding Key="OemPlus" Command="{Binding IncreaseTurnIntervalCommand}"/>
+        <KeyBinding Key="Subtract" Command="{Binding DecreaseTurnIntervalCommand}"/>
+        <KeyBinding Key="OemMinus" Command="{Binding DecreaseTurnIntervalCommand}"/>
     </Window.InputBindings>
 
     <Controls:MetroWindow.RightWindowCommands>
@@ -45,7 +49,7 @@
     <Controls:MetroWindow.Flyouts>
         <Controls:FlyoutsControl>
 
-            <Controls:Flyout Header="Settings" Position="Bottom">
+            <Controls:Flyout Header="Settings" Position="Bottom" IsPinned="False">
                 <Grid Margin="3">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -143,7 +147,7 @@
                 </Grid>    
             </Controls:Flyout>
 
-            <Controls:Flyout Header="Debug" Position="Bottom">
+            <Controls:Flyout Header="Debug" Position="Bottom" IsPinned="False">
                 <Grid Margin="3">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>

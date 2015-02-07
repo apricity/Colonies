@@ -326,6 +326,7 @@
                 desiredOrganismCoordinate => (IOrganism)desiredOrganismCoordinate.Key,
                 desiredOrganismCoordinate => desiredOrganismCoordinate.Value);
 
+            var organismFactory = new OrganismFactory();
             var ecosystemHistory = new EcosystemHistory();
             var ecosystemData = new EcosystemData(this.habitats, organismCoordinates, ecosystemHistory);
             var ecosystemRates = new EcosystemRates();
@@ -333,7 +334,7 @@
             var environmentMeasureDistributor = new EnvironmentMeasureDistributor(ecosystemData);
             var environmentInteraction = new EnvironmentInteraction(ecosystemData, environmentMeasureDistributor);
             var organismMovement = new OrganismMovement(ecosystemData, ecosystemRates, environmentMeasureDistributor);
-            var organismInteraction = new OrganismInteraction(ecosystemData, environmentMeasureDistributor);
+            var organismInteraction = new OrganismInteraction(ecosystemData, environmentMeasureDistributor, organismFactory);
             var ecosystemAdjustment = new EcosystemAdjustment(ecosystemData, ecosystemRates, environmentMeasureDistributor, weather);
             var ecosystemStages = new EcosystemStages(new List<IEcosystemStage> { environmentInteraction, organismMovement, organismInteraction, ecosystemAdjustment });
             var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, environmentMeasureDistributor, ecosystemStages);
@@ -353,7 +354,7 @@
             {
             }
 
-            public override bool NeedsAssistance
+            public override bool IsCalling
             {
                 get
                 {

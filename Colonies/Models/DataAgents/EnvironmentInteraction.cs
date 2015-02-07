@@ -20,7 +20,7 @@
 
         public void Execute()
         {
-            // remove sound distribution before refreshing intentions, insert them again afterwards if still need assistance
+            // remove sound distribution before refreshing intentions, insert them again afterwards if still calling
             this.RemoveSoundDistribution();
             this.ecosystemData.RefreshOrganismIntentions();
             this.PerformInteractions();
@@ -29,7 +29,7 @@
 
         private void RemoveSoundDistribution()
         {
-            foreach (var organismCoordinate in this.ecosystemData.NeedingAssistanceOrganismCoordinates())
+            foreach (var organismCoordinate in this.ecosystemData.CallingOrganismCoordinates())
             {
                 this.environmentMeasureDistributor.RemoveDistribution(organismCoordinate, EnvironmentMeasure.Sound);
             }
@@ -37,7 +37,7 @@
 
         private void InsertSoundDistribution()
         {
-            foreach (var organismCoordinate in this.ecosystemData.NeedingAssistanceOrganismCoordinates())
+            foreach (var organismCoordinate in this.ecosystemData.CallingOrganismCoordinates())
             {
                 this.environmentMeasureDistributor.InsertDistribution(organismCoordinate, EnvironmentMeasure.Sound);
             }
@@ -115,14 +115,13 @@
                 this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Mineral, -mineralTaken);
             }
 
-            // reproduction requirements (first pass: mineral level 1.0, health level 0.75)
-            if (organism.Intention.Equals(Intention.Reproduce)
-                && environment.GetLevel(EnvironmentMeasure.Mineral).Equals(1.0)
-                && organism.GetLevel(OrganismMeasure.Health) > 0.75)
+            // reproduction requirements are attached to the IsCalling property
+            // organism inventory of "spawn" is filled, ready for the organism to place it
+            if (organism.Intention.Equals(Intention.Reproduce) && !organism.IsCalling)
             {
-                // TODO: create the result of using the mineral during reproduction!  a child organism?!
                 var mineralTaken = availableMineral;
                 this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Mineral, -mineralTaken);
+                this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, 1.0);
             }
         }
 

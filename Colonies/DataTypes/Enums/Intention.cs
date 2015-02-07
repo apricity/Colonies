@@ -78,7 +78,15 @@
         public static readonly Intention Reproduce = new Intention(7, "Reproduce", Inventory.Spawn,
             new Dictionary<EnvironmentMeasure, double>());
 
-        public static readonly Intention Dead = new Intention(8, "Dead", null,
+        public static readonly Intention Birth = new Intention(8, "Birth", Inventory.Spawn,
+            new Dictionary<EnvironmentMeasure, double>
+                {
+                    { EnvironmentMeasure.Damp, -10 },
+                    { EnvironmentMeasure.Heat, -10 },
+                    { EnvironmentMeasure.Poison, -50 }
+                });
+
+        public static readonly Intention Dead = new Intention(9, "Dead", null,
             new Dictionary<EnvironmentMeasure, double>
                 {
                     { EnvironmentMeasure.Nutrient, 0 },

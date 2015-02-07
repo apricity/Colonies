@@ -6,6 +6,7 @@
     using System.Windows.Media;
 
     using Microsoft.Practices.Prism.Events;
+    using Microsoft.Practices.Prism.PubSubEvents;
 
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
@@ -65,6 +66,7 @@
             }
 
             var initialOrganismCoordinates = this.InitialOrganismCoordinates();
+            var organismFactory = new OrganismFactory();
             var ecosystemHistory = new EcosystemHistory();
             var ecosystemData = new EcosystemData(habitats, initialOrganismCoordinates, ecosystemHistory);
             var ecosystemRates = new EcosystemRates();
@@ -72,14 +74,14 @@
             var environmentMeasureDistributor = new EnvironmentMeasureDistributor(ecosystemData);
             var environmentInteraction = new EnvironmentInteraction(ecosystemData, environmentMeasureDistributor);
             var organismMovement = new OrganismMovement(ecosystemData, ecosystemRates, environmentMeasureDistributor);
-            var organismInteraction = new OrganismInteraction(ecosystemData, environmentMeasureDistributor);
+            var organismInteraction = new OrganismInteraction(ecosystemData, environmentMeasureDistributor, organismFactory);
             var ecosystemAdjustment = new EcosystemAdjustment(ecosystemData, ecosystemRates, environmentMeasureDistributor, weather);
             var ecosystemStages = new EcosystemStages(new List<IEcosystemStage> { environmentInteraction, organismMovement, organismInteraction, ecosystemAdjustment });
             var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, environmentMeasureDistributor, ecosystemStages);
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
-            foreach (var organismCoordinate in ecosystemData.NeedingAssistanceOrganismCoordinates())
+            foreach (var organismCoordinate in ecosystemData.CallingOrganismCoordinates())
             {
                 ecosystem.EnvironmentMeasureDistributor.InsertDistribution(organismCoordinate, EnvironmentMeasure.Sound);
             }
@@ -95,8 +97,7 @@
 
             // hook organism model into the organism synopsis
             var organismSynopsis = new OrganismSynopsis(initialOrganismCoordinates.Keys.Select(organism => (IOrganism)organism).ToList());
-            var organismViewModels =
-                organismSynopsis.Organisms.Select(organism => new OrganismViewModel(organism, eventaggregator)).ToList();
+            var organismViewModels = organismSynopsis.Organisms.Select(organism => new OrganismViewModel(organism, eventaggregator)).ToList();
             var organismSynopsisViewModel = new OrganismSynopsisViewModel(organismSynopsis, organismViewModels, eventaggregator);
 
             var main = new Main(ecosystem);
@@ -148,15 +149,11 @@
                                                 new Coordinate(5, 1),
                                                 new Coordinate(6, 1),
                                                 new Coordinate(7, 1),
-                                                new Coordinate(2, 8),
-                                                new Coordinate(3, 8),
-                                                new Coordinate(4, 8),
-                                                new Coordinate(5, 8),
-                                                new Coordinate(6, 8),
-                                                new Coordinate(7, 8),
                                                 new Coordinate(8, 1),
                                                 new Coordinate(8, 2),
                                                 new Coordinate(8, 3),
+                                                new Coordinate(8, 4),
+                                                new Coordinate(8, 5),
                                                 new Coordinate(8, 6),
                                                 new Coordinate(8, 7),
                                                 new Coordinate(8, 8)
@@ -175,7 +172,7 @@
                                             { new Defender("Waffle", Colors.Silver), new Coordinate(2, 2) },
                                             { new Gatherer("Wilber", Colors.Silver), new Coordinate(2, 7) },
                                             { new Gatherer("Lotty", Colors.Silver), new Coordinate(7, 2) },
-                                            { new Queen("Dr. Louise", Colors.Silver), new Coordinate(7, 7) },
+                                            { new Queen("Dr. Louise", Colors.Silver), new Coordinate(0, 9) },
                                         };
 
             return organismLocations;

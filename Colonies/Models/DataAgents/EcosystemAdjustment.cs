@@ -27,12 +27,12 @@
             this.IncreaseNutrientLevels();
             this.ProgressWeatherAndHazards();
 
-            var needingAssistanceOrganismCoordinates = this.ecosystemData.NeedingAssistanceOrganismCoordinates();
+            var callingOrganismCoordinates = this.ecosystemData.CallingOrganismCoordinates();
             this.DecreaseOrganismHealth();
             var deadOrganismCoordinates = this.ecosystemData.DeadOrganismCoordinates();
 
             // if organism has died, remove sound
-            foreach (var recentlyDiedOrganismCoordinate in needingAssistanceOrganismCoordinates.Intersect(deadOrganismCoordinates))
+            foreach (var recentlyDiedOrganismCoordinate in callingOrganismCoordinates.Intersect(deadOrganismCoordinates))
             {
                 this.environmentMeasureDistributor.RemoveDistribution(recentlyDiedOrganismCoordinate, EnvironmentMeasure.Sound);
             }

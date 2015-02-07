@@ -45,7 +45,7 @@
             }
         }
 
-        public abstract bool NeedsAssistance { get; }
+        public abstract bool IsCalling { get; }
 
         public bool IsDepositingPheromone
         {

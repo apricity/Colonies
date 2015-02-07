@@ -50,7 +50,7 @@
 
             foreach (var organismCoordinate in organismCoordinates)
             {
-                this.AddOrganism(organismCoordinate.Key, organismCoordinate.Value);
+                this.AddOrganism(organismCoordinate.Key, this.HabitatAt(organismCoordinate.Value));
             }
         }
 
@@ -89,9 +89,9 @@
             return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsDepositingPheromone).Select(this.CoordinateOf);
         }
 
-        public IEnumerable<Coordinate> NeedingAssistanceOrganismCoordinates()
+        public IEnumerable<Coordinate> CallingOrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive && organism.NeedsAssistance).Select(this.CoordinateOf);
+            return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsCalling).Select(this.CoordinateOf);
         }
 
         public bool HasLevel(Coordinate coordinate, EnvironmentMeasure measure)
@@ -168,9 +168,10 @@
             return this.HabitatAt(coordinate).Environment.IsHarmful;
         }
 
-        private void AddOrganism(Organism organism, Coordinate coordinate)
+        public void AddOrganism(IOrganism organism, Coordinate coordinate)
         {
-            this.AddOrganism(organism, this.HabitatAt(coordinate));
+            this.AddOrganism((Organism)organism, this.HabitatAt(coordinate));
+            this.EcosystemHistoryPusher.Push(new EcosystemAddition(organism, coordinate));
         }
 
         private void AddOrganism(Organism organism, Habitat habitat)

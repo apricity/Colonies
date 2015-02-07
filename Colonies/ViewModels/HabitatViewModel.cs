@@ -3,6 +3,7 @@
     using System.Text;
 
     using Microsoft.Practices.Prism.Events;
+    using Microsoft.Practices.Prism.PubSubEvents;
 
     using Wacton.Colonies.Models.Interfaces;
     using Wacton.Colonies.ViewModels.Infrastructure;

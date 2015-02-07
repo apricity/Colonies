@@ -4,7 +4,7 @@
     using System.Linq;
     using System.Windows.Media;
 
-    using Microsoft.Practices.Prism.Events;
+    using Microsoft.Practices.Prism.PubSubEvents;
 
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;

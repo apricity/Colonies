@@ -7,5 +7,7 @@
         void Push(EcosystemModification modification);
 
         void Push(EcosystemRelocation relocation);
+
+        void Push(EcosystemAddition addition);
     }
 }

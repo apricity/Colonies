@@ -8,9 +8,11 @@
     using System.Windows.Media;
 
     using Microsoft.Practices.Prism.Events;
+    using Microsoft.Practices.Prism.PubSubEvents;
 
     using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
+    using Wacton.Colonies.Models;
     using Wacton.Colonies.Models.Interfaces;
     using Wacton.Colonies.ViewModels.Infrastructure;
 
@@ -24,6 +26,8 @@
         private volatile object updateLock = new object();
 
         public ICommand ToggleEcosystemCommand { get; set; }
+        public ICommand IncreaseTurnIntervalCommand { get; set; }
+        public ICommand DecreaseTurnIntervalCommand { get; set; }
 
         private EcosystemViewModel ecosystemViewModel;
         public EcosystemViewModel EcosystemViewModel
@@ -263,11 +267,32 @@
 
             // hook up a toggle ecosystem command so a keyboard shortcut can be used to toggle the ecosystem on/off
             this.ToggleEcosystemCommand = new RelayCommand(this.ToggleEcosystem);
+            this.IncreaseTurnIntervalCommand = new RelayCommand(this.IncreaseTurnInterval);
+            this.DecreaseTurnIntervalCommand = new RelayCommand(this.DecreaseTurnInterval);
         }
 
         private void ToggleEcosystem(object obj)
         {
             this.IsEcosystemActive = !this.IsEcosystemActive;
+        }
+
+        // TODO: bind slider max and min to these values
+        private void IncreaseTurnInterval(object obj)
+        {
+            this.EcosystemTurnInterval++;
+            if (this.EcosystemTurnInterval > 2000)
+            {
+                this.EcosystemTurnInterval = 2000;
+            }
+        }
+
+        private void DecreaseTurnInterval(object obj)
+        {
+            this.EcosystemTurnInterval--;
+            if (this.EcosystemTurnInterval < 1)
+            {
+                this.EcosystemTurnInterval = 1;
+            }
         }
 
         private void ChangeEcosystemTimer()
@@ -314,33 +339,47 @@
 
             // refresh properties of all modifications
             Parallel.ForEach(updateSummary.EcosystemHistory.Modifications, modification =>
-                {
-                    var x = modification.Coordinate.X;
-                    var y = modification.Coordinate.Y;
+            {
+                var x = modification.Coordinate.X;
+                var y = modification.Coordinate.Y;
 
-                    var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
-                    habitatViewModel.RefreshEnvironment();
-                    refreshedHabitatViewModels.Add(habitatViewModel);
-                });
+                var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
+                habitatViewModel.RefreshEnvironment();
+                refreshedHabitatViewModels.Add(habitatViewModel);
+            });
+
+            // refresh properties of all organisms that have been added
+            Parallel.ForEach(updateSummary.EcosystemHistory.Additions, addition =>
+            {
+                var x = addition.Coordinate.X;
+                var y = addition.Coordinate.Y;
+
+                var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
+                habitatViewModel.AssignOrganismModel(addition.Organism);
+                habitatViewModel.RefreshEnvironment();
+                refreshedHabitatViewModels.Add(habitatViewModel);
+
+                this.OrganismSynopsisViewModel.AddOrganism(addition.Organism);
+            });
 
             // refresh properties of all organisms that have not moved
             Parallel.ForEach(updateSummary.OrganismCoordinates, organismCoordinate =>
+            {
+                var organism = organismCoordinate.Key;
+
+                if (updateSummary.EcosystemHistory.Relocations.Any(relocation => relocation.Organism.Equals(organism)))
                 {
-                    var organism = organismCoordinate.Key;
+                    return;
+                }
 
-                    if (updateSummary.EcosystemHistory.Relocations.Any(relocation => relocation.Organism.Equals(organism)))
-                    {
-                        return;
-                    }
+                var x = organismCoordinate.Value.X;
+                var y = organismCoordinate.Value.Y;
 
-                    var x = organismCoordinate.Value.X;
-                    var y = organismCoordinate.Value.Y;
-
-                    var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
-                    habitatViewModel.RefreshOrganism();
-                    habitatViewModel.RefreshEnvironment();
-                    refreshedHabitatViewModels.Add(habitatViewModel);
-                });
+                var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
+                habitatViewModel.RefreshOrganism();
+                habitatViewModel.RefreshEnvironment();
+                refreshedHabitatViewModels.Add(habitatViewModel);
+            });
 
             // unassign moving organisms from their previous view models
             Parallel.ForEach(updateSummary.EcosystemHistory.Relocations, relocation =>

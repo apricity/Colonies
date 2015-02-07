@@ -1,16 +1,21 @@
 ﻿namespace Wacton.Colonies.ViewModels
 {
+    using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Windows;
 
     using Microsoft.Practices.Prism.Events;
+    using Microsoft.Practices.Prism.PubSubEvents;
 
     using Wacton.Colonies.Models.Interfaces;
     using Wacton.Colonies.ViewModels.Infrastructure;
 
     public class OrganismSynopsisViewModel : ViewModelBase<IOrganismSynopsis>
     {
-        private List<OrganismViewModel> organismViewModels;
-        public List<OrganismViewModel> OrganismViewModels
+        // ObservableCollection seems to be required because this is bound to by an ItemSource
+        private ObservableCollection<OrganismViewModel> organismViewModels;
+        public ObservableCollection<OrganismViewModel> OrganismViewModels
         {
             get
             {
@@ -26,7 +31,14 @@
         public OrganismSynopsisViewModel(IOrganismSynopsis domainModel, List<OrganismViewModel> organismViewModels, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
-            this.OrganismViewModels = organismViewModels;
+            this.OrganismViewModels = new ObservableCollection<OrganismViewModel>(organismViewModels);
+        }
+
+        public void AddOrganism(IOrganism organism)
+        {
+            this.DomainModel.Organisms.Add(organism);
+            var updateOrganismViewModelsAction = new Action(() => this.organismViewModels.Add(new OrganismViewModel(organism, this.EventAggregator)));
+            Application.Current.Dispatcher.Invoke(updateOrganismViewModelsAction);
         }
 
         public override void Refresh()

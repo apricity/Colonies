@@ -187,7 +187,7 @@
 
         private void InsertSoundDistribution()
         {
-            foreach (var organismCoordinate in this.ecosystemData.NeedingAssistanceOrganismCoordinates())
+            foreach (var organismCoordinate in this.ecosystemData.CallingOrganismCoordinates())
             {
                 this.environmentMeasureDistributor.InsertDistribution(organismCoordinate, EnvironmentMeasure.Sound);
             }

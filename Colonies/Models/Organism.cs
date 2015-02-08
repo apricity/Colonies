@@ -28,6 +28,8 @@
             }
         }
 
+        public int IntentionDuration { get; private set; }
+
         private readonly MeasurementData<OrganismMeasure> measurementData;
         public IMeasurementData<OrganismMeasure> MeasurementData
         {
@@ -51,7 +53,9 @@
         {
             get
             {
-                return this.Intention.Equals(Intention.Nourish);
+                // TODO: intention duration limit should probably be relative to the size of the ecosystem
+                // note: at time of writing, each turn increases the intention duration by 2 (once in EnvironmentInteraction, once in OrganismInteraction)
+                return this.Intention.Equals(Intention.Nourish) && this.IntentionDuration <= 100;
             }
         }
 
@@ -68,11 +72,13 @@
             this.Name = name;
             this.Color = color;
             this.Inventory = inventoryType;
-            this.UpdateIntention(initialIntention);
 
             var health = new Measurement<OrganismMeasure>(OrganismMeasure.Health, 1.0);
             var inventory = new Measurement<OrganismMeasure>(OrganismMeasure.Inventory, 0.0);
             this.measurementData = new MeasurementData<OrganismMeasure>(new List<Measurement<OrganismMeasure>> { health, inventory });
+
+            this.Intention = Intention.None;
+            this.UpdateIntention(initialIntention);
         }
 
         public void UpdateIntention(Intention newIntention)
@@ -84,10 +90,18 @@
                                   newIntention, this.Inventory, newIntention.RequiredInventory));
             }
 
-            this.Intention = newIntention;
+            if (this.Intention.Equals(newIntention))
+            {
+                this.IntentionDuration++;
+            }
+            else
+            {
+                this.Intention = newIntention;
+                this.IntentionDuration = 0;
+            }
         }
 
-        public abstract void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);
+        public abstract Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);
 
         public double GetLevel(OrganismMeasure measure)
         {

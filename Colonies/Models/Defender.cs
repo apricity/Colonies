@@ -20,16 +20,14 @@
             }
         }
 
-        public override void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+        public override Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             if (this.GetLevel(OrganismMeasure.Health) < 0.33)
             {
-                this.UpdateIntention(Intention.Eat);
+                return Intention.Eat;
             }
-            else
-            {
-                this.UpdateIntention(this.GetLevel(OrganismMeasure.Inventory) < 1.0 ? Intention.Mine : Intention.Build);
-            }
+
+            return this.GetLevel(OrganismMeasure.Inventory) < 1.0 ? Intention.Mine : Intention.Build;
         }
     }
 }

@@ -272,7 +272,8 @@
             {
                 var organism = this.GetOrganism(organismCoordinate);
                 var environment = this.GetEnvironment(organismCoordinate);
-                organism.RefreshIntention(environment);
+                var intention = organism.DecideIntention(environment);
+                organism.UpdateIntention(intention);
             }
         }
     }

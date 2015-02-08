@@ -18,6 +18,8 @@
 
         bool IsCalling { get; }
 
-        void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);
+        Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);
+
+        void UpdateIntention(Intention intention);
     }
 }

@@ -362,9 +362,9 @@
                 }
             }
 
-            public override void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+            public override Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
             {
-                return;
+                return this.Intention;
             }
         }
     }

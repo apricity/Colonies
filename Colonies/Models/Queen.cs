@@ -20,27 +20,19 @@
             }
         }
 
-        public override void RefreshIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+        public override Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             if (this.GetLevel(OrganismMeasure.Health) < 0.33)
             {
-                this.UpdateIntention(Intention.Eat);
+                return Intention.Eat;
             }
-            else if (this.GetLevel(OrganismMeasure.Inventory).Equals(1.0))
+
+            if (this.GetLevel(OrganismMeasure.Inventory).Equals(1.0))
             {
-                this.UpdateIntention(Intention.Birth);
+                return Intention.Birth;
             }
-            else
-            {
-                if (measurableEnvironment.MeasurementData.GetLevel(EnvironmentMeasure.Mineral) < 1.0)
-                {
-                    this.UpdateIntention(Intention.Nest);
-                }
-                else
-                {
-                    this.UpdateIntention(Intention.Reproduce);
-                }
-            }
+
+            return measurableEnvironment.MeasurementData.GetLevel(EnvironmentMeasure.Mineral) < 1.0 ? Intention.Nest : Intention.Reproduce;
         }
     }
 }

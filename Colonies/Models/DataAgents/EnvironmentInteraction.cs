@@ -1,6 +1,7 @@
 ﻿namespace Wacton.Colonies.Models.DataAgents
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using Wacton.Colonies.DataTypes;
@@ -11,36 +12,25 @@
     {
         private readonly EcosystemData ecosystemData;
         private readonly EnvironmentMeasureDistributor environmentMeasureDistributor;
+        private readonly Dictionary<EnvironmentMeasure, Action<IOrganism>> harmfulEnvironmentActions;  
 
         public EnvironmentInteraction(EcosystemData ecosystemData, EnvironmentMeasureDistributor environmentMeasureDistributor)
         {
             this.ecosystemData = ecosystemData;
             this.environmentMeasureDistributor = environmentMeasureDistributor;
+
+            this.harmfulEnvironmentActions = new Dictionary<EnvironmentMeasure, Action<IOrganism>>
+            {
+                { EnvironmentMeasure.Heat, organism => organism.OverloadPheromone() },
+                { EnvironmentMeasure.Damp, organism => organism.OverloadSound() },
+                { EnvironmentMeasure.Disease, organism => organism.ContractDisease() },
+            };
         }
 
         public void Execute()
         {
-            // remove sound distribution before refreshing intentions, insert them again afterwards if still calling
-            this.RemoveSoundDistribution();
             this.ecosystemData.RefreshOrganismIntentions();
             this.PerformInteractions();
-            this.InsertSoundDistribution();
-        }
-
-        private void RemoveSoundDistribution()
-        {
-            foreach (var organismCoordinate in this.ecosystemData.CallingOrganismCoordinates())
-            {
-                this.environmentMeasureDistributor.RemoveDistribution(organismCoordinate, EnvironmentMeasure.Sound);
-            }
-        }
-
-        private void InsertSoundDistribution()
-        {
-            foreach (var organismCoordinate in this.ecosystemData.CallingOrganismCoordinates())
-            {
-                this.environmentMeasureDistributor.InsertDistribution(organismCoordinate, EnvironmentMeasure.Sound);
-            }
         }
 
         private void PerformInteractions()
@@ -115,9 +105,8 @@
                 this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Mineral, -mineralTaken);
             }
 
-            // reproduction requirements are attached to the IsCalling property
             // organism inventory of "spawn" is filled, ready for the organism to place it
-            if (organism.Intention.Equals(Intention.Reproduce) && !organism.IsCalling)
+            if (organism.IsReproductive)
             {
                 var mineralTaken = availableMineral;
                 this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Mineral, -mineralTaken);
@@ -129,8 +118,16 @@
         {
             var organism = this.ecosystemData.GetOrganism(organismCoordinate);
             var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
-            if (!organism.Intention.Equals(Intention.Build)
-                || organism.GetLevel(OrganismMeasure.Inventory) < 1.0)
+
+            if (environment.IsHarmful)
+            {
+                foreach (var harmfulMeasure in environment.HarmfulMeasures)
+                {
+                    this.harmfulEnvironmentActions[harmfulMeasure].Invoke(organism);
+                }
+            }
+
+            if (!organism.Intention.Equals(Intention.Build) || organism.GetLevel(OrganismMeasure.Inventory) < 1.0)
             {
                 return;
             }

@@ -27,12 +27,12 @@
             this.IncreaseNutrientLevels();
             this.ProgressWeatherAndHazards();
 
-            var callingOrganismCoordinates = this.ecosystemData.CallingOrganismCoordinates();
+            var audibleOrganismCoordinates = this.ecosystemData.AudibleOrganismCoordinates();
             this.DecreaseOrganismHealth();
             var deadOrganismCoordinates = this.ecosystemData.DeadOrganismCoordinates();
 
             // if organism has died, remove sound
-            foreach (var recentlyDiedOrganismCoordinate in callingOrganismCoordinates.Intersect(deadOrganismCoordinates))
+            foreach (var recentlyDiedOrganismCoordinate in audibleOrganismCoordinates.Intersect(deadOrganismCoordinates))
             {
                 this.environmentMeasureDistributor.RemoveDistribution(recentlyDiedOrganismCoordinate, EnvironmentMeasure.Sound);
             }
@@ -55,8 +55,12 @@
 
         private void DecreaseOrganismHealth()
         {
-            var organismCoordinates = this.ecosystemData.AliveOrganismCoordinates().ToList();
-            this.ecosystemData.AdjustLevels(organismCoordinates, OrganismMeasure.Health, -this.ecosystemRates.DecreasingRates[OrganismMeasure.Health]);
+            var aliveOrganismCoordinates = this.ecosystemData.AliveOrganismCoordinates().ToList();
+            this.ecosystemData.AdjustLevels(aliveOrganismCoordinates, OrganismMeasure.Health, -this.ecosystemRates.DecreasingRates[OrganismMeasure.Health]);
+
+            // decrease organism health even more if diseased (currently triple health loss)
+            var diseasedOrganismCoordinates = this.ecosystemData.DiseasedOrganismCoordinates().ToList();
+            this.ecosystemData.AdjustLevels(diseasedOrganismCoordinates, OrganismMeasure.Health, -this.ecosystemRates.DecreasingRates[OrganismMeasure.Health] * 2);
         }
 
         private void ProgressWeatherAndHazards()

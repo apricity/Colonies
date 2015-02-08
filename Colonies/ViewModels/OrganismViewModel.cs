@@ -5,7 +5,9 @@
 
     using Microsoft.Practices.Prism.PubSubEvents;
 
+    using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
+    using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models.Interfaces;
     using Wacton.Colonies.ViewModels.Infrastructure;
 
@@ -140,6 +142,20 @@
                 return 0.5;
             }
         }
+
+        private Color hazardColor;
+        public Color HazardColor
+        {
+            get
+            {
+                return this.hazardColor;
+            }
+            set
+            {
+                this.hazardColor = value;
+                this.OnPropertyChanged("HazardColor");
+            }
+        }
         
         public OrganismViewModel(IOrganism domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
@@ -160,7 +176,7 @@
                 this.NameAndIntention = string.Format("{0} : {1} ({2})", this.DomainModel.Name, this.DomainModel.Age.ToString("0.00"), this.DomainModel.Intention);
                 this.InventoryColor = InventoryColors[this.DomainModel.Inventory];
                 this.InventoryScalar = this.DomainModel.GetLevel(OrganismMeasure.Inventory) / 2.0;
-
+                this.RefreshHazardColor();
             }
             else
             {
@@ -173,7 +189,21 @@
                 this.NameAndIntention = default(string);
                 this.InventoryColor = default(Color);
                 this.InventoryScalar = default(double);
+                this.HazardColor = default(Color);
+
             }
+        }
+
+        private void RefreshHazardColor()
+        {
+            this.HazardColor = ColorLogic.ModifyColor(
+                Colors.White,
+                new List<WeightedColor>
+                    {
+                        new WeightedColor(Colors.CornflowerBlue, this.DomainModel.IsSoundOverloaded ? 1.0 : 0.0),
+                        new WeightedColor(Colors.Tomato, this.DomainModel.IsPheromoneOverloaded ? 1.0 : 0.0),
+                        new WeightedColor(Colors.YellowGreen, this.DomainModel.IsDiseased || this.DomainModel.IsInfectious ? 1.0 : 0.0)
+                    });
         }
     }
 }

@@ -48,9 +48,9 @@
                 </Rectangle.Width>
             </Rectangle>
         </Grid>
-        
 
-        <TextBlock Grid.Column="1" Text="{Binding NameAndIntention}" Padding="2, 0" MinWidth="50"/>
+
+        <TextBlock Grid.Column="1" Text="{Binding NameAndIntention}" Padding="2, 0" MinWidth="50" Foreground="{Binding HazardColor, Converter={StaticResource ColorToBrushConverter}}"/>
         
         <ProgressBar Grid.Column="2" Minimum="0" Maximum="1" Value="{Binding HealthLevel, Mode=OneWay}" BorderThickness="0"
                      Style="{StaticResource HealthLevelProgressBar}" HorizontalContentAlignment="Right"

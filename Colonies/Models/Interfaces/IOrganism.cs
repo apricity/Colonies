@@ -18,12 +18,28 @@
 
         bool IsAlive { get; }
 
-        bool IsCalling { get; }
+        bool IsReproductive { get; }
+
+        bool IsAudible { get; }
+
+        bool IsPheromoneOverloaded { get; }
+
+        bool IsSoundOverloaded { get; }
+
+        bool IsDiseased { get; }
+
+        bool IsInfectious { get; }
 
         void IncrementAge(double increment);
 
         Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);
 
         void UpdateIntention(Intention intention);
+
+        void OverloadPheromone();
+
+        void OverloadSound();
+
+        void ContractDisease();
     }
 }

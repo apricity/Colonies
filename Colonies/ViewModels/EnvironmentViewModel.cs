@@ -14,7 +14,7 @@
 
     public class EnvironmentViewModel : ViewModelBase<IEnvironment>
     {
-        private readonly Color baseColor = Colors.Tan;
+        private readonly Color baseColor = Colors.DimGray;
 
         public static readonly Dictionary<EnvironmentMeasure, Color> MeasureColors =
             new Dictionary<EnvironmentMeasure, Color>
@@ -22,7 +22,7 @@
                     { EnvironmentMeasure.Mineral, Colors.Goldenrod },
                     { EnvironmentMeasure.Damp, Colors.CornflowerBlue },
                     { EnvironmentMeasure.Heat, Colors.Tomato },
-                    { EnvironmentMeasure.Poison, Colors.DimGray },
+                    { EnvironmentMeasure.Disease, Colors.YellowGreen },
                     { EnvironmentMeasure.Pheromone, Colors.OrangeRed },
                     { EnvironmentMeasure.Nutrient, Colors.OliveDrab },
                     { EnvironmentMeasure.Obstruction, Colors.Black },
@@ -117,17 +117,17 @@
             }
         }
 
-        private double poisonLevel;
-        public double PoisonLevel
+        private double diseaseLevel;
+        public double DiseaseLevel
         {
             get
             {
-                return this.poisonLevel;
+                return this.diseaseLevel;
             }
             set
             {
-                this.poisonLevel = value;
-                this.OnPropertyChanged("PoisonLevel");
+                this.diseaseLevel = value;
+                this.OnPropertyChanged("DiseaseLevel");
             }
         }
 
@@ -203,7 +203,7 @@
             this.MineralLevel = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Mineral);
             this.DampLevel = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Damp);
             this.HeatLevel = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Heat);
-            this.PoisonLevel = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Poison);
+            this.DiseaseLevel = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Disease);
 
             this.PheromoneOpacity = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Pheromone);
             this.NutrientScalar = this.DomainModel.MeasurementData.GetLevel(EnvironmentMeasure.Nutrient);
@@ -222,7 +222,7 @@
                     {
                         new WeightedColor(MeasureColors[EnvironmentMeasure.Damp], this.DampLevel),
                         new WeightedColor(MeasureColors[EnvironmentMeasure.Heat], this.HeatLevel),
-                        new WeightedColor(MeasureColors[EnvironmentMeasure.Poison], this.PoisonLevel)
+                        new WeightedColor(MeasureColors[EnvironmentMeasure.Disease], this.DiseaseLevel)
                     });
         }
     }

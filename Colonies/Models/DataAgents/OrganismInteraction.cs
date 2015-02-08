@@ -48,11 +48,6 @@
                 var childOrganism = this.organismFactory.CreateChildOrganism(parentOrganism);
                 this.ecosystemData.AddOrganism(childOrganism, childCoordinate);
                 this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, -1.0);
-
-                if (!parentOrganism.IsCalling)
-                {
-                    this.environmentMeasureDistributor.RemoveDistribution(organismCoordinate, EnvironmentMeasure.Sound);
-                }
             }
         }
 
@@ -71,21 +66,16 @@
                     var givenNutrient = Math.Min(desiredNutrient, availableNutrient);
                     this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, -givenNutrient);
                     this.ecosystemData.AdjustLevel(nourishedOrganismCoordinate, OrganismMeasure.Health, givenNutrient);
-
-                    if (!nourishedOrganism.IsCalling)
-                    {
-                        this.environmentMeasureDistributor.RemoveDistribution(nourishedOrganismCoordinate, EnvironmentMeasure.Sound);
-                    }
                 }
             }
         }
 
         private List<IOrganism> GetNeighboursRequestingNutrient(Coordinate coordinate)
         {
-            // TODO: better way?!  perhaps organism tries to give food to anyone calling (even if not queen)
+            // TODO: better way?!  perhaps organism tries to give food to anyone audible (even if not queen)
             var neighbourCoordinates = this.ecosystemData.GetValidNeighbours(coordinate, 1, false, false).ToList();
             var neighbourOrganisms = neighbourCoordinates.Select(this.ecosystemData.GetOrganism).Where(organism => organism != null).ToList();
-            return neighbourOrganisms.Where(neighbour => neighbour.Intention.Equals(Intention.Reproduce) && neighbour.IsCalling).ToList();
+            return neighbourOrganisms.Where(neighbour => neighbour.Intention.Equals(Intention.Reproduce) && !neighbour.IsReproductive).ToList();
         }
     }
 }

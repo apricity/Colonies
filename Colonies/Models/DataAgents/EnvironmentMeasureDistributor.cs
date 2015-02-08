@@ -32,7 +32,7 @@
                 {
                     { EnvironmentMeasure.Damp, hazardDiameter },
                     { EnvironmentMeasure.Heat, hazardDiameter },
-                    { EnvironmentMeasure.Poison, hazardDiameter },
+                    { EnvironmentMeasure.Disease, hazardDiameter },
                     { EnvironmentMeasure.Sound, (hazardDiameter * 4) - 1 }
                 };
         }

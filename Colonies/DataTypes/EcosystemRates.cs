@@ -31,7 +31,7 @@
                 {
                     { EnvironmentMeasure.Damp, new HazardRate(1 / 2000.0, 1 / 500.0, 1 / 1000.0) },
                     { EnvironmentMeasure.Heat, new HazardRate(1 / 2000.0, 1 / 500.0, 1 / 1000.0) },
-                    { EnvironmentMeasure.Poison, new HazardRate(0.0, 1 / 50.0, 1 / 50.0) }
+                    { EnvironmentMeasure.Disease, new HazardRate(0.0, 1 / 50.0, 1 / 50.0) }
                 };
         }
     }

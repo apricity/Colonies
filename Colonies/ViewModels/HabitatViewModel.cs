@@ -90,12 +90,17 @@
             {
                 stringBuilder.AppendLine("----------");
                 stringBuilder.AppendLine(this.DomainModel.Organism.Name);
-                stringBuilder.AppendLine(this.DomainModel.Organism.Intention.ToString());
+                stringBuilder.AppendLine(string.Format("Intention: {0}", this.DomainModel.Organism.Intention));
 
                 foreach (var measurement in this.DomainModel.Organism.MeasurementData.Measurements)
                 {
                     stringBuilder.AppendLine(string.Format("{0}: {1:0.000}", measurement.Measure, measurement.Level));
                 }
+
+                stringBuilder.AppendLine(string.Format("Pheromone {0}", this.DomainModel.Organism.IsPheromoneOverloaded ? "overloaded" : "normal"));
+                stringBuilder.AppendLine(string.Format("Sound {0}", this.DomainModel.Organism.IsSoundOverloaded ? "overloaded" : "normal"));
+                stringBuilder.AppendLine(this.DomainModel.Organism.IsDiseased ? "Diseased" : "Not diseased");
+                stringBuilder.AppendLine(this.DomainModel.Organism.IsInfectious ? "Infectious" : "Not infectious");
             }
 
             stringBuilder.Remove(stringBuilder.Length - 2, 2);

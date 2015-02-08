@@ -12,12 +12,9 @@
         {
         }
 
-        public override bool IsCalling
+        protected override bool IsSounding()
         {
-            get
-            {
-                return false;
-            }
+            return false;
         }
 
         public override Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)

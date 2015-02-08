@@ -168,7 +168,7 @@
             }
         }
 
-        // TODO: needs add, spread, remove for damp, heat, poison...
+        // TODO: needs add, spread, remove for damp, heat, disease...
         public double DampSpreadDenominator
         {
             get

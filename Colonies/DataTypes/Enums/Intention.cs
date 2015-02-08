@@ -12,7 +12,7 @@
                     { EnvironmentMeasure.Sound, 0 },
                     { EnvironmentMeasure.Damp, 0 },
                     { EnvironmentMeasure.Heat, 0 },
-                    { EnvironmentMeasure.Poison, 0 }
+                    { EnvironmentMeasure.Disease, 0 }
                 });
 
         public static readonly Intention Eat = new Intention(1, "Eat", null,
@@ -23,7 +23,7 @@
                     { EnvironmentMeasure.Sound, 10 },
                     { EnvironmentMeasure.Damp, -10 },
                     { EnvironmentMeasure.Heat, -10 },
-                    { EnvironmentMeasure.Poison, -50 }
+                    { EnvironmentMeasure.Disease, -50 }
                 });
 
         public static readonly Intention Harvest = new Intention(2, "Harvest", Inventory.Nutrient,
@@ -33,7 +33,7 @@
                     { EnvironmentMeasure.Pheromone, 10 },
                     { EnvironmentMeasure.Damp, -10 },
                     { EnvironmentMeasure.Heat, -10 },
-                    { EnvironmentMeasure.Poison, -50 }
+                    { EnvironmentMeasure.Disease, -50 }
                 });
 
         public static readonly Intention Nourish = new Intention(3, "Nourish", Inventory.Nutrient,
@@ -43,7 +43,7 @@
                     { EnvironmentMeasure.Pheromone, -25 },
                     { EnvironmentMeasure.Damp, -10 },
                     { EnvironmentMeasure.Heat, -10 },
-                    { EnvironmentMeasure.Poison, -50 }
+                    { EnvironmentMeasure.Disease, -50 }
                 });
 
         public static readonly Intention Mine = new Intention(4, "Mine", Inventory.Mineral,
@@ -52,7 +52,7 @@
                     { EnvironmentMeasure.Mineral, 25 },
                     { EnvironmentMeasure.Damp, -10 },
                     { EnvironmentMeasure.Heat, -10 },
-                    { EnvironmentMeasure.Poison, -50 },
+                    { EnvironmentMeasure.Disease, -50 },
                     { EnvironmentMeasure.Obstruction, -50 }
                 });
 
@@ -62,7 +62,7 @@
                     { EnvironmentMeasure.Sound, 50 },
                     { EnvironmentMeasure.Damp, 10 },
                     { EnvironmentMeasure.Heat, 10 },
-                    { EnvironmentMeasure.Poison, 25 },
+                    { EnvironmentMeasure.Disease, 25 },
                     { EnvironmentMeasure.Obstruction, -50 }
                 });
 
@@ -72,7 +72,7 @@
                     { EnvironmentMeasure.Mineral, 25 },
                     { EnvironmentMeasure.Damp, -10 },
                     { EnvironmentMeasure.Heat, -10 },
-                    { EnvironmentMeasure.Poison, -50 }
+                    { EnvironmentMeasure.Disease, -50 }
                 });
 
         public static readonly Intention Reproduce = new Intention(7, "Reproduce", Inventory.Spawn,
@@ -83,7 +83,7 @@
                 {
                     { EnvironmentMeasure.Damp, -10 },
                     { EnvironmentMeasure.Heat, -10 },
-                    { EnvironmentMeasure.Poison, -50 }
+                    { EnvironmentMeasure.Disease, -50 }
                 });
 
         public static readonly Intention Dead = new Intention(9, "Dead", null,
@@ -94,7 +94,7 @@
                     { EnvironmentMeasure.Sound, 0 },
                     { EnvironmentMeasure.Damp, 0 },
                     { EnvironmentMeasure.Heat, 0 },
-                    { EnvironmentMeasure.Poison, 0 }
+                    { EnvironmentMeasure.Disease, 0 }
                 });
 
         public Inventory RequiredInventory { get; private set; }

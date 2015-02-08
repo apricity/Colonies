@@ -1,6 +1,7 @@
 ﻿namespace Wacton.Colonies.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using Wacton.Colonies.DataTypes;
@@ -48,11 +49,38 @@
         {
             var updateNumber = this.EcosystemStages.UpdateCount + 1; // because ecosystem stages is zero-based
             var updatesPerTurn = this.EcosystemStages.StageCount;
+
+            var previousAudibleOrganismCoordinates = this.EcosystemData.AudibleOrganismCoordinates().ToList();
+
             this.EcosystemStages.ExecuteStage();
-            var ecosystemHistory = this.EcosystemHistoryPuller.Pull();
             this.EcosystemData.IncrementOrganismAges(1 / (double)this.EcosystemStages.StageCount);
+
+            var currentAudibleOrganismCoordinates = this.EcosystemData.AudibleOrganismCoordinates().ToList();
+            var infectiousOrganismCoordinates = this.EcosystemData.InfectiousOrganismCoordinates().ToList();
+
+            this.RemoveEnvironmentDistribution(previousAudibleOrganismCoordinates, EnvironmentMeasure.Sound);
+            this.InsertEnvironmentDistribution(currentAudibleOrganismCoordinates, EnvironmentMeasure.Sound);
+            this.InsertEnvironmentDistribution(infectiousOrganismCoordinates, EnvironmentMeasure.Disease);
+
+            var ecosystemHistory = this.EcosystemHistoryPuller.Pull();
             var updateSummary = new UpdateSummary(updateNumber, updatesPerTurn, ecosystemHistory, this.EcosystemData.OrganismCoordinatePairs());
             return updateSummary;
+        }
+
+        private void RemoveEnvironmentDistribution(IEnumerable<Coordinate> coordinates, EnvironmentMeasure environmentMeasure)
+        {
+            foreach (var coordinate in coordinates)
+            {
+                this.EnvironmentMeasureDistributor.RemoveDistribution(coordinate, environmentMeasure);
+            }
+        }
+
+        private void InsertEnvironmentDistribution(IEnumerable<Coordinate> coordinates, EnvironmentMeasure environmentMeasure)
+        {
+            foreach (var coordinate in coordinates)
+            {
+                this.EnvironmentMeasureDistributor.InsertDistribution(coordinate, environmentMeasure);
+            }
         }
 
         public void SetLevel(Coordinate coordinate, EnvironmentMeasure environmentMeasure, double level)

@@ -12,12 +12,9 @@
         {
         }
 
-        public override bool IsCalling
+        protected override bool IsSounding()
         {
-            get
-            {
-                return this.Intention.Equals(Intention.Reproduce) && this.GetLevel(OrganismMeasure.Health) < 0.995;
-            }
+            return this.Intention.Equals(Intention.Reproduce) && !this.IsReproductive;
         }
 
         public override Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)

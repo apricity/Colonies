@@ -36,14 +36,14 @@
         public void Execute()
         {
             var desiredOrganismCoordinates = this.GetDesiredCoordinates();
-            var movedOrganismCoordinates = this.ResolveOrganismHabitats(desiredOrganismCoordinates, new List<IOrganism>());
+            var resolvedOrganismCoordinates = this.ResolveOrganismHabitats(desiredOrganismCoordinates, new List<IOrganism>());
 
             this.IncreasePheromoneLevels();
             this.IncreaseMineralLevels();
 
-            foreach (var movedOrganismCoordinate in movedOrganismCoordinates)
+            foreach (var organismCoordinate in resolvedOrganismCoordinates)
             {
-                this.ecosystemData.MoveOrganism(movedOrganismCoordinate.Key, movedOrganismCoordinate.Value);
+                this.ecosystemData.MoveOrganism(organismCoordinate.Key, organismCoordinate.Value);
             }
 
             // for any organisms that attempted to move to an obstructed habitat, decrease obstruction level
@@ -187,7 +187,7 @@
 
         private void InsertSoundDistribution()
         {
-            foreach (var organismCoordinate in this.ecosystemData.CallingOrganismCoordinates())
+            foreach (var organismCoordinate in this.ecosystemData.AudibleOrganismCoordinates())
             {
                 this.environmentMeasureDistributor.InsertDistribution(organismCoordinate, EnvironmentMeasure.Sound);
             }

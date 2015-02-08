@@ -30,13 +30,6 @@
         }
 
         private double IntentionStartAge { get; set; }
-        private double IntentionDuration
-        {
-            get
-            {
-                return Math.Round(this.Age - this.IntentionStartAge, 4);
-            }
-        }
 
         private readonly MeasurementData<OrganismMeasure> measurementData;
         public IMeasurementData<OrganismMeasure> MeasurementData
@@ -55,14 +48,28 @@
             }
         }
 
-        public abstract bool IsCalling { get; }
+        public bool IsReproductive
+        {
+            get
+            {
+                return this.Intention.Equals(Intention.Reproduce) && this.GetLevel(OrganismMeasure.Health) >= 0.995;
+            }
+        }
+
+        public bool IsAudible
+        {
+            get
+            {
+                return this.IsSoundOverloaded || this.IsSounding();
+            }
+        }
 
         public bool IsDepositingPheromone
         {
             get
             {
                 // TODO: intention duration limit should probably be relative to the size of the ecosystem
-                return this.Intention.Equals(Intention.Nourish) && this.IntentionDuration <= 50;
+                return this.IsPheromoneOverloaded || (this.Intention.Equals(Intention.Nourish) && this.IsWithinDuration(this.IntentionStartAge, 50));
             }
         }
 
@@ -71,6 +78,42 @@
             get
             {
                 return this.Intention.EnvironmentBiases;
+            }
+        }
+
+        // TODO: overload and disease durations should come from settings
+        private double PheromoneOverloadStartAge { get; set; }
+        public bool IsPheromoneOverloaded
+        {
+            get
+            {
+                return this.IsWithinDuration(this.PheromoneOverloadStartAge, 20);
+            }
+        }
+
+        private double SoundOverloadedStartAge { get; set; }
+        public bool IsSoundOverloaded
+        {
+            get
+            {
+                return this.IsWithinDuration(this.SoundOverloadedStartAge, 20);
+            }
+        }
+
+        private double DiseaseStartAge { get; set; }
+        public bool IsDiseased
+        {
+            get
+            {
+                return this.IsWithinDuration(this.DiseaseStartAge, 100);
+            }
+        }
+
+        public bool IsInfectious
+        {
+            get
+            {
+                return this.IsWithinDuration(this.DiseaseStartAge, 10);
             }
         }
 
@@ -86,12 +129,18 @@
 
             this.Intention = Intention.None;
             this.UpdateIntention(initialIntention);
+
+            this.PheromoneOverloadStartAge = double.NaN;
+            this.SoundOverloadedStartAge = double.NaN;
+            this.DiseaseStartAge = double.NaN;
         }
 
         public void IncrementAge(double increment)
         {
             this.Age += increment;
         }
+
+        protected abstract bool IsSounding();
 
         public abstract Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);
 
@@ -126,6 +175,40 @@
         public double AdjustLevel(OrganismMeasure measure, double adjustment)
         {
             return this.measurementData.AdjustLevel(measure, adjustment);
+        }
+
+        public void OverloadPheromone()
+        {
+            if (!this.IsPheromoneOverloaded)
+            {
+                this.PheromoneOverloadStartAge = this.Age;
+            }
+        }
+
+        public void OverloadSound()
+        {
+            if (!this.IsSoundOverloaded)
+            {
+                this.SoundOverloadedStartAge = this.Age;
+            }
+        }
+
+        public void ContractDisease()
+        {
+            if (!this.IsDiseased)
+            {
+                this.DiseaseStartAge = this.Age;
+            }
+        }
+
+        private bool IsWithinDuration(double startAge, double duration)
+        {
+            return !double.IsNaN(startAge) && this.GetDuration(startAge) <= duration;
+        }
+
+        private double GetDuration(double startAge)
+        {
+            return Math.Round(this.Age - startAge, 4);
         }
 
         public override string ToString()

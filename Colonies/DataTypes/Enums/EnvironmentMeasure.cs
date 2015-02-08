@@ -12,13 +12,13 @@
         public static readonly EnvironmentMeasure Mineral = new EnvironmentMeasure(2, "Mineral", WeatherType.None);
         public static readonly EnvironmentMeasure Damp = new EnvironmentMeasure(3, "Damp", WeatherType.Damp);
         public static readonly EnvironmentMeasure Heat = new EnvironmentMeasure(4, "Heat", WeatherType.Heat);
-        public static readonly EnvironmentMeasure Poison = new EnvironmentMeasure(5, "Poison", WeatherType.None);
+        public static readonly EnvironmentMeasure Disease = new EnvironmentMeasure(5, "Disease", WeatherType.None);
         public static readonly EnvironmentMeasure Obstruction = new EnvironmentMeasure(6, "Obstruction", WeatherType.None);
         public static readonly EnvironmentMeasure Sound = new EnvironmentMeasure(7, "Sound", WeatherType.None);
 
         public static IEnumerable<EnvironmentMeasure> HazardousMeasures()
         {
-            return new List<EnvironmentMeasure> { Heat, Damp, Poison };
+            return new List<EnvironmentMeasure> { Heat, Damp, Disease };
         }
 
         public static IEnumerable<EnvironmentMeasure> TransportableMeasures()

@@ -61,7 +61,7 @@
 
         public void RefreshWeatherColor()
         {
-            this.WeatherColor = ColorLogic.WeatherColor(
+            this.WeatherColor = ColorLogic.ModifyColor(
                 Color.FromRgb(17, 17, 17),
                 new List<WeightedColor>
                     {

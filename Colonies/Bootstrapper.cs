@@ -80,7 +80,7 @@
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
-            foreach (var organismCoordinate in ecosystemData.CallingOrganismCoordinates())
+            foreach (var organismCoordinate in ecosystemData.AudibleOrganismCoordinates())
             {
                 ecosystem.EnvironmentMeasureDistributor.InsertDistribution(organismCoordinate, EnvironmentMeasure.Sound);
             }
@@ -121,7 +121,7 @@
             {
                 for (var j = 4; j <= 5; j++)
                 {
-                    ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(i, j), EnvironmentMeasure.Poison);
+                    ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(i, j), EnvironmentMeasure.Disease);
                 }
             }
 
@@ -171,7 +171,7 @@
                                             { new Defender("Waffle", Colors.Silver), new Coordinate(2, 2) },
                                             { new Gatherer("Wilber", Colors.Silver), new Coordinate(2, 7) },
                                             { new Gatherer("Lotty", Colors.Silver), new Coordinate(7, 2) },
-                                            { new Queen("Dr. Louise", Colors.Silver), new Coordinate(0, 9) },
+                                            { new Queen("Dr. Louise", Colors.Silver), new Coordinate(7, 7) },
                                         };
 
             return organismLocations;

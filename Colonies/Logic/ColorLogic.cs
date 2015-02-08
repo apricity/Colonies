@@ -16,12 +16,7 @@
             return ModifyColor(baseEnvironmentColor, modifyingWeightedColors);
         }
 
-        public static Color WeatherColor(Color baseWeatherColor, List<WeightedColor> modifyingWeightedColors)
-        {
-            return ModifyColor(baseWeatherColor, modifyingWeightedColors);
-        }
-
-        private static Color ModifyColor(Color baseColor, List<WeightedColor> modifyingWeightedColors)
+        public static Color ModifyColor(Color baseColor, List<WeightedColor> modifyingWeightedColors)
         {
             // remove any modifiers that have no effect
             modifyingWeightedColors = modifyingWeightedColors.Where(weightedColor => weightedColor.Weight > 0.0).ToList();

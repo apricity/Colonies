@@ -23,8 +23,15 @@
         {
             get
             {
-                return EnvironmentMeasure.HazardousMeasures()
-                    .Any(environmentMeasure => this.measurementData.GetLevel(environmentMeasure).Equals(1.0));
+                return EnvironmentMeasure.HazardousMeasures().Any(environmentMeasure => this.GetLevel(environmentMeasure).Equals(1.0));
+            }
+        }
+
+        public IEnumerable<EnvironmentMeasure> HarmfulMeasures
+        {
+            get
+            {
+                return EnvironmentMeasure.HazardousMeasures().Where(environmentMeasure => this.GetLevel(environmentMeasure).Equals(1.0));
             }
         }
 

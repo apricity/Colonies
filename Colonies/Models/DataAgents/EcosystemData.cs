@@ -89,9 +89,19 @@
             return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsDepositingPheromone).Select(this.CoordinateOf);
         }
 
-        public IEnumerable<Coordinate> CallingOrganismCoordinates()
+        public IEnumerable<Coordinate> AudibleOrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsCalling).Select(this.CoordinateOf);
+            return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsAudible).Select(this.CoordinateOf);
+        }
+
+        public IEnumerable<Coordinate> DiseasedOrganismCoordinates()
+        {
+            return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsDiseased).Select(this.CoordinateOf);
+        }
+
+        public IEnumerable<Coordinate> InfectiousOrganismCoordinates()
+        {
+            return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsInfectious).Select(this.CoordinateOf);
         }
 
         public bool HasLevel(Coordinate coordinate, EnvironmentMeasure measure)

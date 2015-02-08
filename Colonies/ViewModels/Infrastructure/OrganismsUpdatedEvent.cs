@@ -1,8 +1,8 @@
 ﻿namespace Wacton.Colonies.ViewModels.Infrastructure
 {
-    using Microsoft.Practices.Prism.Events;
+    using Microsoft.Practices.Prism.PubSubEvents;
 
-    public class OrganismsUpdatedEvent : CompositePresentationEvent<object>
+    public class OrganismsUpdatedEvent : PubSubEvent<object>
     {
     }
 }

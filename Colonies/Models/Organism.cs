@@ -62,7 +62,7 @@
             get
             {
                 // TODO: intention duration limit should probably be relative to the size of the ecosystem
-                return this.Intention.Equals(Intention.Nourish) && this.IntentionDuration <= 50
+                return this.Intention.Equals(Intention.Nourish) && this.IntentionDuration <= 50;
             }
         }
 

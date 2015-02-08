@@ -10,6 +10,8 @@
 
         Color Color { get; }
 
+        double Age { get; }
+
         Inventory Inventory { get; }
 
         Intention Intention { get; }
@@ -17,6 +19,8 @@
         bool IsAlive { get; }
 
         bool IsCalling { get; }
+
+        void IncrementAge(double increment);
 
         Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);
 

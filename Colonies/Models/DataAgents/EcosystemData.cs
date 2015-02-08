@@ -276,5 +276,14 @@
                 organism.UpdateIntention(intention);
             }
         }
+
+        public void IncrementOrganismAges(double increment)
+        {
+            foreach (var organismCoordinate in this.AliveOrganismCoordinates())
+            {
+                var organism = this.GetOrganism(organismCoordinate);
+                organism.IncrementAge(increment);
+            }
+        }
     }
 }

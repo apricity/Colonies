@@ -50,6 +50,7 @@
             var updatesPerTurn = this.EcosystemStages.StageCount;
             this.EcosystemStages.ExecuteStage();
             var ecosystemHistory = this.EcosystemHistoryPuller.Pull();
+            this.EcosystemData.IncrementOrganismAges(1 / (double)this.EcosystemStages.StageCount);
             var updateSummary = new UpdateSummary(updateNumber, updatesPerTurn, ecosystemHistory, this.EcosystemData.OrganismCoordinatePairs());
             return updateSummary;
         }

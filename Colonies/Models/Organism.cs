@@ -14,6 +14,7 @@
         public string Name { get; private set; }
         public Color Color { get; private set; }
         public Inventory Inventory { get; private set; }
+        public double Age { get; private set; }
 
         private Intention intention;
         public Intention Intention
@@ -28,7 +29,14 @@
             }
         }
 
-        public int IntentionDuration { get; private set; }
+        private double IntentionStartAge { get; set; }
+        private double IntentionDuration
+        {
+            get
+            {
+                return Math.Round(this.Age - this.IntentionStartAge, 4);
+            }
+        }
 
         private readonly MeasurementData<OrganismMeasure> measurementData;
         public IMeasurementData<OrganismMeasure> MeasurementData
@@ -54,8 +62,7 @@
             get
             {
                 // TODO: intention duration limit should probably be relative to the size of the ecosystem
-                // note: at time of writing, each turn increases the intention duration by 2 (once in EnvironmentInteraction, once in OrganismInteraction)
-                return this.Intention.Equals(Intention.Nourish) && this.IntentionDuration <= 100;
+                return this.Intention.Equals(Intention.Nourish) && this.IntentionDuration <= 50
             }
         }
 
@@ -81,6 +88,13 @@
             this.UpdateIntention(initialIntention);
         }
 
+        public void IncrementAge(double increment)
+        {
+            this.Age += increment;
+        }
+
+        public abstract Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);
+
         public void UpdateIntention(Intention newIntention)
         {
             if (!newIntention.IsCompatibleWith(this.Inventory))
@@ -92,16 +106,12 @@
 
             if (this.Intention.Equals(newIntention))
             {
-                this.IntentionDuration++;
+                return;
             }
-            else
-            {
-                this.Intention = newIntention;
-                this.IntentionDuration = 0;
-            }
-        }
 
-        public abstract Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);
+            this.Intention = newIntention;
+            this.IntentionStartAge = this.Age;
+        }
 
         public double GetLevel(OrganismMeasure measure)
         {
@@ -120,7 +130,7 @@
 
         public override string ToString()
         {
-            return string.Format("{0}: {1} {2} {3}", this.Name, this.GetLevel(OrganismMeasure.Health), this.Intention, this.Color);
+            return string.Format("{0}: {1} | {2} | {3} | {4}", this.Name, this.GetLevel(OrganismMeasure.Health).ToString("0.000"), this.Age.ToString("0.00"), this.Intention, this.Color);
         }
     }
 }

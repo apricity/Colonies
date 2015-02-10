@@ -9,13 +9,6 @@
 
     public static class ColorLogic
     {
-        public static Color EnvironmentColor(Color baseEnvironmentColor, WeightedColor mineralWeightedColor, List<WeightedColor> modifyingWeightedColors)
-        {
-            // set up the base color before applying the list of modifiers
-            baseEnvironmentColor = InterpolateColor(baseEnvironmentColor, mineralWeightedColor.Color, mineralWeightedColor.Weight);
-            return ModifyColor(baseEnvironmentColor, modifyingWeightedColors);
-        }
-
         public static Color ModifyColor(Color baseColor, List<WeightedColor> modifyingWeightedColors)
         {
             // remove any modifiers that have no effect

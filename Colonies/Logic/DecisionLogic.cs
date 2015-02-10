@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Interfaces;
     using Wacton.Colonies.Models.Interfaces;
     using Wacton.Colonies.Utilities;
@@ -29,6 +30,34 @@
                 }
 
                 randomNumber -= 1;
+            }
+
+            if (!itemChosen)
+            {
+                throw new NullReferenceException("An item has not been chosen");
+            }
+
+            return chosenItem;
+        }
+
+        public static T MakeDecision<T>(IEnumerable<WeightedItem<T>> weightedItems)
+        {
+            var chosenItem = default(T);
+            var itemList = weightedItems.ToList();
+            var totalWeight = itemList.Sum(weightedItem => weightedItem.Weight);
+
+            var itemChosen = false;
+            var randomNumber = RandomNumberGenerator.RandomDouble(totalWeight);
+            foreach (var weightedItem in itemList)
+            {
+                if (randomNumber <= weightedItem.Weight)
+                {
+                    chosenItem = weightedItem.Item;
+                    itemChosen = true;
+                    break;
+                }
+
+                randomNumber -= weightedItem.Weight;
             }
 
             if (!itemChosen)

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.InteropServices;
     using System.Windows.Media;
 
     using Microsoft.Practices.Prism.PubSubEvents;
@@ -215,15 +216,16 @@
 
         private void RefreshEnvironmentColor()
         {
-            this.EnvironmentColor = ColorLogic.EnvironmentColor(
-                this.baseColor,
-                new WeightedColor(MeasureColors[EnvironmentMeasure.Mineral], this.MineralLevel),
-                new List<WeightedColor>
+            var mineralWeightedColor = new WeightedColor(MeasureColors[EnvironmentMeasure.Mineral], this.MineralLevel);
+            var hazardWeightedColors = new List<WeightedColor>
                     {
                         new WeightedColor(MeasureColors[EnvironmentMeasure.Damp], this.DampLevel),
                         new WeightedColor(MeasureColors[EnvironmentMeasure.Heat], this.HeatLevel),
                         new WeightedColor(MeasureColors[EnvironmentMeasure.Disease], this.DiseaseLevel)
-                    });
+                    };
+
+            var preHazardColor = ColorLogic.ModifyColor(this.baseColor, new List<WeightedColor> { mineralWeightedColor });
+            this.EnvironmentColor = ColorLogic.ModifyColor(preHazardColor, hazardWeightedColors);
         }
     }
 }

@@ -33,6 +33,12 @@
         {
             foreach (var organismCoordinate in this.ecosystemData.OrganismCoordinates(Intention.Birth).ToList())
             {
+                var parentOrganism = this.ecosystemData.GetOrganism(organismCoordinate);
+                if (parentOrganism.GetLevel(OrganismMeasure.Inventory) < 1.0)
+                {
+                    continue;
+                }
+
                 var neighbourCoordinates = this.ecosystemData.GetValidNeighbours(organismCoordinate, 1, false, false).ToList();
                 var vacantCoordinates = neighbourCoordinates.Where(coordinate =>
                         !this.ecosystemData.HasLevel(coordinate, EnvironmentMeasure.Obstruction)
@@ -40,11 +46,10 @@
 
                 if (!vacantCoordinates.Any())
                 {
-                    return;
+                    continue;
                 }
 
                 var childCoordinate = DecisionLogic.MakeDecision(vacantCoordinates);
-                var parentOrganism = this.ecosystemData.GetOrganism(organismCoordinate);
                 var childOrganism = this.organismFactory.CreateChildOrganism(parentOrganism);
                 this.ecosystemData.AddOrganism(childOrganism, childCoordinate);
                 this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, -1.0);

@@ -46,7 +46,7 @@
         {
             get
             {
-                return this.measurementData.GetLevel(OrganismMeasure.Health) > 0.0;
+                return this.GetLevel(OrganismMeasure.Health) > 0.0;
             }
         }
 

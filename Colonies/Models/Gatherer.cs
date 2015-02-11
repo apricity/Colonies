@@ -7,24 +7,29 @@
 
     public class Gatherer : Organism
     {
-        public Gatherer(string name, Color color)
-            : base(name, color, Inventory.Nutrient, Intention.Harvest)
-        {
+        public Gatherer(string name, Color color) : base(name, color, new GathererLogic())
+        { 
         }
 
-        protected override bool IsSounding()
+        private class GathererLogic : IOrganismLogic 
         {
-            return false;
-        }
-
-        public override Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
-        {
-            if (this.GetLevel(OrganismMeasure.Health) < 0.25)
+            public Inventory PreferredInventory
             {
-                return Intention.Eat;
+                get
+                {
+                    return Inventory.Nutrient;
+                }
             }
 
-            return this.GetLevel(OrganismMeasure.Inventory) < 0.75 ? Intention.Harvest : Intention.Nourish;
+            public bool IsSounding(IOrganismState organismState)
+            {
+                return false;
+            }
+
+            public Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+            {
+                return organismState.GetLevel(OrganismMeasure.Inventory) < 0.75 ? Intention.Harvest : Intention.Nourish;
+            }
         }
     }
 }

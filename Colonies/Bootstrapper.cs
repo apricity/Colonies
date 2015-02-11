@@ -117,6 +117,19 @@
             ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(15, 6), EnvironmentMeasure.Heat);
             ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(19, 9), EnvironmentMeasure.Heat);
 
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(2, 2), EnvironmentMeasure.Heat);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(2, 2), EnvironmentMeasure.Disease);
+
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(2, 7), EnvironmentMeasure.Damp);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(2, 7), EnvironmentMeasure.Disease);
+
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(7, 2), EnvironmentMeasure.Heat);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(7, 2), EnvironmentMeasure.Damp);
+
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(7, 7), EnvironmentMeasure.Heat);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(7, 7), EnvironmentMeasure.Damp);
+            ecosystem.EnvironmentMeasureDistributor.InsertDistribution(new Coordinate(7, 7), EnvironmentMeasure.Disease);
+
             for (var i = 12; i < ecosystem.Width; i++)
             {
                 for (var j = 4; j <= 5; j++)

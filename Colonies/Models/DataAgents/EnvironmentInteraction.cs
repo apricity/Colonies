@@ -47,7 +47,7 @@
         private void InventoryNutrientInteraction(Coordinate organismCoordinate)
         {
             var organism = this.ecosystemData.GetOrganism(organismCoordinate);
-            if (!organism.Intention.Equals(Intention.Eat) || !organism.Inventory.Equals(Inventory.Nutrient))
+            if (!organism.CurrentIntention.Equals(Intention.Eat))
             {
                 return;
             }
@@ -70,7 +70,7 @@
                 return;
             }
 
-            if (organism.Intention.Equals(Intention.Harvest))
+            if (organism.CurrentIntention.Equals(Intention.Harvest))
             {
                 var desiredNutrient = 1 - organism.GetLevel(OrganismMeasure.Inventory);
                 var nutrientTaken = Math.Min(desiredNutrient, availableNutrient);
@@ -78,7 +78,7 @@
                 this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Nutrient, -nutrientTaken);
             }
 
-            if (organism.Intention.Equals(Intention.Eat))
+            if (organism.CurrentIntention.Equals(Intention.Eat))
             {
                 var desiredNutrient = 1 - organism.GetLevel(OrganismMeasure.Health);
                 var nutrientTaken = Math.Min(desiredNutrient, availableNutrient);
@@ -97,7 +97,7 @@
                 return;
             }
 
-            if (organism.Intention.Equals(Intention.Mine))
+            if (organism.CurrentIntention.Equals(Intention.Mine))
             {
                 var desiredMineral = 1 - organism.GetLevel(OrganismMeasure.Inventory);
                 var mineralTaken = Math.Min(desiredMineral, availableMineral);
@@ -127,7 +127,7 @@
                 }
             }
 
-            if (!organism.Intention.Equals(Intention.Build) || organism.GetLevel(OrganismMeasure.Inventory) < 1.0)
+            if (!organism.CurrentIntention.Equals(Intention.Build) || organism.GetLevel(OrganismMeasure.Inventory) < 1.0)
             {
                 return;
             }

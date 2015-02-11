@@ -349,19 +349,29 @@
 
         private class TestOrganism : Organism
         {
-            public TestOrganism(string name, Color color)
-                : base(name, color, Inventory.Nutrient, Intention.Eat)
+            public TestOrganism(string name, Color color) : base (name, color, new TestOrganismLogic())
             {
             }
 
-            protected override bool IsSounding()
+            private class TestOrganismLogic : IOrganismLogic
             {
-                return false;
-            }
+                public Inventory PreferredInventory
+                {
+                    get
+                    {
+                        return Inventory.Nutrient;
+                    }
+                }
 
-            public override Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
-            {
-                return this.Intention;
+                public bool IsSounding(IOrganismState organismState)
+                {
+                    return false;
+                }
+
+                public Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+                {
+                    return organismState.CurrentIntention;
+                }
             }
         }
     }

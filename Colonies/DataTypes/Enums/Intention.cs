@@ -97,21 +97,21 @@
                     { EnvironmentMeasure.Disease, 0 }
                 });
 
-        public Inventory RequiredInventory { get; private set; }
+        public Inventory AssociatedInventory { get; private set; }
         public Dictionary<EnvironmentMeasure, double> EnvironmentBiases { get; private set; } 
 
         private bool RequiresInventory
         {
             get
             {
-                return this.RequiredInventory != null;
+                return this.AssociatedInventory != null;
             }
         }
 
-        private Intention(int value, string friendlyString, Inventory requiredInventory, Dictionary<EnvironmentMeasure, double> environmentBiases)
+        private Intention(int value, string friendlyString, Inventory associatedInventory, Dictionary<EnvironmentMeasure, double> environmentBiases)
             : base(value, friendlyString)
         {
-            this.RequiredInventory = requiredInventory;
+            this.AssociatedInventory = associatedInventory;
 
             this.EnvironmentBiases = new Dictionary<EnvironmentMeasure, double>();
             foreach (var environmentMeasure in Enumeration.GetAll<EnvironmentMeasure>())
@@ -125,9 +125,15 @@
             }
         }
 
-        public bool IsCompatibleWith(Inventory inventory)
+        public bool HasConflictingInventory(Intention otherIntention)
         {
-            return !this.RequiresInventory || this.RequiredInventory.Equals(inventory);
+            if (this.AssociatedInventory == null
+                || otherIntention.AssociatedInventory == null)
+            {
+                return false;
+            }
+
+            return !this.AssociatedInventory.Equals(otherIntention.AssociatedInventory);
         }
     }
 }

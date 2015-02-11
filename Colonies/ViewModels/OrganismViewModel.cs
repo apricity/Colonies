@@ -173,8 +173,8 @@
                 this.IsAlive = this.DomainModel.IsAlive;
                 this.HealthLevel = this.DomainModel.MeasurementData.GetLevel(OrganismMeasure.Health);
                 this.Name = this.DomainModel.Name;
-                this.NameAndIntention = string.Format("{0} : {1} ({2})", this.DomainModel.Name, this.DomainModel.Age.ToString("0.00"), this.DomainModel.Intention);
-                this.InventoryColor = InventoryColors[this.DomainModel.Inventory];
+                this.NameAndIntention = string.Format("{0} : {1} ({2})", this.DomainModel.Name, this.DomainModel.Age.ToString("0.00"), this.DomainModel.CurrentIntention);
+                this.InventoryColor = InventoryColors[this.DomainModel.CurrentInventory];
                 this.InventoryScalar = this.DomainModel.GetLevel(OrganismMeasure.Inventory) / 2.0;
                 this.RefreshHazardColor();
             }

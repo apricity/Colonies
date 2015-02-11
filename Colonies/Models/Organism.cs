@@ -13,23 +13,25 @@
     {
         public string Name { get; private set; }
         public Color Color { get; private set; }
-        public Inventory Inventory { get; private set; }
         public double Age { get; private set; }
+        private IOrganismLogic OrganismLogic { get; set; }
 
-        private Intention intention;
-        public Intention Intention
+        private Intention currentIntention;
+        public Intention CurrentIntention
         {
             get
             {
-                return this.IsAlive ? this.intention : Intention.Dead;
+                return this.IsAlive ? this.currentIntention : Intention.Dead;
             }
             private set
             {
-                this.intention = value;
+                this.currentIntention = value;
             }
         }
 
-        private double IntentionStartAge { get; set; }
+        private double CurrentIntentionStartAge { get; set; }
+
+        public Inventory CurrentInventory { get; private set; }
 
         private readonly MeasurementData<OrganismMeasure> measurementData;
         public IMeasurementData<OrganismMeasure> MeasurementData
@@ -52,7 +54,7 @@
         {
             get
             {
-                return this.Intention.Equals(Intention.Reproduce) && this.GetLevel(OrganismMeasure.Health) >= 0.995;
+                return this.CurrentIntention.Equals(Intention.Reproduce) && this.GetLevel(OrganismMeasure.Health) >= 0.995;
             }
         }
 
@@ -60,7 +62,7 @@
         {
             get
             {
-                return this.IsSoundOverloaded || this.IsSounding();
+                return this.IsSoundOverloaded || this.IsSounding(this);
             }
         }
 
@@ -69,7 +71,7 @@
             get
             {
                 // TODO: intention duration limit should probably be relative to the size of the ecosystem
-                return this.IsPheromoneOverloaded || (this.Intention.Equals(Intention.Nourish) && this.IsWithinDuration(this.IntentionStartAge, 50));
+                return this.IsPheromoneOverloaded || (this.CurrentIntention.Equals(Intention.Nourish) && this.IsWithinDuration(this.CurrentIntentionStartAge, 50));
             }
         }
 
@@ -77,7 +79,7 @@
         {
             get
             {
-                return this.Intention.EnvironmentBiases;
+                return this.CurrentIntention.EnvironmentBiases;
             }
         }
 
@@ -117,18 +119,17 @@
             }
         }
 
-        protected Organism(string name, Color color, Inventory inventoryType, Intention initialIntention)
+        protected Organism(string name, Color color, IOrganismLogic organismLogic)
         {
             this.Name = name;
             this.Color = color;
-            this.Inventory = inventoryType;
+            this.OrganismLogic = organismLogic;
 
             var health = new Measurement<OrganismMeasure>(OrganismMeasure.Health, 1.0);
             var inventory = new Measurement<OrganismMeasure>(OrganismMeasure.Inventory, 0.0);
             this.measurementData = new MeasurementData<OrganismMeasure>(new List<Measurement<OrganismMeasure>> { health, inventory });
-
-            this.Intention = Intention.None;
-            this.UpdateIntention(initialIntention);
+            this.CurrentIntention = Intention.None;
+            this.CurrentInventory = this.OrganismLogic.PreferredInventory;
 
             this.PheromoneOverloadStartAge = double.NaN;
             this.SoundOverloadedStartAge = double.NaN;
@@ -140,26 +141,31 @@
             this.Age += increment;
         }
 
-        protected abstract bool IsSounding();
+        private bool IsSounding(IOrganismState organismState)
+        {
+            return this.OrganismLogic.IsSounding(organismState);
+        }
 
-        public abstract Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment);
+        public Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+        {
+            return this.OrganismLogic.DecideIntention(measurableEnvironment, this);
+        }
 
         public void UpdateIntention(Intention newIntention)
         {
-            if (!newIntention.IsCompatibleWith(this.Inventory))
-            {
-                throw new InvalidOperationException(
-                    string.Format("Intention {0} is incompatible with inventory {1} (requires inventory {2})", 
-                                  newIntention, this.Inventory, newIntention.RequiredInventory));
-            }
-
-            if (this.Intention.Equals(newIntention))
+            if (this.CurrentIntention.Equals(newIntention))
             {
                 return;
             }
 
-            this.Intention = newIntention;
-            this.IntentionStartAge = this.Age;
+            if (newIntention.HasConflictingInventory(this.CurrentIntention))
+            {
+                this.SetLevel(OrganismMeasure.Inventory, 0.0);
+                this.CurrentInventory = newIntention.AssociatedInventory;
+            }
+
+            this.CurrentIntention = newIntention;
+            this.CurrentIntentionStartAge = this.Age;
         }
 
         public double GetLevel(OrganismMeasure measure)
@@ -213,7 +219,7 @@
 
         public override string ToString()
         {
-            return string.Format("{0}: {1} | {2} | {3} | {4}", this.Name, this.GetLevel(OrganismMeasure.Health).ToString("0.000"), this.Age.ToString("0.00"), this.Intention, this.Color);
+            return string.Format("{0}: {1} | {2} | {3} | {4}", this.Name, this.GetLevel(OrganismMeasure.Health).ToString("0.000"), this.Age.ToString("0.00"), this.CurrentIntention, this.Color);
         }
     }
 }

@@ -75,7 +75,7 @@
             // TODO: better way?!  perhaps organism tries to give food to anyone audible (even if not queen)
             var neighbourCoordinates = this.ecosystemData.GetValidNeighbours(coordinate, 1, false, false).ToList();
             var neighbourOrganisms = neighbourCoordinates.Select(this.ecosystemData.GetOrganism).Where(organism => organism != null).ToList();
-            return neighbourOrganisms.Where(neighbour => neighbour.Intention.Equals(Intention.Reproduce) && !neighbour.IsReproductive).ToList();
+            return neighbourOrganisms.Where(neighbour => neighbour.CurrentIntention.Equals(Intention.Reproduce) && !neighbour.IsReproductive).ToList();
         }
     }
 }

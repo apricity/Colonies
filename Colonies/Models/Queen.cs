@@ -7,29 +7,39 @@
 
     public class Queen : Organism
     {
-        public Queen(string name, Color color)
-            : base(name, color, Inventory.Spawn, Intention.Nest)
+        public Queen(string name, Color color) : base(name, color, new QueenLogic())
         {
         }
 
-        protected override bool IsSounding()
+        private class QueenLogic : IOrganismLogic
         {
-            return this.Intention.Equals(Intention.Reproduce) && !this.IsReproductive;
-        }
-
-        public override Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
-        {
-            if (this.GetLevel(OrganismMeasure.Health) < 0.33)
+            public Inventory PreferredInventory
             {
-                return Intention.Eat;
+                get
+                {
+                    return Inventory.Spawn;
+                }
             }
 
-            if (this.GetLevel(OrganismMeasure.Inventory).Equals(1.0))
+            public bool IsSounding(IOrganismState organismState)
             {
-                return Intention.Birth;
+                return organismState.CurrentIntention.Equals(Intention.Reproduce) && !organismState.IsReproductive;
             }
 
-            return measurableEnvironment.MeasurementData.GetLevel(EnvironmentMeasure.Mineral) < 1.0 ? Intention.Nest : Intention.Reproduce;
+            public Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+            {
+                if (organismState.GetLevel(OrganismMeasure.Health) < 0.33)
+                {
+                    return Intention.Eat;
+                }
+
+                if (organismState.GetLevel(OrganismMeasure.Inventory).Equals(1.0))
+                {
+                    return Intention.Birth;
+                }
+
+                return measurableEnvironment.GetLevel(EnvironmentMeasure.Mineral) < 1.0 ? Intention.Nest : Intention.Reproduce;
+            }
         }
     }
 }

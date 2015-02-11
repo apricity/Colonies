@@ -50,7 +50,12 @@
 
             foreach (var organismCoordinate in organismCoordinates)
             {
-                this.AddOrganism(organismCoordinate.Key, this.HabitatAt(organismCoordinate.Value));
+                var organism = organismCoordinate.Key;
+                var coordinate = organismCoordinate.Value;
+
+                this.AddOrganism(organism, this.HabitatAt(coordinate));
+                var initialIntention = organism.DecideIntention(this.GetEnvironment(coordinate));
+                organism.UpdateIntention(initialIntention);
             }
         }
 
@@ -71,7 +76,7 @@
 
         public IEnumerable<Coordinate> OrganismCoordinates(Intention intention)
         {
-            return this.OrganismHabitats.Keys.Where(organism => organism.Intention.Equals(intention)).Select(this.CoordinateOf);
+            return this.OrganismHabitats.Keys.Where(organism => organism.CurrentIntention.Equals(intention)).Select(this.CoordinateOf);
         }
 
         public IEnumerable<Coordinate> AliveOrganismCoordinates()

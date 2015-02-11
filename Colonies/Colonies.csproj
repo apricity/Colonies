@@ -137,6 +137,8 @@
     <Compile Include="Models\DataAgents\OrganismMovement.cs" />
     <Compile Include="Models\DataAgents\EcosystemHistory.cs" />
     <Compile Include="Models\DataAgents\EnvironmentInteraction.cs" />
+    <Compile Include="Models\Interfaces\IOrganismState.cs" />
+    <Compile Include="Models\Interfaces\IOrganismLogic.cs" />
     <Compile Include="Models\Interfaces\IEcosystemHistory.cs" />
     <Compile Include="Models\Interfaces\IEcosystemHistoryPusher.cs" />
     <Compile Include="Models\Interfaces\IEcosystemHistoryPuller.cs" />

@@ -35,12 +35,36 @@
 
         private void PerformInteractions()
         {
+            //foreach (var organismCoordinate in this.ecosystemData.AliveOrganismCoordinates())
+            //{
+            //    this.InventoryNutrientInteraction(organismCoordinate);
+            //    this.EnvironmentNutrientInteraction(organismCoordinate);
+            //    this.EnvironmentMineralInteraction(organismCoordinate);
+            //    this.EnvironmentHazardInteraction(organismCoordinate);
+            //}
+
             foreach (var organismCoordinate in this.ecosystemData.AliveOrganismCoordinates())
             {
-                this.InventoryNutrientInteraction(organismCoordinate);
-                this.EnvironmentNutrientInteraction(organismCoordinate);
-                this.EnvironmentMineralInteraction(organismCoordinate);
-                this.EnvironmentHazardInteraction(organismCoordinate);
+                var organism = this.ecosystemData.GetOrganism(organismCoordinate);
+                var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
+
+                // TODO: put new 'can interact' etc methods on organism itself, as well as intention.  that way, organism can pass its own context
+                if (!organism.CurrentIntention.IntentionLogic.CanInteractEnvironment(environment, organism))
+                {
+                    continue;
+                }
+
+                var adjustments = organism.CurrentIntention.IntentionLogic.InteractEnvironmentAdjustments(environment, organism);
+
+                foreach (var organismMeasureAdjustment in adjustments.OrganismMeasureAdjustments)
+                {
+                    this.ecosystemData.AdjustLevel(organismCoordinate, organismMeasureAdjustment.Key, organismMeasureAdjustment.Value);
+                }
+
+                foreach (var organismMeasureAdjustment in adjustments.EnvironmentMeasureAdjustments)
+                {
+                    this.ecosystemData.AdjustLevel(organismCoordinate, organismMeasureAdjustment.Key, organismMeasureAdjustment.Value);
+                }
             }
         }
 

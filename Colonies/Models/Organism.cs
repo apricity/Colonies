@@ -79,7 +79,7 @@
         {
             get
             {
-                return this.CurrentIntention.EnvironmentBiases;
+                return this.CurrentIntention.EnvironmentBias;
             }
         }
 

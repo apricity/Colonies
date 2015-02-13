@@ -5,7 +5,7 @@
 
     using Wacton.Colonies.Models.Interfaces;
 
-    public class IntentionEatLogic : IIntentionLogic
+    public class EatLogic : IIntentionLogic
     {
         public Inventory AssociatedIntenvory
         {
@@ -33,8 +33,8 @@
 
         public bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
         {
-            var organismCanConsume = organismState.GetLevel(OrganismMeasure.Health) < 1.0;
-            return organismCanConsume && (this.OrganismHasNutrients(organismState) || this.EnvironmentHasNutrients(measurableEnvironment));
+            return this.OrganismCanConsume(organismState) && 
+                (this.OrganismHasNutrients(organismState) || this.EnvironmentHasNutrients(measurableEnvironment));
         }
 
         public IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
@@ -70,14 +70,19 @@
             return new IntentionAdjustments(organismAdjustments, environmentAdjustments);
         }
 
-        public bool CanInteractOrganism(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+        public bool CanInteractOrganism(IOrganismState organismState)
         {
             return false;
         }
 
-        public IntentionAdjustments InteractOrganismAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+        public IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState)
         {
             return new IntentionAdjustments();
+        }
+
+        private bool OrganismCanConsume(IOrganismState organismState)
+        {
+            return organismState.GetLevel(OrganismMeasure.Health) < 1.0;
         }
 
         private bool OrganismHasNutrients(IOrganismState organismState)

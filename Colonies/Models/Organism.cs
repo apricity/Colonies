@@ -207,6 +207,26 @@
             }
         }
 
+        public bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+        {
+            return this.CurrentIntention.CanInteractEnvironment(measurableEnvironment, this);
+        }
+
+        public IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+        {
+            return this.CurrentIntention.InteractEnvironmentAdjustments(measurableEnvironment, this);
+        }
+
+        public bool CanInteractOrganism()
+        {
+            return this.CurrentIntention.CanInteractOrganism(this);
+        }
+
+        public IntentionAdjustments InteractOrganismAdjustments(IOrganismState otherOrganismState)
+        {
+            return this.CurrentIntention.InteractOrganismAdjustments(this, otherOrganismState);
+        }
+
         private bool IsWithinDuration(double startAge, double duration)
         {
             return !double.IsNaN(startAge) && this.GetDuration(startAge) <= duration;

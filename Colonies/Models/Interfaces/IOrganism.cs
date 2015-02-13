@@ -23,5 +23,13 @@
         void OverloadSound();
 
         void ContractDisease();
+
+        bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment);
+
+        IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment);
+
+        bool CanInteractOrganism();
+
+        IntentionAdjustments InteractOrganismAdjustments(IOrganismState otherOrganismState);
     }
 }

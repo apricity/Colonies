@@ -173,6 +173,19 @@
             }
         }
 
+        public void AdjustLevels(Coordinate coordinate, IntentionAdjustments intentionAdjustments)
+        {
+            foreach (var organismMeasureAdjustment in intentionAdjustments.OrganismMeasureAdjustments)
+            {
+                this.AdjustLevel(coordinate, organismMeasureAdjustment.Key, organismMeasureAdjustment.Value);
+            }
+
+            foreach (var organismMeasureAdjustment in intentionAdjustments.EnvironmentMeasureAdjustments)
+            {
+                this.AdjustLevel(coordinate, organismMeasureAdjustment.Key, organismMeasureAdjustment.Value);
+            }
+        }
+
         private void RecordHistory(Coordinate coordinate, IMeasure measure, double previousLevel, double updatedLevel)
         {
             this.EcosystemHistoryPusher.Push(new EcosystemModification(coordinate, measure, previousLevel, updatedLevel));

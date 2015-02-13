@@ -25,8 +25,8 @@
         public void Execute()
         {
             this.ecosystemData.RefreshOrganismIntentions();
-            this.BirthOrganisms();
             this.NourishNeighbours();
+            this.BirthOrganisms();
         }
 
         private void BirthOrganisms()
@@ -60,16 +60,22 @@
         {
             foreach (var organismCoordinate in this.ecosystemData.OrganismCoordinates(Intention.Nourish))
             {
+                var organism = this.ecosystemData.GetOrganism(organismCoordinate);
+                if (!organism.CanInteractOrganism())
+                {
+                    continue;
+                }
+
                 var neighboursRequestingNutrient = this.GetNeighboursRequestingNutrient(organismCoordinate);
                 if (neighboursRequestingNutrient.Any())
                 {
                     var nourishedOrganism = neighboursRequestingNutrient.FirstOrDefault() ?? DecisionLogic.MakeDecision(neighboursRequestingNutrient);
                     var nourishedOrganismCoordinate = this.ecosystemData.CoordinateOf(nourishedOrganism);
 
-                    var desiredNutrient = 1 - this.ecosystemData.GetLevel(nourishedOrganismCoordinate, OrganismMeasure.Health);
-                    var availableNutrient = this.ecosystemData.GetLevel(organismCoordinate, OrganismMeasure.Inventory);
-                    var givenNutrient = Math.Min(desiredNutrient, availableNutrient);
-                    this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, -givenNutrient);
+                    var adjustments = organism.InteractOrganismAdjustments(nourishedOrganism);
+                    this.ecosystemData.AdjustLevels(organismCoordinate, adjustments);
+
+                    var givenNutrient = -adjustments.OrganismMeasureAdjustments[OrganismMeasure.Inventory];
                     this.ecosystemData.AdjustLevel(nourishedOrganismCoordinate, OrganismMeasure.Health, givenNutrient);
                 }
             }

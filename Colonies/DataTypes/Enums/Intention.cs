@@ -2,18 +2,20 @@
 {
     using System.Collections.Generic;
 
+    using Wacton.Colonies.Models.Interfaces;
+
     public class Intention : Enumeration
     {
-        public static readonly Intention None = new Intention(0, "None", new IntentionEatLogic());
-        public static readonly Intention Eat = new Intention(1, "Eat", new IntentionEatLogic());
-        public static readonly Intention Harvest = new Intention(2, "Harvest", new IntentionEatLogic());
-        public static readonly Intention Nourish = new Intention(3, "Nourish", new IntentionEatLogic());
-        public static readonly Intention Mine = new Intention(4, "Mine", new IntentionEatLogic());
-        public static readonly Intention Build = new Intention(5, "Build", new IntentionEatLogic());
-        public static readonly Intention Nest = new Intention(6, "Nest", new IntentionEatLogic());
-        public static readonly Intention Reproduce = new Intention(7, "Reproduce", new IntentionEatLogic());
-        public static readonly Intention Birth = new Intention(8, "Birth", new IntentionEatLogic());
-        public static readonly Intention Dead = new Intention(9, "Dead", new IntentionEatLogic());
+        public static readonly Intention None = new Intention(0, "None", new NoLogic());
+        public static readonly Intention Eat = new Intention(1, "Eat", new EatLogic());
+        public static readonly Intention Harvest = new Intention(2, "Harvest", new HarvestLogic());
+        public static readonly Intention Nourish = new Intention(3, "Nourish", new NourishLogic());
+        public static readonly Intention Mine = new Intention(4, "Mine", new NoLogic()); // update
+        public static readonly Intention Build = new Intention(5, "Build", new NoLogic()); // update
+        public static readonly Intention Nest = new Intention(6, "Nest", new NoLogic()); // update
+        public static readonly Intention Reproduce = new Intention(7, "Reproduce", new NoLogic()); // update
+        public static readonly Intention Birth = new Intention(8, "Birth", new NoLogic()); // update
+        public static readonly Intention Dead = new Intention(9, "Dead", new NoLogic());
 
         public IIntentionLogic IntentionLogic { get; private set; }
 
@@ -52,6 +54,26 @@
             }
 
             return !this.AssociatedInventory.Equals(otherIntention.AssociatedInventory);
+        }
+
+        public bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+        {
+            return this.IntentionLogic.CanInteractEnvironment(measurableEnvironment, organismState);
+        }
+
+        public IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+        {
+            return this.IntentionLogic.InteractEnvironmentAdjustments(measurableEnvironment, organismState);
+        }
+
+        public bool CanInteractOrganism(IOrganismState organismState)
+        {
+            return this.IntentionLogic.CanInteractOrganism(organismState);
+        }
+
+        public IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState)
+        {
+            return this.IntentionLogic.InteractOrganismAdjustments(organismState, otherOrganismState);
         }
     }
 }

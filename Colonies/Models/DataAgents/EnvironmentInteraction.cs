@@ -48,68 +48,58 @@
                 var organism = this.ecosystemData.GetOrganism(organismCoordinate);
                 var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
 
-                // TODO: put new 'can interact' etc methods on organism itself, as well as intention.  that way, organism can pass its own context
-                if (!organism.CurrentIntention.IntentionLogic.CanInteractEnvironment(environment, organism))
+                if (!organism.CanInteractEnvironment(environment))
                 {
                     continue;
                 }
 
-                var adjustments = organism.CurrentIntention.IntentionLogic.InteractEnvironmentAdjustments(environment, organism);
-
-                foreach (var organismMeasureAdjustment in adjustments.OrganismMeasureAdjustments)
-                {
-                    this.ecosystemData.AdjustLevel(organismCoordinate, organismMeasureAdjustment.Key, organismMeasureAdjustment.Value);
-                }
-
-                foreach (var organismMeasureAdjustment in adjustments.EnvironmentMeasureAdjustments)
-                {
-                    this.ecosystemData.AdjustLevel(organismCoordinate, organismMeasureAdjustment.Key, organismMeasureAdjustment.Value);
-                }
+                var adjustments = organism.InteractEnvironmentAdjustments(environment);
+                this.ecosystemData.AdjustLevels(organismCoordinate, adjustments);
             }
         }
 
-        private void InventoryNutrientInteraction(Coordinate organismCoordinate)
-        {
-            var organism = this.ecosystemData.GetOrganism(organismCoordinate);
-            if (!organism.CurrentIntention.Equals(Intention.Eat))
-            {
-                return;
-            }
+        //private void InventoryNutrientInteraction(Coordinate organismCoordinate)
+        //{
+        //    var organism = this.ecosystemData.GetOrganism(organismCoordinate);
+        //    if (!organism.CurrentIntention.Equals(Intention.Eat))
+        //    {
+        //        return;
+        //    }
 
-            var availableInventoryNutrient = organism.GetLevel(OrganismMeasure.Inventory);
-            var desiredInventoryNutrient = 1 - organism.GetLevel(OrganismMeasure.Health);
-            var inventoryNutrientTaken = Math.Min(desiredInventoryNutrient, availableInventoryNutrient);
+        //    var availableInventoryNutrient = organism.GetLevel(OrganismMeasure.Inventory);
+        //    var desiredInventoryNutrient = 1 - organism.GetLevel(OrganismMeasure.Health);
+        //    var inventoryNutrientTaken = Math.Min(desiredInventoryNutrient, availableInventoryNutrient);
 
-            this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Health, inventoryNutrientTaken);
-            this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, -inventoryNutrientTaken);
-        }
+        //    this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Health, inventoryNutrientTaken);
+        //    this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, -inventoryNutrientTaken);
+        //}
 
-        private void EnvironmentNutrientInteraction(Coordinate organismCoordinate)
-        {
-            var organism = this.ecosystemData.GetOrganism(organismCoordinate);
-            var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
-            var availableNutrient = environment.GetLevel(EnvironmentMeasure.Nutrient);
-            if (availableNutrient.Equals(0.0))
-            {
-                return;
-            }
+        //private void EnvironmentNutrientInteraction(Coordinate organismCoordinate)
+        //{
+        //    var organism = this.ecosystemData.GetOrganism(organismCoordinate);
+        //    var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
+        //    var availableNutrient = environment.GetLevel(EnvironmentMeasure.Nutrient);
+        //    if (availableNutrient.Equals(0.0))
+        //    {
+        //        return;
+        //    }
 
-            if (organism.CurrentIntention.Equals(Intention.Harvest))
-            {
-                var desiredNutrient = 1 - organism.GetLevel(OrganismMeasure.Inventory);
-                var nutrientTaken = Math.Min(desiredNutrient, availableNutrient);
-                this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, nutrientTaken);
-                this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Nutrient, -nutrientTaken);
-            }
+        //    if (organism.CurrentIntention.Equals(Intention.Harvest))
+        //    {
+        //        var desiredNutrient = 1 - organism.GetLevel(OrganismMeasure.Inventory);
+        //        var nutrientTaken = Math.Min(desiredNutrient, availableNutrient);
+        //        this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, nutrientTaken);
+        //        this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Nutrient, -nutrientTaken);
+        //    }
 
-            if (organism.CurrentIntention.Equals(Intention.Eat))
-            {
-                var desiredNutrient = 1 - organism.GetLevel(OrganismMeasure.Health);
-                var nutrientTaken = Math.Min(desiredNutrient, availableNutrient);
-                this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Health, nutrientTaken);
-                this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Nutrient, -nutrientTaken);
-            }
-        }
+        //    if (organism.CurrentIntention.Equals(Intention.Eat))
+        //    {
+        //        var desiredNutrient = 1 - organism.GetLevel(OrganismMeasure.Health);
+        //        var nutrientTaken = Math.Min(desiredNutrient, availableNutrient);
+        //        this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Health, nutrientTaken);
+        //        this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Nutrient, -nutrientTaken);
+        //    }
+        //}
 
         private void EnvironmentMineralInteraction(Coordinate organismCoordinate)
         {

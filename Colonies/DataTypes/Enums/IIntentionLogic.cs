@@ -14,9 +14,9 @@
 
         IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState);
 
-        bool CanInteractOrganism(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState);
+        bool CanInteractOrganism(IOrganismState organismState);
 
-        IntentionAdjustments InteractOrganismAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState);
+        IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState);
 
     }
 }

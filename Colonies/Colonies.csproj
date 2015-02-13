@@ -106,12 +106,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataTypes\Enums\BuildLogic.cs" />
+    <Compile Include="DataTypes\Enums\NestLogic.cs" />
+    <Compile Include="DataTypes\Enums\ReproduceLogic.cs" />
+    <Compile Include="DataTypes\Enums\MineLogic.cs" />
     <Compile Include="DataTypes\Enums\NoLogic.cs" />
+    <Compile Include="DataTypes\Enums\BirthLogic.cs" />
     <Compile Include="DataTypes\Enums\NourishLogic.cs" />
     <Compile Include="DataTypes\Enums\HarvestLogic.cs" />
     <Compile Include="DataTypes\Enums\IIntentionLogic.cs" />
     <Compile Include="DataTypes\Enums\IntentionAdjustments.cs" />
-    <Compile Include="DataTypes\Enums\IntentionBiases.cs" />
     <Compile Include="DataTypes\Enums\EatLogic.cs" />
     <Compile Include="DataTypes\WeightedItem.cs" />
     <Compile Include="DataTypes\EcosystemAddition.cs" />

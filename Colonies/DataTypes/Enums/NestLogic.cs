@@ -5,13 +5,13 @@
 
     using Wacton.Colonies.Models.Interfaces;
 
-    public class NoLogic : IIntentionLogic
+    public class NestLogic : IIntentionLogic
     {
         public Inventory AssociatedIntenvory
         {
             get
             {
-                return null;
+                return Inventory.Spawn;
             }
         }
 
@@ -21,20 +21,17 @@
             {
                 return new Dictionary<EnvironmentMeasure, double>
                        {
-                           { EnvironmentMeasure.Nutrient, 0 },
-                           { EnvironmentMeasure.Pheromone, 0 },
-                           { EnvironmentMeasure.Sound, 0 },
-                           { EnvironmentMeasure.Damp, 0 },
-                           { EnvironmentMeasure.Heat, 0 },
-                           { EnvironmentMeasure.Disease, 0 },
-                           { EnvironmentMeasure.Obstruction, 0 },
+                           { EnvironmentMeasure.Mineral, 25 },
+                           { EnvironmentMeasure.Damp, -10 },
+                           { EnvironmentMeasure.Heat, -10 },
+                           { EnvironmentMeasure.Disease, -50 }
                        };
             }
         }
 
         public bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
         {
-            return false;
+            return this.OrganismCanNest(organismState);
         }
 
         public IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
@@ -50,6 +47,16 @@
         public IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState)
         {
             return new IntentionAdjustments();
+        }
+
+        private bool OrganismCanNest(IOrganismState organismState)
+        {
+            return organismState.CurrentInventory.Equals(Inventory.Spawn) && organismState.GetLevel(OrganismMeasure.Inventory).Equals(0.0);
+        }
+
+        private bool EnvironmentHasMinerals(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+        {
+            return measurableEnvironment.GetLevel(EnvironmentMeasure.Mineral) > 0.0;
         }
     }
 }

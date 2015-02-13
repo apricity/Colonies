@@ -12,6 +12,8 @@
 
         bool IsReproductive { get; }
 
+        bool CanMove { get; }
+
         bool IsAudible { get; }
 
         bool IsPheromoneOverloaded { get; }

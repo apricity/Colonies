@@ -10,11 +10,11 @@
         public static readonly Intention Eat = new Intention(1, "Eat", new EatLogic());
         public static readonly Intention Harvest = new Intention(2, "Harvest", new HarvestLogic());
         public static readonly Intention Nourish = new Intention(3, "Nourish", new NourishLogic());
-        public static readonly Intention Mine = new Intention(4, "Mine", new NoLogic()); // update
-        public static readonly Intention Build = new Intention(5, "Build", new NoLogic()); // update
-        public static readonly Intention Nest = new Intention(6, "Nest", new NoLogic()); // update
-        public static readonly Intention Reproduce = new Intention(7, "Reproduce", new NoLogic()); // update
-        public static readonly Intention Birth = new Intention(8, "Birth", new NoLogic()); // update
+        public static readonly Intention Mine = new Intention(4, "Mine", new MineLogic());
+        public static readonly Intention Build = new Intention(5, "Build", new BuildLogic());
+        public static readonly Intention Nest = new Intention(6, "Nest", new NestLogic());
+        public static readonly Intention Reproduce = new Intention(7, "Reproduce", new ReproduceLogic());
+        public static readonly Intention Birth = new Intention(8, "Birth", new BirthLogic());
         public static readonly Intention Dead = new Intention(9, "Dead", new NoLogic());
 
         public IIntentionLogic IntentionLogic { get; private set; }

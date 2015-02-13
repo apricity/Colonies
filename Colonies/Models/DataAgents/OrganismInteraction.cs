@@ -14,71 +14,80 @@
         private readonly EcosystemData ecosystemData;
         private readonly EnvironmentMeasureDistributor environmentMeasureDistributor;
         private readonly OrganismFactory organismFactory;
+        private readonly Dictionary<Intention, Func<Coordinate, IntentionAdjustments>> organismInteractionFunctions;  
 
         public OrganismInteraction(EcosystemData ecosystemData, EnvironmentMeasureDistributor environmentMeasureDistributor, OrganismFactory organismFactory)
         {
             this.ecosystemData = ecosystemData;
             this.environmentMeasureDistributor = environmentMeasureDistributor;
             this.organismFactory = organismFactory;
+
+            this.organismInteractionFunctions = new Dictionary<Intention, Func<Coordinate, IntentionAdjustments>>
+            {
+                { Intention.Nourish, organismCoordinate => this.NourishNeighbour(organismCoordinate) },
+                { Intention.Birth, organismCoordinate => this.BirthOrganism(organismCoordinate) },
+            };
         }
 
         public void Execute()
         {
             this.ecosystemData.RefreshOrganismIntentions();
-            this.NourishNeighbours();
-            this.BirthOrganisms();
+            this.PerformInteractions();
         }
 
-        private void BirthOrganisms()
+        private void PerformInteractions()
         {
-            foreach (var organismCoordinate in this.ecosystemData.OrganismCoordinates(Intention.Birth).ToList())
-            {
-                var parentOrganism = this.ecosystemData.GetOrganism(organismCoordinate);
-                if (parentOrganism.GetLevel(OrganismMeasure.Inventory) < 1.0)
-                {
-                    continue;
-                }
-
-                var neighbourCoordinates = this.ecosystemData.GetValidNeighbours(organismCoordinate, 1, false, false).ToList();
-                var vacantCoordinates = neighbourCoordinates.Where(coordinate =>
-                        !this.ecosystemData.HasLevel(coordinate, EnvironmentMeasure.Obstruction)
-                        && this.ecosystemData.GetOrganism(coordinate) == null).ToList();
-
-                if (!vacantCoordinates.Any())
-                {
-                    continue;
-                }
-
-                var childCoordinate = DecisionLogic.MakeDecision(vacantCoordinates);
-                var childOrganism = this.organismFactory.CreateChildOrganism(parentOrganism);
-                this.ecosystemData.AddOrganism(childOrganism, childCoordinate);
-                this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, -1.0);
-            }
-        }
-
-        private void NourishNeighbours()
-        {
-            foreach (var organismCoordinate in this.ecosystemData.OrganismCoordinates(Intention.Nourish))
+            foreach (var organismCoordinate in this.ecosystemData.AliveOrganismCoordinates().ToList())
             {
                 var organism = this.ecosystemData.GetOrganism(organismCoordinate);
-                if (!organism.CanInteractOrganism())
+                if (organism.CanInteractOrganism())
                 {
-                    continue;
-                }
-
-                var neighboursRequestingNutrient = this.GetNeighboursRequestingNutrient(organismCoordinate);
-                if (neighboursRequestingNutrient.Any())
-                {
-                    var nourishedOrganism = neighboursRequestingNutrient.FirstOrDefault() ?? DecisionLogic.MakeDecision(neighboursRequestingNutrient);
-                    var nourishedOrganismCoordinate = this.ecosystemData.CoordinateOf(nourishedOrganism);
-
-                    var adjustments = organism.InteractOrganismAdjustments(nourishedOrganism);
+                    var adjustments = this.organismInteractionFunctions[organism.CurrentIntention].Invoke(organismCoordinate);
                     this.ecosystemData.AdjustLevels(organismCoordinate, adjustments);
-
-                    var givenNutrient = -adjustments.OrganismMeasureAdjustments[OrganismMeasure.Inventory];
-                    this.ecosystemData.AdjustLevel(nourishedOrganismCoordinate, OrganismMeasure.Health, givenNutrient);
                 }
             }
+        }
+
+        private IntentionAdjustments BirthOrganism(Coordinate parentOrganismCoordinate)
+        {
+            var parentOrganism = this.ecosystemData.GetOrganism(parentOrganismCoordinate);
+
+            var neighbourCoordinates = this.ecosystemData.GetValidNeighbours(parentOrganismCoordinate, 1, false, false).ToList();
+            var vacantCoordinates = neighbourCoordinates.Where(coordinate =>
+                    !this.ecosystemData.HasLevel(coordinate, EnvironmentMeasure.Obstruction)
+                    && this.ecosystemData.GetOrganism(coordinate) == null).ToList();
+
+            if (!vacantCoordinates.Any())
+            {
+                return new IntentionAdjustments();
+            }
+
+            var childOrganismCoordinate = DecisionLogic.MakeDecision(vacantCoordinates);
+            var childOrganism = this.organismFactory.CreateChildOrganism(parentOrganism);
+            this.ecosystemData.AddOrganism(childOrganism, childOrganismCoordinate);
+
+            var adjustments = parentOrganism.InteractOrganismAdjustments(childOrganism);
+            return adjustments;
+        }
+
+        private IntentionAdjustments NourishNeighbour(Coordinate nourishingOrganismCoordinate)
+        {
+            var nourishingOrganism = this.ecosystemData.GetOrganism(nourishingOrganismCoordinate);
+
+            var neighboursRequestingNutrient = this.GetNeighboursRequestingNutrient(nourishingOrganismCoordinate);
+            if (!neighboursRequestingNutrient.Any())
+            {
+                return new IntentionAdjustments();
+            }
+
+            var nourishedOrganism = neighboursRequestingNutrient.FirstOrDefault() ?? DecisionLogic.MakeDecision(neighboursRequestingNutrient);
+            var nourishedOrganismCoordinate = this.ecosystemData.CoordinateOf(nourishedOrganism);
+
+            var adjustments = nourishingOrganism.InteractOrganismAdjustments(nourishedOrganism);
+            var givenNutrient = -adjustments.OrganismMeasureAdjustments[OrganismMeasure.Inventory];
+            this.ecosystemData.AdjustLevel(nourishedOrganismCoordinate, OrganismMeasure.Health, givenNutrient);
+
+            return adjustments;
         }
 
         private List<IOrganism> GetNeighboursRequestingNutrient(Coordinate coordinate)

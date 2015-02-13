@@ -67,7 +67,7 @@
             {
                 // remain stationary if organism is reproducing
                 var organism = this.ecosystemData.GetOrganism(organismCoordinate);
-                if (organism.CurrentIntention.Equals(Intention.Reproduce))
+                if (!organism.CanMove)
                 {
                     desiredOrganismCoordinates.Add(organism, organismCoordinate);
                     continue;

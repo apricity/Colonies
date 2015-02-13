@@ -5,13 +5,13 @@
 
     using Wacton.Colonies.Models.Interfaces;
 
-    public class NoLogic : IIntentionLogic
+    public class BirthLogic : IIntentionLogic
     {
         public Inventory AssociatedIntenvory
         {
             get
             {
-                return null;
+                return Inventory.Spawn;
             }
         }
 
@@ -21,13 +21,9 @@
             {
                 return new Dictionary<EnvironmentMeasure, double>
                        {
-                           { EnvironmentMeasure.Nutrient, 0 },
-                           { EnvironmentMeasure.Pheromone, 0 },
-                           { EnvironmentMeasure.Sound, 0 },
-                           { EnvironmentMeasure.Damp, 0 },
-                           { EnvironmentMeasure.Heat, 0 },
-                           { EnvironmentMeasure.Disease, 0 },
-                           { EnvironmentMeasure.Obstruction, 0 },
+                           { EnvironmentMeasure.Damp, -10 },
+                           { EnvironmentMeasure.Heat, -10 },
+                           { EnvironmentMeasure.Disease, -50 }
                        };
             }
         }
@@ -44,12 +40,26 @@
 
         public bool CanInteractOrganism(IOrganismState organismState)
         {
-            return false;
+            return this.OrganismHasSpawn(organismState);
         }
 
         public IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState)
         {
-            return new IntentionAdjustments();
+            if (!this.CanInteractOrganism(organismState))
+            {
+                return new IntentionAdjustments();
+            }
+
+            var organismAdjustments = new Dictionary<OrganismMeasure, double>();
+            var environmentAdjustments = new Dictionary<EnvironmentMeasure, double>();
+            organismAdjustments.Add(OrganismMeasure.Inventory, -1.0);
+
+            return new IntentionAdjustments(organismAdjustments, environmentAdjustments);
+        }
+
+        private bool OrganismHasSpawn(IOrganismState organismState)
+        {
+            return organismState.CurrentInventory.Equals(Inventory.Spawn) && organismState.GetLevel(OrganismMeasure.Inventory).Equals(1.0);
         }
     }
 }

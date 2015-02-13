@@ -35,122 +35,29 @@
 
         private void PerformInteractions()
         {
-            //foreach (var organismCoordinate in this.ecosystemData.AliveOrganismCoordinates())
-            //{
-            //    this.InventoryNutrientInteraction(organismCoordinate);
-            //    this.EnvironmentNutrientInteraction(organismCoordinate);
-            //    this.EnvironmentMineralInteraction(organismCoordinate);
-            //    this.EnvironmentHazardInteraction(organismCoordinate);
-            //}
-
-            foreach (var organismCoordinate in this.ecosystemData.AliveOrganismCoordinates())
+            foreach (var organismCoordinate in this.ecosystemData.AliveOrganismCoordinates().ToList())
             {
                 var organism = this.ecosystemData.GetOrganism(organismCoordinate);
                 var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
 
-                if (!organism.CanInteractEnvironment(environment))
+                if (organism.CanInteractEnvironment(environment))
                 {
-                    continue;
+                    var adjustments = organism.InteractEnvironmentAdjustments(environment);
+                    this.ecosystemData.AdjustLevels(organismCoordinate, adjustments);
                 }
 
-                var adjustments = organism.InteractEnvironmentAdjustments(environment);
-                this.ecosystemData.AdjustLevels(organismCoordinate, adjustments);
+                this.HazardInteraction(organism, environment);
             }
         }
 
-        //private void InventoryNutrientInteraction(Coordinate organismCoordinate)
-        //{
-        //    var organism = this.ecosystemData.GetOrganism(organismCoordinate);
-        //    if (!organism.CurrentIntention.Equals(Intention.Eat))
-        //    {
-        //        return;
-        //    }
-
-        //    var availableInventoryNutrient = organism.GetLevel(OrganismMeasure.Inventory);
-        //    var desiredInventoryNutrient = 1 - organism.GetLevel(OrganismMeasure.Health);
-        //    var inventoryNutrientTaken = Math.Min(desiredInventoryNutrient, availableInventoryNutrient);
-
-        //    this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Health, inventoryNutrientTaken);
-        //    this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, -inventoryNutrientTaken);
-        //}
-
-        //private void EnvironmentNutrientInteraction(Coordinate organismCoordinate)
-        //{
-        //    var organism = this.ecosystemData.GetOrganism(organismCoordinate);
-        //    var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
-        //    var availableNutrient = environment.GetLevel(EnvironmentMeasure.Nutrient);
-        //    if (availableNutrient.Equals(0.0))
-        //    {
-        //        return;
-        //    }
-
-        //    if (organism.CurrentIntention.Equals(Intention.Harvest))
-        //    {
-        //        var desiredNutrient = 1 - organism.GetLevel(OrganismMeasure.Inventory);
-        //        var nutrientTaken = Math.Min(desiredNutrient, availableNutrient);
-        //        this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, nutrientTaken);
-        //        this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Nutrient, -nutrientTaken);
-        //    }
-
-        //    if (organism.CurrentIntention.Equals(Intention.Eat))
-        //    {
-        //        var desiredNutrient = 1 - organism.GetLevel(OrganismMeasure.Health);
-        //        var nutrientTaken = Math.Min(desiredNutrient, availableNutrient);
-        //        this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Health, nutrientTaken);
-        //        this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Nutrient, -nutrientTaken);
-        //    }
-        //}
-
-        private void EnvironmentMineralInteraction(Coordinate organismCoordinate)
+        private void HazardInteraction(IOrganism organism, IEnvironment environment)
         {
-            var organism = this.ecosystemData.GetOrganism(organismCoordinate);
-            var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
-            var availableMineral = environment.GetLevel(EnvironmentMeasure.Mineral);
-            if (availableMineral.Equals(0.0))
-            {
-                return;
-            }
-
-            if (organism.CurrentIntention.Equals(Intention.Mine))
-            {
-                var desiredMineral = 1 - organism.GetLevel(OrganismMeasure.Inventory);
-                var mineralTaken = Math.Min(desiredMineral, availableMineral);
-                this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, mineralTaken);
-                this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Mineral, -mineralTaken);
-            }
-
-            // organism inventory of "spawn" is filled, ready for the organism to place it
-            if (organism.IsReproductive)
-            {
-                var mineralTaken = availableMineral;
-                this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Mineral, -mineralTaken);
-                this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, 1.0);
-            }
-        }
-
-        private void EnvironmentHazardInteraction(Coordinate organismCoordinate)
-        {
-            var organism = this.ecosystemData.GetOrganism(organismCoordinate);
-            var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
-
             if (environment.IsHarmful)
             {
                 foreach (var harmfulMeasure in environment.HarmfulMeasures)
                 {
                     this.harmfulEnvironmentActions[harmfulMeasure].Invoke(organism);
                 }
-            }
-
-            if (!organism.CurrentIntention.Equals(Intention.Build) || organism.GetLevel(OrganismMeasure.Inventory) < 1.0)
-            {
-                return;
-            }
-
-            var hazardousMeasurements = environment.MeasurementData.Measurements.Where(measurement => measurement.Measure.IsHazardous).ToList();
-            if (hazardousMeasurements.Any(measurement => measurement.Level > 0.0))
-            {
-                this.ecosystemData.AdjustLevel(organismCoordinate, OrganismMeasure.Inventory, -1.0);
-                this.ecosystemData.AdjustLevel(organismCoordinate, EnvironmentMeasure.Obstruction, 1.0);
             }
         }
     }

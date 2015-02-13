@@ -28,6 +28,11 @@
 
             public Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
             {
+                if (organismState.GetLevel(OrganismMeasure.Health) < 0.25)
+                {
+                    return Intention.Eat;
+                }
+
                 return organismState.GetLevel(OrganismMeasure.Inventory) < 0.75 ? Intention.Harvest : Intention.Nourish;
             }
         }

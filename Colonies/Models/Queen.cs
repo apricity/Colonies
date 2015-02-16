@@ -23,7 +23,7 @@
 
             public bool IsSounding(IOrganismState organismState)
             {
-                return organismState.CurrentIntention.Equals(Intention.Reproduce) && !organismState.IsReproductive;
+                return organismState.CurrentIntention.Equals(Intention.Reproduce);
             }
 
             public Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)

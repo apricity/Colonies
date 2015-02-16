@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using Wacton.Colonies.DataTypes;
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.Models.Interfaces;
 
@@ -52,12 +51,14 @@
 
         private void HazardInteraction(IOrganism organism, IEnvironment environment)
         {
-            if (environment.IsHarmful)
+            if (!environment.IsHarmful)
             {
-                foreach (var harmfulMeasure in environment.HarmfulMeasures)
-                {
-                    this.harmfulEnvironmentActions[harmfulMeasure].Invoke(organism);
-                }
+                return;
+            }
+
+            foreach (var harmfulMeasure in environment.HarmfulMeasures)
+            {
+                this.harmfulEnvironmentActions[harmfulMeasure].Invoke(organism);
             }
         }
     }

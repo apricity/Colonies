@@ -39,11 +39,20 @@
             var resolvedOrganismCoordinates = this.ResolveOrganismHabitats(desiredOrganismCoordinates, new List<IOrganism>());
 
             this.IncreasePheromoneLevels();
-            this.IncreaseMineralLevels();
 
             foreach (var organismCoordinate in resolvedOrganismCoordinates)
             {
-                this.ecosystemData.MoveOrganism(organismCoordinate.Key, organismCoordinate.Value);
+                var organism = organismCoordinate.Key;
+                var preMoveCoordinate = this.ecosystemData.CoordinateOf(organism);
+                this.ecosystemData.MoveOrganism(organism, organismCoordinate.Value);
+                this.IncreaseMineralLevel(preMoveCoordinate);
+            }
+
+            // increase mineral wherever there are dead organisms
+            var deadOrganismCoordinates = this.ecosystemData.DeadOrganismCoordinates().Where(coordinate => !this.ecosystemData.IsHarmful(coordinate)).ToList();
+            foreach (var organismCoordinate in deadOrganismCoordinates)
+            {
+                this.IncreaseMineralLevel(organismCoordinate);
             }
 
             // for any organisms that attempted to move to an obstructed habitat, decrease obstruction level
@@ -176,13 +185,16 @@
             this.ecosystemData.AdjustLevels(organismCoordinates, EnvironmentMeasure.Pheromone, this.ecosystemRates.IncreasingRates[EnvironmentMeasure.Pheromone]);
         }
 
-        private void IncreaseMineralLevels()
+        private void IncreaseMineralLevel(Coordinate coordinate)
         {
-            // only increase mineral where the terrain is not harmful (even when the organism is dead!)
+            // only increase if the environment is not harmful
             // TODO: need a "HasDecomposed" bool - this could stop showing organism and stop mineral form
-            var organismCoordinates = this.ecosystemData.OrganismCoordinates()
-                .Where(coordinate => !this.ecosystemData.IsHarmful(coordinate)).ToList();
-            this.ecosystemData.AdjustLevels(organismCoordinates, EnvironmentMeasure.Mineral, this.ecosystemRates.IncreasingRates[EnvironmentMeasure.Mineral]);
+            if (this.ecosystemData.IsHarmful(coordinate))
+            {
+                return;
+            }
+
+            this.ecosystemData.AdjustLevel(coordinate, EnvironmentMeasure.Mineral, this.ecosystemRates.IncreasingRates[EnvironmentMeasure.Mineral]);
         }
 
         private void InsertSoundDistribution()

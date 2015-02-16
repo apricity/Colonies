@@ -1,6 +1,5 @@
 ﻿namespace Wacton.Colonies.DataTypes.Enums
 {
-    using System;
     using System.Collections.Generic;
 
     using Wacton.Colonies.Models.Interfaces;

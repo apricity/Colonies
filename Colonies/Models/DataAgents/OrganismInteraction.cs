@@ -24,8 +24,8 @@
 
             this.organismInteractionFunctions = new Dictionary<Intention, Func<Coordinate, IntentionAdjustments>>
             {
-                { Intention.Nourish, organismCoordinate => this.NourishNeighbour(organismCoordinate) },
-                { Intention.Birth, organismCoordinate => this.BirthOrganism(organismCoordinate) },
+                { Intention.Nourish, this.NourishNeighbour },
+                { Intention.Birth, this.BirthOrganism },
             };
         }
 
@@ -92,10 +92,9 @@
 
         private List<IOrganism> GetNeighboursRequestingNutrient(Coordinate coordinate)
         {
-            // TODO: better way?!  perhaps organism tries to give food to anyone audible (even if not queen)
             var neighbourCoordinates = this.ecosystemData.GetValidNeighbours(coordinate, 1, false, false).ToList();
             var neighbourOrganisms = neighbourCoordinates.Select(this.ecosystemData.GetOrganism).Where(organism => organism != null).ToList();
-            return neighbourOrganisms.Where(neighbour => neighbour.CurrentIntention.Equals(Intention.Reproduce) && !neighbour.IsReproductive).ToList();
+            return neighbourOrganisms.Where(neighbour => neighbour.IsAudible).ToList();
         }
     }
 }

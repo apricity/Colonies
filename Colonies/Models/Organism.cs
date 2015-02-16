@@ -50,15 +50,6 @@
             }
         }
 
-        // TODO: suspect I don't need this anymore, handled by intention logic?
-        public bool IsReproductive
-        {
-            get
-            {
-                return this.CurrentIntention.Equals(Intention.Reproduce) && this.GetLevel(OrganismMeasure.Health) >= 0.995;
-            }
-        }
-
         public bool CanMove
         {
             get

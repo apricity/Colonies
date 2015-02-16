@@ -4,9 +4,9 @@
 
     public static class RandomNumberGenerator
     {
-        private static Random random = new Random();
+        private static readonly Random Random = new Random();
 
-        public static double? OverrideNextDouble { get; set; }
+        public static double? OverrideNextDouble { private get; set; }
 
         public static double RandomDouble(double range)
         {
@@ -15,7 +15,7 @@
                 return (double)OverrideNextDouble * range;
             }
 
-            return random.NextDouble() * range;
+            return Random.NextDouble() * range;
         }
     }
 }

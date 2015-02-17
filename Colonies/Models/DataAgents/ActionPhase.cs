@@ -7,13 +7,13 @@
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.Models.Interfaces;
 
-    public class EnvironmentInteraction : IEcosystemStage
+    public class ActionPhase : IEcosystemPhase
     {
         private readonly EcosystemData ecosystemData;
         private readonly EnvironmentMeasureDistributor environmentMeasureDistributor;
         private readonly Dictionary<EnvironmentMeasure, Action<IOrganism>> harmfulEnvironmentActions;  
 
-        public EnvironmentInteraction(EcosystemData ecosystemData, EnvironmentMeasureDistributor environmentMeasureDistributor)
+        public ActionPhase(EcosystemData ecosystemData, EnvironmentMeasureDistributor environmentMeasureDistributor)
         {
             this.ecosystemData = ecosystemData;
             this.environmentMeasureDistributor = environmentMeasureDistributor;
@@ -39,12 +39,13 @@
                 var organism = this.ecosystemData.GetOrganism(organismCoordinate);
                 var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
 
-                if (organism.CanInteractEnvironment(environment))
+                if (organism.CanAct(environment))
                 {
-                    var adjustments = organism.InteractEnvironmentAdjustments(environment);
+                    var adjustments = organism.ActionEffects(environment);
                     this.ecosystemData.AdjustLevels(organismCoordinate, adjustments);
                 }
 
+                // TODO: do hazard interactions on last phase instead (after movement phase)?
                 this.HazardInteraction(organism, environment);
             }
         }

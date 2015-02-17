@@ -1,6 +1,6 @@
 ﻿namespace Wacton.Colonies.Models.Interfaces
 {
-    public interface IEcosystemStage
+    public interface IEcosystemPhase
     {
         void Execute();
     }

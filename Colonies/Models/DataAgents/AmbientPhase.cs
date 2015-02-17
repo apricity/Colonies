@@ -6,14 +6,14 @@
     using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.Models.Interfaces;
 
-    public class EcosystemAdjustment : IEcosystemStage
+    public class AmbientPhase : IEcosystemPhase
     {
         private readonly EcosystemData ecosystemData;
         private readonly EcosystemRates ecosystemRates;
         private readonly EnvironmentMeasureDistributor environmentMeasureDistributor;
         private readonly IWeather weather;
 
-        public EcosystemAdjustment(EcosystemData ecosystemData, EcosystemRates ecosystemRates, EnvironmentMeasureDistributor environmentMeasureDistributor, IWeather weather)
+        public AmbientPhase(EcosystemData ecosystemData, EcosystemRates ecosystemRates, EnvironmentMeasureDistributor environmentMeasureDistributor, IWeather weather)
         {
             this.ecosystemData = ecosystemData;
             this.ecosystemRates = ecosystemRates;

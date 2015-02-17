@@ -12,6 +12,6 @@
 
         IWeather Weather { get; }
 
-        UpdateSummary UpdateOneStage();
+        UpdateSummary ExecuteOnePhase();
     }
 }

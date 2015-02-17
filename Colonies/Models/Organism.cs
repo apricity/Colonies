@@ -207,22 +207,22 @@
             }
         }
 
-        public bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+        public bool CanAct(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             return this.CurrentIntention.CanInteractEnvironment(measurableEnvironment, this);
         }
 
-        public IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+        public IntentionAdjustments ActionEffects(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             return this.CurrentIntention.InteractEnvironmentAdjustments(measurableEnvironment, this);
         }
 
-        public bool CanInteractOrganism()
+        public bool CanInteract()
         {
             return this.CurrentIntention.CanInteractOrganism(this);
         }
 
-        public IntentionAdjustments InteractOrganismAdjustments(IOrganismState otherOrganismState)
+        public IntentionAdjustments InteractionEffects(IOrganismState otherOrganismState)
         {
             return this.CurrentIntention.InteractOrganismAdjustments(this, otherOrganismState);
         }

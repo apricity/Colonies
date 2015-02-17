@@ -16,7 +16,7 @@
         private IEcosystemHistoryPuller EcosystemHistoryPuller { get; set; }
         public IWeather Weather { get; private set; }
         public EnvironmentMeasureDistributor EnvironmentMeasureDistributor { get; private set; }
-        private EcosystemStages EcosystemStages { get; set; }
+        private EcosystemPhases EcosystemPhases { get; set; }
 
         public int Width
         {
@@ -35,25 +35,25 @@
         }
 
         // TODO: param list still a bit too long?
-        public Ecosystem(EcosystemData ecosystemData, EcosystemRates ecosystemRates, IEcosystemHistoryPuller ecosystemHistoryPuller, IWeather weather, EnvironmentMeasureDistributor environmentMeasureDistributor, EcosystemStages ecosystemStages)
+        public Ecosystem(EcosystemData ecosystemData, EcosystemRates ecosystemRates, IEcosystemHistoryPuller ecosystemHistoryPuller, IWeather weather, EnvironmentMeasureDistributor environmentMeasureDistributor, EcosystemPhases ecosystemPhases)
         {
             this.EcosystemData = ecosystemData;
             this.EcosystemRates = ecosystemRates;
             this.EcosystemHistoryPuller = ecosystemHistoryPuller;
             this.Weather = weather;
             this.EnvironmentMeasureDistributor = environmentMeasureDistributor;
-            this.EcosystemStages = ecosystemStages;
+            this.EcosystemPhases = ecosystemPhases;
         }
 
-        public UpdateSummary UpdateOneStage()
+        public UpdateSummary ExecuteOnePhase()
         {
-            var updateNumber = this.EcosystemStages.UpdateCount + 1; // because ecosystem stages is zero-based
-            var updatesPerTurn = this.EcosystemStages.StageCount;
+            var updateNumber = this.EcosystemPhases.UpdateCount + 1; // because ecosystem phases is zero-based
+            var updatesPerTurn = this.EcosystemPhases.PhaseCount;
 
             var previousAudibleOrganismCoordinates = this.EcosystemData.AudibleOrganismCoordinates().ToList();
 
-            this.EcosystemStages.ExecuteStage();
-            this.EcosystemData.IncrementOrganismAges(1 / (double)this.EcosystemStages.StageCount);
+            this.EcosystemPhases.ExecutePhase();
+            this.EcosystemData.IncrementOrganismAges(1 / (double)this.EcosystemPhases.PhaseCount);
 
             var currentAudibleOrganismCoordinates = this.EcosystemData.AudibleOrganismCoordinates().ToList();
             var infectiousOrganismCoordinates = this.EcosystemData.InfectiousOrganismCoordinates().ToList();

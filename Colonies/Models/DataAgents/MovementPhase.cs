@@ -9,7 +9,7 @@
     using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models.Interfaces;
 
-    public class OrganismMovement : IEcosystemStage, IBiased<OrganismMeasure>
+    public class MovementPhase : IEcosystemPhase, IBiased<OrganismMeasure>
     {
         private readonly EcosystemData ecosystemData;
         private readonly EcosystemRates ecosystemRates;
@@ -20,7 +20,7 @@
         public Dictionary<IOrganism, Coordinate> OverrideDesiredOrganismCoordinates { get; set; }
         public Func<IEnumerable<IOrganism>, IOrganism> OverrideDecideOrganismFunction { get; set; } 
 
-        public OrganismMovement(EcosystemData ecosystemData, EcosystemRates ecosystemRates, EnvironmentMeasureDistributor environmentMeasureDistributor)
+        public MovementPhase(EcosystemData ecosystemData, EcosystemRates ecosystemRates, EnvironmentMeasureDistributor environmentMeasureDistributor)
         {
             this.ecosystemData = ecosystemData;
             this.ecosystemRates = ecosystemRates;

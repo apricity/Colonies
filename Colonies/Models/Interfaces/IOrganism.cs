@@ -24,12 +24,12 @@
 
         void ContractDisease();
 
-        bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment);
+        bool CanAct(IMeasurable<EnvironmentMeasure> measurableEnvironment);
 
-        IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment);
+        IntentionAdjustments ActionEffects(IMeasurable<EnvironmentMeasure> measurableEnvironment);
 
-        bool CanInteractOrganism();
+        bool CanInteract();
 
-        IntentionAdjustments InteractOrganismAdjustments(IOrganismState otherOrganismState);
+        IntentionAdjustments InteractionEffects(IOrganismState otherOrganismState);
     }
 }

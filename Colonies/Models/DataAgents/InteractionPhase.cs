@@ -9,20 +9,20 @@
     using Wacton.Colonies.Logic;
     using Wacton.Colonies.Models.Interfaces;
 
-    public class OrganismInteraction : IEcosystemStage
+    public class InteractionPhase : IEcosystemPhase
     {
         private readonly EcosystemData ecosystemData;
         private readonly EnvironmentMeasureDistributor environmentMeasureDistributor;
         private readonly OrganismFactory organismFactory;
-        private readonly Dictionary<Intention, Func<Coordinate, IntentionAdjustments>> organismInteractionFunctions;  
+        private readonly Dictionary<Intention, Func<Coordinate, IntentionAdjustments>> interactionFunctions;  
 
-        public OrganismInteraction(EcosystemData ecosystemData, EnvironmentMeasureDistributor environmentMeasureDistributor, OrganismFactory organismFactory)
+        public InteractionPhase(EcosystemData ecosystemData, EnvironmentMeasureDistributor environmentMeasureDistributor, OrganismFactory organismFactory)
         {
             this.ecosystemData = ecosystemData;
             this.environmentMeasureDistributor = environmentMeasureDistributor;
             this.organismFactory = organismFactory;
 
-            this.organismInteractionFunctions = new Dictionary<Intention, Func<Coordinate, IntentionAdjustments>>
+            this.interactionFunctions = new Dictionary<Intention, Func<Coordinate, IntentionAdjustments>>
             {
                 { Intention.Nourish, this.NourishNeighbour },
                 { Intention.Birth, this.BirthOrganism },
@@ -40,9 +40,9 @@
             foreach (var organismCoordinate in this.ecosystemData.AliveOrganismCoordinates().ToList())
             {
                 var organism = this.ecosystemData.GetOrganism(organismCoordinate);
-                if (organism.CanInteractOrganism())
+                if (organism.CanInteract())
                 {
-                    var adjustments = this.organismInteractionFunctions[organism.CurrentIntention].Invoke(organismCoordinate);
+                    var adjustments = this.interactionFunctions[organism.CurrentIntention].Invoke(organismCoordinate);
                     this.ecosystemData.AdjustLevels(organismCoordinate, adjustments);
                 }
             }
@@ -66,7 +66,7 @@
             var childOrganism = this.organismFactory.CreateChildOrganism(parentOrganism);
             this.ecosystemData.AddOrganism(childOrganism, childOrganismCoordinate);
 
-            var adjustments = parentOrganism.InteractOrganismAdjustments(childOrganism);
+            var adjustments = parentOrganism.InteractionEffects(childOrganism);
             return adjustments;
         }
 
@@ -83,7 +83,7 @@
             var nourishedOrganism = neighboursRequestingNutrient.FirstOrDefault() ?? DecisionLogic.MakeDecision(neighboursRequestingNutrient);
             var nourishedOrganismCoordinate = this.ecosystemData.CoordinateOf(nourishedOrganism);
 
-            var adjustments = nourishingOrganism.InteractOrganismAdjustments(nourishedOrganism);
+            var adjustments = nourishingOrganism.InteractionEffects(nourishedOrganism);
             var givenNutrient = -adjustments.OrganismMeasureAdjustments[OrganismMeasure.Inventory];
             this.ecosystemData.AdjustLevel(nourishedOrganismCoordinate, OrganismMeasure.Health, givenNutrient);
 

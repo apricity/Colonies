@@ -26,7 +26,7 @@
 
         public UpdateSummary PerformUpdate()
         {
-            return this.Ecosystem.UpdateOneStage();
+            return this.Ecosystem.ExecuteOnePhase();
         }
     }
 }

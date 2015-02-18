@@ -142,6 +142,7 @@
     <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
     <Compile Include="Extensions\EcosystemDataExtensions.cs" />
     <Compile Include="Models\DataAgents\AmbientPhase.cs" />
+    <Compile Include="Models\DataAgents\SetupPhase.cs" />
     <Compile Include="Models\DataAgents\OrganismFactory.cs" />
     <Compile Include="Models\DataAgents\InteractionPhase.cs" />
     <Compile Include="Models\DataAgents\MovementPhase.cs" />

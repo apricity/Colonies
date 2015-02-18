@@ -25,13 +25,12 @@
             this.interactionFunctions = new Dictionary<Intention, Func<Coordinate, IntentionAdjustments>>
             {
                 { Intention.Nourish, this.NourishNeighbour },
-                { Intention.Birth, this.BirthOrganism },
+                { Intention.Birth, this.BirthOffspring },
             };
         }
 
         public void Execute()
         {
-            this.ecosystemData.RefreshOrganismIntentions();
             this.PerformInteractions();
         }
 
@@ -48,7 +47,7 @@
             }
         }
 
-        private IntentionAdjustments BirthOrganism(Coordinate parentOrganismCoordinate)
+        private IntentionAdjustments BirthOffspring(Coordinate parentOrganismCoordinate)
         {
             var parentOrganism = this.ecosystemData.GetOrganism(parentOrganismCoordinate);
 
@@ -62,13 +61,31 @@
                 return new IntentionAdjustments();
             }
 
-            var childOrganismCoordinate = DecisionLogic.MakeDecision(vacantCoordinates);
-            var childOrganism = this.organismFactory.CreateChildOrganism(parentOrganism);
-            this.ecosystemData.AddOrganism(childOrganism, childOrganismCoordinate);
+            var offspringOrganismCoordinate = DecisionLogic.MakeDecision(vacantCoordinates);
+            var offspringOrganism = this.organismFactory.CreateOffspringOrganism(parentOrganism);
+            var offspringEnvironment = this.ecosystemData.GetEnvironment(offspringOrganismCoordinate);
+            this.ecosystemData.AddOrganism(offspringOrganism, offspringOrganismCoordinate);
 
-            var adjustments = parentOrganism.InteractionEffects(childOrganism);
+            // TODO: test!
+            this.ecosystemData.HazardAffliction(offspringOrganismCoordinate);
+            //this.HazardAfflication(offspringOrganism, offspringEnvironment);
+
+            var adjustments = parentOrganism.InteractionEffects(offspringOrganism);
             return adjustments;
         }
+
+        //private void HazardAfflication(IOrganism organism, IEnvironment environment)
+        //{
+        //    if (!environment.IsHarmful)
+        //    {
+        //        return;
+        //    }
+
+        //    foreach (var harmfulMeasure in environment.HarmfulMeasures)
+        //    {
+        //        harmfulMeasure.OrganismAfflication.Invoke(organism);
+        //    }
+        //}
 
         private IntentionAdjustments NourishNeighbour(Coordinate nourishingOrganismCoordinate)
         {

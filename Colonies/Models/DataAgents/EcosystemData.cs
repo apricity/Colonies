@@ -54,8 +54,6 @@
                 var coordinate = organismCoordinate.Value;
 
                 this.AddOrganism(organism, this.HabitatAt(coordinate));
-                var initialIntention = organism.DecideIntention(this.GetEnvironment(coordinate));
-                organism.UpdateIntention(initialIntention);
             }
         }
 
@@ -311,6 +309,23 @@
             {
                 var organism = this.GetOrganism(organismCoordinate);
                 organism.IncrementAge(increment);
+            }
+        }
+
+        // TODO: move to environment measure distributor, and handle hazard effects there at the same time?
+        public void HazardAffliction(Coordinate organismCoordinate)
+        {
+            var organism = this.GetOrganism(organismCoordinate);
+            var environment = this.GetEnvironment(organismCoordinate);
+
+            if (!environment.IsHarmful)
+            {
+                return;
+            }
+
+            foreach (var harmfulMeasure in environment.HarmfulMeasures)
+            {
+                harmfulMeasure.OrganismAfflication.Invoke(organism);
             }
         }
     }

@@ -332,17 +332,20 @@
             var ecosystemRates = new EcosystemRates();
             var weather = new Weather();
             var environmentMeasureDistributor = new EnvironmentMeasureDistributor(ecosystemData);
+            var setupPhase = new SetupPhase(ecosystemData);
             var actionPhase = new ActionPhase(ecosystemData, environmentMeasureDistributor);
             var movementPhase = new MovementPhase(ecosystemData, ecosystemRates, environmentMeasureDistributor);
             var interactionPhase = new InteractionPhase(ecosystemData, environmentMeasureDistributor, organismFactory);
             var ambientPhase = new AmbientPhase(ecosystemData, ecosystemRates, environmentMeasureDistributor, weather);
-            var ecosystemStages = new EcosystemPhases(new List<IEcosystemPhase> { actionPhase, movementPhase, interactionPhase, ambientPhase });
+            var ecosystemStages = new EcosystemPhases(new List<IEcosystemPhase> { setupPhase, actionPhase, interactionPhase, movementPhase, ambientPhase });
             var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, environmentMeasureDistributor, ecosystemStages);
 
             movementPhase.OverrideDesiredOrganismCoordinates = desiredBiasedOrganismCoordinates;
             movementPhase.OverrideDecideOrganismFunction = organisms => organisms.First();
 
+            var setupUpdateSummary = ecosystem.ExecuteOnePhase();
             var actionUpdateSummary = ecosystem.ExecuteOnePhase();
+            var interactionUpdateSummary = ecosystem.ExecuteOnePhase();
             var movementUpdateSummary = ecosystem.ExecuteOnePhase();
             return movementUpdateSummary;
         }

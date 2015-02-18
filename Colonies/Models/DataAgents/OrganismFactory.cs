@@ -18,7 +18,7 @@
                     new WeightedItem<Type>(typeof(Defender), 45)
                 };
 
-        public IOrganism CreateChildOrganism(IOrganism parentOrganism)
+        public IOrganism CreateOffspringOrganism(IOrganism parentOrganism)
         {
             // TODO: this is just a quick way of getting a random string - use a dictionary of adjectives & nouns (or similar) instead
             var name = Path.GetRandomFileName().Replace(".", string.Empty);

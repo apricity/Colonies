@@ -71,11 +71,12 @@
             var ecosystemRates = new EcosystemRates();
             var weather = new Weather();
             var environmentMeasureDistributor = new EnvironmentMeasureDistributor(ecosystemData);
+            var setupPhase = new SetupPhase(ecosystemData);
             var actionPhase = new ActionPhase(ecosystemData, environmentMeasureDistributor);
             var movementPhase = new MovementPhase(ecosystemData, ecosystemRates, environmentMeasureDistributor);
             var interactionPhase = new InteractionPhase(ecosystemData, environmentMeasureDistributor, organismFactory);
             var ambientPhase = new AmbientPhase(ecosystemData, ecosystemRates, environmentMeasureDistributor, weather);
-            var ecosystemPhases = new EcosystemPhases(new List<IEcosystemPhase> { actionPhase, movementPhase, interactionPhase, ambientPhase }); // TODO: review movement/interaction ordering
+            var ecosystemPhases = new EcosystemPhases(new List<IEcosystemPhase> { setupPhase, actionPhase, interactionPhase, movementPhase, ambientPhase }); // TODO: review movement/interaction ordering
             var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, environmentMeasureDistributor, ecosystemPhases);
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 

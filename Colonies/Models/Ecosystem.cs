@@ -50,6 +50,7 @@
             var updateNumber = this.EcosystemPhases.UpdateCount + 1; // because ecosystem phases is zero-based
             var updatesPerTurn = this.EcosystemPhases.PhaseCount;
 
+            // TODO: review this now that intention is only updated once per turn - can do it at setup phase?
             var previousAudibleOrganismCoordinates = this.EcosystemData.AudibleOrganismCoordinates().ToList();
 
             this.EcosystemPhases.ExecutePhase();
@@ -60,6 +61,8 @@
 
             this.RemoveEnvironmentDistribution(previousAudibleOrganismCoordinates, EnvironmentMeasure.Sound);
             this.InsertEnvironmentDistribution(currentAudibleOrganismCoordinates, EnvironmentMeasure.Sound);
+
+            // TODO: should this just go into movement phase?
             this.InsertEnvironmentDistribution(infectiousOrganismCoordinates, EnvironmentMeasure.Disease);
 
             var ecosystemHistory = this.EcosystemHistoryPuller.Pull();

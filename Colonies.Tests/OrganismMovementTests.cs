@@ -332,10 +332,11 @@
             var ecosystemRates = new EcosystemRates();
             var weather = new Weather();
             var environmentMeasureDistributor = new EnvironmentMeasureDistributor(ecosystemData);
-            var setupPhase = new SetupPhase(ecosystemData);
+            var hazardAfflictor = new HazardAfflictor(ecosystemData, environmentMeasureDistributor);
+            var setupPhase = new SetupPhase(ecosystemData, hazardAfflictor);
             var actionPhase = new ActionPhase(ecosystemData, environmentMeasureDistributor);
             var movementPhase = new MovementPhase(ecosystemData, ecosystemRates, environmentMeasureDistributor);
-            var interactionPhase = new InteractionPhase(ecosystemData, environmentMeasureDistributor, organismFactory);
+            var interactionPhase = new InteractionPhase(ecosystemData, environmentMeasureDistributor, organismFactory, hazardAfflictor);
             var ambientPhase = new AmbientPhase(ecosystemData, ecosystemRates, environmentMeasureDistributor, weather);
             var ecosystemStages = new EcosystemPhases(new List<IEcosystemPhase> { setupPhase, actionPhase, interactionPhase, movementPhase, ambientPhase });
             var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, environmentMeasureDistributor, ecosystemStages);

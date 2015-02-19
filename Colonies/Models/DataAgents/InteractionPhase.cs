@@ -14,13 +14,15 @@
         private readonly EcosystemData ecosystemData;
         private readonly EnvironmentMeasureDistributor environmentMeasureDistributor;
         private readonly OrganismFactory organismFactory;
+        private readonly HazardAfflictor hazardAfflictor;
         private readonly Dictionary<Intention, Func<Coordinate, IntentionAdjustments>> interactionFunctions;  
 
-        public InteractionPhase(EcosystemData ecosystemData, EnvironmentMeasureDistributor environmentMeasureDistributor, OrganismFactory organismFactory)
+        public InteractionPhase(EcosystemData ecosystemData, EnvironmentMeasureDistributor environmentMeasureDistributor, OrganismFactory organismFactory, HazardAfflictor hazardAfflictor)
         {
             this.ecosystemData = ecosystemData;
             this.environmentMeasureDistributor = environmentMeasureDistributor;
             this.organismFactory = organismFactory;
+            this.hazardAfflictor = hazardAfflictor;
 
             this.interactionFunctions = new Dictionary<Intention, Func<Coordinate, IntentionAdjustments>>
             {
@@ -67,7 +69,7 @@
             this.ecosystemData.AddOrganism(offspringOrganism, offspringOrganismCoordinate);
 
             // TODO: test!
-            this.ecosystemData.HazardAffliction(offspringOrganismCoordinate);
+            this.hazardAfflictor.HazardAffliction(offspringOrganismCoordinate);
             //this.HazardAfflication(offspringOrganism, offspringEnvironment);
 
             var adjustments = parentOrganism.InteractionEffects(offspringOrganism);

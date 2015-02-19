@@ -7,10 +7,12 @@
     public class SetupPhase : IEcosystemPhase
     {
         private readonly EcosystemData ecosystemData;
+        private readonly HazardAfflictor hazardAfflictor;
 
-        public SetupPhase(EcosystemData ecosystemData)
+        public SetupPhase(EcosystemData ecosystemData, HazardAfflictor hazardAfflictor)
         {
             this.ecosystemData = ecosystemData;
+            this.hazardAfflictor = hazardAfflictor;
         }
 
         public void Execute()
@@ -24,7 +26,7 @@
             {
                 var organism = this.ecosystemData.GetOrganism(organismCoordinate);
                 var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
-                this.ecosystemData.HazardAffliction(organismCoordinate);
+                this.hazardAfflictor.HazardAffliction(organismCoordinate);
                 //this.HazardAfflication(organism, environment);
 
                 var intention = organism.DecideIntention(environment);

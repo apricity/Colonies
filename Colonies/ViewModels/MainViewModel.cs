@@ -21,7 +21,7 @@
         // so use a lock to ensure the model isn't updated while it's updating...
         // (volatile because, if interval update is too small, lock will be accessed by multiple threads simultaneously)
         private readonly Timer ecosystemTimer;
-        private volatile object updateLock = new object();
+        private volatile object performPhaseLock = new object();
 
         public ICommand ToggleEcosystemCommand { get; set; }
         public ICommand IncreaseTurnIntervalCommand { get; set; }
@@ -73,22 +73,22 @@
         }
 
         // TODO: should the slider go from "slow (1) -> fast (100)", and that value be converted in this view model to a ms value?
-        // turn interval is in ms
-        private int ecosystemTurnInterval;
-        public int EcosystemTurnInterval
+        // phase interval is in ms
+        private int phaseInterval;
+        public int PhaseInterval
         {
             get
             {
-                return this.ecosystemTurnInterval;
+                return this.phaseInterval;
             }
             set
             {
-                this.ecosystemTurnInterval = value;
-                this.OnPropertyChanged("EcosystemTurnInterval");
+                this.phaseInterval = value;
+                this.OnPropertyChanged("PhaseInterval");
             }
         }
 
-        private int lastUsedTurnInterval;
+        private int previousPhaseInterval;
 
         public double HealthDeteriorationDemoninator
         {
@@ -220,31 +220,31 @@
             }
         }
 
-        private int turnCount;
-        public int TurnCount
+        private int roundCount;
+        public int RoundCount
         {
             get
             {
-                return this.turnCount;
+                return this.roundCount;
             }
             private set
             {
-                this.turnCount = value;
-                this.OnPropertyChanged("TurnCount");
+                this.roundCount = value;
+                this.OnPropertyChanged("RoundCount");
             }
         }
 
-        private int updateCount;
-        public int UpdateCount
+        private int phaseCount;
+        public int PhaseCount
         {
             get
             {
-                return this.updateCount;
+                return this.phaseCount;
             }
             private set
             {
-                this.updateCount = value;
-                this.OnPropertyChanged("UpdateCount");
+                this.phaseCount = value;
+                this.OnPropertyChanged("PhaseCount");
             }
         }
 
@@ -255,13 +255,13 @@
             this.OrganismSynopsisViewModel = organismSynopsisViewModel;
 
             // initally set the ecosystem up to be not running
-            this.TurnCount = 0;
-            this.UpdateCount = 0;
+            this.RoundCount = 0;
+            this.PhaseCount = 0;
             this.ecosystemTimer = new Timer(this.OnEcosystemTimerTick);
             this.IsEcosystemActive = false;
             var initialUpdateInterval = Properties.Settings.Default.UpdateFrequencyInMs;
-            this.EcosystemTurnInterval = initialUpdateInterval;
-            this.lastUsedTurnInterval = initialUpdateInterval;
+            this.PhaseInterval = initialUpdateInterval;
+            this.previousPhaseInterval = initialUpdateInterval;
 
             // hook up a toggle ecosystem command so a keyboard shortcut can be used to toggle the ecosystem on/off
             this.ToggleEcosystemCommand = new RelayCommand(this.ToggleEcosystem);
@@ -277,19 +277,19 @@
         // TODO: bind slider max and min to these values
         private void IncreaseTurnInterval(object obj)
         {
-            this.EcosystemTurnInterval++;
-            if (this.EcosystemTurnInterval > 2000)
+            this.PhaseInterval++;
+            if (this.PhaseInterval > 2000)
             {
-                this.EcosystemTurnInterval = 2000;
+                this.PhaseInterval = 2000;
             }
         }
 
         private void DecreaseTurnInterval(object obj)
         {
-            this.EcosystemTurnInterval--;
-            if (this.EcosystemTurnInterval < 1)
+            this.PhaseInterval--;
+            if (this.PhaseInterval < 1)
             {
-                this.EcosystemTurnInterval = 1;
+                this.PhaseInterval = 1;
             }
         }
 
@@ -298,45 +298,45 @@
             const int immediateStart = 0;
             const int preventStart = Timeout.Infinite;
 
-            this.ecosystemTimer.Change(this.IsEcosystemActive ? immediateStart : preventStart, this.EcosystemTurnInterval);
-            this.lastUsedTurnInterval = this.EcosystemTurnInterval;
+            this.ecosystemTimer.Change(this.IsEcosystemActive ? immediateStart : preventStart, this.PhaseInterval);
+            this.previousPhaseInterval = this.PhaseInterval;
         }
 
         private void OnEcosystemTimerTick(object state)
         {
-            if (Monitor.TryEnter(this.updateLock))
+            if (Monitor.TryEnter(this.performPhaseLock))
             {
                 try
                 {
-                    var updateSummary = this.DomainModel.PerformUpdate();
-                    this.UpdateViewModels(updateSummary);
-                    this.UpdateCount = updateSummary.UpdateNumber;
+                    var phaseSummary = this.DomainModel.PerformPhase();
+                    this.UpdateViewModels(phaseSummary);
+                    this.PhaseCount = phaseSummary.PhaseNumber;
 
                     // TODO: only do these after all phases have been performed?
-                    this.TurnCount = this.UpdateCount / updateSummary.UpdatesPerTurn;
+                    this.RoundCount = this.PhaseCount / phaseSummary.PhasesPerRound;
                     this.WeatherDampLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Damp));
                     this.WeatherHeatLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Heat));
 
-                    // if there's been a change in the turn interval while the previous turn was processed
+                    // if there's been a change in the phase interval while the previous phase was processed
                     // update the interval of the ecosystem timer
-                    if (this.EcosystemTurnInterval != this.lastUsedTurnInterval)
+                    if (this.PhaseInterval != this.previousPhaseInterval)
                     {
                         this.ChangeEcosystemTimer();
                     }
                 }
                 finally
                 {
-                    Monitor.Exit(this.updateLock);
+                    Monitor.Exit(this.performPhaseLock);
                 }
             }
         }
 
-        private void UpdateViewModels(UpdateSummary updateSummary)
+        private void UpdateViewModels(PhaseSummary phaseSummary)
         {
             var refreshedHabitatViewModels = new ConcurrentBag<HabitatViewModel>();
 
             // refresh properties of all modifications
-            Parallel.ForEach(updateSummary.EcosystemHistory.Modifications, modification =>
+            Parallel.ForEach(phaseSummary.EcosystemHistory.Modifications, modification =>
             {
                 var x = modification.Coordinate.X;
                 var y = modification.Coordinate.Y;
@@ -347,7 +347,7 @@
             });
 
             // refresh properties of all organisms that have been added
-            Parallel.ForEach(updateSummary.EcosystemHistory.Additions, addition =>
+            Parallel.ForEach(phaseSummary.EcosystemHistory.Additions, addition =>
             {
                 var x = addition.Coordinate.X;
                 var y = addition.Coordinate.Y;
@@ -361,11 +361,11 @@
             });
 
             // refresh properties of all organisms that have not moved
-            Parallel.ForEach(updateSummary.OrganismCoordinates, organismCoordinate =>
+            Parallel.ForEach(phaseSummary.OrganismCoordinates, organismCoordinate =>
             {
                 var organism = organismCoordinate.Key;
 
-                if (updateSummary.EcosystemHistory.Relocations.Any(relocation => relocation.Organism.Equals(organism)))
+                if (phaseSummary.EcosystemHistory.Relocations.Any(relocation => relocation.Organism.Equals(organism)))
                 {
                     return;
                 }
@@ -380,7 +380,7 @@
             });
 
             // unassign moving organisms from their previous view models
-            Parallel.ForEach(updateSummary.EcosystemHistory.Relocations, relocation =>
+            Parallel.ForEach(phaseSummary.EcosystemHistory.Relocations, relocation =>
             {
                 var x = relocation.PreviousCoordinate.X;
                 var y = relocation.PreviousCoordinate.Y;
@@ -392,7 +392,7 @@
             });
 
             // assign moving organisms to their current view models
-            Parallel.ForEach(updateSummary.EcosystemHistory.Relocations, relocation =>
+            Parallel.ForEach(phaseSummary.EcosystemHistory.Relocations, relocation =>
             {
                 var x = relocation.UpdatedCoordinate.X;
                 var y = relocation.UpdatedCoordinate.Y;

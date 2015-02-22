@@ -141,8 +141,9 @@
     <Compile Include="DataTypes\Coordinate.cs" />
     <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
     <Compile Include="Extensions\EcosystemDataExtensions.cs" />
+    <Compile Include="Models\DataAgents\HazardFlow.cs" />
     <Compile Include="Models\DataAgents\AmbientPhase.cs" />
-    <Compile Include="Models\DataAgents\HazardAfflictor.cs" />
+    <Compile Include="Models\DataAgents\Afflictor.cs" />
     <Compile Include="Models\DataAgents\SetupPhase.cs" />
     <Compile Include="Models\DataAgents\OrganismFactory.cs" />
     <Compile Include="Models\DataAgents\InteractionPhase.cs" />
@@ -157,7 +158,7 @@
     <Compile Include="Models\Interfaces\IEcosystemPhase.cs" />
     <Compile Include="Models\Queen.cs" />
     <Compile Include="Models\Defender.cs" />
-    <Compile Include="Models\DataAgents\EnvironmentMeasureDistributor.cs" />
+    <Compile Include="Models\DataAgents\Distributor.cs" />
     <Compile Include="Models\Gatherer.cs" />
     <Compile Include="ViewModels\Infrastructure\OrganismsUpdatedEvent.cs" />
     <Compile Include="Extensions\GenericCollectionExtensions.cs" />
@@ -183,7 +184,7 @@
     <Compile Include="Models\DataAgents\EcosystemData.cs" />
     <Compile Include="Models\Main.cs" />
     <Compile Include="Models\OrganismSynopsis.cs" />
-    <Compile Include="DataTypes\UpdateSummary.cs" />
+    <Compile Include="DataTypes\PhaseSummary.cs" />
     <Compile Include="ViewModels\Infrastructure\RelayCommand.cs" />
     <Compile Include="DesignTime\DesignTimeViewModelLocator.cs" />
     <Compile Include="Models\DataAgents\Weather.cs" />

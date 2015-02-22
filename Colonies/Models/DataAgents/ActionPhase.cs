@@ -7,12 +7,12 @@
     public class ActionPhase : IEcosystemPhase
     {
         private readonly EcosystemData ecosystemData;
-        private readonly EnvironmentMeasureDistributor environmentMeasureDistributor;
+        private readonly Distributor distributor;
 
-        public ActionPhase(EcosystemData ecosystemData, EnvironmentMeasureDistributor environmentMeasureDistributor)
+        public ActionPhase(EcosystemData ecosystemData, Distributor distributor)
         {
             this.ecosystemData = ecosystemData;
-            this.environmentMeasureDistributor = environmentMeasureDistributor;
+            this.distributor = distributor;
         }
 
         public void Execute()

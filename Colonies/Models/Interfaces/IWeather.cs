@@ -6,6 +6,6 @@
     {
         double GetLevel(WeatherType weatherType);
 
-        void Progress();
+        void Advance();
     }
 }

@@ -15,8 +15,10 @@
         public EcosystemRates EcosystemRates { get; private set; }
         private IEcosystemHistoryPuller EcosystemHistoryPuller { get; set; }
         public IWeather Weather { get; private set; }
-        public EnvironmentMeasureDistributor EnvironmentMeasureDistributor { get; private set; }
+        public Distributor Distributor { get; private set; }
         private EcosystemPhases EcosystemPhases { get; set; }
+
+        private IEnumerable<Coordinate> previousAudibleOrganismCoordinates;
 
         public int Width
         {
@@ -35,55 +37,44 @@
         }
 
         // TODO: param list still a bit too long?
-        public Ecosystem(EcosystemData ecosystemData, EcosystemRates ecosystemRates, IEcosystemHistoryPuller ecosystemHistoryPuller, IWeather weather, EnvironmentMeasureDistributor environmentMeasureDistributor, EcosystemPhases ecosystemPhases)
+        public Ecosystem(EcosystemData ecosystemData, EcosystemRates ecosystemRates, IEcosystemHistoryPuller ecosystemHistoryPuller, IWeather weather, Distributor distributor, EcosystemPhases ecosystemPhases)
         {
             this.EcosystemData = ecosystemData;
             this.EcosystemRates = ecosystemRates;
             this.EcosystemHistoryPuller = ecosystemHistoryPuller;
             this.Weather = weather;
-            this.EnvironmentMeasureDistributor = environmentMeasureDistributor;
+            this.Distributor = distributor;
             this.EcosystemPhases = ecosystemPhases;
+
+            this.previousAudibleOrganismCoordinates = new List<Coordinate>();
         }
 
-        public UpdateSummary ExecuteOnePhase()
+        public PhaseSummary ExecuteOnePhase()
         {
-            var updateNumber = this.EcosystemPhases.UpdateCount + 1; // because ecosystem phases is zero-based
-            var updatesPerTurn = this.EcosystemPhases.PhaseCount;
-
-            // TODO: review this now that intention is only updated once per turn - can do it at setup phase?
-            var previousAudibleOrganismCoordinates = this.EcosystemData.AudibleOrganismCoordinates().ToList();
+            var phaseNumber = this.EcosystemPhases.PhaseCount + 1; // because ecosystem phases is zero-based
+            var phasesPerRound = this.EcosystemPhases.PhasesPerRound;
 
             this.EcosystemPhases.ExecutePhase();
-            this.EcosystemData.IncrementOrganismAges(1 / (double)this.EcosystemPhases.PhaseCount);
-
-            var currentAudibleOrganismCoordinates = this.EcosystemData.AudibleOrganismCoordinates().ToList();
-            var infectiousOrganismCoordinates = this.EcosystemData.InfectiousOrganismCoordinates().ToList();
-
-            this.RemoveEnvironmentDistribution(previousAudibleOrganismCoordinates, EnvironmentMeasure.Sound);
-            this.InsertEnvironmentDistribution(currentAudibleOrganismCoordinates, EnvironmentMeasure.Sound);
-
-            // TODO: should this just go into movement phase?
-            this.InsertEnvironmentDistribution(infectiousOrganismCoordinates, EnvironmentMeasure.Disease);
+            this.EcosystemData.IncrementOrganismAges(1 / (double)phasesPerRound);
+            this.ProcessChangedAfflictions();
 
             var ecosystemHistory = this.EcosystemHistoryPuller.Pull();
-            var updateSummary = new UpdateSummary(updateNumber, updatesPerTurn, ecosystemHistory, this.EcosystemData.OrganismCoordinatePairs());
-            return updateSummary;
+            var phaseSummary = new PhaseSummary(phaseNumber, phasesPerRound, ecosystemHistory, this.EcosystemData.OrganismCoordinatePairs());
+            return phaseSummary;
         }
 
-        private void RemoveEnvironmentDistribution(IEnumerable<Coordinate> coordinates, EnvironmentMeasure environmentMeasure)
+        // due to affliction timings in the organism, affliction can be present in the previous phase but not the current phase
+        // (e.g. infectious at end of ambient phase, but not infectious at start of setup phase)
+        // since each phase is independent, afflictions are being processed at this level instead of performing this for every phase
+        private void ProcessChangedAfflictions()
         {
-            foreach (var coordinate in coordinates)
-            {
-                this.EnvironmentMeasureDistributor.RemoveDistribution(coordinate, environmentMeasure);
-            }
-        }
+            var audibleOrganismCoordinates = this.EcosystemData.AudibleOrganismCoordinates().ToList();
+            var infectiousAudibleOrganismCoordinates = this.EcosystemData.InfectiousOrganismCoordinates().ToList();
+            this.Distributor.Remove(EnvironmentMeasure.Sound, previousAudibleOrganismCoordinates.ToList());
+            this.Distributor.Insert(EnvironmentMeasure.Sound, audibleOrganismCoordinates);
+            this.Distributor.Insert(EnvironmentMeasure.Disease, infectiousAudibleOrganismCoordinates);
 
-        private void InsertEnvironmentDistribution(IEnumerable<Coordinate> coordinates, EnvironmentMeasure environmentMeasure)
-        {
-            foreach (var coordinate in coordinates)
-            {
-                this.EnvironmentMeasureDistributor.InsertDistribution(coordinate, environmentMeasure);
-            }
+            this.previousAudibleOrganismCoordinates = audibleOrganismCoordinates;
         }
 
         public void SetLevel(Coordinate coordinate, EnvironmentMeasure environmentMeasure, double level)

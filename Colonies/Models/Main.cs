@@ -24,7 +24,7 @@
             return this.ecosystem.ToString();
         }
 
-        public UpdateSummary PerformUpdate()
+        public PhaseSummary PerformPhase()
         {
             return this.Ecosystem.ExecuteOnePhase();
         }

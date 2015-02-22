@@ -85,7 +85,7 @@
                                   Content="{Binding IsEcosystemActive, Converter={StaticResource BoolToActiveStringConverter}}" Margin="3"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Interval:"/>
-                    <Slider Grid.Row="1" Grid.Column="1" Value="{Binding EcosystemTurnInterval}" 
+                    <Slider Grid.Row="1" Grid.Column="1" Value="{Binding PhaseInterval}" 
                             Minimum="1" Maximum="2000" AutoToolTipPlacement="BottomRight" FlowDirection="RightToLeft" Margin="3"/>
 
                     <!-- TODO: wrap each of these in a common control -->
@@ -173,11 +173,11 @@
 
                     <!--<Grid.ShowGridLines>True</Grid.ShowGridLines>-->
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Update count:"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding UpdateCount}" Margin="3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Phase count:"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding PhaseCount}" Margin="3"/>
                     
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Turn count:"/>
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding TurnCount}" Margin="3"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Round count:"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding RoundCount}" Margin="3"/>
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Weather damp:"/>
                     <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding WeatherDampLevel}" Margin="3"/>

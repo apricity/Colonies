@@ -6,6 +6,6 @@
     {
         IEcosystem Ecosystem { get; }
 
-        UpdateSummary PerformUpdate();
+        PhaseSummary PerformPhase();
     }
 }

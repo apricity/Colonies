@@ -10,15 +10,17 @@
     {
         private readonly EcosystemData ecosystemData;
         private readonly EcosystemRates ecosystemRates;
-        private readonly EnvironmentMeasureDistributor environmentMeasureDistributor;
+        private readonly Distributor distributor;
         private readonly IWeather weather;
+        private readonly HazardFlow hazardFlow;
 
-        public AmbientPhase(EcosystemData ecosystemData, EcosystemRates ecosystemRates, EnvironmentMeasureDistributor environmentMeasureDistributor, IWeather weather)
+        public AmbientPhase(EcosystemData ecosystemData, EcosystemRates ecosystemRates, Distributor distributor, IWeather weather, HazardFlow hazardFlow)
         {
             this.ecosystemData = ecosystemData;
             this.ecosystemRates = ecosystemRates;
-            this.environmentMeasureDistributor = environmentMeasureDistributor;
+            this.distributor = distributor;
             this.weather = weather;
+            this.hazardFlow = hazardFlow;
         }
 
         public void Execute()
@@ -34,7 +36,7 @@
             // if organism has died, remove sound
             foreach (var recentlyDiedOrganismCoordinate in audibleOrganismCoordinates.Intersect(deadOrganismCoordinates))
             {
-                this.environmentMeasureDistributor.RemoveDistribution(recentlyDiedOrganismCoordinate, EnvironmentMeasure.Sound);
+                this.distributor.Remove(EnvironmentMeasure.Sound, recentlyDiedOrganismCoordinate);
             }
         }
 
@@ -65,30 +67,8 @@
 
         private void ProgressWeatherAndHazards()
         {
-            this.weather.Progress();
-
-            foreach (var environmentMeasureHazardRate in this.ecosystemRates.HazardRates)
-            {
-                var environmentMeasure = environmentMeasureHazardRate.Key;
-                var hazardRate = environmentMeasureHazardRate.Value;
-
-                var weatherBiasedSpreadRate = hazardRate.SpreadRate;
-                var weatherBiasedRemoveRate = hazardRate.RemoveRate;
-                var weatherBiasedAddRate = hazardRate.AddRate;
-
-                var weatherTrigger = environmentMeasure.WeatherTrigger;
-                if (weatherTrigger != WeatherType.None)
-                {
-                    var weatherLevel = this.weather.GetLevel(weatherTrigger);
-                    weatherBiasedSpreadRate *= weatherLevel;
-                    weatherBiasedRemoveRate *= (1 - weatherLevel);
-                    weatherBiasedAddRate *= weatherLevel;
-                }
-
-                this.environmentMeasureDistributor.RandomSpreadHazards(environmentMeasure, weatherBiasedSpreadRate);
-                this.environmentMeasureDistributor.RandomRemoveHazards(environmentMeasure, weatherBiasedRemoveRate);
-                this.environmentMeasureDistributor.RandomAddHazards(environmentMeasure, weatherBiasedAddRate);
-            }
+            this.weather.Advance();
+            this.hazardFlow.Advance();
         }
     }
 }

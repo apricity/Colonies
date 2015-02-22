@@ -12,17 +12,17 @@
     public class InteractionPhase : IEcosystemPhase
     {
         private readonly EcosystemData ecosystemData;
-        private readonly EnvironmentMeasureDistributor environmentMeasureDistributor;
+        private readonly Distributor distributor;
         private readonly OrganismFactory organismFactory;
-        private readonly HazardAfflictor hazardAfflictor;
+        private readonly Afflictor afflictor;
         private readonly Dictionary<Intention, Func<Coordinate, IntentionAdjustments>> interactionFunctions;  
 
-        public InteractionPhase(EcosystemData ecosystemData, EnvironmentMeasureDistributor environmentMeasureDistributor, OrganismFactory organismFactory, HazardAfflictor hazardAfflictor)
+        public InteractionPhase(EcosystemData ecosystemData, Distributor distributor, OrganismFactory organismFactory, Afflictor afflictor)
         {
             this.ecosystemData = ecosystemData;
-            this.environmentMeasureDistributor = environmentMeasureDistributor;
+            this.distributor = distributor;
             this.organismFactory = organismFactory;
-            this.hazardAfflictor = hazardAfflictor;
+            this.afflictor = afflictor;
 
             this.interactionFunctions = new Dictionary<Intention, Func<Coordinate, IntentionAdjustments>>
             {
@@ -68,26 +68,11 @@
             var offspringEnvironment = this.ecosystemData.GetEnvironment(offspringOrganismCoordinate);
             this.ecosystemData.AddOrganism(offspringOrganism, offspringOrganismCoordinate);
 
-            // TODO: test!
-            this.hazardAfflictor.HazardAffliction(offspringOrganismCoordinate);
-            //this.HazardAfflication(offspringOrganism, offspringEnvironment);
+            this.afflictor.AfflictIfHarmful(offspringOrganismCoordinate);
 
             var adjustments = parentOrganism.InteractionEffects(offspringOrganism);
             return adjustments;
         }
-
-        //private void HazardAfflication(IOrganism organism, IEnvironment environment)
-        //{
-        //    if (!environment.IsHarmful)
-        //    {
-        //        return;
-        //    }
-
-        //    foreach (var harmfulMeasure in environment.HarmfulMeasures)
-        //    {
-        //        harmfulMeasure.OrganismAfflication.Invoke(organism);
-        //    }
-        //}
 
         private IntentionAdjustments NourishNeighbour(Coordinate nourishingOrganismCoordinate)
         {

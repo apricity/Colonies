@@ -8,7 +8,7 @@
     {
         private readonly List<IEcosystemPhase> ecosystemPhases;
 
-        public int PhaseCount
+        public int PhasesPerRound
         {
             get
             {
@@ -16,19 +16,19 @@
             }
         }
 
-        public int UpdateCount { get; private set; }
+        public int PhaseCount { get; private set; }
 
         public EcosystemPhases(List<IEcosystemPhase> ecosystemPhases)
         {
             this.ecosystemPhases = ecosystemPhases;
-            this.UpdateCount = 0;
+            this.PhaseCount = 0;
         }
 
         public void ExecutePhase()
         {
-            var phaseIndex = this.UpdateCount % this.PhaseCount;
+            var phaseIndex = this.PhaseCount % this.PhasesPerRound;
             this.ecosystemPhases[phaseIndex].Execute();
-            this.UpdateCount++;
+            this.PhaseCount++;
         }
     }
 }

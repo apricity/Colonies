@@ -10,21 +10,20 @@
     using Wacton.Colonies.Extensions;
     using Wacton.Colonies.Logic;
 
-    public class EnvironmentMeasureDistributor
+    public class Distributor
     {
         private EcosystemData EcosystemData { get; set; }
-        private Dictionary<EnvironmentMeasure, List<Coordinate>> DistributionSourceCoordinates { get; set; }
-        private Dictionary<EnvironmentMeasure, int> EnvironmentMeasureDiameters { get; set; } 
+        private Dictionary<EnvironmentMeasure, int> EnvironmentMeasureDiameters { get; set; }
+        private Dictionary<EnvironmentMeasure, List<Coordinate>> HazardSourceCoordinates { get; set; }
 
-        public EnvironmentMeasureDistributor(EcosystemData ecosystemData)
+        public Distributor(EcosystemData ecosystemData)
         {
             this.EcosystemData = ecosystemData;
 
-            this.DistributionSourceCoordinates = new Dictionary<EnvironmentMeasure, List<Coordinate>>();
+            this.HazardSourceCoordinates = new Dictionary<EnvironmentMeasure, List<Coordinate>>();
             foreach (var environmentMeasure in EnvironmentMeasure.HazardousMeasures())
             {
-                this.DistributionSourceCoordinates.Add(environmentMeasure, new List<Coordinate>());
-                // TODO: how to handle Sound distribution?
+                this.HazardSourceCoordinates.Add(environmentMeasure, new List<Coordinate>());
             }
 
             var hazardDiameter = this.EcosystemData.CalculateHazardDiameter();
@@ -37,7 +36,7 @@
                 };
         }
 
-        public void InsertDistribution(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
+        public void Insert(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
         {
             var diameter = this.EnvironmentMeasureDiameters[environmentMeasure];
             var radius = (diameter - 1) / 2;
@@ -64,15 +63,23 @@
                 }
             }
 
-            // TODO: needs to be .IsDistributed or something - Sound is not a hazard
+            // TODO: include sound in hazard sources?  or is it better to leave as it is, since organism sound knowledge is held elsewhere?
             if (environmentMeasure.IsHazardous)
             {
-                this.RegisterDistributionSource(environmentMeasure, coordinate);
+                this.RegisterHazardSource(environmentMeasure, coordinate);
+            }
+        }
+
+        public void Insert(EnvironmentMeasure environmentMeasure, IEnumerable<Coordinate> coordinates)
+        {
+            foreach (var coordinate in coordinates)
+            {
+                this.Insert(environmentMeasure, coordinate);
             }
         }
 
         // TODO: review this closely - recently saw a damp of 0.4 with no source next to it...
-        public void RemoveDistribution(Coordinate coordinate, EnvironmentMeasure environmentMeasure)
+        public void Remove(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
         {
             var diameter = this.EnvironmentMeasureDiameters[environmentMeasure];
             var radius = (diameter - 1) / 2;
@@ -99,64 +106,16 @@
 
             if (environmentMeasure.IsHazardous)
             {
-                this.DeregisterDistributionSource(environmentMeasure, coordinate);
+                this.DeregisterHazardSource(environmentMeasure, coordinate);
                 this.RepairBrokenHazards(environmentMeasure);
             }
         }
 
-        public void RandomAddHazards(EnvironmentMeasure environmentMeasure, double addChance)
+        public void Remove(EnvironmentMeasure environmentMeasure, IEnumerable<Coordinate> coordinates)
         {
-            if (!DecisionLogic.IsSuccessful(addChance))
+            foreach (var coordinate in coordinates)
             {
-                return;
-            }
-
-            var hazardCoordinates = this.DistributionSourceCoordinates[environmentMeasure].ToList();
-            var nonHazardCoordinates = this.EcosystemData.AllCoordinates().Except(hazardCoordinates);
-            var chosenNonHazardCoordinate = DecisionLogic.MakeDecision(nonHazardCoordinates);
-            if (!this.EcosystemData.HasLevel(chosenNonHazardCoordinate, EnvironmentMeasure.Obstruction))
-            {
-                this.InsertDistribution(chosenNonHazardCoordinate, environmentMeasure);
-            }
-        }
-
-        public void RandomSpreadHazards(EnvironmentMeasure environmentMeasure, double spreadChance)
-        {
-            var hazardCoordinates = this.DistributionSourceCoordinates[environmentMeasure].ToList();
-            foreach (var hazardCoordinate in hazardCoordinates)
-            {
-                if (!DecisionLogic.IsSuccessful(spreadChance))
-                {
-                    continue;
-                }
-
-                var neighbouringCoordinates = this.EcosystemData.GetNeighbours(hazardCoordinate, 1, false, false).ToList();
-                var validNeighbouringCoordinates = neighbouringCoordinates.Where(neighbourCoordinate =>
-                    neighbourCoordinate != null
-                    && !this.EcosystemData.HasLevel(neighbourCoordinate, EnvironmentMeasure.Obstruction)
-                    && this.EcosystemData.GetLevel(neighbourCoordinate, environmentMeasure) < 1).ToList();
-
-                if (validNeighbouringCoordinates.Count == 0)
-                {
-                    continue;
-                }
-
-                var chosenCoordinate = DecisionLogic.MakeDecision(validNeighbouringCoordinates);
-                this.InsertDistribution(chosenCoordinate, environmentMeasure);
-            }
-        }
-
-        public void RandomRemoveHazards(EnvironmentMeasure environmentMeasure, double removeChance)
-        {
-            var hazardCoordinates = this.DistributionSourceCoordinates[environmentMeasure].ToList();
-            foreach (var hazardCoordinate in hazardCoordinates)
-            {
-                if (!DecisionLogic.IsSuccessful(removeChance))
-                {
-                    continue;
-                }
-
-                this.RemoveDistribution(hazardCoordinate, environmentMeasure);
+                this.Remove(environmentMeasure, coordinate);
             }
         }
 
@@ -164,7 +123,7 @@
         private void RepairBrokenHazards(EnvironmentMeasure environmentMeasure)
         {
             // go through all remaining hazard coordinates and restore any remove measures that belonged to other hazards
-            var remainingHazardCoordinates = this.DistributionSourceCoordinates[environmentMeasure].ToList();
+            var remainingHazardCoordinates = this.HazardSourceCoordinates[environmentMeasure].ToList();
             foreach (var remainingHazardCoordinate in remainingHazardCoordinates)
             {
                 var radius = (this.EnvironmentMeasureDiameters[environmentMeasure] - 1) / 2;
@@ -175,23 +134,28 @@
                     continue;
                 }
 
-                this.InsertDistribution(remainingHazardCoordinate, environmentMeasure);
+                this.Insert(environmentMeasure, remainingHazardCoordinate);
             }
         }
 
-        private void RegisterDistributionSource(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
+        public IEnumerable<Coordinate> HazardSources(EnvironmentMeasure environmentMeasure)
         {
-            if (!this.DistributionSourceCoordinates[environmentMeasure].Contains(coordinate))
+            return this.HazardSourceCoordinates[environmentMeasure];
+        }
+
+        private void RegisterHazardSource(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
+        {
+            if (!this.HazardSourceCoordinates[environmentMeasure].Contains(coordinate))
             {
-                this.DistributionSourceCoordinates[environmentMeasure].Add(coordinate);
+                this.HazardSourceCoordinates[environmentMeasure].Add(coordinate);
             }
         }
 
-        private void DeregisterDistributionSource(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
+        private void DeregisterHazardSource(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
         {
-            if (this.DistributionSourceCoordinates[environmentMeasure].Contains(coordinate))
+            if (this.HazardSourceCoordinates[environmentMeasure].Contains(coordinate))
             {
-                this.DistributionSourceCoordinates[environmentMeasure].Remove(coordinate);
+                this.HazardSourceCoordinates[environmentMeasure].Remove(coordinate);
             }
         }
     }

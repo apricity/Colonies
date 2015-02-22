@@ -33,7 +33,7 @@
             return this.WeatherLevels[weatherType];
         }
 
-        public void Progress()
+        public void Advance()
         {
             var ratesToInvert = this.WeatherChangeRates.ToDictionary(
                 weatherChangeRate => weatherChangeRate.Key, weatherChangeRate => false);

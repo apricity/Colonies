@@ -320,7 +320,7 @@
             return habitats;
         }
 
-        private UpdateSummary CreateAndUpdateEcosystem(Dictionary<Organism, Coordinate> organismCoordinates, Dictionary<Organism, Coordinate> desiredOrganismCoordinates)
+        private PhaseSummary CreateAndUpdateEcosystem(Dictionary<Organism, Coordinate> organismCoordinates, Dictionary<Organism, Coordinate> desiredOrganismCoordinates)
         {
             var desiredBiasedOrganismCoordinates = desiredOrganismCoordinates.ToDictionary(
                 desiredOrganismCoordinate => (IOrganism)desiredOrganismCoordinate.Key,
@@ -331,15 +331,16 @@
             var ecosystemData = new EcosystemData(this.habitats, organismCoordinates, ecosystemHistory);
             var ecosystemRates = new EcosystemRates();
             var weather = new Weather();
-            var environmentMeasureDistributor = new EnvironmentMeasureDistributor(ecosystemData);
-            var hazardAfflictor = new HazardAfflictor(ecosystemData, environmentMeasureDistributor);
-            var setupPhase = new SetupPhase(ecosystemData, hazardAfflictor);
-            var actionPhase = new ActionPhase(ecosystemData, environmentMeasureDistributor);
-            var movementPhase = new MovementPhase(ecosystemData, ecosystemRates, environmentMeasureDistributor);
-            var interactionPhase = new InteractionPhase(ecosystemData, environmentMeasureDistributor, organismFactory, hazardAfflictor);
-            var ambientPhase = new AmbientPhase(ecosystemData, ecosystemRates, environmentMeasureDistributor, weather);
+            var distributor = new Distributor(ecosystemData);
+            var afflictor = new Afflictor(ecosystemData, distributor);
+            var hazardFlow = new HazardFlow(ecosystemData, ecosystemRates, distributor, weather);
+            var setupPhase = new SetupPhase(ecosystemData, distributor, afflictor);
+            var actionPhase = new ActionPhase(ecosystemData, distributor);
+            var movementPhase = new MovementPhase(ecosystemData, ecosystemRates, distributor);
+            var interactionPhase = new InteractionPhase(ecosystemData, distributor, organismFactory, afflictor);
+            var ambientPhase = new AmbientPhase(ecosystemData, ecosystemRates, distributor, weather, hazardFlow);
             var ecosystemStages = new EcosystemPhases(new List<IEcosystemPhase> { setupPhase, actionPhase, interactionPhase, movementPhase, ambientPhase });
-            var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, environmentMeasureDistributor, ecosystemStages);
+            var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, distributor, ecosystemStages);
 
             movementPhase.OverrideDesiredOrganismCoordinates = desiredBiasedOrganismCoordinates;
             movementPhase.OverrideDecideOrganismFunction = organisms => organisms.First();

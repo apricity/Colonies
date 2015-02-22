@@ -2,17 +2,20 @@
 {
     using System.Linq;
 
+    using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.Models.Interfaces;
 
     public class SetupPhase : IEcosystemPhase
     {
         private readonly EcosystemData ecosystemData;
-        private readonly HazardAfflictor hazardAfflictor;
+        private readonly Distributor distributor;
+        private readonly Afflictor afflictor;
 
-        public SetupPhase(EcosystemData ecosystemData, HazardAfflictor hazardAfflictor)
+        public SetupPhase(EcosystemData ecosystemData, Distributor distributor, Afflictor afflictor)
         {
             this.ecosystemData = ecosystemData;
-            this.hazardAfflictor = hazardAfflictor;
+            this.distributor = distributor;
+            this.afflictor = afflictor;
         }
 
         public void Execute()
@@ -26,25 +29,11 @@
             {
                 var organism = this.ecosystemData.GetOrganism(organismCoordinate);
                 var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
-                this.hazardAfflictor.HazardAffliction(organismCoordinate);
-                //this.HazardAfflication(organism, environment);
+                this.afflictor.AfflictIfHarmful(organismCoordinate);
 
                 var intention = organism.DecideIntention(environment);
                 organism.UpdateIntention(intention);
             }
         }
-
-        //private void HazardAfflication(IOrganism organism, IEnvironment environment)
-        //{
-        //    if (!environment.IsHarmful)
-        //    {
-        //        return;
-        //    }
-
-        //    foreach (var harmfulMeasure in environment.HarmfulMeasures)
-        //    {
-        //        harmfulMeasure.OrganismAfflication.Invoke(organism);
-        //    }
-        //}
     }
 }

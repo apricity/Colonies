@@ -1,6 +1,5 @@
 ﻿namespace Wacton.Colonies.Models.DataAgents
 {
-    using System.Collections.Generic;
     using System.Linq;
 
     using Wacton.Colonies.DataTypes;

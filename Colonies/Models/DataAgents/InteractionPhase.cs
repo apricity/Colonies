@@ -12,15 +12,13 @@
     public class InteractionPhase : IEcosystemPhase
     {
         private readonly EcosystemData ecosystemData;
-        private readonly Distributor distributor;
         private readonly OrganismFactory organismFactory;
         private readonly Afflictor afflictor;
         private readonly Dictionary<Intention, Func<Coordinate, IntentionAdjustments>> interactionFunctions;  
 
-        public InteractionPhase(EcosystemData ecosystemData, Distributor distributor, OrganismFactory organismFactory, Afflictor afflictor)
+        public InteractionPhase(EcosystemData ecosystemData, OrganismFactory organismFactory, Afflictor afflictor)
         {
             this.ecosystemData = ecosystemData;
-            this.distributor = distributor;
             this.organismFactory = organismFactory;
             this.afflictor = afflictor;
 
@@ -65,7 +63,6 @@
 
             var offspringOrganismCoordinate = DecisionLogic.MakeDecision(vacantCoordinates);
             var offspringOrganism = this.organismFactory.CreateOffspringOrganism(parentOrganism);
-            var offspringEnvironment = this.ecosystemData.GetEnvironment(offspringOrganismCoordinate);
             this.ecosystemData.AddOrganism(offspringOrganism, offspringOrganismCoordinate);
 
             this.afflictor.AfflictIfHarmful(offspringOrganismCoordinate);

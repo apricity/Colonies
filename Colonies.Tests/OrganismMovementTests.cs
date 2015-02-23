@@ -337,7 +337,7 @@
             var setupPhase = new SetupPhase(ecosystemData, distributor, afflictor);
             var actionPhase = new ActionPhase(ecosystemData, distributor);
             var movementPhase = new MovementPhase(ecosystemData, ecosystemRates, distributor);
-            var interactionPhase = new InteractionPhase(ecosystemData, distributor, organismFactory, afflictor);
+            var interactionPhase = new InteractionPhase(ecosystemData, organismFactory, afflictor);
             var ambientPhase = new AmbientPhase(ecosystemData, ecosystemRates, distributor, weather, hazardFlow);
             var ecosystemStages = new EcosystemPhases(new List<IEcosystemPhase> { setupPhase, actionPhase, interactionPhase, movementPhase, ambientPhase });
             var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, distributor, ecosystemStages);

@@ -2,7 +2,6 @@
 {
     using System.Linq;
 
-    using Wacton.Colonies.DataTypes.Enums;
     using Wacton.Colonies.Models.Interfaces;
 
     public class SetupPhase : IEcosystemPhase

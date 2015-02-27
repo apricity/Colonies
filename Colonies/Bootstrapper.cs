@@ -7,14 +7,18 @@
 
     using Microsoft.Practices.Prism.PubSubEvents;
 
-    using Wacton.Colonies.DataTypes;
-    using Wacton.Colonies.DataTypes.Enums;
-    using Wacton.Colonies.Models;
-    using Wacton.Colonies.Models.DataAgents;
-    using Wacton.Colonies.Models.Interfaces;
+    using Wacton.Colonies.Core;
+    using Wacton.Colonies.Ecosystem;
+    using Wacton.Colonies.Ecosystem.Data;
+    using Wacton.Colonies.Ecosystem.Modification;
+    using Wacton.Colonies.Ecosystem.Phases;
+    using Wacton.Colonies.Environment;
+    using Wacton.Colonies.Habitat;
+    using Wacton.Colonies.Main;
+    using Wacton.Colonies.Measures;
+    using Wacton.Colonies.Organism;
+    using Wacton.Colonies.OrganismSynopsis;
     using Wacton.Colonies.Properties;
-    using Wacton.Colonies.ViewModels;
-    using Wacton.Colonies.Views;
 
     public class Bootstrapper
     {
@@ -41,7 +45,7 @@
             // the event aggregator might be used by view models to inform of changes
             var eventaggregator = new EventAggregator();
 
-            var habitats = new Habitat[ecosystemWidth, ecosystemHeight];
+            var habitats = new Habitat.Habitat[ecosystemWidth, ecosystemHeight];
             var habitatViewModels = new List<List<HabitatViewModel>>();
 
             for (var x = 0; x < ecosystemWidth; x++)
@@ -51,12 +55,12 @@
                 for (var y = 0; y < ecosystemHeight; y++)
                 {
                     // initially set each habitat to have an unknown environment and no organism
-                    var environment = new Environment();
+                    var environment = new Environment.Environment();
                     var environmentViewModel = new EnvironmentViewModel(environment, eventaggregator);
 
                     var organismViewModel = new OrganismViewModel(null, eventaggregator);
 
-                    var habitat = new Habitat(environment, null);
+                    var habitat = new Habitat.Habitat(environment, null);
                     var habitatViewModel = new HabitatViewModel(habitat, environmentViewModel, organismViewModel, eventaggregator);
 
                     habitats[x, y] = habitat;
@@ -69,17 +73,17 @@
             var ecosystemHistory = new EcosystemHistory();
             var ecosystemData = new EcosystemData(habitats, initialOrganismCoordinates, ecosystemHistory);
             var ecosystemRates = new EcosystemRates();
-            var weather = new Weather();
+            var weather = new Weather.Weather();
             var distributor = new Distributor(ecosystemData);
             var afflictor = new Afflictor(ecosystemData, distributor);
             var hazardFlow = new HazardFlow(ecosystemData, ecosystemRates, distributor, weather);
-            var setupPhase = new SetupPhase(ecosystemData, distributor, afflictor);
-            var actionPhase = new ActionPhase(ecosystemData, distributor);
-            var movementPhase = new MovementPhase(ecosystemData, ecosystemRates, distributor);
+            var setupPhase = new SetupPhase(ecosystemData, afflictor);
+            var actionPhase = new ActionPhase(ecosystemData);
+            var movementPhase = new MovementPhase(ecosystemData, ecosystemRates);
             var interactionPhase = new InteractionPhase(ecosystemData, organismFactory, afflictor);
             var ambientPhase = new AmbientPhase(ecosystemData, ecosystemRates, distributor, weather, hazardFlow);
             var ecosystemPhases = new EcosystemPhases(new List<IEcosystemPhase> { setupPhase, actionPhase, interactionPhase, movementPhase, ambientPhase });
-            var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, distributor, ecosystemPhases);
+            var ecosystem = new Ecosystem.Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, distributor, ecosystemPhases);
             var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
 
             this.InitialiseTerrain(ecosystem);
@@ -98,11 +102,11 @@
             }
 
             // hook organism model into the organism synopsis
-            var organismSynopsis = new OrganismSynopsis(initialOrganismCoordinates.Keys.Select(organism => (IOrganism)organism).ToList());
+            var organismSynopsis = new OrganismSynopsis.OrganismSynopsis(initialOrganismCoordinates.Keys.Select(organism => (IOrganism)organism).ToList());
             var organismViewModels = organismSynopsis.Organisms.Select(organism => new OrganismViewModel(organism, eventaggregator)).ToList();
             var organismSynopsisViewModel = new OrganismSynopsisViewModel(organismSynopsis, organismViewModels, eventaggregator);
 
-            var main = new Main(ecosystem);
+            var main = new Main.Main(ecosystem);
             var mainViewModel = new MainViewModel(main, ecosystemViewModel, organismSynopsisViewModel, eventaggregator);
 
             // clear the history so this setup is not shown in the first pull of the history
@@ -111,7 +115,7 @@
             return mainViewModel;
         }
 
-        protected virtual void InitialiseTerrain(Ecosystem ecosystem)
+        protected virtual void InitialiseTerrain(Ecosystem.Ecosystem ecosystem)
         {
             ecosystem.Distributor.Insert(EnvironmentMeasure.Damp, new Coordinate(19, 0));
             ecosystem.Distributor.Insert(EnvironmentMeasure.Damp, new Coordinate(15, 3));
@@ -181,9 +185,9 @@
             }
         }
 
-        protected virtual Dictionary<Organism, Coordinate> InitialOrganismCoordinates()
+        protected virtual Dictionary<Organism.Organism, Coordinate> InitialOrganismCoordinates()
         {
-            var organismLocations = new Dictionary<Organism, Coordinate>
+            var organismLocations = new Dictionary<Organism.Organism, Coordinate>
                                         {
                                             { new Defender("Waffle", Colors.Silver), new Coordinate(2, 2) },
                                             { new Gatherer("Wilber", Colors.Silver), new Coordinate(2, 7) },

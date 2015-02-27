@@ -5,12 +5,10 @@
 
     using NUnit.Framework;
 
-    using Wacton.Colonies.DataTypes;
-    using Wacton.Colonies.DataTypes.Enums;
-    using Wacton.Colonies.DataTypes.Interfaces;
-    using Wacton.Colonies.Logic;
-    using Wacton.Colonies.Models.Interfaces;
-    using Wacton.Colonies.Utilities;
+    using Wacton.Colonies.Core;
+    using Wacton.Colonies.Measures;
+    using Wacton.Tovarisch.Enum;
+    using Wacton.Tovarisch.Randomness;
 
     [TestFixture]
     public class RandomDecisionTests

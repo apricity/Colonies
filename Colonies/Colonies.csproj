@@ -87,7 +87,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.0.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\Caliburn.Micro.2.0.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -106,30 +106,27 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DataTypes\Enums\BuildLogic.cs" />
-    <Compile Include="DataTypes\Enums\NestLogic.cs" />
-    <Compile Include="DataTypes\Enums\ReproduceLogic.cs" />
-    <Compile Include="DataTypes\Enums\MineLogic.cs" />
-    <Compile Include="DataTypes\Enums\NoLogic.cs" />
-    <Compile Include="DataTypes\Enums\BirthLogic.cs" />
-    <Compile Include="DataTypes\Enums\NourishLogic.cs" />
-    <Compile Include="DataTypes\Enums\HarvestLogic.cs" />
-    <Compile Include="DataTypes\Enums\IIntentionLogic.cs" />
-    <Compile Include="DataTypes\Enums\IntentionAdjustments.cs" />
-    <Compile Include="DataTypes\Enums\EatLogic.cs" />
-    <Compile Include="DataTypes\WeightedItem.cs" />
-    <Compile Include="DataTypes\EcosystemAddition.cs" />
-    <Compile Include="DataTypes\EcosystemRates.cs" />
-    <Compile Include="DataTypes\EcosystemRelocation.cs" />
-    <Compile Include="DataTypes\EcosystemModification.cs" />
-    <Compile Include="DataTypes\EcosystemPhases.cs" />
-    <Compile Include="DataTypes\Enums\Intention.cs" />
-    <Compile Include="DataTypes\Enums\Inventory.cs" />
-    <Compile Include="DataTypes\Enums\OrganismMeasure.cs" />
-    <Compile Include="DataTypes\Enums\Enumeration.cs" />
-    <Compile Include="DataTypes\HazardRate.cs" />
-    <Compile Include="DataTypes\Enums\EnvironmentMeasure.cs" />
-    <Compile Include="DataTypes\WeightedColor.cs" />
+    <Compile Include="Intentions\BuildLogic.cs" />
+    <Compile Include="Intentions\NestLogic.cs" />
+    <Compile Include="Intentions\ReproduceLogic.cs" />
+    <Compile Include="Intentions\MineLogic.cs" />
+    <Compile Include="Intentions\NoLogic.cs" />
+    <Compile Include="Intentions\BirthLogic.cs" />
+    <Compile Include="Intentions\NourishLogic.cs" />
+    <Compile Include="Intentions\HarvestLogic.cs" />
+    <Compile Include="Intentions\IIntentionLogic.cs" />
+    <Compile Include="Intentions\IntentionAdjustments.cs" />
+    <Compile Include="Intentions\EatLogic.cs" />
+    <Compile Include="Ecosystem\Data\EcosystemAddition.cs" />
+    <Compile Include="Ecosystem\Data\EcosystemRates.cs" />
+    <Compile Include="Ecosystem\Data\EcosystemRelocation.cs" />
+    <Compile Include="Ecosystem\Data\EcosystemModification.cs" />
+    <Compile Include="Ecosystem\Phases\EcosystemPhases.cs" />
+    <Compile Include="Intentions\Intention.cs" />
+    <Compile Include="Organism\Inventory.cs" />
+    <Compile Include="Measures\OrganismMeasure.cs" />
+    <Compile Include="Measures\HazardRate.cs" />
+    <Compile Include="Measures\EnvironmentMeasure.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\BoolToActiveStringConverter.cs" />
@@ -138,107 +135,105 @@
     <Compile Include="Converters\DoubleToObstructionDashConverter.cs" />
     <Compile Include="Converters\RelativeScaleConverter.cs" />
     <Compile Include="Converters\DoubleToHealthBrushConverter.cs" />
-    <Compile Include="DataTypes\Coordinate.cs" />
+    <Compile Include="Core\Coordinate.cs" />
     <Compile Include="DesignTime\DesignTimeBootstrapper.cs" />
     <Compile Include="Extensions\EcosystemDataExtensions.cs" />
-    <Compile Include="Models\DataAgents\HazardFlow.cs" />
-    <Compile Include="Models\DataAgents\AmbientPhase.cs" />
-    <Compile Include="Models\DataAgents\Afflictor.cs" />
-    <Compile Include="Models\DataAgents\SetupPhase.cs" />
-    <Compile Include="Models\DataAgents\OrganismFactory.cs" />
-    <Compile Include="Models\DataAgents\InteractionPhase.cs" />
-    <Compile Include="Models\DataAgents\MovementPhase.cs" />
-    <Compile Include="Models\DataAgents\EcosystemHistory.cs" />
-    <Compile Include="Models\DataAgents\ActionPhase.cs" />
-    <Compile Include="Models\Interfaces\IOrganismState.cs" />
-    <Compile Include="Models\Interfaces\IOrganismLogic.cs" />
-    <Compile Include="Models\Interfaces\IEcosystemHistory.cs" />
-    <Compile Include="Models\Interfaces\IEcosystemHistoryPusher.cs" />
-    <Compile Include="Models\Interfaces\IEcosystemHistoryPuller.cs" />
-    <Compile Include="Models\Interfaces\IEcosystemPhase.cs" />
-    <Compile Include="Models\Queen.cs" />
-    <Compile Include="Models\Defender.cs" />
-    <Compile Include="Models\DataAgents\Distributor.cs" />
-    <Compile Include="Models\Gatherer.cs" />
-    <Compile Include="ViewModels\Infrastructure\OrganismsUpdatedEvent.cs" />
+    <Compile Include="Ecosystem\Modification\HazardFlow.cs" />
+    <Compile Include="Ecosystem\Phases\AmbientPhase.cs" />
+    <Compile Include="Ecosystem\Modification\Afflictor.cs" />
+    <Compile Include="Ecosystem\Phases\SetupPhase.cs" />
+    <Compile Include="Organism\OrganismFactory.cs" />
+    <Compile Include="Ecosystem\Phases\InteractionPhase.cs" />
+    <Compile Include="Ecosystem\Phases\MovementPhase.cs" />
+    <Compile Include="Ecosystem\Data\EcosystemHistory.cs" />
+    <Compile Include="Ecosystem\Phases\ActionPhase.cs" />
+    <Compile Include="Organism\IOrganismState.cs" />
+    <Compile Include="Organism\IOrganismLogic.cs" />
+    <Compile Include="Ecosystem\Data\IEcosystemHistory.cs" />
+    <Compile Include="Ecosystem\Data\IEcosystemHistoryPusher.cs" />
+    <Compile Include="Ecosystem\Data\IEcosystemHistoryPuller.cs" />
+    <Compile Include="Ecosystem\Phases\IEcosystemPhase.cs" />
+    <Compile Include="Organism\Queen.cs" />
+    <Compile Include="Organism\Defender.cs" />
+    <Compile Include="Ecosystem\Modification\Distributor.cs" />
+    <Compile Include="Organism\Gatherer.cs" />
+    <Compile Include="Infrastructure\OrganismsUpdatedEvent.cs" />
     <Compile Include="Extensions\GenericCollectionExtensions.cs" />
-    <Compile Include="DataTypes\Interfaces\IMeasurement.cs" />
-    <Compile Include="DataTypes\Interfaces\IMeasure.cs" />
-    <Compile Include="DataTypes\Interfaces\IMeasurementData.cs" />
-    <Compile Include="Models\Interfaces\IHabitat.cs" />
-    <Compile Include="Models\Interfaces\IMain.cs" />
-    <Compile Include="Models\Interfaces\IEcosystem.cs" />
-    <Compile Include="Models\Interfaces\IEnvironment.cs" />
-    <Compile Include="Models\Interfaces\IOrganism.cs" />
-    <Compile Include="Models\Interfaces\IOrganismSynopsis.cs" />
-    <Compile Include="Models\Interfaces\IWeather.cs" />
-    <Compile Include="Utilities\Logger.cs" />
-    <Compile Include="Logic\ColorLogic.cs" />
-    <Compile Include="Logic\DecisionLogic.cs" />
-    <Compile Include="DataTypes\Measurement.cs" />
-    <Compile Include="Models\Interfaces\IBiased.cs" />
-    <Compile Include="Models\Interfaces\IMeasurable.cs" />
-    <Compile Include="DataTypes\MeasurementData.cs" />
-    <Compile Include="Utilities\RandomNumberGenerator.cs" />
-    <Compile Include="Models\Ecosystem.cs" />
-    <Compile Include="Models\DataAgents\EcosystemData.cs" />
-    <Compile Include="Models\Main.cs" />
-    <Compile Include="Models\OrganismSynopsis.cs" />
-    <Compile Include="DataTypes\PhaseSummary.cs" />
-    <Compile Include="ViewModels\Infrastructure\RelayCommand.cs" />
+    <Compile Include="Measures\IMeasurement.cs" />
+    <Compile Include="Measures\IMeasure.cs" />
+    <Compile Include="Measures\IMeasurementData.cs" />
+    <Compile Include="Habitat\IHabitat.cs" />
+    <Compile Include="Main\IMain.cs" />
+    <Compile Include="Ecosystem\IEcosystem.cs" />
+    <Compile Include="Environment\IEnvironment.cs" />
+    <Compile Include="Organism\IOrganism.cs" />
+    <Compile Include="OrganismSynopsis\IOrganismSynopsis.cs" />
+    <Compile Include="Weather\IWeather.cs" />
+    <Compile Include="Core\Logger.cs" />
+    <Compile Include="Core\DecisionLogic.cs" />
+    <Compile Include="Measures\Measurement.cs" />
+    <Compile Include="Measures\IBiased.cs" />
+    <Compile Include="Measures\IMeasurable.cs" />
+    <Compile Include="Measures\MeasurementData.cs" />
+    <Compile Include="Ecosystem\Ecosystem.cs" />
+    <Compile Include="Ecosystem\Modification\EcosystemData.cs" />
+    <Compile Include="Main\Main.cs" />
+    <Compile Include="OrganismSynopsis\OrganismSynopsis.cs" />
+    <Compile Include="Ecosystem\Phases\PhaseSummary.cs" />
+    <Compile Include="Infrastructure\RelayCommand.cs" />
     <Compile Include="DesignTime\DesignTimeViewModelLocator.cs" />
-    <Compile Include="Models\DataAgents\Weather.cs" />
-    <Compile Include="ViewModels\OrganismSynopsisViewModel.cs" />
-    <Compile Include="ViewModels\OrganismViewModel.cs" />
-    <Compile Include="ViewModels\EcosystemViewModel.cs" />
-    <Compile Include="ViewModels\EnvironmentViewModel.cs" />
-    <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="ViewModels\Infrastructure\ViewModelBase.cs" />
-    <Compile Include="Views\OrganismDetailsView.xaml.cs">
+    <Compile Include="Weather\Weather.cs" />
+    <Compile Include="OrganismSynopsis\OrganismSynopsisViewModel.cs" />
+    <Compile Include="Organism\OrganismViewModel.cs" />
+    <Compile Include="Ecosystem\EcosystemViewModel.cs" />
+    <Compile Include="Environment\EnvironmentViewModel.cs" />
+    <Compile Include="Main\MainViewModel.cs" />
+    <Compile Include="Infrastructure\ViewModelBase.cs" />
+    <Compile Include="Organism\OrganismDetailsView.xaml.cs">
       <DependentUpon>OrganismDetailsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\OrganismSynopsisView.xaml.cs">
+    <Compile Include="OrganismSynopsis\OrganismSynopsisView.xaml.cs">
       <DependentUpon>OrganismSynopsisView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\OrganismView.xaml.cs">
+    <Compile Include="Organism\OrganismView.xaml.cs">
       <DependentUpon>OrganismView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EcosystemView.xaml.cs">
+    <Compile Include="Ecosystem\EcosystemView.xaml.cs">
       <DependentUpon>EcosystemView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\HabitatView.xaml.cs">
+    <Compile Include="Habitat\HabitatView.xaml.cs">
       <DependentUpon>HabitatView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\HabitatViewModel.cs" />
-    <Compile Include="Views\EnvironmentView.xaml.cs">
+    <Compile Include="Habitat\HabitatViewModel.cs" />
+    <Compile Include="Environment\EnvironmentView.xaml.cs">
       <DependentUpon>EnvironmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\Habitat.cs" />
-    <Compile Include="Models\Environment.cs" />
-    <Compile Include="DataTypes\Enums\WeatherType.cs" />
-    <Compile Include="Models\Organism.cs" />
+    <Compile Include="Habitat\Habitat.cs" />
+    <Compile Include="Environment\Environment.cs" />
+    <Compile Include="Weather\WeatherType.cs" />
+    <Compile Include="Organism\Organism.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Styles\HealthLevelProgressBarStyle.xaml">
+    <Page Include="Styles\HealthLevelProgressBarStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\OrganismDetailsView.xaml">
+    <Page Include="Organism\OrganismDetailsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\OrganismSynopsisView.xaml">
+    <Page Include="OrganismSynopsis\OrganismSynopsisView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\OrganismView.xaml">
+    <Page Include="Organism\OrganismView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\MainView.xaml">
+    <Page Include="Main\MainView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -246,19 +241,19 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Views\MainView.xaml.cs">
+    <Compile Include="Main\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\EcosystemView.xaml">
+    <Page Include="Ecosystem\EcosystemView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\HabitatView.xaml">
+    <Page Include="Habitat\HabitatView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EnvironmentView.xaml">
+    <Page Include="Environment\EnvironmentView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -300,6 +295,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Entypo-license.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tovarisch\Tovarisch.csproj">
+      <Project>{bb2d0bdb-971b-4179-b04a-eef42541becf}</Project>
+      <Name>Tovarisch</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

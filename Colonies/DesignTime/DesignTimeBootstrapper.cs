@@ -3,10 +3,11 @@
     using System.Collections.Generic;
     using System.Windows.Media;
 
-    using Wacton.Colonies.DataTypes;
-    using Wacton.Colonies.DataTypes.Enums;
-    using Wacton.Colonies.Models;
-    using Wacton.Colonies.ViewModels;
+    using Wacton.Colonies.Core;
+    using Wacton.Colonies.Ecosystem;
+    using Wacton.Colonies.Main;
+    using Wacton.Colonies.Measures;
+    using Wacton.Colonies.Organism;
 
     public class DesignTimeBootstrapper : Bootstrapper
     {

@@ -1,6 +1,11 @@
 ﻿namespace Wacton.Colonies.DesignTime
 {
-    using Wacton.Colonies.ViewModels;
+    using Wacton.Colonies.Ecosystem;
+    using Wacton.Colonies.Environment;
+    using Wacton.Colonies.Habitat;
+    using Wacton.Colonies.Main;
+    using Wacton.Colonies.Organism;
+    using Wacton.Colonies.OrganismSynopsis;
 
     public class DesignTimeViewModelLocator
     {

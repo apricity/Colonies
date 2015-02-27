@@ -2,8 +2,9 @@
 {
     using System;
 
-    using Wacton.Colonies.DataTypes;
-    using Wacton.Colonies.Models.DataAgents;
+    using Wacton.Colonies.Core;
+    using Wacton.Colonies.Ecosystem.Data;
+    using Wacton.Colonies.Ecosystem.Modification;
 
     public static class EcosystemDataExtensions
     {

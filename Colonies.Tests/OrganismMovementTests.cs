@@ -6,11 +6,17 @@
 
     using NUnit.Framework;
 
-    using Wacton.Colonies.DataTypes;
-    using Wacton.Colonies.DataTypes.Enums;
-    using Wacton.Colonies.Models;
-    using Wacton.Colonies.Models.DataAgents;
-    using Wacton.Colonies.Models.Interfaces;
+    using Wacton.Colonies.Core;
+    using Wacton.Colonies.Ecosystem;
+    using Wacton.Colonies.Ecosystem.Data;
+    using Wacton.Colonies.Ecosystem.Modification;
+    using Wacton.Colonies.Ecosystem.Phases;
+    using Wacton.Colonies.Environment;
+    using Wacton.Colonies.Habitat;
+    using Wacton.Colonies.Intentions;
+    using Wacton.Colonies.Measures;
+    using Wacton.Colonies.Organism;
+    using Wacton.Colonies.Weather;
 
     [TestFixture]
     public class OrganismMovementTests
@@ -334,9 +340,9 @@
             var distributor = new Distributor(ecosystemData);
             var afflictor = new Afflictor(ecosystemData, distributor);
             var hazardFlow = new HazardFlow(ecosystemData, ecosystemRates, distributor, weather);
-            var setupPhase = new SetupPhase(ecosystemData, distributor, afflictor);
-            var actionPhase = new ActionPhase(ecosystemData, distributor);
-            var movementPhase = new MovementPhase(ecosystemData, ecosystemRates, distributor);
+            var setupPhase = new SetupPhase(ecosystemData, afflictor);
+            var actionPhase = new ActionPhase(ecosystemData);
+            var movementPhase = new MovementPhase(ecosystemData, ecosystemRates);
             var interactionPhase = new InteractionPhase(ecosystemData, organismFactory, afflictor);
             var ambientPhase = new AmbientPhase(ecosystemData, ecosystemRates, distributor, weather, hazardFlow);
             var ecosystemStages = new EcosystemPhases(new List<IEcosystemPhase> { setupPhase, actionPhase, interactionPhase, movementPhase, ambientPhase });

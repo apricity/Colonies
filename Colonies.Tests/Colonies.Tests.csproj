@@ -65,6 +65,10 @@
       <Project>{75a3e797-07fe-4e0f-a491-7bd4e3022ea7}</Project>
       <Name>Colonies.Domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Colonies.UI\Colonies.UI.csproj">
+      <Project>{11bb5de6-7143-410c-927b-3e35dd40ab68}</Project>
+      <Name>Colonies.UI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tovarisch\Tovarisch.csproj">
       <Project>{bb2d0bdb-971b-4179-b04a-eef42541becf}</Project>
       <Name>Tovarisch</Name>

@@ -3,8 +3,8 @@
     using System.Reflection;
 
     using Wacton.Colonies.Domain;
-    using Wacton.Colonies.Domain.Main;
     using Wacton.Colonies.Domain.Properties;
+    using Wacton.Colonies.UI;
 
     public class Bootstrapper
     {

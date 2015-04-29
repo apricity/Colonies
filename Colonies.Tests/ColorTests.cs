@@ -5,7 +5,7 @@
 
     using NUnit.Framework;
 
-    using Wacton.Colonies.Converters;
+    using Wacton.Colonies.Domain.Converters;
 
     [TestFixture]
     public class ColorTests

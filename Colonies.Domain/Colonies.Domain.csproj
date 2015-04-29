@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{75A3E797-07FE-4E0F-A491-7BD4E3022EA7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Wacton.Colonies.Domain</RootNamespace>
+    <AssemblyName>Wacton.Colonies.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AForge">
+      <HintPath>..\packages\AForge.2.2.5\lib\AForge.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Imaging">
+      <HintPath>..\packages\AForge.Imaging.2.2.5\lib\AForge.Imaging.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Math">
+      <HintPath>..\packages\AForge.Math.2.2.5\lib\AForge.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="MahApps.Metro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MahApps.Metro.1.0.0.0\lib\net45\MahApps.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="MahApps.Metro.Resources">
+      <HintPath>..\..\MahApps.Metro\MahApps.Metro.Resources\bin\Debug\MahApps.Metro.Resources.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Prism.Composition">
+      <HintPath>..\packages\Prism.Composition.5.0.0\lib\NET45\Microsoft.Practices.Prism.Composition.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Prism.Interactivity, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Prism.Interactivity.5.0.0\lib\NET45\Microsoft.Practices.Prism.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Prism.Mvvm, Version=1.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Prism.Mvvm.1.1.1\lib\net45\Microsoft.Practices.Prism.Mvvm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Prism.Mvvm.Desktop, Version=1.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Prism.Mvvm.1.1.1\lib\net45\Microsoft.Practices.Prism.Mvvm.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Prism.PubSubEvents, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Prism.PubSubEvents.1.1.2\lib\portable-sl5+windowsphone8+windows8+net40+wpa81\Microsoft.Practices.Prism.PubSubEvents.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Prism.SharedInterfaces, Version=1.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Prism.Mvvm.1.1.1\lib\net45\Microsoft.Practices.Prism.SharedInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.2.0.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DesignTime\DesignTimeViewModelBootstrapper.cs" />
+    <Compile Include="ViewModelBootstrapper.cs" />
+    <Compile Include="DomainBootstrapper.cs" />
+    <Compile Include="Intentions\BuildLogic.cs" />
+    <Compile Include="Intentions\NestLogic.cs" />
+    <Compile Include="Intentions\ReproduceLogic.cs" />
+    <Compile Include="Intentions\MineLogic.cs" />
+    <Compile Include="Intentions\NoLogic.cs" />
+    <Compile Include="Intentions\BirthLogic.cs" />
+    <Compile Include="Intentions\NourishLogic.cs" />
+    <Compile Include="Intentions\HarvestLogic.cs" />
+    <Compile Include="Intentions\IIntentionLogic.cs" />
+    <Compile Include="Intentions\IntentionAdjustments.cs" />
+    <Compile Include="Intentions\EatLogic.cs" />
+    <Compile Include="Ecosystem\Data\EcosystemAddition.cs" />
+    <Compile Include="Ecosystem\Data\EcosystemRates.cs" />
+    <Compile Include="Ecosystem\Data\EcosystemRelocation.cs" />
+    <Compile Include="Ecosystem\Data\EcosystemModification.cs" />
+    <Compile Include="Ecosystem\Phases\EcosystemPhases.cs" />
+    <Compile Include="Intentions\Intention.cs" />
+    <Compile Include="Organism\Inventory.cs" />
+    <Compile Include="Measures\OrganismMeasure.cs" />
+    <Compile Include="Measures\HazardRate.cs" />
+    <Compile Include="Measures\EnvironmentMeasure.cs" />
+    <Compile Include="Converters\ColorToBrushConverter.cs" />
+    <Compile Include="Converters\BoolToActiveStringConverter.cs" />
+    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\BoolToAliveOpacityConverter.cs" />
+    <Compile Include="Converters\DoubleToObstructionDashConverter.cs" />
+    <Compile Include="Converters\RelativeScaleConverter.cs" />
+    <Compile Include="Converters\DoubleToHealthBrushConverter.cs" />
+    <Compile Include="Core\Coordinate.cs" />
+    <Compile Include="DesignTime\DesignTimeDomainBootstrapper.cs" />
+    <Compile Include="Extensions\EcosystemDataExtensions.cs" />
+    <Compile Include="Ecosystem\Modification\HazardFlow.cs" />
+    <Compile Include="Ecosystem\Phases\AmbientPhase.cs" />
+    <Compile Include="Ecosystem\Modification\Afflictor.cs" />
+    <Compile Include="Ecosystem\Phases\SetupPhase.cs" />
+    <Compile Include="Organism\OrganismFactory.cs" />
+    <Compile Include="Ecosystem\Phases\InteractionPhase.cs" />
+    <Compile Include="Ecosystem\Phases\MovementPhase.cs" />
+    <Compile Include="Ecosystem\Data\EcosystemHistory.cs" />
+    <Compile Include="Ecosystem\Phases\ActionPhase.cs" />
+    <Compile Include="Organism\IOrganismState.cs" />
+    <Compile Include="Organism\IOrganismLogic.cs" />
+    <Compile Include="Ecosystem\Data\IEcosystemHistory.cs" />
+    <Compile Include="Ecosystem\Data\IEcosystemHistoryPusher.cs" />
+    <Compile Include="Ecosystem\Data\IEcosystemHistoryPuller.cs" />
+    <Compile Include="Ecosystem\Phases\IEcosystemPhase.cs" />
+    <Compile Include="Organism\Queen.cs" />
+    <Compile Include="Organism\Defender.cs" />
+    <Compile Include="Ecosystem\Modification\Distributor.cs" />
+    <Compile Include="Organism\Gatherer.cs" />
+    <Compile Include="Infrastructure\OrganismsUpdatedEvent.cs" />
+    <Compile Include="Extensions\GenericCollectionExtensions.cs" />
+    <Compile Include="Measures\IMeasurement.cs" />
+    <Compile Include="Measures\IMeasure.cs" />
+    <Compile Include="Measures\IMeasurementData.cs" />
+    <Compile Include="Habitat\IHabitat.cs" />
+    <Compile Include="Main\IMain.cs" />
+    <Compile Include="Ecosystem\IEcosystem.cs" />
+    <Compile Include="Environment\IEnvironment.cs" />
+    <Compile Include="Organism\IOrganism.cs" />
+    <Compile Include="OrganismSynopsis\IOrganismSynopsis.cs" />
+    <Compile Include="Weather\IWeather.cs" />
+    <Compile Include="Core\Logger.cs" />
+    <Compile Include="Core\DecisionLogic.cs" />
+    <Compile Include="Measures\Measurement.cs" />
+    <Compile Include="Measures\IBiased.cs" />
+    <Compile Include="Measures\IMeasurable.cs" />
+    <Compile Include="Measures\MeasurementData.cs" />
+    <Compile Include="Ecosystem\Ecosystem.cs" />
+    <Compile Include="Ecosystem\Modification\EcosystemData.cs" />
+    <Compile Include="Main\Main.cs" />
+    <Compile Include="OrganismSynopsis\OrganismSynopsis.cs" />
+    <Compile Include="Ecosystem\Phases\PhaseSummary.cs" />
+    <Compile Include="Infrastructure\RelayCommand.cs" />
+    <Compile Include="DesignTime\DesignTimeViewModelLocator.cs" />
+    <Compile Include="Weather\Weather.cs" />
+    <Compile Include="OrganismSynopsis\OrganismSynopsisViewModel.cs" />
+    <Compile Include="Organism\OrganismViewModel.cs" />
+    <Compile Include="Ecosystem\EcosystemViewModel.cs" />
+    <Compile Include="Environment\EnvironmentViewModel.cs" />
+    <Compile Include="Main\MainViewModel.cs" />
+    <Compile Include="Infrastructure\ViewModelBase.cs" />
+    <Compile Include="Organism\OrganismDetailsView.xaml.cs">
+      <DependentUpon>OrganismDetailsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OrganismSynopsis\OrganismSynopsisView.xaml.cs">
+      <DependentUpon>OrganismSynopsisView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Organism\OrganismView.xaml.cs">
+      <DependentUpon>OrganismView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ecosystem\EcosystemView.xaml.cs">
+      <DependentUpon>EcosystemView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Habitat\HabitatView.xaml.cs">
+      <DependentUpon>HabitatView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Habitat\HabitatViewModel.cs" />
+    <Compile Include="Environment\EnvironmentView.xaml.cs">
+      <DependentUpon>EnvironmentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Habitat\Habitat.cs" />
+    <Compile Include="Environment\Environment.cs" />
+    <Compile Include="Weather\WeatherType.cs" />
+    <Compile Include="Organism\Organism.cs" />
+    <Compile Include="Properties\Annotations.cs" />
+    <Page Include="Resources\Icons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\HealthLevelProgressBarStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Organism\OrganismDetailsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="OrganismSynopsis\OrganismSynopsisView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Organism\OrganismView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Main\MainView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="Main\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Ecosystem\EcosystemView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Habitat\HabitatView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Environment\EnvironmentView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+    <Resource Include="Resources\Entypo.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\WindowsIcons-license.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Entypo-license.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tovarisch\Tovarisch.csproj">
+      <Project>{bb2d0bdb-971b-4179-b04a-eef42541becf}</Project>
+      <Name>Tovarisch</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icon.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

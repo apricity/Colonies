@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 
@@ -10,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Wacton")]
 [assembly: AssemblyProduct("Wacton.Colonies")]
-[assembly: AssemblyCopyright("Copyright © Wacton 2013")]
+[assembly: AssemblyCopyright("Copyright © Wacton 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

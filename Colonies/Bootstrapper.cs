@@ -1,24 +1,10 @@
 ﻿namespace Wacton.Colonies
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Reflection;
-    using System.Windows.Media;
 
-    using Microsoft.Practices.Prism.PubSubEvents;
-
-    using Wacton.Colonies.Core;
-    using Wacton.Colonies.Ecosystem;
-    using Wacton.Colonies.Ecosystem.Data;
-    using Wacton.Colonies.Ecosystem.Modification;
-    using Wacton.Colonies.Ecosystem.Phases;
-    using Wacton.Colonies.Environment;
-    using Wacton.Colonies.Habitat;
-    using Wacton.Colonies.Main;
-    using Wacton.Colonies.Measures;
-    using Wacton.Colonies.Organism;
-    using Wacton.Colonies.OrganismSynopsis;
-    using Wacton.Colonies.Properties;
+    using Wacton.Colonies.Domain;
+    using Wacton.Colonies.Domain.Main;
+    using Wacton.Colonies.Domain.Properties;
 
     public class Bootstrapper
     {
@@ -30,172 +16,18 @@
 
             // create the view to display to the user
             // the data context is the view model tree that contains the model
-            var mainViewModel = this.BuildMainDataContext(Settings.Default.EcosystemWidth, Settings.Default.EcosystemHeight);
-            mainViewModel.Refresh();
+            var domainBootstrapper = new DomainBootstrapper();
+            var domainModel = domainBootstrapper.BuildDomainModel(Settings.Default.EcosystemWidth, Settings.Default.EcosystemHeight);
 
-            var mainView = new MainView { DataContext = mainViewModel };
+            var viewModelBootstrapper = new ViewModelBootstrapper();
+            var viewModel = viewModelBootstrapper.BuildViewModel(domainModel);
+            viewModel.Refresh();
+
+            var mainView = new MainView { DataContext = viewModel };
             mainView.Title += string.Format(" ({0})", version);
 
             // display the window to the user!
             mainView.Show();
-        }
-
-        protected MainViewModel BuildMainDataContext(int ecosystemWidth, int ecosystemHeight)
-        {
-            // the event aggregator might be used by view models to inform of changes
-            var eventaggregator = new EventAggregator();
-
-            var habitats = new Habitat.Habitat[ecosystemWidth, ecosystemHeight];
-            var habitatViewModels = new List<List<HabitatViewModel>>();
-
-            for (var x = 0; x < ecosystemWidth; x++)
-            {
-                habitatViewModels.Add(new List<HabitatViewModel>());
-
-                for (var y = 0; y < ecosystemHeight; y++)
-                {
-                    // initially set each habitat to have an unknown environment and no organism
-                    var environment = new Environment.Environment();
-                    var environmentViewModel = new EnvironmentViewModel(environment, eventaggregator);
-
-                    var organismViewModel = new OrganismViewModel(null, eventaggregator);
-
-                    var habitat = new Habitat.Habitat(environment, null);
-                    var habitatViewModel = new HabitatViewModel(habitat, environmentViewModel, organismViewModel, eventaggregator);
-
-                    habitats[x, y] = habitat;
-                    habitatViewModels[x].Add(habitatViewModel);
-                }
-            }
-
-            var initialOrganismCoordinates = this.InitialOrganismCoordinates();
-            var organismFactory = new OrganismFactory();
-            var ecosystemHistory = new EcosystemHistory();
-            var ecosystemData = new EcosystemData(habitats, initialOrganismCoordinates, ecosystemHistory);
-            var ecosystemRates = new EcosystemRates();
-            var weather = new Weather.Weather();
-            var distributor = new Distributor(ecosystemData);
-            var afflictor = new Afflictor(ecosystemData, distributor);
-            var hazardFlow = new HazardFlow(ecosystemData, ecosystemRates, distributor, weather);
-            var setupPhase = new SetupPhase(ecosystemData, afflictor);
-            var actionPhase = new ActionPhase(ecosystemData);
-            var movementPhase = new MovementPhase(ecosystemData, ecosystemRates);
-            var interactionPhase = new InteractionPhase(ecosystemData, organismFactory, afflictor);
-            var ambientPhase = new AmbientPhase(ecosystemData, ecosystemRates, distributor, weather, hazardFlow);
-            var ecosystemPhases = new EcosystemPhases(new List<IEcosystemPhase> { setupPhase, actionPhase, interactionPhase, movementPhase, ambientPhase });
-            var ecosystem = new Ecosystem.Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, distributor, ecosystemPhases);
-            var ecosystemViewModel = new EcosystemViewModel(ecosystem, habitatViewModels, eventaggregator);
-
-            this.InitialiseTerrain(ecosystem);
-            foreach (var organismCoordinate in ecosystemData.AudibleOrganismCoordinates())
-            {
-                ecosystem.Distributor.Insert(EnvironmentMeasure.Sound, organismCoordinate);
-            }
-
-            // hook organism model into the ecosystem
-            foreach (var organismLocation in initialOrganismCoordinates)
-            {
-                var organism = organismLocation.Key;
-                var location = organismLocation.Value;
-
-                habitatViewModels[location.X][location.Y].OrganismViewModel.AssignModel(organism);
-            }
-
-            // hook organism model into the organism synopsis
-            var organismSynopsis = new OrganismSynopsis.OrganismSynopsis(initialOrganismCoordinates.Keys.Select(organism => (IOrganism)organism).ToList());
-            var organismViewModels = organismSynopsis.Organisms.Select(organism => new OrganismViewModel(organism, eventaggregator)).ToList();
-            var organismSynopsisViewModel = new OrganismSynopsisViewModel(organismSynopsis, organismViewModels, eventaggregator);
-
-            var main = new Main.Main(ecosystem);
-            var mainViewModel = new MainViewModel(main, ecosystemViewModel, organismSynopsisViewModel, eventaggregator);
-
-            // clear the history so this setup is not shown in the first pull of the history
-            ecosystemHistory.Pull();
-
-            return mainViewModel;
-        }
-
-        protected virtual void InitialiseTerrain(Ecosystem.Ecosystem ecosystem)
-        {
-            ecosystem.Distributor.Insert(EnvironmentMeasure.Damp, new Coordinate(19, 0));
-            ecosystem.Distributor.Insert(EnvironmentMeasure.Damp, new Coordinate(15, 3));
-            ecosystem.Distributor.Insert(EnvironmentMeasure.Damp, new Coordinate(17, 4));
-            ecosystem.Distributor.Insert(EnvironmentMeasure.Heat, new Coordinate(17, 5));
-            ecosystem.Distributor.Insert(EnvironmentMeasure.Heat, new Coordinate(15, 6));
-            ecosystem.Distributor.Insert(EnvironmentMeasure.Heat, new Coordinate(19, 9));
-
-            // testing hazard combinations
-            //ecosystem.Distributor.Insert(EnvironmentMeasure.Heat, new Coordinate(2, 2));
-            //ecosystem.Distributor.Insert(EnvironmentMeasure.Disease, new Coordinate(2, 2));
-
-            //ecosystem.Distributor.Insert(EnvironmentMeasure.Damp, new Coordinate(2, 7));
-            //ecosystem.Distributor.Insert(EnvironmentMeasure.Disease, new Coordinate(2, 7));
-
-            //ecosystem.Distributor.Insert(EnvironmentMeasure.Heat, new Coordinate(7, 2));
-            //ecosystem.Distributor.Insert(EnvironmentMeasure.Damp, new Coordinate(7, 2));
-
-            //ecosystem.Distributor.Insert(EnvironmentMeasure.Heat, new Coordinate(7, 7));
-            //ecosystem.Distributor.Insert(EnvironmentMeasure.Damp, new Coordinate(7, 7));
-            //ecosystem.Distributor.Insert(EnvironmentMeasure.Disease, new Coordinate(7, 7));
-
-            for (var i = 12; i < ecosystem.Width; i++)
-            {
-                for (var j = 4; j <= 5; j++)
-                {
-                    ecosystem.Distributor.Insert(EnvironmentMeasure.Disease, new Coordinate(i, j));
-                }
-            }
-
-            for (var i = 0; i < 15; i++)
-            {
-                ecosystem.SetLevel(new Coordinate(i, 0), EnvironmentMeasure.Nutrient, 1.0 - (i * (1 / (double)15)));
-                ecosystem.SetLevel(new Coordinate(i, 9), EnvironmentMeasure.Mineral, 1.0 - (i * (1 / (double)15)));
-            }
-
-            // custom obstructed habitats (will make a square shapen with an entrance - a pen?)
-            var obstructedCoordinates = new List<Coordinate>
-                                            {
-                                                new Coordinate(1, 1),
-                                                new Coordinate(1, 2),
-                                                new Coordinate(1, 3),
-                                                new Coordinate(1, 4),
-                                                new Coordinate(1, 5),
-                                                new Coordinate(1, 6),
-                                                new Coordinate(1, 7),
-                                                new Coordinate(1, 8),
-                                                new Coordinate(2, 1),
-                                                new Coordinate(3, 1),
-                                                new Coordinate(4, 1),
-                                                new Coordinate(5, 1),
-                                                new Coordinate(6, 1),
-                                                new Coordinate(7, 1),
-                                                new Coordinate(8, 1),
-                                                new Coordinate(8, 2),
-                                                new Coordinate(8, 3),
-                                                new Coordinate(8, 4),
-                                                new Coordinate(8, 5),
-                                                new Coordinate(8, 6),
-                                                new Coordinate(8, 7),
-                                                new Coordinate(8, 8)
-                                            };
-
-            foreach (var coordinate in obstructedCoordinates)
-            {
-                ecosystem.SetLevel(coordinate, EnvironmentMeasure.Obstruction, 1.0);
-            }
-        }
-
-        protected virtual Dictionary<Organism.Organism, Coordinate> InitialOrganismCoordinates()
-        {
-            var organismLocations = new Dictionary<Organism.Organism, Coordinate>
-                                        {
-                                            { new Defender("Waffle", Colors.Silver), new Coordinate(2, 2) },
-                                            { new Gatherer("Wilber", Colors.Silver), new Coordinate(2, 7) },
-                                            { new Gatherer("Lotty", Colors.Silver), new Coordinate(7, 2) },
-                                            { new Queen("Dr. Louise", Colors.Silver), new Coordinate(7, 7) },
-                                        };
-
-            return organismLocations;
         }
     }
 }

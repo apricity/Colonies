@@ -6,17 +6,17 @@
 
     using NUnit.Framework;
 
-    using Wacton.Colonies.Core;
-    using Wacton.Colonies.Ecosystem;
-    using Wacton.Colonies.Ecosystem.Data;
-    using Wacton.Colonies.Ecosystem.Modification;
-    using Wacton.Colonies.Ecosystem.Phases;
-    using Wacton.Colonies.Environment;
-    using Wacton.Colonies.Habitat;
-    using Wacton.Colonies.Intentions;
-    using Wacton.Colonies.Measures;
-    using Wacton.Colonies.Organism;
-    using Wacton.Colonies.Weather;
+    using Wacton.Colonies.Domain.Core;
+    using Wacton.Colonies.Domain.Ecosystem;
+    using Wacton.Colonies.Domain.Ecosystem.Data;
+    using Wacton.Colonies.Domain.Ecosystem.Modification;
+    using Wacton.Colonies.Domain.Ecosystem.Phases;
+    using Wacton.Colonies.Domain.Environment;
+    using Wacton.Colonies.Domain.Habitat;
+    using Wacton.Colonies.Domain.Intentions;
+    using Wacton.Colonies.Domain.Measures;
+    using Wacton.Colonies.Domain.Organism;
+    using Wacton.Colonies.Domain.Weather;
 
     [TestFixture]
     public class OrganismMovementTests

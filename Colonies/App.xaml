@@ -2,12 +2,6 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Startup="ApplicationStartup">
-            <!-- not using StartupUri, handling the startup process myself instead using Startup event -->
-    <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Styles/HealthLevelProgressBarStyle.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Application.Resources>
+    <!-- not using StartupUri, handling the startup process myself instead using Startup event -->
+
 </Application>

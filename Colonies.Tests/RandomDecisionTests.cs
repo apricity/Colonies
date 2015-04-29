@@ -5,8 +5,8 @@
 
     using NUnit.Framework;
 
-    using Wacton.Colonies.Core;
-    using Wacton.Colonies.Measures;
+    using Wacton.Colonies.Domain.Core;
+    using Wacton.Colonies.Domain.Measures;
     using Wacton.Tovarisch.Enum;
     using Wacton.Tovarisch.Randomness;
 

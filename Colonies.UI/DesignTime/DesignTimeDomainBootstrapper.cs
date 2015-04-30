@@ -5,10 +5,10 @@
 
     using Wacton.Colonies.Domain;
     using Wacton.Colonies.Domain.Core;
-    using Wacton.Colonies.Domain.Ecosystem;
-    using Wacton.Colonies.Domain.Main;
+    using Wacton.Colonies.Domain.Ecosystems;
+    using Wacton.Colonies.Domain.Mains;
     using Wacton.Colonies.Domain.Measures;
-    using Wacton.Colonies.Domain.Organism;
+    using Wacton.Colonies.Domain.Organisms;
 
     public class DesignTimeDomainBootstrapper : DomainBootstrapper
     {

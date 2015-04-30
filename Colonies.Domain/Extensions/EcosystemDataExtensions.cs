@@ -3,7 +3,7 @@
     using System;
 
     using Wacton.Colonies.Domain.Core;
-    using Wacton.Colonies.Domain.Ecosystem.Modification;
+    using Wacton.Colonies.Domain.Ecosystems.Modification;
 
     public static class EcosystemDataExtensions
     {

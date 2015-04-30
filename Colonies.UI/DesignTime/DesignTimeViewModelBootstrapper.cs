@@ -1,6 +1,7 @@
 ﻿namespace Wacton.Colonies.UI.DesignTime
 {
-    using Wacton.Colonies.Domain.Main;
+    using Wacton.Colonies.Domain.Mains;
+    using Wacton.Colonies.UI.Mains;
 
     public class DesignTimeViewModelBootstrapper : ViewModelBootstrapper
     {

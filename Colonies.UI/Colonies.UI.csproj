@@ -90,40 +90,64 @@
     <Compile Include="DesignTime\DesignTimeDomainBootstrapper.cs" />
     <Compile Include="DesignTime\DesignTimeViewModelBootstrapper.cs" />
     <Compile Include="DesignTime\DesignTimeViewModelLocator.cs" />
-    <Compile Include="EcosystemView.xaml.cs">
+    <Compile Include="Ecosystems\EcosystemView.xaml.cs">
       <DependentUpon>EcosystemView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EcosystemViewModel.cs" />
-    <Compile Include="EnvironmentView.xaml.cs">
+    <Compile Include="Ecosystems\EcosystemViewModel.cs" />
+    <Compile Include="Environments\EnvironmentView.xaml.cs">
       <DependentUpon>EnvironmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EnvironmentViewModel.cs" />
-    <Compile Include="HabitatView.xaml.cs">
+    <Compile Include="Environments\EnvironmentViewModel.cs" />
+    <Compile Include="Habitats\HabitatView.xaml.cs">
       <DependentUpon>HabitatView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="HabitatViewModel.cs" />
+    <Compile Include="Habitats\HabitatViewModel.cs" />
     <Compile Include="Infrastructure\OrganismsUpdatedEvent.cs" />
     <Compile Include="Infrastructure\RelayCommand.cs" />
     <Compile Include="Infrastructure\ViewModelBase.cs" />
-    <Compile Include="MainView.xaml.cs">
+    <Compile Include="Mains\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainViewModel.cs" />
-    <Compile Include="OrganismDetailsView.xaml.cs">
+    <Compile Include="Mains\MainViewModel.cs" />
+    <Compile Include="Organisms\OrganismDetailsView.xaml.cs">
       <DependentUpon>OrganismDetailsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="OrganismSynopsisView.xaml.cs">
-      <DependentUpon>OrganismSynopsisView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="OrganismSynopsisViewModel.cs" />
-    <Compile Include="OrganismView.xaml.cs">
+    <Compile Include="Organisms\OrganismView.xaml.cs">
       <DependentUpon>OrganismView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="OrganismViewModel.cs" />
+    <Compile Include="Organisms\OrganismViewModel.cs" />
+    <Compile Include="OrganismSynopses\OrganismSynopsisView.xaml.cs">
+      <DependentUpon>OrganismSynopsisView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OrganismSynopses\OrganismSynopsisViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModelBootstrapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Ecosystems\EcosystemView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Environments\EnvironmentView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Habitats\HabitatView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Mains\MainView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Organisms\OrganismDetailsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Organisms\OrganismView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -134,43 +158,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="EcosystemView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="EnvironmentView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="HabitatView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="MainView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="OrganismDetailsView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="OrganismView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="OrganismSynopsisView.xaml">
+    <Page Include="OrganismSynopses\OrganismSynopsisView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

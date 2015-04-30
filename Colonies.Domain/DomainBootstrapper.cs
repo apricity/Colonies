@@ -5,25 +5,31 @@
     using System.Windows.Media;
 
     using Wacton.Colonies.Domain.Core;
-    using Wacton.Colonies.Domain.Ecosystem.Data;
-    using Wacton.Colonies.Domain.Ecosystem.Modification;
-    using Wacton.Colonies.Domain.Ecosystem.Phases;
+    using Wacton.Colonies.Domain.Ecosystems;
+    using Wacton.Colonies.Domain.Ecosystems.Data;
+    using Wacton.Colonies.Domain.Ecosystems.Modification;
+    using Wacton.Colonies.Domain.Ecosystems.Phases;
+    using Wacton.Colonies.Domain.Environments;
+    using Wacton.Colonies.Domain.Habitats;
+    using Wacton.Colonies.Domain.Mains;
     using Wacton.Colonies.Domain.Measures;
-    using Wacton.Colonies.Domain.Organism;
+    using Wacton.Colonies.Domain.OrganismSynopses;
+    using Wacton.Colonies.Domain.Organisms;
+    using Wacton.Colonies.Domain.Weathers;
 
     public class DomainBootstrapper
     {
-        public Main.Main BuildDomainModel(int ecosystemWidth, int ecosystemHeight)
+        public Main BuildDomainModel(int ecosystemWidth, int ecosystemHeight)
         {
-            var habitats = new Habitat.Habitat[ecosystemWidth, ecosystemHeight];
+            var habitats = new Habitat[ecosystemWidth, ecosystemHeight];
 
             for (var x = 0; x < ecosystemWidth; x++)
             {
                 for (var y = 0; y < ecosystemHeight; y++)
                 {
                     // initially set each habitat to have an unknown environment and no organism
-                    var environment = new Environment.Environment();
-                    var habitat = new Habitat.Habitat(environment, null);
+                    var environment = new Environment();
+                    var habitat = new Habitat(environment, null);
                     habitats[x, y] = habitat;
                 }
             }
@@ -33,7 +39,7 @@
             var ecosystemHistory = new EcosystemHistory();
             var ecosystemData = new EcosystemData(habitats, initialOrganismCoordinates, ecosystemHistory);
             var ecosystemRates = new EcosystemRates();
-            var weather = new Weather.Weather();
+            var weather = new Weather();
             var distributor = new Distributor(ecosystemData);
             var afflictor = new Afflictor(ecosystemData, distributor);
             var hazardFlow = new HazardFlow(ecosystemData, ecosystemRates, distributor, weather);
@@ -43,7 +49,7 @@
             var interactionPhase = new InteractionPhase(ecosystemData, organismFactory, afflictor);
             var ambientPhase = new AmbientPhase(ecosystemData, ecosystemRates, distributor, weather, hazardFlow);
             var ecosystemPhases = new EcosystemPhases(new List<IEcosystemPhase> { setupPhase, actionPhase, interactionPhase, movementPhase, ambientPhase });
-            var ecosystem = new Ecosystem.Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, distributor, ecosystemPhases);
+            var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, distributor, ecosystemPhases);
 
             this.InitialiseTerrain(ecosystem);
             foreach (var organismCoordinate in ecosystemData.AudibleOrganismCoordinates())
@@ -52,8 +58,8 @@
             }
 
             // hook organism model into the organism synopsis
-            var organismSynopsis = new OrganismSynopsis.OrganismSynopsis(initialOrganismCoordinates.Keys.Select(organism => (IOrganism)organism).ToList());
-            var main = new Main.Main(ecosystem, organismSynopsis);
+            var organismSynopsis = new OrganismSynopsis(initialOrganismCoordinates.Keys.Select(organism => (IOrganism)organism).ToList());
+            var main = new Main(ecosystem, organismSynopsis);
 
             // clear the history so this setup is not shown in the first pull of the history
             ecosystemHistory.Pull();
@@ -61,7 +67,7 @@
             return main;
         }
 
-        protected virtual void InitialiseTerrain(Ecosystem.Ecosystem ecosystem)
+        protected virtual void InitialiseTerrain(Ecosystem ecosystem)
         {
             ecosystem.Distributor.Insert(EnvironmentMeasure.Damp, new Coordinate(19, 0));
             ecosystem.Distributor.Insert(EnvironmentMeasure.Damp, new Coordinate(15, 3));
@@ -131,9 +137,9 @@
             }
         }
 
-        protected virtual Dictionary<Organism.Organism, Coordinate> InitialOrganismCoordinates()
+        protected virtual Dictionary<Organism, Coordinate> InitialOrganismCoordinates()
         {
-            var organismLocations = new Dictionary<Organism.Organism, Coordinate>
+            var organismLocations = new Dictionary<Organism, Coordinate>
                                         {
                                             { new Defender("Waffle", Colors.Silver), new Coordinate(2, 2) },
                                             { new Gatherer("Wilber", Colors.Silver), new Coordinate(2, 7) },

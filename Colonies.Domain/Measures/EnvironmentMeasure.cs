@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using Wacton.Colonies.Domain.Weather;
+    using Wacton.Colonies.Domain.Weathers;
     using Wacton.Tovarisch.Enum;
 
     public class EnvironmentMeasure : Enumeration, IMeasure

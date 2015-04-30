@@ -6,7 +6,13 @@
     using Microsoft.Practices.Prism.PubSubEvents;
 
     using Wacton.Colonies.Domain.Core;
-    using Wacton.Colonies.Domain.Main;
+    using Wacton.Colonies.Domain.Mains;
+    using Wacton.Colonies.UI.Ecosystems;
+    using Wacton.Colonies.UI.Environments;
+    using Wacton.Colonies.UI.Habitats;
+    using Wacton.Colonies.UI.Mains;
+    using Wacton.Colonies.UI.Organisms;
+    using Wacton.Colonies.UI.OrganismSynopses;
 
     public class ViewModelBootstrapper
     {

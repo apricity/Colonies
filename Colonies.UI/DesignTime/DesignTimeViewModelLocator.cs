@@ -1,5 +1,12 @@
 ﻿namespace Wacton.Colonies.UI.DesignTime
 {
+    using Wacton.Colonies.UI.Ecosystems;
+    using Wacton.Colonies.UI.Environments;
+    using Wacton.Colonies.UI.Habitats;
+    using Wacton.Colonies.UI.Mains;
+    using Wacton.Colonies.UI.Organisms;
+    using Wacton.Colonies.UI.OrganismSynopses;
+
     public class DesignTimeViewModelLocator
     {
         private static readonly DesignTimeDomainBootstrapper DomainBootstrapper;

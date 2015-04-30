@@ -3,7 +3,7 @@
     using System.Collections.Generic;
 
     using Wacton.Colonies.Domain.Measures;
-    using Wacton.Colonies.Domain.Organism;
+    using Wacton.Colonies.Domain.Organisms;
 
     public class NestLogic : IIntentionLogic
     {

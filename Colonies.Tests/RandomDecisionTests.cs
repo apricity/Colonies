@@ -39,7 +39,7 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add(Decider.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
 
@@ -62,7 +62,7 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add(Decider.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
 
@@ -86,7 +86,7 @@
             }
 
             // set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
-            DecisionLogic.SetBaseWeighting(0.0);
+            Decider.SetBaseWeighting(0.0);
 
             var biasedItem = new TestBiasedItem(1.0, 0.0);
             var chosenItems = new List<TestMeasurableItem>();
@@ -104,7 +104,7 @@
             for (var i = 0; i < numberOfResults; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add(Decider.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / numberOfResults;
             }
 
@@ -139,7 +139,7 @@
             }
 
             // set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
-            DecisionLogic.SetBaseWeighting(0.0);
+            Decider.SetBaseWeighting(0.0);
 
             // bias of both measurements are the same in order for them to balance
             var biasedItem = new TestBiasedItem(1.0, 1.0);
@@ -149,7 +149,7 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add(Decider.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
 
@@ -173,7 +173,7 @@
             }
 
             // set the base weighting to 0 (so that chance of being chosen is based directly on measurment level * bias)
-            DecisionLogic.SetBaseWeighting(0.0);
+            Decider.SetBaseWeighting(0.0);
 
             // pheromone bias is double that of health bias to compensate for the halving of the measurement level
             var biasedItem = new TestBiasedItem(2.0, 1.0);
@@ -183,7 +183,7 @@
             for (var i = 0; i < this.items.Count; i++)
             {
                 RandomNumberGenerator.OverrideNextDouble = nextDouble;
-                chosenItems.Add(DecisionLogic.MakeDecision(this.items, biasedItem));
+                chosenItems.Add(Decider.MakeDecision(this.items, biasedItem));
                 nextDouble += 1.0 / this.items.Count;
             }
 

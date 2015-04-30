@@ -7,16 +7,16 @@
     using NUnit.Framework;
 
     using Wacton.Colonies.Domain.Core;
-    using Wacton.Colonies.Domain.Ecosystem;
-    using Wacton.Colonies.Domain.Ecosystem.Data;
-    using Wacton.Colonies.Domain.Ecosystem.Modification;
-    using Wacton.Colonies.Domain.Ecosystem.Phases;
-    using Wacton.Colonies.Domain.Environment;
-    using Wacton.Colonies.Domain.Habitat;
+    using Wacton.Colonies.Domain.Ecosystems;
+    using Wacton.Colonies.Domain.Ecosystems.Data;
+    using Wacton.Colonies.Domain.Ecosystems.Modification;
+    using Wacton.Colonies.Domain.Ecosystems.Phases;
+    using Wacton.Colonies.Domain.Environments;
+    using Wacton.Colonies.Domain.Habitats;
     using Wacton.Colonies.Domain.Intentions;
     using Wacton.Colonies.Domain.Measures;
-    using Wacton.Colonies.Domain.Organism;
-    using Wacton.Colonies.Domain.Weather;
+    using Wacton.Colonies.Domain.Organisms;
+    using Wacton.Colonies.Domain.Weathers;
 
     [TestFixture]
     public class OrganismMovementTests
@@ -28,9 +28,9 @@
         [SetUp]
         public void SetupTest()
         {
-            const int width = 10;
-            const int height = 1;
-            this.habitats = GenerateBaseHabitats(width, height);
+            const int Width = 10;
+            const int Height = 1;
+            this.habitats = GenerateBaseHabitats(Width, Height);
 
             var organismIdentifiers = new List<string> { "A", "B", "C", "D", "W", "X", "Y", "Z" };
 

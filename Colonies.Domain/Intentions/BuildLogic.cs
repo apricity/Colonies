@@ -4,7 +4,7 @@
     using System.Linq;
 
     using Wacton.Colonies.Domain.Measures;
-    using Wacton.Colonies.Domain.Organism;
+    using Wacton.Colonies.Domain.Organisms;
 
     public class BuildLogic : IIntentionLogic
     {

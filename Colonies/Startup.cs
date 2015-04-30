@@ -7,9 +7,9 @@
     using Wacton.Colonies.UI;
     using Wacton.Colonies.UI.Mains;
 
-    public class Bootstrapper
+    public static class Startup
     {
-        public virtual void Run()
+        public static void Go()
         {
             // get the version number to display on the main window title
             var assembly = Assembly.GetExecutingAssembly();

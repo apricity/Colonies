@@ -13,8 +13,7 @@
             // hook up unhandled exception handling
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
-            var bootstrapper = new Bootstrapper();
-            bootstrapper.Run();
+            Colonies.Startup.Go();
         }
 
         private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)

@@ -3,7 +3,7 @@
     using System.Reflection;
 
     using Wacton.Colonies.Domain;
-    using Wacton.Colonies.Domain.Properties;
+    using Wacton.Colonies.Properties;
     using Wacton.Colonies.UI;
     using Wacton.Colonies.UI.Mains;
 

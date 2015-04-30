@@ -12,13 +12,13 @@ namespace Wacton.Colonies.UI.Mains
     using Wacton.Colonies.Domain.Ecosystems.Phases;
     using Wacton.Colonies.Domain.Mains;
     using Wacton.Colonies.Domain.Measures;
-    using Wacton.Colonies.Domain.Properties;
     using Wacton.Colonies.Domain.Weathers;
     using Wacton.Colonies.UI.Ecosystems;
     using Wacton.Colonies.UI.Environments;
     using Wacton.Colonies.UI.Habitats;
     using Wacton.Colonies.UI.Infrastructure;
     using Wacton.Colonies.UI.OrganismSynopses;
+    using Wacton.Colonies.UI.Properties;
 
     // TODO: stop breaking the law of demeter so badly :(
     public class MainViewModel : ViewModelBase<IMain>

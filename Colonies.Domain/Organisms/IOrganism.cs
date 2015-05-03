@@ -1,5 +1,6 @@
 ﻿namespace Wacton.Colonies.Domain.Organisms
 {
+    using System;
     using System.Windows.Media;
 
     using Wacton.Colonies.Domain.Intentions;
@@ -7,6 +8,8 @@
 
     public interface IOrganism : IOrganismState, IBiased<EnvironmentMeasure>
     {
+        Guid ColonyId { get; }
+
         string Name { get; }
 
         Color Color { get; }

@@ -1,5 +1,6 @@
 ﻿namespace Wacton.Colonies.Tests
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows.Media;
@@ -11,12 +12,13 @@
     using Wacton.Colonies.Domain.Ecosystems.Data;
     using Wacton.Colonies.Domain.Ecosystems.Modification;
     using Wacton.Colonies.Domain.Ecosystems.Phases;
-    using Wacton.Colonies.Domain.Environments;
     using Wacton.Colonies.Domain.Habitats;
     using Wacton.Colonies.Domain.Intentions;
     using Wacton.Colonies.Domain.Measures;
     using Wacton.Colonies.Domain.Organisms;
     using Wacton.Colonies.Domain.Weathers;
+
+    using Environment = Wacton.Colonies.Domain.Environments.Environment;
 
     [TestFixture]
     public class OrganismMovementTests
@@ -37,7 +39,7 @@
             this.organismsById = new Dictionary<string, Organism>();
             foreach (var organismIdentifier in organismIdentifiers)
             {
-                this.organismsById.Add(organismIdentifier, new TestOrganism(organismIdentifier, Colors.Black));
+                this.organismsById.Add(organismIdentifier, new TestOrganism(Guid.NewGuid(), organismIdentifier, Colors.Black));
             }
 
             this.habitatCoordinates = new Dictionary<Habitat, Coordinate>();
@@ -58,13 +60,13 @@
              * no conflict, both organisms should move where they chose to go
              * result of test:                          |_A_|___|___|___|_B_|___|___|___|___|___| */
 
-            var organismCoordinates = new Dictionary<Organism, Coordinate>
+            var organismCoordinates = new Dictionary<IOrganism, Coordinate>
                                         {
                                             { this.organismsById["A"], new Coordinate(1, 0) },
                                             { this.organismsById["B"], new Coordinate(3, 0) }
                                         };
 
-            var desiredOrganismCoordinates = new Dictionary<Organism, Coordinate>
+            var desiredOrganismCoordinates = new Dictionary<IOrganism, Coordinate>
                                         {
                                             { this.organismsById["A"], new Coordinate(0, 0) },
                                             { this.organismsById["B"], new Coordinate(4, 0) }
@@ -87,13 +89,13 @@
              * (therefore, when A wants to move left and B wants to move right, A will win)
              * result of test:                          |___|_B_|_A_|___|___|___|___|___|___|___| */
 
-            var organismCoordinates = new Dictionary<Organism, Coordinate>
+            var organismCoordinates = new Dictionary<IOrganism, Coordinate>
                                         {
                                             { this.organismsById["A"], new Coordinate(3, 0) },
                                             { this.organismsById["B"], new Coordinate(1, 0) }
                                         };
 
-            var desiredOrganismCoordinates = new Dictionary<Organism, Coordinate>
+            var desiredOrganismCoordinates = new Dictionary<IOrganism, Coordinate>
                                         {
                                             { this.organismsById["A"], new Coordinate(2, 0) },
                                             { this.organismsById["B"], new Coordinate(2, 0) }
@@ -121,7 +123,7 @@
              * (therefore, when Y wants to move right and Z wants to move left, Y will win)
              * result of test:                          |___|_B_|_A_|___|___|___|___|_Y_|_Z_|___| */
 
-            var organismCoordinates = new Dictionary<Organism, Coordinate>
+            var organismCoordinates = new Dictionary<IOrganism, Coordinate>
                                         {
                                             { this.organismsById["A"], new Coordinate(3, 0) },
                                             { this.organismsById["B"], new Coordinate(1, 0) },
@@ -129,7 +131,7 @@
                                             { this.organismsById["Z"], new Coordinate(0, 0) }
                                         };
 
-            var desiredOrganismCoordinates = new Dictionary<Organism, Coordinate>
+            var desiredOrganismCoordinates = new Dictionary<IOrganism, Coordinate>
                                         {
                                             { this.organismsById["A"], new Coordinate(2, 0) },
                                             { this.organismsById["B"], new Coordinate(2, 0) },
@@ -157,7 +159,7 @@
              * all organisms are moving in convoy to the right, and each will be able to go to their desired destination
              * result of test:                          |___|_A_|_B_|_C_|_D_|___|___|___|___|___| */
 
-            var organismCoordinates = new Dictionary<Organism, Coordinate>
+            var organismCoordinates = new Dictionary<IOrganism, Coordinate>
                                         {
                                             { this.organismsById["A"], new Coordinate(0, 0) },
                                             { this.organismsById["B"], new Coordinate(1, 0) },
@@ -165,7 +167,7 @@
                                             { this.organismsById["D"], new Coordinate(3, 0) }
                                         };
 
-            var desiredOrganismCoordinates = new Dictionary<Organism, Coordinate>
+            var desiredOrganismCoordinates = new Dictionary<IOrganism, Coordinate>
                                         {
                                             { this.organismsById["A"], new Coordinate(1, 0) },
                                             { this.organismsById["B"], new Coordinate(2, 0) },
@@ -190,7 +192,7 @@
              * all organisms are moving in convoy to the right, and each will be able to go to their desired destination
              * result of test:                          |___|_A_|_B_|_C_|_D_|___|_W_|_X_|_Y_|_Z_| */
 
-            var organismCoordinates = new Dictionary<Organism, Coordinate>
+            var organismCoordinates = new Dictionary<IOrganism, Coordinate>
                                         {
                                             { this.organismsById["A"], new Coordinate(0, 0) },
                                             { this.organismsById["B"], new Coordinate(1, 0) },
@@ -202,7 +204,7 @@
                                             { this.organismsById["Z"], new Coordinate(8, 0) }
                                         };
 
-            var desiredOrganismCoordinates = new Dictionary<Organism, Coordinate>
+            var desiredOrganismCoordinates = new Dictionary<IOrganism, Coordinate>
                                         {
                                             { this.organismsById["A"], new Coordinate(1, 0) },
                                             { this.organismsById["B"], new Coordinate(2, 0) },
@@ -232,7 +234,7 @@
              * A is trailing B, and will be able to move when B wins the vacant destination
              * result of test:                          |___|_A_|_B_|_C_|_D_|___|___|___|___|___| */
 
-            var organismCoordinates = new Dictionary<Organism, Coordinate>
+            var organismCoordinates = new Dictionary<IOrganism, Coordinate>
                                         {
                                             { this.organismsById["A"], new Coordinate(0, 0) },
                                             { this.organismsById["B"], new Coordinate(1, 0) },
@@ -240,7 +242,7 @@
                                             { this.organismsById["D"], new Coordinate(4, 0) }
                                         };
 
-            var desiredOrganismCoordinates = new Dictionary<Organism, Coordinate>
+            var desiredOrganismCoordinates = new Dictionary<IOrganism, Coordinate>
                                         {
                                             { this.organismsById["A"], new Coordinate(1, 0) },
                                             { this.organismsById["B"], new Coordinate(2, 0) },
@@ -273,7 +275,7 @@
              * Z is trailing W, and will be able to move when W wins the vacant destination 
              * result of test:                          |___|_A_|_B_|_C_|_D_|_X_|_Y_|_W_|_Z_|___| */
 
-            var organismCoordinates = new Dictionary<Organism, Coordinate>
+            var organismCoordinates = new Dictionary<IOrganism, Coordinate>
                                         {
                                             { this.organismsById["A"], new Coordinate(0, 0) },
                                             { this.organismsById["B"], new Coordinate(1, 0) },
@@ -285,7 +287,7 @@
                                             { this.organismsById["Z"], new Coordinate(9, 0) }
                                         };
 
-            var desiredOrganismCoordinates = new Dictionary<Organism, Coordinate>
+            var desiredOrganismCoordinates = new Dictionary<IOrganism, Coordinate>
                                         {
                                             { this.organismsById["A"], new Coordinate(1, 0) },
                                             { this.organismsById["B"], new Coordinate(2, 0) },
@@ -326,7 +328,7 @@
             return habitats;
         }
 
-        private PhaseSummary CreateAndUpdateEcosystem(Dictionary<Organism, Coordinate> organismCoordinates, Dictionary<Organism, Coordinate> desiredOrganismCoordinates)
+        private PhaseSummary CreateAndUpdateEcosystem(Dictionary<IOrganism, Coordinate> organismCoordinates, Dictionary<IOrganism, Coordinate> desiredOrganismCoordinates)
         {
             var desiredBiasedOrganismCoordinates = desiredOrganismCoordinates.ToDictionary(
                 desiredOrganismCoordinate => (IOrganism)desiredOrganismCoordinate.Key,
@@ -360,7 +362,7 @@
 
         private class TestOrganism : Organism
         {
-            public TestOrganism(string name, Color color) : base (name, color, new TestOrganismLogic())
+            public TestOrganism(Guid colonyId, string name, Color color) : base (colonyId, name, color, new TestOrganismLogic())
             {
             }
 

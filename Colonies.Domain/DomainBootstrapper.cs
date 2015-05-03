@@ -34,8 +34,8 @@
                 }
             }
 
-            var initialOrganismCoordinates = this.InitialOrganismCoordinates();
             var organismFactory = new OrganismFactory();
+            var initialOrganismCoordinates = this.InitialOrganismCoordinates(organismFactory);
             var ecosystemHistory = new EcosystemHistory();
             var ecosystemData = new EcosystemData(habitats, initialOrganismCoordinates, ecosystemHistory);
             var ecosystemRates = new EcosystemRates();
@@ -137,14 +137,15 @@
             }
         }
 
-        protected virtual Dictionary<Organism, Coordinate> InitialOrganismCoordinates()
+        protected virtual Dictionary<IOrganism, Coordinate> InitialOrganismCoordinates(OrganismFactory organismFactory)
         {
-            var organismLocations = new Dictionary<Organism, Coordinate>
+            var firstQueen = organismFactory.CreateOrphanOrganism(Colors.Silver, typeof(Queen));
+            var organismLocations = new Dictionary<IOrganism, Coordinate>
                                         {
-                                            { new Defender("Waffle", Colors.Silver), new Coordinate(2, 2) },
-                                            { new Gatherer("Wilber", Colors.Silver), new Coordinate(2, 7) },
-                                            { new Gatherer("Lotty", Colors.Silver), new Coordinate(7, 2) },
-                                            { new Queen("Dr. Louise", Colors.Silver), new Coordinate(7, 7) },
+                                            { organismFactory.CreateOffspringOrganism(firstQueen), new Coordinate(2, 2) },
+                                            { organismFactory.CreateOffspringOrganism(firstQueen), new Coordinate(2, 7) },
+                                            { organismFactory.CreateOffspringOrganism(firstQueen), new Coordinate(7, 2) },
+                                            { firstQueen, new Coordinate(7, 7) },
                                         };
 
             return organismLocations;

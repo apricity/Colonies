@@ -9,6 +9,7 @@
 
     public abstract class Organism : IOrganism
     {
+        public Guid ColonyId { get; private set; }
         public string Name { get; private set; }
         public Color Color { get; private set; }
         public double Age { get; private set; }
@@ -117,8 +118,9 @@
             }
         }
 
-        protected Organism(string name, Color color, IOrganismLogic organismLogic)
+        protected Organism(Guid colonyId, string name, Color color, IOrganismLogic organismLogic)
         {
+            this.ColonyId = colonyId;
             this.Name = name;
             this.Color = color;
             this.OrganismLogic = organismLogic;

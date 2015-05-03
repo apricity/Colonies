@@ -1,5 +1,6 @@
 ﻿namespace Wacton.Colonies.UI.DesignTime
 {
+    using System;
     using System.Collections.Generic;
     using System.Windows.Media;
 
@@ -28,12 +29,13 @@
             ecosystem.SetLevel(new Coordinate(1, 1), EnvironmentMeasure.Sound, 0.5);
         }
 
-        protected override Dictionary<Organism, Coordinate> InitialOrganismCoordinates()
+        protected override Dictionary<IOrganism, Coordinate> InitialOrganismCoordinates(OrganismFactory organismFactory)
         {
-            var organismLocations = new Dictionary<Organism, Coordinate>
+            var guid = Guid.NewGuid();
+            var organismLocations = new Dictionary<IOrganism, Coordinate>
                                         {
-                                            { new Gatherer("DesignTimeOrganism-01", Colors.Silver), new Coordinate(0, 0) },
-                                            { new Gatherer("DesignTimeOrganism-02", Colors.Silver), new Coordinate(EcosystemWidth - 1, EcosystemHeight - 1) }
+                                            { new Gatherer(guid, "DesignTimeOrganism-01", Colors.Silver), new Coordinate(0, 0) },
+                                            { new Gatherer(guid, "DesignTimeOrganism-02", Colors.Silver), new Coordinate(EcosystemWidth - 1, EcosystemHeight - 1) }
                                         };
 
             return organismLocations;

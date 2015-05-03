@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Windows.Media;
 
     using Wacton.Tovarisch.Lexicon;
     using Wacton.Tovarisch.Numbers;
@@ -21,12 +22,53 @@
 
         private readonly WordProvider wordProvider = new WordProvider();
         private readonly List<string> usedNames = new List<string>();
+        private readonly Dictionary<Guid, string> colonyNames = new Dictionary<Guid, string>();
+
+        public IOrganism CreateOrphanOrganism(Color color, Type organismType)
+        {
+            var colonyId = Guid.NewGuid();
+            var colonyName = this.GenerateColonyName(colonyId);
+            var name = this.GenerateFullName(colonyName);
+            var organism = (IOrganism)Activator.CreateInstance(organismType, colonyId, name, color);
+            EnsureOrganismInstantiatedCorrectly(organism, colonyId, name, color);
+            return organism;
+        }
 
         public IOrganism CreateOffspringOrganism(IOrganism parentOrganism)
         {
-            var firstName = this.wordProvider.GetRandomWord(WordClass.Verb).ToTitleCase();
-            var secondName = this.wordProvider.GetRandomWord(WordClass.Noun).ToTitleCase();
-            var name = string.Concat(firstName, " ", secondName);
+            var colonyId = parentOrganism.ColonyId;
+            var colonyName = this.colonyNames[colonyId];
+            var name = this.GenerateFullName(colonyName);
+            var color = parentOrganism.Color;
+            var organismType = RandomSelection.SelectOne(this.organismTypeWeightings);
+            var organism = (IOrganism)Activator.CreateInstance(organismType, parentOrganism.ColonyId, name, color);
+            EnsureOrganismInstantiatedCorrectly(organism, colonyId, name, color);
+            return organism;
+        }
+
+        private string GenerateColonyName(Guid colonyId)
+        {
+            var colonyName = string.Empty;
+
+            var isUniqueColonyName = false;
+            while (!isUniqueColonyName)
+            {
+                colonyName = this.wordProvider.GetRandomWord(WordClass.Adjective).ToTitleCase();
+                if (!this.colonyNames.ContainsValue(colonyName))
+                {
+                    isUniqueColonyName = true;
+                }
+            }
+
+            this.colonyNames.Add(colonyId, colonyName);
+            return colonyName;
+        }
+
+        private string GenerateFullName(string colonyName)
+        {
+            var givenName = this.wordProvider.GetRandomWord(WordClass.Noun).ToTitleCase();
+            var nickName = this.wordProvider.GetRandomWord(WordClass.Verb).ToTitleCase();
+            var name = string.Format("{0} \"{1}\" {2}", givenName, nickName, colonyName);
 
             var nameCount = this.usedNames.Count(usedName => usedName.Equals(name));
             this.usedNames.Add(name);
@@ -38,10 +80,31 @@
                 name = string.Concat(name, " ", numeralSuffix.ToRomanNumerals());
             }
 
-            var color = parentOrganism.Color;
-            var organismType = RandomSelection.SelectOne(this.organismTypeWeightings);
-            var organism = (IOrganism)Activator.CreateInstance(organismType, name, color);
-            return organism;
+            return name;
+        }
+
+        private static void EnsureOrganismInstantiatedCorrectly(IOrganism organism, Guid colonyId, string name, Color color)
+        {
+            if (organism.ColonyId != colonyId)
+            {
+                throw new InvalidOperationException(
+                    string.Format("Organism instance was not created as requested | expected ID {0}, actual ID {1}",
+                    colonyId, organism.ColonyId));
+            }
+
+            if (organism.Name != name)
+            {
+                throw new InvalidOperationException(
+                    string.Format("Organism instance was not created as requested | expected name {0}, actual name {1}",
+                    name, organism.Name));
+            }
+
+            if (organism.Color != color)
+            {
+                throw new InvalidOperationException(
+                    string.Format("Organism instance was not created as requested | expected color {0}, actual color {1}",
+                    color, organism.Color));
+            }
         }
     }
 }

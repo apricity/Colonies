@@ -1,5 +1,6 @@
 ﻿namespace Wacton.Colonies.Domain.Organisms
 {
+    using System;
     using System.Windows.Media;
 
     using Wacton.Colonies.Domain.Intentions;
@@ -7,7 +8,7 @@
 
     public class Gatherer : Organism
     {
-        public Gatherer(string name, Color color) : base(name, color, new GathererLogic())
+        public Gatherer(Guid colonyId, string name, Color color) : base(colonyId, name, color, new GathererLogic())
         { 
         }
 

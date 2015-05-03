@@ -36,7 +36,7 @@
             }
         }
 
-        public EcosystemData(Habitat[,] habitats, Dictionary<Organism, Coordinate> organismCoordinates, IEcosystemHistoryPusher ecosystemHistory)
+        public EcosystemData(Habitat[,] habitats, Dictionary<IOrganism, Coordinate> organismCoordinates, IEcosystemHistoryPusher ecosystemHistory)
         {
             this.Habitats = habitats;
             this.HabitatCoordinates = new Dictionary<Habitat, Coordinate>();
@@ -56,7 +56,7 @@
                 var organism = organismCoordinate.Key;
                 var coordinate = organismCoordinate.Value;
 
-                this.AddOrganism(organism, this.HabitatAt(coordinate));
+                this.AddOrganism(organism, coordinate);
             }
         }
 

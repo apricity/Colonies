@@ -4,8 +4,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        xmlns:designTime="clr-namespace:Wacton.Colonies.UI.DesignTime"
-        xmlns:converters="clr-namespace:Wacton.Colonies.UI.Converters"
         xmlns:ecosystems="clr-namespace:Wacton.Colonies.UI.Ecosystems"
         xmlns:organismSynopses="clr-namespace:Wacton.Colonies.UI.OrganismSynopses"
         mc:Ignorable="d" 

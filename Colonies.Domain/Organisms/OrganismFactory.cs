@@ -2,9 +2,12 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
+    using System.Linq;
 
+    using Wacton.Tovarisch.Lexicon;
+    using Wacton.Tovarisch.Numbers;
     using Wacton.Tovarisch.Randomness;
+    using Wacton.Tovarisch.Strings;
 
     public class OrganismFactory
     {
@@ -16,12 +19,26 @@
                     new WeightedItem<Type>(typeof(Defender), 45)
                 };
 
+        private readonly WordProvider wordProvider = new WordProvider();
+        private readonly List<string> usedNames = new List<string>();
+
         public IOrganism CreateOffspringOrganism(IOrganism parentOrganism)
         {
-            // TODO: this is just a quick way of getting a random string - use a dictionary of adjectives & nouns (or similar) instead
-            var name = Path.GetRandomFileName().Replace(".", string.Empty);
-            var color = parentOrganism.Color;
+            var firstName = this.wordProvider.GetRandomWord(WordClass.Verb).ToTitleCase();
+            var secondName = this.wordProvider.GetRandomWord(WordClass.Noun).ToTitleCase();
+            var name = string.Concat(firstName, " ", secondName);
 
+            var nameCount = this.usedNames.Count(usedName => usedName.Equals(name));
+            this.usedNames.Add(name);
+
+            // update name with numeral suffix (II, III, IV, etc.) if name already exists
+            if (nameCount > 0)
+            {
+                var numeralSuffix = nameCount + 1;
+                name = string.Concat(name, " ", numeralSuffix.ToRomanNumerals());
+            }
+
+            var color = parentOrganism.Color;
             var organismType = RandomSelection.SelectOne(this.organismTypeWeightings);
             var organism = (IOrganism)Activator.CreateInstance(organismType, name, color);
             return organism;

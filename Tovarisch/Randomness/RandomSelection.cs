@@ -12,7 +12,7 @@
             var itemList = items.ToList();
 
             var itemChosen = false;
-            var randomNumber = RandomNumberGenerator.DoubleBetween(itemList.Count);
+            var randomNumber = RandomNumberGenerator.DoubleBetween(0, itemList.Count);
             foreach (var item in itemList)
             {
                 if (randomNumber <= 1)
@@ -40,7 +40,7 @@
             var totalWeight = itemList.Sum(weightedItem => weightedItem.Weight);
 
             var itemChosen = false;
-            var randomNumber = RandomNumberGenerator.DoubleBetween(totalWeight);
+            var randomNumber = RandomNumberGenerator.DoubleBetween(0, totalWeight);
             foreach (var weightedItem in itemList)
             {
                 if (randomNumber <= weightedItem.Weight)
@@ -73,7 +73,7 @@
                 return false;
             }
 
-            var randomNumber = RandomNumberGenerator.DoubleBetween(1);
+            var randomNumber = RandomNumberGenerator.DoubleBetween(0, 1);
             return randomNumber <= successProbability;
         }
     }

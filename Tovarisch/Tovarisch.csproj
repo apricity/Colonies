@@ -53,15 +53,42 @@
     <Compile Include="CSV\CsvWrite.cs" />
     <Compile Include="CSV\CsvRead.cs" />
     <Compile Include="Enum\Enumeration.cs" />
+    <Compile Include="Lexicon\WordClass.cs" />
+    <Compile Include="Lexicon\WordProvider.cs" />
+    <Compile Include="Numbers\RomanNumerals.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Randomness\RandomNumberGenerator.cs" />
     <Compile Include="Randomness\RandomSelection.cs" />
     <Compile Include="Randomness\WeightedItem.cs" />
+    <Compile Include="Strings\StringExtensions.cs" />
     <Compile Include="Threading\ThreadBarrier.cs" />
     <Compile Include="Threading\ThreadTurnstile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Adjectives.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Adverbs.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Nouns.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Verbs.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

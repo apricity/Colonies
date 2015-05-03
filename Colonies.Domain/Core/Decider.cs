@@ -76,7 +76,7 @@
                 //return SelectOne(weightedMeasurables.Keys);
             }
 
-            var randomNumber = RandomNumberGenerator.DoubleBetween(totalWeight);
+            var randomNumber = RandomNumberGenerator.DoubleBetween(0, totalWeight);
             foreach (var weightedMeasurable in weightedMeasurables)
             {
                 if (randomNumber < weightedMeasurable.Value)

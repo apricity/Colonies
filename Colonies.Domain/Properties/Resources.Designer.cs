@@ -59,5 +59,69 @@ namespace Wacton.Colonies.Domain.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   1 This software and database is being provided to you, the LICENSEE, by  
+        ///  2 Princeton University under the following license.  By obtaining, using  
+        ///  3 and/or copying this software and database, you agree that you have  
+        ///  4 read, understood, and will comply with these terms and conditions.:  
+        ///  5   
+        ///  6 Permission to use, copy, modify and distribute this software and  
+        ///  7 database and its documentation for any purpose and without fee or  
+        ///  8 royalty is hereby granted, provided that you agree to comp [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string adjectives {
+            get {
+                return ResourceManager.GetString("adjectives", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   1 This software and database is being provided to you, the LICENSEE, by  
+        ///  2 Princeton University under the following license.  By obtaining, using  
+        ///  3 and/or copying this software and database, you agree that you have  
+        ///  4 read, understood, and will comply with these terms and conditions.:  
+        ///  5   
+        ///  6 Permission to use, copy, modify and distribute this software and  
+        ///  7 database and its documentation for any purpose and without fee or  
+        ///  8 royalty is hereby granted, provided that you agree to comp [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string adverbs {
+            get {
+                return ResourceManager.GetString("adverbs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   1 This software and database is being provided to you, the LICENSEE, by  
+        ///  2 Princeton University under the following license.  By obtaining, using  
+        ///  3 and/or copying this software and database, you agree that you have  
+        ///  4 read, understood, and will comply with these terms and conditions.:  
+        ///  5   
+        ///  6 Permission to use, copy, modify and distribute this software and  
+        ///  7 database and its documentation for any purpose and without fee or  
+        ///  8 royalty is hereby granted, provided that you agree to comp [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string nouns {
+            get {
+                return ResourceManager.GetString("nouns", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   1 This software and database is being provided to you, the LICENSEE, by  
+        ///  2 Princeton University under the following license.  By obtaining, using  
+        ///  3 and/or copying this software and database, you agree that you have  
+        ///  4 read, understood, and will comply with these terms and conditions.:  
+        ///  5   
+        ///  6 Permission to use, copy, modify and distribute this software and  
+        ///  7 database and its documentation for any purpose and without fee or  
+        ///  8 royalty is hereby granted, provided that you agree to comp [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string verbs {
+            get {
+                return ResourceManager.GetString("verbs", resourceCulture);
+            }
+        }
     }
 }

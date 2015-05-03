@@ -96,6 +96,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\WordProvider.cs" />
     <Compile Include="DomainBootstrapper.cs" />
     <Compile Include="Intentions\BuildLogic.cs" />
     <Compile Include="Intentions\NestLogic.cs" />
@@ -202,6 +203,18 @@
       <Project>{bb2d0bdb-971b-4179-b04a-eef42541becf}</Project>
       <Name>Tovarisch</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\adjectives.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\adverbs.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\nouns.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\verbs.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

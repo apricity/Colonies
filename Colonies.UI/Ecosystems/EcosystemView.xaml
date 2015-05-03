@@ -3,17 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:converters="clr-namespace:Wacton.Colonies.UI.Converters"
-             xmlns:designTime="clr-namespace:Wacton.Colonies.UI.DesignTime"
              xmlns:habitats="clr-namespace:Wacton.Colonies.UI.Habitats"
              mc:Ignorable="d"
              d:DesignHeight="200" d:DesignWidth="300" 
              d:DataContext="{Binding Source={StaticResource DesignTimeViewModelLocator}, Path=EcosystemViewModel}">
 
-    <!-- TODO: common resource xaml -->
     <UserControl.Resources>
-        <converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
-        <designTime:DesignTimeViewModelLocator x:Key="DesignTimeViewModelLocator"/>
+        <ResourceDictionary Source="pack://application:,,,/Wacton.Colonies.UI;component/Styles/CommonResources.xaml"/>
     </UserControl.Resources>
 
     <Grid>

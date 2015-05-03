@@ -7,6 +7,10 @@
 
     public class BoolToVisibilityConverter : IValueConverter
     {
+        public bool Hidden { get; set; }
+
+        public bool Reverse { get; set; }
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null)
@@ -17,7 +21,12 @@
             if (value is bool)
             {
                 var isTrue = (bool)value;
-                return isTrue ? Visibility.Visible : Visibility.Hidden;
+                if (isTrue != this.Reverse)
+                {
+                    return Visibility.Visible;
+                }
+
+                return this.Hidden ? Visibility.Hidden : Visibility.Collapsed;
             }
 
             var type = value.GetType();

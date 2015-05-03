@@ -10,7 +10,7 @@
              d:DataContext="{Binding Source={StaticResource DesignTimeViewModelLocator}, Path=OrganismSynopsisViewModel}">
 
     <UserControl.Resources>
-        <designTime:DesignTimeViewModelLocator x:Key="DesignTimeViewModelLocator" />
+        <ResourceDictionary Source="pack://application:,,,/Wacton.Colonies.UI;component/Styles/CommonResources.xaml"/>
     </UserControl.Resources>
 
     <Grid>

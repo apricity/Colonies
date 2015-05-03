@@ -82,6 +82,7 @@
   <ItemGroup>
     <Compile Include="Converters\BoolToActiveStringConverter.cs" />
     <Compile Include="Converters\BoolToAliveOpacityConverter.cs" />
+    <Compile Include="Converters\BoolToInverseConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\DoubleToHealthBrushConverter.cs" />
@@ -156,6 +157,10 @@
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\CommonResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\HealthLevelProgressBarStyle.xaml">
       <Generator>MSBuild:Compile</Generator>

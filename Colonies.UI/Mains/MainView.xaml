@@ -16,16 +16,14 @@
 
     <Window.Resources>
         <ResourceDictionary>
-            <designTime:DesignTimeViewModelLocator x:Key="DesignTimeViewModelLocator"/>
-
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Wacton.Colonies.UI;component/Styles/CommonResources.xaml"/>
+
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Violet.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
-
-                <ResourceDictionary Source="pack://application:,,,/Wacton.Colonies.UI;component/Resources/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>
@@ -69,9 +67,6 @@
                     </Grid.ColumnDefinitions>
 
                     <Grid.Resources>
-                        <converters:BoolToActiveStringConverter x:Key="BoolToActiveStringConverter" />
-                        <converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
-                    
                         <Style TargetType="TextBlock">
                             <Setter Property="Margin" Value="3,3,3,3"/>
                             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -162,9 +157,6 @@
                     </Grid.ColumnDefinitions>
 
                     <Grid.Resources>
-                        <converters:BoolToActiveStringConverter x:Key="BoolToActiveStringConverter" />
-                        <converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
-                    
                         <Style TargetType="TextBlock">
                             <Setter Property="Margin" Value="3,3,3,3"/>
                             <Setter Property="VerticalAlignment" Value="Center"/>

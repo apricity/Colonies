@@ -3,8 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:converters="clr-namespace:Wacton.Colonies.UI.Converters"
-             xmlns:designTime="clr-namespace:Wacton.Colonies.UI.DesignTime"
              xmlns:environments="clr-namespace:Wacton.Colonies.UI.Environments"
              xmlns:organisms="clr-namespace:Wacton.Colonies.UI.Organisms"
              xmlns:habitats="clr-namespace:Wacton.Colonies.UI.Habitats"
@@ -16,9 +14,7 @@
              d:DataContext="{Binding Source={StaticResource DesignTimeViewModelLocator}, Path=HabitatViewModel}">
 
     <UserControl.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <converters:RelativeScaleConverter x:Key="RelativeScaleConverter"/>
-        <designTime:DesignTimeViewModelLocator x:Key="DesignTimeViewModelLocator"/>
+        <ResourceDictionary Source="pack://application:,,,/Wacton.Colonies.UI;component/Styles/CommonResources.xaml"/>
     </UserControl.Resources>
 
     <!-- border on left & top of each item -->
@@ -26,7 +22,7 @@
     <Grid>
         <environments:EnvironmentView DataContext="{Binding EnvironmentViewModel}"/>
 
-        <organisms:OrganismView DataContext="{Binding OrganismViewModel}" Visibility="{Binding HasOrganism,  Converter={StaticResource BoolToVisibilityConverter}}">
+        <organisms:OrganismView DataContext="{Binding OrganismViewModel}" Visibility="{Binding HasOrganism,  Converter={StaticResource BoolToNotHiddenConverter}}">
             <organisms:OrganismView.Height>
                 <MultiBinding Converter="{StaticResource RelativeScaleConverter}">
                     <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=habitats:HabitatView}" Path="Height"/>

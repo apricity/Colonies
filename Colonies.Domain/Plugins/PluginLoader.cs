@@ -15,6 +15,12 @@
 
             var executingAssemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var pluginPath = Path.Combine(executingAssemblyPath, "Plugins");
+
+            if (!Directory.Exists(pluginPath))
+            {
+                return new List<ColonyPluginData>();
+            }
+
             var pluginFiles = Directory.GetFiles(pluginPath, "*.dll");
 
             foreach (var pluginFile in pluginFiles)

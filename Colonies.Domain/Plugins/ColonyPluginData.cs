@@ -34,5 +34,10 @@
                 this.ColonyLogicTypes.Add(new WeightedItem<Type>(logicType, logicWeight));
             }
         }
+
+        public override string ToString()
+        {
+            return string.Format("Colony: {0} | Logics: {1} | ID: {2}", this.ColonyName, this.ColonyLogicTypes.Count, this.ColonyId);
+        }
     }
 }

@@ -81,6 +81,7 @@
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
@@ -114,6 +115,7 @@
     <Compile Include="Ecosystems\Data\EcosystemModification.cs" />
     <Compile Include="Ecosystems\Phases\EcosystemPhases.cs" />
     <Compile Include="Intentions\Intention.cs" />
+    <Compile Include="Organisms\DummyLogic.cs" />
     <Compile Include="Organisms\Inventory.cs" />
     <Compile Include="Measures\OrganismMeasure.cs" />
     <Compile Include="Measures\HazardRate.cs" />
@@ -135,10 +137,7 @@
     <Compile Include="Ecosystems\Data\IEcosystemHistoryPusher.cs" />
     <Compile Include="Ecosystems\Data\IEcosystemHistoryPuller.cs" />
     <Compile Include="Ecosystems\Phases\IEcosystemPhase.cs" />
-    <Compile Include="Organisms\Queen.cs" />
-    <Compile Include="Organisms\Defender.cs" />
     <Compile Include="Ecosystems\Modification\Distributor.cs" />
-    <Compile Include="Organisms\Gatherer.cs" />
     <Compile Include="Extensions\GenericCollectionExtensions.cs" />
     <Compile Include="Measures\IMeasurement.cs" />
     <Compile Include="Measures\IMeasure.cs" />
@@ -149,6 +148,9 @@
     <Compile Include="Environments\IEnvironment.cs" />
     <Compile Include="Organisms\IOrganism.cs" />
     <Compile Include="OrganismSynopses\IOrganismSynopsis.cs" />
+    <Compile Include="Plugins\IColonyPlugin.cs" />
+    <Compile Include="Plugins\ColonyPluginData.cs" />
+    <Compile Include="Plugins\PluginLoader.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

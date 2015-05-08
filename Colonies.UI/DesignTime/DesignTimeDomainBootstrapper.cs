@@ -10,6 +10,7 @@
     using Wacton.Colonies.Domain.Mains;
     using Wacton.Colonies.Domain.Measures;
     using Wacton.Colonies.Domain.Organisms;
+    using Wacton.Colonies.Domain.Plugins;
 
     public class DesignTimeDomainBootstrapper : DomainBootstrapper
     {
@@ -29,13 +30,22 @@
             ecosystem.SetLevel(new Coordinate(1, 1), EnvironmentMeasure.Sound, 0.5);
         }
 
+        protected override List<ColonyPluginData> InitialColonyData(PluginLoader pluginLoader)
+        {
+            // visual studio seems to lock DLLs that are reflection-loaded due to calls from the designer
+            // so overriding the plugin loading behaviour at design-time to make development easier
+            return new List<ColonyPluginData>();
+        }
+
         protected override Dictionary<IOrganism, Coordinate> InitialOrganismCoordinates(OrganismFactory organismFactory)
         {
-            var guid = Guid.NewGuid();
+            var organism1 = organismFactory.CreateDummyOrganism(Colors.Silver);
+            var organism2 = organismFactory.CreateDummyOrganism(Colors.Silver);
+
             var organismLocations = new Dictionary<IOrganism, Coordinate>
                                         {
-                                            { new Gatherer(guid, "DesignTimeOrganism-01", Colors.Silver), new Coordinate(0, 0) },
-                                            { new Gatherer(guid, "DesignTimeOrganism-02", Colors.Silver), new Coordinate(EcosystemWidth - 1, EcosystemHeight - 1) }
+                                            { organism1, new Coordinate(0, 0) },
+                                            { organism2, new Coordinate(EcosystemWidth - 1, EcosystemHeight - 1) }
                                         };
 
             return organismLocations;

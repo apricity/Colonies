@@ -13,9 +13,8 @@
     using Wacton.Colonies.Domain.Ecosystems.Modification;
     using Wacton.Colonies.Domain.Ecosystems.Phases;
     using Wacton.Colonies.Domain.Habitats;
-    using Wacton.Colonies.Domain.Intentions;
-    using Wacton.Colonies.Domain.Measures;
     using Wacton.Colonies.Domain.Organisms;
+    using Wacton.Colonies.Domain.Plugins;
     using Wacton.Colonies.Domain.Weathers;
 
     using Environment = Wacton.Colonies.Domain.Environments.Environment;
@@ -39,7 +38,7 @@
             this.organismsById = new Dictionary<string, Organism>();
             foreach (var organismIdentifier in organismIdentifiers)
             {
-                this.organismsById.Add(organismIdentifier, new TestOrganism(Guid.NewGuid(), organismIdentifier, Colors.Black));
+                this.organismsById.Add(organismIdentifier, new Organism(Guid.NewGuid(), organismIdentifier, Colors.Black, new DummyLogic()));
             }
 
             this.habitatCoordinates = new Dictionary<Habitat, Coordinate>();
@@ -331,10 +330,10 @@
         private PhaseSummary CreateAndUpdateEcosystem(Dictionary<IOrganism, Coordinate> organismCoordinates, Dictionary<IOrganism, Coordinate> desiredOrganismCoordinates)
         {
             var desiredBiasedOrganismCoordinates = desiredOrganismCoordinates.ToDictionary(
-                desiredOrganismCoordinate => (IOrganism)desiredOrganismCoordinate.Key,
+                desiredOrganismCoordinate => desiredOrganismCoordinate.Key,
                 desiredOrganismCoordinate => desiredOrganismCoordinate.Value);
 
-            var organismFactory = new OrganismFactory();
+            var organismFactory = new OrganismFactory(new List<ColonyPluginData>());
             var ecosystemHistory = new EcosystemHistory();
             var ecosystemData = new EcosystemData(this.habitats, organismCoordinates, ecosystemHistory);
             var ecosystemRates = new EcosystemRates();
@@ -358,34 +357,6 @@
             var interactionUpdateSummary = ecosystem.ExecuteOnePhase();
             var movementUpdateSummary = ecosystem.ExecuteOnePhase();
             return movementUpdateSummary;
-        }
-
-        private class TestOrganism : Organism
-        {
-            public TestOrganism(Guid colonyId, string name, Color color) : base (colonyId, name, color, new TestOrganismLogic())
-            {
-            }
-
-            private class TestOrganismLogic : IOrganismLogic
-            {
-                public Inventory PreferredInventory
-                {
-                    get
-                    {
-                        return Inventory.Nutrient;
-                    }
-                }
-
-                public bool IsSounding(IOrganismState organismState)
-                {
-                    return false;
-                }
-
-                public Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
-                {
-                    return organismState.CurrentIntention;
-                }
-            }
         }
     }
 }

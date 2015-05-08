@@ -5,6 +5,8 @@
 
     public interface IOrganismLogic
     {
+        string Description { get; }
+
         Inventory PreferredInventory { get; }
 
         bool IsSounding(IOrganismState organismState);

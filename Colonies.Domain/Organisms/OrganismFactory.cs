@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Windows.Media;
 
+    using Wacton.Colonies.Domain.Plugins;
     using Wacton.Tovarisch.Lexicon;
     using Wacton.Tovarisch.Numbers;
     using Wacton.Tovarisch.Randomness;
@@ -12,56 +13,65 @@
 
     public class OrganismFactory
     {
-        // TODO: this will have to be modifiable when custom organism plugins come about
-        private readonly List<WeightedItem<Type>> organismTypeWeightings = new List<WeightedItem<Type>>
-                {
-                    new WeightedItem<Type>(typeof(Queen), 10),
-                    new WeightedItem<Type>(typeof(Gatherer), 45),
-                    new WeightedItem<Type>(typeof(Defender), 45)
-                };
-
+        private readonly List<ColonyPluginData> colonyDatas = new List<ColonyPluginData>(); 
         private readonly WordProvider wordProvider = new WordProvider();
         private readonly List<string> usedNames = new List<string>();
-        private readonly Dictionary<Guid, string> colonyNames = new Dictionary<Guid, string>();
 
-        public IOrganism CreateOrphanOrganism(Color color, Type organismType)
+        public OrganismFactory(List<ColonyPluginData> colonyDatas)
+        {
+            this.colonyDatas = colonyDatas;
+        }
+
+        public IOrganism CreateDummyOrganism(Color color)
         {
             var colonyId = Guid.NewGuid();
-            var colonyName = this.GenerateColonyName(colonyId);
-            var name = this.GenerateFullName(colonyName);
-            var organism = (IOrganism)Activator.CreateInstance(organismType, colonyId, name, color);
-            EnsureOrganismInstantiatedCorrectly(organism, colonyId, name, color);
+            var name = this.GenerateFullName("Dummy");
+            var organism = new Organism(colonyId, name, color, new DummyLogic());
             return organism;
+        }
+
+        public Dictionary<Guid, List<IOrganism>> CreateOrganismRoster()
+        {
+            var roster = new Dictionary<Guid, List<IOrganism>>();
+
+            foreach (var colonyData in this.colonyDatas)
+            {
+                var colonyLogicTypes = colonyData.ColonyLogicTypes;
+                var organisms = new List<IOrganism>();
+                foreach (var logicType in colonyLogicTypes)
+                {
+                    var organismLogicType = logicType.Item;
+                    var organism = this.CreateOrganism(colonyData, organismLogicType);
+                    organisms.Add(organism);
+                }
+
+                roster.Add(colonyData.ColonyId, organisms);
+            }
+
+            return roster;
         }
 
         public IOrganism CreateOffspringOrganism(IOrganism parentOrganism)
         {
-            var colonyId = parentOrganism.ColonyId;
-            var colonyName = this.colonyNames[colonyId];
+            var colonyData = this.GetColonyData(parentOrganism.ColonyId);
+            return this.CreateOrganism(colonyData);
+        }
+
+        private IOrganism CreateOrganism(ColonyPluginData colonyData, Type organismLogicType = null)
+        {
+            var colonyId = colonyData.ColonyId;
+            var colonyName = colonyData.ColonyName;
+            var colonyColor = colonyData.ColonyColor;
             var name = this.GenerateFullName(colonyName);
-            var color = parentOrganism.Color;
-            var organismType = RandomSelection.SelectOne(this.organismTypeWeightings);
-            var organism = (IOrganism)Activator.CreateInstance(organismType, parentOrganism.ColonyId, name, color);
-            EnsureOrganismInstantiatedCorrectly(organism, colonyId, name, color);
+            var logicType = organismLogicType ?? RandomSelection.SelectOne(colonyData.ColonyLogicTypes);
+            var logic = (IOrganismLogic)Activator.CreateInstance(logicType);
+            var organism = new Organism(colonyId, name, colonyColor, logic);
             return organism;
         }
 
-        private string GenerateColonyName(Guid colonyId)
+        private ColonyPluginData GetColonyData(Guid colonyId)
         {
-            var colonyName = string.Empty;
-
-            var isUniqueColonyName = false;
-            while (!isUniqueColonyName)
-            {
-                colonyName = this.wordProvider.GetRandomWord(WordClass.Adjective).ToTitleCase();
-                if (!this.colonyNames.ContainsValue(colonyName))
-                {
-                    isUniqueColonyName = true;
-                }
-            }
-
-            this.colonyNames.Add(colonyId, colonyName);
-            return colonyName;
+            return this.colonyDatas.Single(data => data.ColonyId.Equals(colonyId));
         }
 
         private string GenerateFullName(string colonyName)
@@ -81,30 +91,6 @@
             }
 
             return name;
-        }
-
-        private static void EnsureOrganismInstantiatedCorrectly(IOrganism organism, Guid colonyId, string name, Color color)
-        {
-            if (organism.ColonyId != colonyId)
-            {
-                throw new InvalidOperationException(
-                    string.Format("Organism instance was not created as requested | expected ID {0}, actual ID {1}",
-                    colonyId, organism.ColonyId));
-            }
-
-            if (organism.Name != name)
-            {
-                throw new InvalidOperationException(
-                    string.Format("Organism instance was not created as requested | expected name {0}, actual name {1}",
-                    name, organism.Name));
-            }
-
-            if (organism.Color != color)
-            {
-                throw new InvalidOperationException(
-                    string.Format("Organism instance was not created as requested | expected color {0}, actual color {1}",
-                    color, organism.Color));
-            }
         }
     }
 }

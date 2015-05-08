@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Windows.Media;
 
     using Wacton.Colonies.Domain.Core;
     using Wacton.Colonies.Domain.Ecosystems;
@@ -13,8 +12,9 @@
     using Wacton.Colonies.Domain.Habitats;
     using Wacton.Colonies.Domain.Mains;
     using Wacton.Colonies.Domain.Measures;
-    using Wacton.Colonies.Domain.OrganismSynopses;
     using Wacton.Colonies.Domain.Organisms;
+    using Wacton.Colonies.Domain.OrganismSynopses;
+    using Wacton.Colonies.Domain.Plugins;
     using Wacton.Colonies.Domain.Weathers;
 
     public class DomainBootstrapper
@@ -34,7 +34,9 @@
                 }
             }
 
-            var organismFactory = new OrganismFactory();
+            var pluginLoader = new PluginLoader();
+            var initialColonyData = this.InitialColonyData(pluginLoader);
+            var organismFactory = new OrganismFactory(initialColonyData);
             var initialOrganismCoordinates = this.InitialOrganismCoordinates(organismFactory);
             var ecosystemHistory = new EcosystemHistory();
             var ecosystemData = new EcosystemData(habitats, initialOrganismCoordinates, ecosystemHistory);
@@ -137,16 +139,24 @@
             }
         }
 
+        protected virtual List<ColonyPluginData> InitialColonyData(PluginLoader pluginLoader)
+        {
+            return pluginLoader.LoadPlugins();
+        }
+
         protected virtual Dictionary<IOrganism, Coordinate> InitialOrganismCoordinates(OrganismFactory organismFactory)
         {
-            var firstQueen = organismFactory.CreateOrphanOrganism(Colors.Silver, typeof(Queen));
-            var organismLocations = new Dictionary<IOrganism, Coordinate>
-                                        {
-                                            { organismFactory.CreateOffspringOrganism(firstQueen), new Coordinate(2, 2) },
-                                            { organismFactory.CreateOffspringOrganism(firstQueen), new Coordinate(2, 7) },
-                                            { organismFactory.CreateOffspringOrganism(firstQueen), new Coordinate(7, 2) },
-                                            { firstQueen, new Coordinate(7, 7) },
-                                        };
+            var organismLocations = new Dictionary<IOrganism, Coordinate>();
+
+            // will need some ecosystem setup logic soon!  immiment crashes when plugins start containing more organism logics
+            var coordinates = new List<Coordinate> { new Coordinate(2, 2), new Coordinate(2, 7), new Coordinate(7, 2), new Coordinate(7, 7) };
+            var initialOrganisms = organismFactory.CreateOrganismRoster();
+            var allOrganisms = initialOrganisms.Values.SelectMany(organisms => organisms).ToList();
+
+            for (var i = 0; i < allOrganisms.Count; i++)
+            {
+                organismLocations.Add(allOrganisms[i], coordinates[i]);
+            }
 
             return organismLocations;
         }

@@ -14,6 +14,8 @@
 
         Color Color { get; }
 
+        string Description { get; }
+
         double Age { get; }
 
         void IncrementAge(double increment);

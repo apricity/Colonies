@@ -7,13 +7,22 @@
     using Wacton.Colonies.Domain.Intentions;
     using Wacton.Colonies.Domain.Measures;
 
-    public abstract class Organism : IOrganism
+    public class Organism : IOrganism
     {
         public Guid ColonyId { get; private set; }
         public string Name { get; private set; }
         public Color Color { get; private set; }
-        public double Age { get; private set; }
+
         private IOrganismLogic OrganismLogic { get; set; }
+        public string Description
+        {
+            get
+            {
+                return this.OrganismLogic.Description;
+            }
+        }
+
+        public double Age { get; private set; }
 
         private Intention currentIntention;
         public Intention CurrentIntention
@@ -118,7 +127,7 @@
             }
         }
 
-        protected Organism(Guid colonyId, string name, Color color, IOrganismLogic organismLogic)
+        public Organism(Guid colonyId, string name, Color color, IOrganismLogic organismLogic)
         {
             this.ColonyId = colonyId;
             this.Name = name;
@@ -239,7 +248,7 @@
 
         public override string ToString()
         {
-            return string.Format("{0}: {1} | {2} | {3} | {4}", this.Name, this.GetLevel(OrganismMeasure.Health).ToString("0.000"), this.Age.ToString("0.00"), this.CurrentIntention, this.Color);
+            return string.Format("{0}: {1} | {2} | {3} | {4} | {5}", this.Name, this.GetLevel(OrganismMeasure.Health).ToString("0.000"), this.Age.ToString("0.00"), this.Description, this.CurrentIntention, this.Color);
         }
     }
 }

@@ -30,7 +30,7 @@
             ecosystem.SetLevel(new Coordinate(1, 1), EnvironmentMeasure.Sound, 0.5);
         }
 
-        protected override List<ColonyPluginData> InitialColonyData(PluginLoader pluginLoader)
+        protected override List<ColonyPluginData> InitialColonyData(PluginImporter pluginImporter)
         {
             // visual studio seems to lock DLLs that are reflection-loaded due to calls from the designer
             // so overriding the plugin loading behaviour at design-time to make development easier

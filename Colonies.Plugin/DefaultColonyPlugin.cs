@@ -2,10 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.Composition;
     using System.Windows.Media;
-
     using Wacton.Colonies.Domain.Plugins;
 
+    [Export(typeof(IColonyPlugin))]
     public class DefaultColonyPlugin : IColonyPlugin
     {
         public string ColonyName

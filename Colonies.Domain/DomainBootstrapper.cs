@@ -34,8 +34,8 @@
                 }
             }
 
-            var pluginLoader = new PluginLoader();
-            var initialColonyData = this.InitialColonyData(pluginLoader);
+            var pluginImporter = new PluginImporter();
+            var initialColonyData = this.InitialColonyData(pluginImporter);
             var organismFactory = new OrganismFactory(initialColonyData);
             var initialOrganismCoordinates = this.InitialOrganismCoordinates(organismFactory);
             var ecosystemHistory = new EcosystemHistory();
@@ -139,9 +139,9 @@
             }
         }
 
-        protected virtual List<ColonyPluginData> InitialColonyData(PluginLoader pluginLoader)
+        protected virtual List<ColonyPluginData> InitialColonyData(PluginImporter pluginImporter)
         {
-            return pluginLoader.LoadPlugins();
+            return pluginImporter.Import();
         }
 
         protected virtual Dictionary<IOrganism, Coordinate> InitialOrganismCoordinates(OrganismFactory organismFactory)

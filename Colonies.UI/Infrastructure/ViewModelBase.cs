@@ -18,28 +18,6 @@
             this.EventAggregator = eventAggregator;
         }
 
-        public void AssignModel(T model)
-        {
-            if (this.DomainModel != null)
-            {
-                throw new InvalidOperationException("Cannot assign a model when a model is already present");
-            }
-
-            this.DomainModel = model;
-            this.Refresh();
-        }
-
-        public void UnassignModel()
-        {
-            if (this.DomainModel == null)
-            {
-                throw new InvalidOperationException("Cannot unassign a model when no model is present");
-            }
-
-            this.DomainModel = null;
-            this.Refresh();
-        }
-
         public abstract void Refresh();
 
         public override string ToString()

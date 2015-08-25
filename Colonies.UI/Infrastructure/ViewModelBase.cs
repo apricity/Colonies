@@ -25,11 +25,6 @@
                 throw new InvalidOperationException("Cannot assign a model when a model is already present");
             }
 
-            if (model == null)
-            {
-                throw new InvalidOperationException("Cannot assign a null model");
-            }
-
             this.DomainModel = model;
             this.Refresh();
         }
@@ -41,7 +36,7 @@
                 throw new InvalidOperationException("Cannot unassign a model when no model is present");
             }
 
-            this.DomainModel = default(T);
+            this.DomainModel = null;
             this.Refresh();
         }
 

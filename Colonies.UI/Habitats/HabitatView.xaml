@@ -21,8 +21,8 @@
     <!-- TODO: height and width should be global variables somewhere... -->
     <Grid>
         <environments:EnvironmentView DataContext="{Binding EnvironmentViewModel}"/>
-
-        <organisms:OrganismView DataContext="{Binding OrganismViewModel}" Visibility="{Binding HasOrganism,  Converter={StaticResource BoolToNotHiddenConverter}}">
+        
+        <organisms:OrganismView DataContext="{Binding OrganismViewModel}">
             <organisms:OrganismView.Height>
                 <MultiBinding Converter="{StaticResource RelativeScaleConverter}">
                     <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=habitats:HabitatView}" Path="Height"/>

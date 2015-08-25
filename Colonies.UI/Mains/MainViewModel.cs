@@ -1,5 +1,6 @@
 namespace Wacton.Colonies.UI.Mains
 {
+    using System;
     using System.Collections.Concurrent;
     using System.Linq;
     using System.Threading;
@@ -80,21 +81,21 @@ namespace Wacton.Colonies.UI.Mains
 
         // TODO: should the slider go from "slow (1) -> fast (100)", and that value be converted in this view model to a ms value?
         // phase interval is in ms
-        private int phaseInterval;
-        public int PhaseInterval
+        private int desiredPhaseInterval;
+        public int DesiredPhaseInterval
         {
             get
             {
-                return this.phaseInterval;
+                return this.desiredPhaseInterval;
             }
             set
             {
-                this.phaseInterval = value;
-                this.OnPropertyChanged("PhaseInterval");
+                this.desiredPhaseInterval = value;
+                this.OnPropertyChanged("DesiredPhaseInterval");
             }
         }
 
-        private int previousPhaseInterval;
+        private int previousDesiredPhaseInterval;
 
         public double HealthDeteriorationDemoninator
         {
@@ -254,6 +255,37 @@ namespace Wacton.Colonies.UI.Mains
             }
         }
 
+        private int phaseDuration;
+        public int PhaseDuration
+        {
+            get
+            {
+                return this.phaseDuration;
+            }
+            private set
+            {
+                this.phaseDuration = value;
+                this.OnPropertyChanged("PhaseDuration");
+            }
+        }
+
+        private int roundDuration;
+        public int RoundDuration
+        {
+            get
+            {
+                return this.roundDuration;
+            }
+            private set
+            {
+                this.roundDuration = value;
+                this.OnPropertyChanged("RoundDuration");
+            }
+        }
+
+        private DateTime previousPhaseStartTime = DateTime.MinValue;
+        private DateTime previousRoundStartTime = DateTime.MinValue;
+
         public MainViewModel(IMain domainModel, EcosystemViewModel ecosystemViewModel, OrganismSynopsisViewModel organismSynopsisViewModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
@@ -265,14 +297,16 @@ namespace Wacton.Colonies.UI.Mains
             this.PhaseCount = 0;
             this.ecosystemTimer = new Timer(this.OnEcosystemTimerTick);
             this.IsEcosystemActive = false;
-            var initialUpdateInterval = Settings.Default.UpdateFrequencyInMs;
-            this.PhaseInterval = initialUpdateInterval;
-            this.previousPhaseInterval = initialUpdateInterval;
+            var initialDesiredPhaseInterval = Settings.Default.PhaseIntervalInMs;
+            this.DesiredPhaseInterval = initialDesiredPhaseInterval;
+            this.previousDesiredPhaseInterval = initialDesiredPhaseInterval;
+            this.PhaseDuration = 0;
+            this.RoundDuration = 0;
 
             // hook up a toggle ecosystem command so a keyboard shortcut can be used to toggle the ecosystem on/off
             this.ToggleEcosystemCommand = new RelayCommand(this.ToggleEcosystem);
-            this.IncreaseTurnIntervalCommand = new RelayCommand(this.IncreaseTurnInterval);
-            this.DecreaseTurnIntervalCommand = new RelayCommand(this.DecreaseTurnInterval);
+            this.IncreaseTurnIntervalCommand = new RelayCommand(this.IncreasePhaseInterval);
+            this.DecreaseTurnIntervalCommand = new RelayCommand(this.DecreasePhaseInterval);
         }
 
         private void ToggleEcosystem(object obj)
@@ -281,21 +315,21 @@ namespace Wacton.Colonies.UI.Mains
         }
 
         // TODO: bind slider max and min to these values
-        private void IncreaseTurnInterval(object obj)
+        private void IncreasePhaseInterval(object obj)
         {
-            this.PhaseInterval++;
-            if (this.PhaseInterval > 2000)
+            this.DesiredPhaseInterval++;
+            if (this.DesiredPhaseInterval > 2000)
             {
-                this.PhaseInterval = 2000;
+                this.DesiredPhaseInterval = 2000;
             }
         }
 
-        private void DecreaseTurnInterval(object obj)
+        private void DecreasePhaseInterval(object obj)
         {
-            this.PhaseInterval--;
-            if (this.PhaseInterval < 1)
+            this.DesiredPhaseInterval--;
+            if (this.DesiredPhaseInterval < 1)
             {
-                this.PhaseInterval = 1;
+                this.DesiredPhaseInterval = 1;
             }
         }
 
@@ -304,8 +338,8 @@ namespace Wacton.Colonies.UI.Mains
             const int immediateStart = 0;
             const int preventStart = Timeout.Infinite;
 
-            this.ecosystemTimer.Change(this.IsEcosystemActive ? immediateStart : preventStart, this.PhaseInterval);
-            this.previousPhaseInterval = this.PhaseInterval;
+            this.ecosystemTimer.Change(this.IsEcosystemActive ? this.DesiredPhaseInterval : preventStart, this.DesiredPhaseInterval);
+            this.previousDesiredPhaseInterval = this.DesiredPhaseInterval;
         }
 
         private void OnEcosystemTimerTick(object state)
@@ -319,16 +353,19 @@ namespace Wacton.Colonies.UI.Mains
                     this.PhaseCount = phaseSummary.PhaseNumber;
 
                     // TODO: only do these after all phases have been performed?
+                    var previousRoundCount = this.RoundCount;
                     this.RoundCount = this.PhaseCount / phaseSummary.PhasesPerRound;
                     this.WeatherDampLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Damp));
                     this.WeatherHeatLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Heat));
 
                     // if there's been a change in the phase interval while the previous phase was processed
                     // update the interval of the ecosystem timer
-                    if (this.PhaseInterval != this.previousPhaseInterval)
+                    if (this.DesiredPhaseInterval != this.previousDesiredPhaseInterval)
                     {
                         this.ChangeEcosystemTimer();
                     }
+
+                    CalculateDuration(previousRoundCount);
                 }
                 finally
                 {
@@ -337,22 +374,49 @@ namespace Wacton.Colonies.UI.Mains
             }
         }
 
+        private void CalculateDuration(int previousRoundCount)
+        {
+            if (this.previousPhaseStartTime.Equals(DateTime.MinValue))
+            {
+                this.previousPhaseStartTime = DateTime.Now;
+            }
+            else
+            {
+                var phaseStartTime = DateTime.Now;
+                this.PhaseDuration = (int)((phaseStartTime - this.previousPhaseStartTime).TotalMilliseconds);
+                this.previousPhaseStartTime = phaseStartTime;
+            }
+
+            if (this.previousRoundStartTime.Equals(DateTime.MinValue))
+            {
+                this.previousRoundStartTime = DateTime.Now;
+            }
+            else
+            {
+                if (this.RoundCount > previousRoundCount)
+                {
+                    var roundStartTime = DateTime.Now;
+                    this.RoundDuration = (int)((roundStartTime - this.previousRoundStartTime).TotalMilliseconds);
+                    this.previousRoundStartTime = roundStartTime;
+                }
+            }
+        }
+
         private void UpdateViewModels(PhaseSummary phaseSummary)
         {
-            var refreshedHabitatViewModels = new ConcurrentBag<HabitatViewModel>();
+            var updatedHabitatViewModels = new ConcurrentBag<HabitatViewModel>();
 
-            // refresh properties of all modifications
+            // update properties of all modifications
             Parallel.ForEach(phaseSummary.EcosystemHistory.Modifications, modification =>
             {
                 var x = modification.Coordinate.X;
                 var y = modification.Coordinate.Y;
 
                 var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
-                habitatViewModel.RefreshEnvironment();
-                refreshedHabitatViewModels.Add(habitatViewModel);
+                updatedHabitatViewModels.Add(habitatViewModel);
             });
 
-            // refresh properties of all organisms that have been added
+            // update properties of all organisms that have been added
             Parallel.ForEach(phaseSummary.EcosystemHistory.Additions, addition =>
             {
                 var x = addition.Coordinate.X;
@@ -360,13 +424,12 @@ namespace Wacton.Colonies.UI.Mains
 
                 var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
                 habitatViewModel.AssignOrganismModel(addition.Organism);
-                habitatViewModel.RefreshEnvironment();
-                refreshedHabitatViewModels.Add(habitatViewModel);
+                updatedHabitatViewModels.Add(habitatViewModel);
 
                 this.OrganismSynopsisViewModel.AddOrganism(addition.Organism);
             });
 
-            // refresh properties of all organisms that have not moved
+            // update properties of all organisms that have not moved
             Parallel.ForEach(phaseSummary.OrganismCoordinates, organismCoordinate =>
             {
                 var organism = organismCoordinate.Key;
@@ -380,9 +443,7 @@ namespace Wacton.Colonies.UI.Mains
                 var y = organismCoordinate.Value.Y;
 
                 var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
-                habitatViewModel.RefreshOrganism();
-                habitatViewModel.RefreshEnvironment();
-                refreshedHabitatViewModels.Add(habitatViewModel);
+                updatedHabitatViewModels.Add(habitatViewModel);
             });
 
             // unassign moving organisms from their previous view models
@@ -393,8 +454,7 @@ namespace Wacton.Colonies.UI.Mains
 
                 var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
                 habitatViewModel.UnassignOrganismModel();
-                habitatViewModel.RefreshEnvironment();
-                refreshedHabitatViewModels.Add(habitatViewModel);
+                updatedHabitatViewModels.Add(habitatViewModel);
             });
 
             // assign moving organisms to their current view models
@@ -405,12 +465,11 @@ namespace Wacton.Colonies.UI.Mains
 
                 var habitatViewModel = this.EcosystemViewModel.HabitatViewModels[x][y];
                 habitatViewModel.AssignOrganismModel(relocation.Organism);
-                habitatViewModel.RefreshEnvironment();
-                refreshedHabitatViewModels.Add(habitatViewModel);
+                updatedHabitatViewModels.Add(habitatViewModel);
             });
 
-            // refresh the tool tip of each distinct habitat view model that has had its child view models refreshed
-            Parallel.ForEach(refreshedHabitatViewModels.Distinct(), habitatViewModel => habitatViewModel.RefreshToolTip());
+            // refresh each distinct habitat view model that has been updated
+            Parallel.ForEach(updatedHabitatViewModels.Distinct(), habitatViewModel => habitatViewModel.Refresh());
 
             this.EcosystemViewModel.RefreshWeatherColor();
 

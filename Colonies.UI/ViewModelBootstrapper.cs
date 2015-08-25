@@ -35,8 +35,7 @@
                     var habitat = domainModel.Ecosystem.HabitatAt(new Coordinate(x, y));
 
                     var environmentViewModel = new EnvironmentViewModel(habitat.Environment, eventaggregator);
-                    var organismViewModel = new OrganismViewModel(habitat.Organism, eventaggregator);
-                    var habitatViewModel = new HabitatViewModel(habitat, environmentViewModel, organismViewModel, eventaggregator);
+                    var habitatViewModel = new HabitatViewModel(habitat, environmentViewModel, eventaggregator);
                     habitatViewModels[x].Add(habitatViewModel);
                 }
             }

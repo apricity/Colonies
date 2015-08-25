@@ -159,7 +159,6 @@ namespace Wacton.Colonies.UI.Organisms
         public OrganismViewModel(IOrganism domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
-
         }
 
         // TODO: can Refresh() be a generic ViewModel method?
@@ -176,20 +175,6 @@ namespace Wacton.Colonies.UI.Organisms
                 this.InventoryColor = InventoryColors[this.DomainModel.CurrentInventory];
                 this.InventoryScalar = this.DomainModel.GetLevel(OrganismMeasure.Inventory) / 2.0;
                 this.RefreshHazardColor();
-            }
-            else
-            {
-                // reset the properties to their default values if no organism in the model
-                this.HasOrganism = false;
-                this.Color = default(Color);
-                this.IsAlive = default(bool);
-                this.HealthLevel = default(double);
-                this.Name = default(string);
-                this.NameAndIntention = default(string);
-                this.InventoryColor = default(Color);
-                this.InventoryScalar = default(double);
-                this.HazardColor = default(Color);
-
             }
         }
 

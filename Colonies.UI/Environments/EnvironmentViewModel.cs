@@ -194,7 +194,6 @@
         public EnvironmentViewModel(IEnvironment domainModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
-            this.RefreshEnvironmentColor();
         }
 
         public override void Refresh()

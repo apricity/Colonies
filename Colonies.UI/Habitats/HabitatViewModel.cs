@@ -54,11 +54,11 @@
             }
         }
 
-        public HabitatViewModel(IHabitat domainModel, EnvironmentViewModel environmentViewModel, OrganismViewModel organismViewModel, IEventAggregator eventAggregator)
+        public HabitatViewModel(IHabitat domainModel, EnvironmentViewModel environmentViewModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
             this.EnvironmentViewModel = environmentViewModel;
-            this.OrganismViewModel = organismViewModel;
+            this.OrganismViewModel = new OrganismViewModel(domainModel.Organism, this.EventAggregator);
         }
 
         public void RefreshEnvironment()
@@ -73,12 +73,12 @@
 
         public void AssignOrganismModel(IOrganism model)
         {
-            this.OrganismViewModel.AssignModel(model);
+            this.OrganismViewModel = new OrganismViewModel(model, this.EventAggregator);
         }
 
         public void UnassignOrganismModel()
         {
-            this.OrganismViewModel.UnassignModel();
+            this.OrganismViewModel = new OrganismViewModel(null, this.EventAggregator);
         }
 
         public void RefreshToolTip()

@@ -16,7 +16,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid>
+    <Grid Visibility="{Binding HasOrganism, Converter={StaticResource BoolToNotCollapsedConverter}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="2.5*"/>
             <RowDefinition Height="2.5*"/>

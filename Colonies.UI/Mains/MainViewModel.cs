@@ -335,10 +335,10 @@ namespace Wacton.Colonies.UI.Mains
 
         private void ChangeEcosystemTimer()
         {
-            const int immediateStart = 0;
-            const int preventStart = Timeout.Infinite;
+            const int ImmediateStart = 0;
+            const int PreventStart = Timeout.Infinite;
 
-            this.ecosystemTimer.Change(this.IsEcosystemActive ? this.DesiredPhaseInterval : preventStart, this.DesiredPhaseInterval);
+            this.ecosystemTimer.Change(this.IsEcosystemActive ? this.DesiredPhaseInterval : PreventStart, this.DesiredPhaseInterval);
             this.previousDesiredPhaseInterval = this.DesiredPhaseInterval;
         }
 
@@ -365,7 +365,7 @@ namespace Wacton.Colonies.UI.Mains
                         this.ChangeEcosystemTimer();
                     }
 
-                    CalculateDuration(previousRoundCount);
+                    this.CalculateDuration(previousRoundCount);
                 }
                 finally
                 {
@@ -383,7 +383,7 @@ namespace Wacton.Colonies.UI.Mains
             else
             {
                 var phaseStartTime = DateTime.Now;
-                this.PhaseDuration = (int)((phaseStartTime - this.previousPhaseStartTime).TotalMilliseconds);
+                this.PhaseDuration = (int)(phaseStartTime - this.previousPhaseStartTime).TotalMilliseconds;
                 this.previousPhaseStartTime = phaseStartTime;
             }
 
@@ -396,7 +396,7 @@ namespace Wacton.Colonies.UI.Mains
                 if (this.RoundCount > previousRoundCount)
                 {
                     var roundStartTime = DateTime.Now;
-                    this.RoundDuration = (int)((roundStartTime - this.previousRoundStartTime).TotalMilliseconds);
+                    this.RoundDuration = (int)(roundStartTime - this.previousRoundStartTime).TotalMilliseconds;
                     this.previousRoundStartTime = roundStartTime;
                 }
             }

@@ -14,6 +14,7 @@
         public string ColonyName { get; private set; }
         public Color ColonyColor { get; private set; }
         public List<WeightedItem<Type>> ColonyLogicTypes { get; private set; }
+        public string PluginDescription { get; private set; }
 
         public ColonyPluginData(IColonyPlugin colonyPlugin)
         {
@@ -33,11 +34,13 @@
 
                 this.ColonyLogicTypes.Add(new WeightedItem<Type>(logicType, logicWeight));
             }
+
+            this.PluginDescription = colonyPlugin.ToString();
         }
 
         public override string ToString()
         {
-            return string.Format("Colony: {0} | Logics: {1} | ID: {2}", this.ColonyName, this.ColonyLogicTypes.Count, this.ColonyId);
+            return string.Format("Colony: {0} [{1}] | Logics: {2} | ID: {3} ", this.ColonyName, this.PluginDescription, this.ColonyLogicTypes.Count, this.ColonyId);
         }
     }
 }

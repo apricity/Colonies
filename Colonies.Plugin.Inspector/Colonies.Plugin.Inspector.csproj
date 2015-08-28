@@ -1,18 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{626B10A6-2B01-4202-BF00-8132F2E917E1}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{64D5622C-F84A-4CA5-BDC9-34235EBF4095}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Wacton.Colonies.Plugin</RootNamespace>
-    <AssemblyName>Wacton.Colonies.Plugin</AssemblyName>
+    <RootNamespace>Wacton.Colonies.Plugin.Inspector</RootNamespace>
+    <AssemblyName>Wacton.Colonies.Plugin.Inspector</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,7 +35,6 @@
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -41,18 +43,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlternativeColonyPlugin.cs" />
-    <Compile Include="KamikazeLogic.cs" />
-    <Compile Include="DefaultColonyPlugin.cs" />
-    <Compile Include="DefenderLogic.cs" />
-    <Compile Include="GathererLogic.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueenLogic.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Colonies.Domain\Colonies.Domain.csproj">
       <Project>{75a3e797-07fe-4e0f-a491-7bd4e3022ea7}</Project>
       <Name>Colonies.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Colonies.Plugin\Colonies.Plugin.csproj">
+      <Project>{626b10a6-2b01-4202-bf00-8132f2e917e1}</Project>
+      <Name>Colonies.Plugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tovarisch\Tovarisch.csproj">
       <Project>{bb2d0bdb-971b-4179-b04a-eef42541becf}</Project>
@@ -60,12 +64,6 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy /Y /I "$(TargetDir)Wacton.Colonies.Plugin.dll" "$(TargetDir)..\..\..\Colonies\bin\Debug\Plugins\"
-xcopy /Y /I "$(TargetDir)Wacton.Colonies.Plugin.dll" "$(TargetDir)..\..\..\Colonies\bin\Release\Plugins\"
-xcopy /Y /I "$(TargetDir)Wacton.Colonies.Plugin.dll" "$(TargetDir)..\..\..\Colonies.Plugin.Inspector\bin\Debug\Plugins\"
-xcopy /Y /I "$(TargetDir)Wacton.Colonies.Plugin.dll" "$(TargetDir)..\..\..\Colonies.Plugin.Inspector\bin\Release\Plugins\"</PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

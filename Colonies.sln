@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Colonies.Tests", "Colonies.Tests\Colonies.Tests.csproj", "{01A31DB3-BE9B-4AB0-9064-1C13680B947D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tovarisch", "Tovarisch\Tovarisch.csproj", "{BB2D0BDB-971B-4179-B04A-EEF42541BECF}"
@@ -14,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tovarisch.MVVM", "Tovarisch.MVVM\Tovarisch.MVVM.csproj", "{41EE67A2-EB04-49A0-88E3-4ADA08D33B38}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Colonies.Plugin", "Colonies.Plugin\Colonies.Plugin.csproj", "{626B10A6-2B01-4202-BF00-8132F2E917E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Colonies.Plugin.Inspector", "Colonies.Plugin.Inspector\Colonies.Plugin.Inspector.csproj", "{64D5622C-F84A-4CA5-BDC9-34235EBF4095}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +53,10 @@ Global
 		{626B10A6-2B01-4202-BF00-8132F2E917E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{626B10A6-2B01-4202-BF00-8132F2E917E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{626B10A6-2B01-4202-BF00-8132F2E917E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64D5622C-F84A-4CA5-BDC9-34235EBF4095}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64D5622C-F84A-4CA5-BDC9-34235EBF4095}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64D5622C-F84A-4CA5-BDC9-34235EBF4095}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64D5622C-F84A-4CA5-BDC9-34235EBF4095}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

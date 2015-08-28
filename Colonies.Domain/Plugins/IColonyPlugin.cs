@@ -11,6 +11,6 @@
         // TODO: consider moving to RGB values if wanting to avoid plugins using transparency
         Color ColonyColor { get; }
 
-        Dictionary<Type, int> LogicWeightings { get; } 
+        PluginLogicWeightings LogicWeightings { get; }
     }
 }

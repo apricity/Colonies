@@ -68,6 +68,7 @@
     <Compile Include="Strings\StringExtensions.cs" />
     <Compile Include="Threading\ThreadBarrier.cs" />
     <Compile Include="Threading\ThreadTurnstile.cs" />
+    <Compile Include="Types\TypeDictionary.cs" />
     <Compile Include="Types\TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

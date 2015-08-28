@@ -26,14 +26,13 @@
             }
         }
 
-        public Dictionary<Type, int> LogicWeightings
+        public PluginLogicWeightings LogicWeightings
         {
             get
             {
-                return new Dictionary<Type, int>
-                           {
-                               { typeof(Kamikaze), 1 }
-                           };
+                var logicWeightings = new PluginLogicWeightings();
+                logicWeightings.Add<Kamikaze>(1);
+                return logicWeightings;
             }
         }
     }

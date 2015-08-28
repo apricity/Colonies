@@ -25,16 +25,15 @@
             }
         }
 
-        public Dictionary<Type, int> LogicWeightings
+        public PluginLogicWeightings LogicWeightings
         {
             get
             {
-                return new Dictionary<Type, int>
-                           {
-                               { typeof(QueenLogic), 10 },
-                               { typeof(GathererLogic), 45 },
-                               { typeof(DefenderLogic), 45 }
-                           };
+                var logicWeightings = new PluginLogicWeightings();
+                logicWeightings.Add<QueenLogic>(10);
+                logicWeightings.Add<GathererLogic>(45);
+                logicWeightings.Add<DefenderLogic>(45);
+                return logicWeightings;
             }
         }
     }

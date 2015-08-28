@@ -21,7 +21,7 @@
             this.ColonyName = colonyPlugin.ColonyName;
             this.ColonyColor = colonyPlugin.ColonyColor;
             this.ColonyLogicTypes = new List<WeightedItem<Type>>();
-            foreach (var logicWeighting in colonyPlugin.LogicWeightings)
+            foreach (var logicWeighting in colonyPlugin.LogicWeightings.Get())
             {
                 var logicType = logicWeighting.Key;
                 var logicWeight = logicWeighting.Value;

@@ -14,14 +14,6 @@
             }
         }
 
-        public Inventory PreferredInventory
-        {
-            get
-            {
-                return Inventory.Spawn;
-            }
-        }
-
         public bool IsSounding(IOrganismState organismState)
         {
             return organismState.CurrentIntention.Equals(Intention.Reproduce);

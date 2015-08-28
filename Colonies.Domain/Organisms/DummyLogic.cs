@@ -13,14 +13,6 @@
             }
         }
 
-        public Inventory PreferredInventory
-        {
-            get
-            {
-                return Inventory.Nutrient;
-            }
-        }
-
         public bool IsSounding(IOrganismState organismState)
         {
             return false;

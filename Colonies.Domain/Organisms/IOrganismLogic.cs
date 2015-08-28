@@ -7,8 +7,6 @@
     {
         string Description { get; }
 
-        Inventory PreferredInventory { get; }
-
         bool IsSounding(IOrganismState organismState);
 
         Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState);

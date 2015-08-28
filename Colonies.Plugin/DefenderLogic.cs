@@ -14,14 +14,6 @@
             }
         }
 
-        public Inventory PreferredInventory
-        {
-            get
-            {
-                return Inventory.Mineral;
-            }
-        }
-
         public bool IsSounding(IOrganismState organismState)
         {
             return false;

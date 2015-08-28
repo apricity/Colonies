@@ -138,7 +138,7 @@
             var inventory = new Measurement<OrganismMeasure>(OrganismMeasure.Inventory, 0.0);
             this.measurementData = new MeasurementData<OrganismMeasure>(new List<Measurement<OrganismMeasure>> { health, inventory });
             this.CurrentIntention = Intention.None;
-            this.CurrentInventory = this.OrganismLogic.PreferredInventory;
+            this.CurrentInventory = this.CurrentIntention.AssociatedInventory;
 
             this.PheromoneOverloadStartAge = double.NaN;
             this.SoundOverloadedStartAge = double.NaN;

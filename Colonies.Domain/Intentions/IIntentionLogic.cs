@@ -18,6 +18,5 @@
         bool CanInteractOrganism(IOrganismState organismState);
 
         IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState);
-
     }
 }

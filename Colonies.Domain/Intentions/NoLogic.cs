@@ -11,7 +11,7 @@
         {
             get
             {
-                return null;
+                return Inventory.None;
             }
         }
 

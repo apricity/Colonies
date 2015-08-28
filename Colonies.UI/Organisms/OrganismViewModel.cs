@@ -15,6 +15,7 @@ namespace Wacton.Colonies.UI.Organisms
         private static readonly Dictionary<Inventory, Color> InventoryColors =
             new Dictionary<Inventory, Color>
                 {
+                    { Inventory.None, Colors.Transparent },
                     { Inventory.Mineral, Colors.Goldenrod },
                     { Inventory.Nutrient, Colors.OliveDrab },
                     { Inventory.Spawn, Colors.Black }

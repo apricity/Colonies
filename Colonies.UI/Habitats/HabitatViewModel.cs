@@ -61,16 +61,6 @@
             this.OrganismViewModel = new OrganismViewModel(domainModel.Organism, this.EventAggregator);
         }
 
-        public void RefreshEnvironment()
-        {
-            this.EnvironmentViewModel.Refresh();
-        }
-
-        public void RefreshOrganism()
-        {
-            this.OrganismViewModel.Refresh();
-        }
-
         public void AssignOrganismModel(IOrganism model)
         {
             this.OrganismViewModel = new OrganismViewModel(model, this.EventAggregator);
@@ -81,7 +71,7 @@
             this.OrganismViewModel = new OrganismViewModel(null, this.EventAggregator);
         }
 
-        public void RefreshToolTip()
+        private void RefreshToolTip()
         {
             var stringBuilder = new StringBuilder();
             foreach (var measurement in this.DomainModel.Environment.MeasurementData.Measurements)
@@ -113,8 +103,8 @@
         public override void Refresh()
         {
             // refresh child view models (environment & organism)
-            this.RefreshEnvironment();
-            this.RefreshOrganism();
+            this.EnvironmentViewModel.Refresh();
+            this.OrganismViewModel.Refresh();
             this.RefreshToolTip();
         }
     }

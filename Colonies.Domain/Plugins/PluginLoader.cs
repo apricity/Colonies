@@ -5,40 +5,33 @@
     using System.ComponentModel.Composition;
     using System.ComponentModel.Composition.Hosting;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
 
     using Wacton.Tovarisch.Types;
 
     public class PluginImporter
     {
+        // this is assigned by the container.ComposeParts() in ImportUsingMef()
         [ImportMany(typeof(IColonyPlugin))]
         private IEnumerable<IColonyPlugin> colonyPlugins;
 
         public List<ColonyPluginData> Import(bool useMef = true)
         {
-            var pluginDatas = new List<ColonyPluginData>();
             var executingAssemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var pluginPath = Path.Combine(executingAssemblyPath, "Plugins");
-            pluginDatas = useMef ? this.ImportUsingMef(pluginPath) : this.ImportUsingReflection(pluginPath);
-            return pluginDatas;
+            return useMef ? this.ImportUsingMef(pluginPath) : this.ImportUsingReflection(pluginPath);
         }
 
         private List<ColonyPluginData> ImportUsingMef(string pluginPath)
         {
-            var pluginDatas = new List<ColonyPluginData>();
-
             var catalog = new AggregateCatalog();
             catalog.Catalogs.Add(new DirectoryCatalog(pluginPath));
 
             var container = new CompositionContainer(catalog);
             container.ComposeParts(this);
 
-            foreach (var colonyPlugin in colonyPlugins)
-            {
-                pluginDatas.Add(new ColonyPluginData(colonyPlugin));
-            }
-
-            return pluginDatas;
+            return this.colonyPlugins.Select(colonyPlugin => new ColonyPluginData(colonyPlugin)).ToList();
         }
 
         private List<ColonyPluginData> ImportUsingReflection(string pluginPath)

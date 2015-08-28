@@ -164,18 +164,20 @@ namespace Wacton.Colonies.UI.Organisms
         // TODO: can Refresh() be a generic ViewModel method?
         public override void Refresh()
         {
-            if (this.DomainModel != null)
+            if (this.DomainModel == null)
             {
-                this.HasOrganism = true;
-                this.Color = this.DomainModel.Color;
-                this.IsAlive = this.DomainModel.IsAlive;
-                this.HealthLevel = this.DomainModel.MeasurementData.GetLevel(OrganismMeasure.Health);
-                this.Name = this.DomainModel.Name;
-                this.NameAndIntention = string.Format("{0} : {1} ({2} | {3})", this.DomainModel.Name, this.DomainModel.Age.ToString("0.00"), this.DomainModel.Description, this.DomainModel.CurrentIntention);
-                this.InventoryColor = InventoryColors[this.DomainModel.CurrentInventory];
-                this.InventoryScalar = this.DomainModel.GetLevel(OrganismMeasure.Inventory) / 2.0;
-                this.RefreshHazardColor();
+                return;
             }
+
+            this.HasOrganism = true;
+            this.Color = this.DomainModel.Color;
+            this.IsAlive = this.DomainModel.IsAlive;
+            this.HealthLevel = this.DomainModel.MeasurementData.GetLevel(OrganismMeasure.Health);
+            this.Name = this.DomainModel.Name;
+            this.NameAndIntention = string.Format("{0} : {1} ({2} | {3})", this.DomainModel.Name, this.DomainModel.Age.ToString("0.00"), this.DomainModel.Description, this.DomainModel.CurrentIntention);
+            this.InventoryColor = InventoryColors[this.DomainModel.CurrentInventory];
+            this.InventoryScalar = this.DomainModel.GetLevel(OrganismMeasure.Inventory) / 2.0;
+            this.RefreshHazardColor();
         }
 
         private void RefreshHazardColor()

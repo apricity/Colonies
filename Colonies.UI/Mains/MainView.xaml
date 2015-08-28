@@ -28,11 +28,11 @@
     </Window.Resources>
 
     <Window.InputBindings>
-        <KeyBinding Key="Space" Command="{Binding ToggleEcosystemCommand}"/>
-        <KeyBinding Key="Add" Command="{Binding IncreaseTurnIntervalCommand}"/>
-        <KeyBinding Key="OemPlus" Command="{Binding IncreaseTurnIntervalCommand}"/>
-        <KeyBinding Key="Subtract" Command="{Binding DecreaseTurnIntervalCommand}"/>
-        <KeyBinding Key="OemMinus" Command="{Binding DecreaseTurnIntervalCommand}"/>
+        <KeyBinding Key="Space" Command="{Binding ToggleEcosystemActiveCommand}"/>
+        <KeyBinding Key="Add" Command="{Binding IncreasePhaseTimerIntervalCommand}"/>
+        <KeyBinding Key="OemPlus" Command="{Binding IncreasePhaseTimerIntervalCommand}"/>
+        <KeyBinding Key="Subtract" Command="{Binding DecreasePhaseTimerIntervalCommand}"/>
+        <KeyBinding Key="OemMinus" Command="{Binding DecreasePhaseTimerIntervalCommand}"/>
     </Window.InputBindings>
 
     <controls:MetroWindow.RightWindowCommands>
@@ -79,7 +79,7 @@
                                   Content="{Binding IsEcosystemActive, Converter={StaticResource BoolToActiveStringConverter}}" Margin="3"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Interval:"/>
-                    <Slider Grid.Row="1" Grid.Column="1" Value="{Binding DesiredPhaseInterval}" 
+                    <Slider Grid.Row="1" Grid.Column="1" Value="{Binding PhaseTimerInterval}" 
                             Minimum="1" Maximum="2000" AutoToolTipPlacement="BottomRight" FlowDirection="RightToLeft" Margin="3"/>
 
                     <!-- TODO: wrap each of these in a common control -->

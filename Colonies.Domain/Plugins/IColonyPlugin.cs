@@ -1,7 +1,5 @@
 ﻿namespace Wacton.Colonies.Domain.Plugins
 {
-    using System;
-    using System.Collections.Generic;
     using System.Windows.Media;
 
     public interface IColonyPlugin

@@ -1,13 +1,11 @@
 ﻿namespace Wacton.Colonies.Domain.Plugins
 {
-    using System.Collections.Generic;
-
     using Wacton.Colonies.Domain.Organisms;
     using Wacton.Tovarisch.Types;
 
     public class PluginLogicWeightings
     {
-        private TypeDictionary<int> typeDictionary;
+        private readonly TypeDictionary<int> typeDictionary;
 
         public PluginLogicWeightings()
         {

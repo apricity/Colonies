@@ -12,22 +12,22 @@
 
         public void Add<T>(TValue value)
         {
-            Add(typeof(T), value);
+            this.Add(typeof(T), value);
         }
 
         public bool Remove<T>()
         {
-            return Remove(typeof(T));
+            return this.Remove(typeof(T));
         }
 
         public bool TryGetValue<T>(out TValue value)
         {
-            return TryGetValue(typeof(T), out value);
+            return this.TryGetValue(typeof(T), out value);
         }
 
         public bool ContainsKey<T>()
         {
-            return ContainsKey(typeof(T));
+            return this.ContainsKey(typeof(T));
         }
     }
 }

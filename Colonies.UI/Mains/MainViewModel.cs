@@ -27,12 +27,12 @@ namespace Wacton.Colonies.UI.Mains
         // if the timer interval is too small, the model update won't have finished
         // so use a lock to ensure the model isn't updated while it's updating...
         // (volatile because, if interval update is too small, lock will be accessed by multiple threads simultaneously)
-        private readonly Timer ecosystemPhaseTimer;
+        private readonly Timer ecosystemTimer;
         private volatile object performPhaseLock = new object();
 
-        public ICommand ToggleEcosystemActiveCommand { get; set; }
-        public ICommand IncreasePhaseTimerIntervalCommand { get; set; }
-        public ICommand DecreasePhaseTimerIntervalCommand { get; set; }
+        public ICommand ToggleEcosystemCommand { get; set; }
+        public ICommand IncreaseTurnIntervalCommand { get; set; }
+        public ICommand DecreaseTurnIntervalCommand { get; set; }
 
         private EcosystemViewModel ecosystemViewModel;
         public EcosystemViewModel EcosystemViewModel
@@ -75,27 +75,27 @@ namespace Wacton.Colonies.UI.Mains
                 this.OnPropertyChanged("IsEcosystemActive");
 
                 // if the ecosystem turns on/off the timer needs to start/stop 
-                this.ChangeEcosystemPhaseTimer();
+                this.ChangeEcosystemTimer();
             }
         }
 
         // TODO: should the slider go from "slow (1) -> fast (100)", and that value be converted in this view model to a ms value?
         // phase interval is in ms
-        private int phaseTimerInterval;
-        public int PhaseTimerInterval
+        private int desiredPhaseInterval;
+        public int DesiredPhaseInterval
         {
             get
             {
-                return this.phaseTimerInterval;
+                return this.desiredPhaseInterval;
             }
             set
             {
-                this.phaseTimerInterval = value;
-                this.OnPropertyChanged("PhaseTimerInterval");
+                this.desiredPhaseInterval = value;
+                this.OnPropertyChanged("DesiredPhaseInterval");
             }
         }
 
-        private int previousPhaseTimerInterval;
+        private int previousDesiredPhaseInterval;
 
         public double HealthDeteriorationDemoninator
         {
@@ -227,6 +227,20 @@ namespace Wacton.Colonies.UI.Mains
             }
         }
 
+        private int roundCount;
+        public int RoundCount
+        {
+            get
+            {
+                return this.roundCount;
+            }
+            private set
+            {
+                this.roundCount = value;
+                this.OnPropertyChanged("RoundCount");
+            }
+        }
+
         private int phaseCount;
         public int PhaseCount
         {
@@ -252,20 +266,6 @@ namespace Wacton.Colonies.UI.Mains
             {
                 this.phaseDuration = value;
                 this.OnPropertyChanged("PhaseDuration");
-            }
-        }
-
-        private int roundCount;
-        public int RoundCount
-        {
-            get
-            {
-                return this.roundCount;
-            }
-            private set
-            {
-                this.roundCount = value;
-                this.OnPropertyChanged("RoundCount");
             }
         }
 
@@ -295,54 +295,54 @@ namespace Wacton.Colonies.UI.Mains
             // initally set the ecosystem up to be not running
             this.RoundCount = 0;
             this.PhaseCount = 0;
-            this.ecosystemPhaseTimer = new Timer(this.PerformEcosystemPhase);
+            this.ecosystemTimer = new Timer(this.OnEcosystemTimerTick);
             this.IsEcosystemActive = false;
-            var initialPhaseTimerInterval = Settings.Default.PhaseTimerIntervalInMs;
-            this.PhaseTimerInterval = initialPhaseTimerInterval;
-            this.previousPhaseTimerInterval = initialPhaseTimerInterval;
+            var initialDesiredPhaseInterval = Settings.Default.PhaseIntervalInMs;
+            this.DesiredPhaseInterval = initialDesiredPhaseInterval;
+            this.previousDesiredPhaseInterval = initialDesiredPhaseInterval;
             this.PhaseDuration = 0;
             this.RoundDuration = 0;
 
             // hook up a toggle ecosystem command so a keyboard shortcut can be used to toggle the ecosystem on/off
-            this.ToggleEcosystemActiveCommand = new RelayCommand(this.ToggleEcosystemActive);
-            this.IncreasePhaseTimerIntervalCommand = new RelayCommand(this.IncreasePhaseTimerInterval);
-            this.DecreasePhaseTimerIntervalCommand = new RelayCommand(this.DecreasePhaseTimerInterval);
+            this.ToggleEcosystemCommand = new RelayCommand(this.ToggleEcosystem);
+            this.IncreaseTurnIntervalCommand = new RelayCommand(this.IncreasePhaseInterval);
+            this.DecreaseTurnIntervalCommand = new RelayCommand(this.DecreasePhaseInterval);
         }
 
-        private void ToggleEcosystemActive(object obj)
+        private void ToggleEcosystem(object obj)
         {
             this.IsEcosystemActive = !this.IsEcosystemActive;
         }
 
         // TODO: bind slider max and min to these values
-        private void IncreasePhaseTimerInterval(object obj)
+        private void IncreasePhaseInterval(object obj)
         {
-            this.PhaseTimerInterval++;
-            if (this.PhaseTimerInterval > 2000)
+            this.DesiredPhaseInterval++;
+            if (this.DesiredPhaseInterval > 2000)
             {
-                this.PhaseTimerInterval = 2000;
+                this.DesiredPhaseInterval = 2000;
             }
         }
 
-        private void DecreasePhaseTimerInterval(object obj)
+        private void DecreasePhaseInterval(object obj)
         {
-            this.PhaseTimerInterval--;
-            if (this.PhaseTimerInterval < 1)
+            this.DesiredPhaseInterval--;
+            if (this.DesiredPhaseInterval < 1)
             {
-                this.PhaseTimerInterval = 1;
+                this.DesiredPhaseInterval = 1;
             }
         }
 
-        private void ChangeEcosystemPhaseTimer()
+        private void ChangeEcosystemTimer()
         {
             const int ImmediateStart = 0;
             const int PreventStart = Timeout.Infinite;
 
-            this.ecosystemPhaseTimer.Change(this.IsEcosystemActive ? this.PhaseTimerInterval : PreventStart, this.PhaseTimerInterval);
-            this.previousPhaseTimerInterval = this.PhaseTimerInterval;
+            this.ecosystemTimer.Change(this.IsEcosystemActive ? this.DesiredPhaseInterval : PreventStart, this.DesiredPhaseInterval);
+            this.previousDesiredPhaseInterval = this.DesiredPhaseInterval;
         }
 
-        private void PerformEcosystemPhase(object state)
+        private void OnEcosystemTimerTick(object state)
         {
             if (Monitor.TryEnter(this.performPhaseLock))
             {
@@ -360,9 +360,9 @@ namespace Wacton.Colonies.UI.Mains
 
                     // if there's been a change in the phase interval while the previous phase was processed
                     // update the interval of the ecosystem timer
-                    if (this.PhaseTimerInterval != this.previousPhaseTimerInterval)
+                    if (this.DesiredPhaseInterval != this.previousDesiredPhaseInterval)
                     {
-                        this.ChangeEcosystemPhaseTimer();
+                        this.ChangeEcosystemTimer();
                     }
 
                     this.CalculateDuration(previousRoundCount);

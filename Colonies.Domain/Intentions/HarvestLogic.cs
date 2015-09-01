@@ -31,9 +31,14 @@
             }
         }
 
+        public bool CanInteractEnvironment(IOrganismState organismState)
+        {
+            return organismState.CurrentInventory.Equals(Inventory.Nutrient) && organismState.GetLevel(OrganismMeasure.Inventory) < 1.0;
+        }
+
         public bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
         {
-            return this.OrganismCanHarvest(organismState) && this.EnvironmentHasNutrients(measurableEnvironment);
+            return this.CanInteractEnvironment(organismState) && this.EnvironmentHasNutrients(measurableEnvironment);
         }
 
         public IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
@@ -64,11 +69,6 @@
         public IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState)
         {
             return new IntentionAdjustments();
-        }
-
-        private bool OrganismCanHarvest(IOrganismState organismState)
-        {
-            return organismState.CurrentInventory.Equals(Inventory.Nutrient) && organismState.GetLevel(OrganismMeasure.Inventory) < 1.0;
         }
 
         private bool EnvironmentHasNutrients(IMeasurable<EnvironmentMeasure> measurableEnvironment)

@@ -29,9 +29,14 @@
             }
         }
 
+        public bool CanInteractEnvironment(IOrganismState organismState)
+        {
+            return organismState.CurrentInventory.Equals(Inventory.Spawn) && organismState.GetLevel(OrganismMeasure.Inventory).Equals(0.0);
+        }
+
         public bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
         {
-            return this.OrganismCanNest(organismState);
+            return this.CanInteractEnvironment(organismState);
         }
 
         public IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
@@ -47,11 +52,6 @@
         public IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState)
         {
             return new IntentionAdjustments();
-        }
-
-        private bool OrganismCanNest(IOrganismState organismState)
-        {
-            return organismState.CurrentInventory.Equals(Inventory.Spawn) && organismState.GetLevel(OrganismMeasure.Inventory).Equals(0.0);
         }
 
         private bool EnvironmentHasMinerals(IMeasurable<EnvironmentMeasure> measurableEnvironment)

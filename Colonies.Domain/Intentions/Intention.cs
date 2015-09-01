@@ -28,6 +28,7 @@
                 return this.IntentionLogic.AssociatedIntenvory;
             }
         }
+
         public Dictionary<EnvironmentMeasure, double> EnvironmentBias { get; private set; }
 
         private Intention(int value, string friendlyString, IIntentionLogic intentionLogic)

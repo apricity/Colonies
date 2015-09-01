@@ -11,6 +11,8 @@
 
         Dictionary<EnvironmentMeasure, double> EnvironmentBias { get; }
 
+        bool CanInteractEnvironment(IOrganismState organismState);
+
         bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState);
 
         IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState);

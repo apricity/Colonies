@@ -51,6 +51,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Wacton.Tovarisch, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\Wacton.Tovarisch.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -68,10 +72,6 @@
     <ProjectReference Include="..\Colonies.UI\Colonies.UI.csproj">
       <Project>{11bb5de6-7143-410c-927b-3e35dd40ab68}</Project>
       <Name>Colonies.UI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tovarisch\Tovarisch.csproj">
-      <Project>{bb2d0bdb-971b-4179-b04a-eef42541becf}</Project>
-      <Name>Tovarisch</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

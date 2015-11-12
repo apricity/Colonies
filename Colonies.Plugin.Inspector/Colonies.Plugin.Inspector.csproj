@@ -41,6 +41,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Wacton.Tovarisch, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\Wacton.Tovarisch.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -57,10 +61,6 @@
     <ProjectReference Include="..\Colonies.Plugin\Colonies.Plugin.csproj">
       <Project>{626b10a6-2b01-4202-bf00-8132f2e917e1}</Project>
       <Name>Colonies.Plugin</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tovarisch\Tovarisch.csproj">
-      <Project>{bb2d0bdb-971b-4179-b04a-eef42541becf}</Project>
-      <Name>Tovarisch</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

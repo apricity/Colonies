@@ -14,7 +14,6 @@
             using (var writer = File.CreateText(filepath))
             {
                 WriteRows(rows, writer);
-                writer.Flush();
             }
         }
 
@@ -23,7 +22,6 @@
             using (var appender = File.AppendText(filepath))
             {
                 WriteRows(rows, appender);
-                appender.Flush();
             }
         }
 
@@ -32,7 +30,6 @@
             using (var fileWriter = File.CreateText(filepath))
             {
                 WriteColumns(columns, fileWriter);
-                fileWriter.Flush();
             }
         }
 

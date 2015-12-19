@@ -86,12 +86,8 @@
   <ItemGroup>
     <Compile Include="Converters\BoolToActiveStringConverter.cs" />
     <Compile Include="Converters\BoolToAliveOpacityConverter.cs" />
-    <Compile Include="Converters\BoolToInverseConverter.cs" />
-    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
-    <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\DoubleToHealthBrushConverter.cs" />
     <Compile Include="Converters\DoubleToObstructionDashConverter.cs" />
-    <Compile Include="Converters\RelativeScaleConverter.cs" />
     <Compile Include="DesignTime\DesignTimeDomainBootstrapper.cs" />
     <Compile Include="DesignTime\DesignTimeViewModelBootstrapper.cs" />
     <Compile Include="DesignTime\DesignTimeViewModelLocator.cs" />

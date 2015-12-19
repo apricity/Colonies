@@ -8,24 +8,15 @@
     <!-- cannot override metro controls as this will reset some styles -->
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Wacton.Colonies.UI;component/Resources/Icons.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Wacton.Tovarisch;component/Converters/CommonConverters.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <designTime:DesignTimeViewModelLocator x:Key="DesignTimeViewModelLocator"/>
     
-    <converters:BoolToVisibilityConverter x:Key="BoolToNotCollapsedConverter" Hidden="False" Reverse="False"/>
-    <converters:BoolToVisibilityConverter x:Key="BoolToNotHiddenConverter" Hidden="True" Reverse="False"/>
-    <converters:BoolToVisibilityConverter x:Key="BoolToCollapsedConverter" Hidden="False" Reverse="True"/>
-    <converters:BoolToVisibilityConverter x:Key="BoolToHiddenConverter" Hidden="True" Reverse="True"/>
-    <converters:BoolToInverseConverter x:Key="BoolToInverseConverter" />
-
     <converters:BoolToActiveStringConverter x:Key="BoolToActiveStringConverter" />
     <converters:BoolToAliveOpacityConverter x:Key="BoolToAliveOpacityConverter" />
-
-    <converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
     
     <converters:DoubleToHealthLevelBrushConverter x:Key="DoubleToHealthLevelBrushConverter"/>
     <converters:DoubleToObstructionDashConverter x:Key="DoubleToObstructionDashConverter"/>
-    
-    <converters:RelativeScaleConverter x:Key="RelativeScaleConverter"/>
     
 </ResourceDictionary>

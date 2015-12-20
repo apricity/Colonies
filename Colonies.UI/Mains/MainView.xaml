@@ -7,7 +7,7 @@
         xmlns:ecosystems="clr-namespace:Wacton.Colonies.UI.Ecosystems"
         xmlns:organismSynopses="clr-namespace:Wacton.Colonies.UI.OrganismSynopses"
         mc:Ignorable="d" 
-        Title="Wacton.Colonies" Height="350" Width="900" WindowStartupLocation="CenterScreen"
+        Title="Wacton.Colonies" TitleCaps="False" Height="350" Width="900" WindowStartupLocation="CenterScreen"
         Icon="pack://application:,,,/Wacton.Colonies.UI;component/Resources/Icon.ico" ShowTitleBar="True" ShowIconOnTitleBar="True"
         d:DataContext="{Binding Source={StaticResource DesignTimeViewModelLocator}, Path=MainViewModel}">
         <!-- "snoop" used to determine a good startup height and width -->

@@ -6,14 +6,7 @@
     {
         private readonly List<IEcosystemPhase> ecosystemPhases;
 
-        public int PhasesPerRound
-        {
-            get
-            {
-                return this.ecosystemPhases.Count;
-            }
-        }
-
+        public int PhasesPerRound => this.ecosystemPhases.Count;
         public int PhaseCount { get; private set; }
 
         public EcosystemPhases(List<IEcosystemPhase> ecosystemPhases)

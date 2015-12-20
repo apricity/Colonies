@@ -4,7 +4,7 @@
 
     public class Measurement<T> : IMeasurement<T>, IEquatable<Measurement<T>> where T : IMeasure
     {
-        public T Measure { get; private set; }
+        public T Measure { get; }
         public double Level { get; private set; }
 
         public Measurement(T measure, double level)
@@ -46,9 +46,6 @@
             return this.Measure.Equals(other.Measure) && this.Level.Equals(other.Level);
         }
 
-        public override string ToString()
-        {
-            return string.Format("{0}: {1}", this.Measure, this.Level);
-        }
+        public override string ToString() => $"{this.Measure}: {this.Level}";
     }
 }

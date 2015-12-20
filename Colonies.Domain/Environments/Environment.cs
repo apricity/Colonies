@@ -9,22 +9,9 @@
     public sealed class Environment : IEnvironment
     {
         private readonly MeasurementData<EnvironmentMeasure> measurementData;
-        public IMeasurementData<EnvironmentMeasure> MeasurementData
-        {
-            get
-            {
-                return this.measurementData;
-            }
-        }
+        public IMeasurementData<EnvironmentMeasure> MeasurementData => this.measurementData;
 
-        public bool IsHarmful
-        {
-            get
-            {
-                return EnvironmentMeasure.HazardousMeasures().Any(environmentMeasure => this.GetLevel(environmentMeasure).Equals(1.0));
-            }
-        }
-
+        public bool IsHarmful => this.HarmfulMeasures.Any();
         public IEnumerable<EnvironmentMeasure> HarmfulMeasures
         {
             get
@@ -58,10 +45,7 @@
         {
             return this.measurementData.AdjustLevel(measure, adjustment);
         }
-        
-        public override string ToString()
-        {
-            return this.measurementData.ToString();
-        }
+
+        public override string ToString() => this.measurementData.ToString();
     }
 }

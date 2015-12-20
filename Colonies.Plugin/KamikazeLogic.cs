@@ -6,13 +6,7 @@
 
     public class Kamikaze : IOrganismLogic
     {
-        public string Description
-        {
-            get
-            {
-                return "Kamikaze!";
-            }
-        }
+        public string Description => "Kamikaze!";
 
         public bool IsSounding(IOrganismState organismState)
         {

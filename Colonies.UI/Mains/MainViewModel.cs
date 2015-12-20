@@ -44,7 +44,7 @@ namespace Wacton.Colonies.UI.Mains
             set
             {
                 this.ecosystemViewModel = value;
-                this.OnPropertyChanged("EcosystemViewModel");
+                this.OnPropertyChanged(nameof(this.EcosystemViewModel));
             }
         }
 
@@ -58,7 +58,7 @@ namespace Wacton.Colonies.UI.Mains
             set
             {
                 this.organismSynopsisViewModel = value;
-                this.OnPropertyChanged("OrganismSynopsisViewModel");
+                this.OnPropertyChanged(nameof(this.OrganismSynopsisViewModel));
             }
         }
 
@@ -72,7 +72,7 @@ namespace Wacton.Colonies.UI.Mains
             set
             {
                 this.isEcosystemActive = value;
-                this.OnPropertyChanged("IsEcosystemActive");
+                this.OnPropertyChanged(nameof(this.IsEcosystemActive));
 
                 // if the ecosystem turns on/off the timer needs to start/stop 
                 this.ChangeEcosystemPhaseTimer();
@@ -91,7 +91,7 @@ namespace Wacton.Colonies.UI.Mains
             set
             {
                 this.phaseTimerInterval = value;
-                this.OnPropertyChanged("PhaseTimerInterval");
+                this.OnPropertyChanged(nameof(this.PhaseTimerInterval));
             }
         }
 
@@ -106,7 +106,7 @@ namespace Wacton.Colonies.UI.Mains
             set
             {
                 this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[OrganismMeasure.Health] = 1 / value;
-                this.OnPropertyChanged("HealthDeteriorationDemoninator");
+                this.OnPropertyChanged(nameof(this.HealthDeteriorationDemoninator));
             }
         }
 
@@ -119,7 +119,7 @@ namespace Wacton.Colonies.UI.Mains
             set
             {
                 this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Pheromone] = 1 / value;
-                this.OnPropertyChanged("PheromoneDepositDemoninator");
+                this.OnPropertyChanged(nameof(this.PheromoneDepositDemoninator));
             }
         }
 
@@ -132,7 +132,7 @@ namespace Wacton.Colonies.UI.Mains
             set
             {
                 this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[EnvironmentMeasure.Pheromone] = 1 / value;
-                this.OnPropertyChanged("PheromoneFadeDemoninator");
+                this.OnPropertyChanged(nameof(this.PheromoneFadeDemoninator));
             }
         }
 
@@ -145,7 +145,7 @@ namespace Wacton.Colonies.UI.Mains
             set
             {
                 this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Nutrient] = 1 / value;
-                this.OnPropertyChanged("NutrientGrowthRate");
+                this.OnPropertyChanged(nameof(this.NutrientGrowthDemoninator));
             }
         }
 
@@ -158,7 +158,7 @@ namespace Wacton.Colonies.UI.Mains
             set
             {
                 this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Nutrient] = 1 / value;
-                this.OnPropertyChanged("MineralFormRate");
+                this.OnPropertyChanged(nameof(this.MineralFormDemoninator));
             }
         }
 
@@ -171,7 +171,7 @@ namespace Wacton.Colonies.UI.Mains
             set
             {
                 this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[EnvironmentMeasure.Obstruction] = 1 / value;
-                this.OnPropertyChanged("ObstructionDemolishRate");
+                this.OnPropertyChanged(nameof(this.ObstructionDemolishDenominator));
             }
         }
 
@@ -187,17 +187,17 @@ namespace Wacton.Colonies.UI.Mains
                 var currentHazardRate = this.DomainModel.Ecosystem.EcosystemRates.HazardRates[EnvironmentMeasure.Damp];
                 var updatedHazardRate = new HazardRate(currentHazardRate.AddRate, 1 / value, currentHazardRate.RemoveRate);
                 this.DomainModel.Ecosystem.EcosystemRates.HazardRates[EnvironmentMeasure.Damp] = updatedHazardRate;
-                this.OnPropertyChanged("DampSpreadDenominator");
+                this.OnPropertyChanged(nameof(this.DampSpreadDenominator));
             }
         }
 
-        public static Color PheromoneColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Pheromone]; } }
-        public static Color NutrientColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Nutrient]; } }
-        public static Color MineralColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Mineral]; } }
-        public static Color ObstructionColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Obstruction]; } }
-        public static Color SoundColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Sound]; } }
-        public static Color DampColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Damp]; } }
-        public static Color HeatColor { get { return EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Heat]; } }
+        public static Color PheromoneColor => EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Pheromone];
+        public static Color NutrientColor => EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Nutrient];
+        public static Color MineralColor => EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Mineral];
+        public static Color ObstructionColor => EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Obstruction];
+        public static Color SoundColor => EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Sound];
+        public static Color DampColor => EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Damp];
+        public static Color HeatColor => EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Heat];
 
         private string weatherDampLevel;
         public string WeatherDampLevel
@@ -209,7 +209,7 @@ namespace Wacton.Colonies.UI.Mains
             set
             {
                 this.weatherDampLevel = value;
-                this.OnPropertyChanged("WeatherDampLevel");
+                this.OnPropertyChanged(nameof(this.WeatherDampLevel));
             }
         }
 
@@ -223,7 +223,7 @@ namespace Wacton.Colonies.UI.Mains
             set
             {
                 this.weatherHeatLevel = value;
-                this.OnPropertyChanged("WeatherHeatLevel");
+                this.OnPropertyChanged(nameof(this.WeatherHeatLevel));
             }
         }
 
@@ -237,7 +237,7 @@ namespace Wacton.Colonies.UI.Mains
             private set
             {
                 this.phaseCount = value;
-                this.OnPropertyChanged("PhaseCount");
+                this.OnPropertyChanged(nameof(this.PhaseCount));
             }
         }
 
@@ -251,7 +251,7 @@ namespace Wacton.Colonies.UI.Mains
             private set
             {
                 this.phaseDuration = value;
-                this.OnPropertyChanged("PhaseDuration");
+                this.OnPropertyChanged(nameof(this.PhaseDuration));
             }
         }
 
@@ -265,7 +265,7 @@ namespace Wacton.Colonies.UI.Mains
             private set
             {
                 this.roundCount = value;
-                this.OnPropertyChanged("RoundCount");
+                this.OnPropertyChanged(nameof(this.RoundCount));
             }
         }
 
@@ -279,7 +279,7 @@ namespace Wacton.Colonies.UI.Mains
             private set
             {
                 this.roundDuration = value;
-                this.OnPropertyChanged("RoundDuration");
+                this.OnPropertyChanged(nameof(this.RoundDuration));
             }
         }
 
@@ -355,8 +355,8 @@ namespace Wacton.Colonies.UI.Mains
                     // TODO: only do these after all phases have been performed?
                     var previousRoundCount = this.RoundCount;
                     this.RoundCount = this.PhaseCount / phaseSummary.PhasesPerRound;
-                    this.WeatherDampLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Damp));
-                    this.WeatherHeatLevel = string.Format("{0:0.0000}", this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Heat));
+                    this.WeatherDampLevel = $"{this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Damp):0.0000}";
+                    this.WeatherHeatLevel = $"{this.DomainModel.Ecosystem.Weather.GetLevel(WeatherType.Heat):0.0000}";
 
                     // if there's been a change in the phase interval while the previous phase was processed
                     // update the interval of the ecosystem timer

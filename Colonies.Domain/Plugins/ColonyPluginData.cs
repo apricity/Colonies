@@ -10,11 +10,11 @@
 
     public class ColonyPluginData
     {
-        public Guid ColonyId { get; private set; }
-        public string ColonyName { get; private set; }
+        public Guid ColonyId { get; }
+        public string ColonyName { get; }
         public Color ColonyColor { get; private set; }
-        public List<WeightedItem<Type>> ColonyLogicTypes { get; private set; }
-        public string PluginDescription { get; private set; }
+        public List<WeightedItem<Type>> ColonyLogicTypes { get; }
+        public string PluginDescription { get; }
 
         public ColonyPluginData(IColonyPlugin colonyPlugin)
         {
@@ -38,9 +38,6 @@
             this.PluginDescription = colonyPlugin.ToString();
         }
 
-        public override string ToString()
-        {
-            return string.Format("Colony: {0} [{1}] | Logics: {2} | ID: {3} ", this.ColonyName, this.PluginDescription, this.ColonyLogicTypes.Count, this.ColonyId);
-        }
+        public override string ToString() => $"Colony: {this.ColonyName} [{this.PluginDescription}] | Logics: {this.ColonyLogicTypes.Count} | ID: {this.ColonyId} ";
     }
 }

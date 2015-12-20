@@ -2,9 +2,9 @@
 {
     public class HazardRate
     {
-        public double AddRate { get; private set; }
-        public double SpreadRate { get; private set; }
-        public double RemoveRate { get; private set; }
+        public double AddRate { get; }
+        public double SpreadRate { get; }
+        public double RemoveRate { get; }
 
         public HazardRate(double addRate, double spreadRate, double removeRate)
         {
@@ -13,9 +13,6 @@
             this.RemoveRate = removeRate;
         }
 
-        public override string ToString()
-        {
-            return string.Format("Add {0} | Spread {1} | Remove {2}", this.AddRate, this.SpreadRate, this.RemoveRate);
-        }
+        public override string ToString() => $"Add {this.AddRate} | Spread {this.SpreadRate} | Remove {this.RemoveRate}";
     }
 }

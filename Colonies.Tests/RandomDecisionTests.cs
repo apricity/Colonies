@@ -230,10 +230,7 @@
                 this.yMeasurement.SetLevel(healthLevel);
             }
 
-            public override string ToString()
-            {
-                return this.identifier;
-            }
+            public override string ToString() => this.identifier;
         }
 
         private class TestBiasedItem : IBiased<TestMeasure>

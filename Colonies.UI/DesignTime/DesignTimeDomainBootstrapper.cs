@@ -1,6 +1,5 @@
 ﻿namespace Wacton.Colonies.UI.DesignTime
 {
-    using System;
     using System.Collections.Generic;
     using System.Windows.Media;
 

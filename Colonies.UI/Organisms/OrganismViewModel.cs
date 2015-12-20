@@ -33,7 +33,7 @@ namespace Wacton.Colonies.UI.Organisms
             set
             {
                 this.hasOrganism = value;
-                this.OnPropertyChanged("HasOrganism");
+                this.OnPropertyChanged(nameof(this.HasOrganism));
             }
         }
 
@@ -47,7 +47,7 @@ namespace Wacton.Colonies.UI.Organisms
             set
             {
                 this.color = value;
-                this.OnPropertyChanged("Color");
+                this.OnPropertyChanged(nameof(this.Color));
             }
         }
 
@@ -61,7 +61,7 @@ namespace Wacton.Colonies.UI.Organisms
             set
             {
                 this.name = value;
-                this.OnPropertyChanged("Name");
+                this.OnPropertyChanged(nameof(this.Name));
             }
         }
 
@@ -75,7 +75,7 @@ namespace Wacton.Colonies.UI.Organisms
             set
             {
                 this.nameAndIntention = value;
-                this.OnPropertyChanged("NameAndIntention");
+                this.OnPropertyChanged(nameof(this.NameAndIntention));
             }
         }
 
@@ -89,7 +89,7 @@ namespace Wacton.Colonies.UI.Organisms
             set
             {
                 this.healthLevel = value;
-                this.OnPropertyChanged("HealthLevel");
+                this.OnPropertyChanged(nameof(this.HealthLevel));
             }
         }
 
@@ -103,7 +103,7 @@ namespace Wacton.Colonies.UI.Organisms
             set
             {
                 this.isAlive = value;
-                this.OnPropertyChanged("IsAlive");
+                this.OnPropertyChanged(nameof(this.IsAlive));
             }
         }
 
@@ -117,7 +117,7 @@ namespace Wacton.Colonies.UI.Organisms
             set
             {
                 this.inventoryColor = value;
-                this.OnPropertyChanged("InventoryColor");
+                this.OnPropertyChanged(nameof(this.InventoryColor));
             }
         }
 
@@ -131,17 +131,11 @@ namespace Wacton.Colonies.UI.Organisms
             set
             {
                 this.inventoryScalar = value;
-                this.OnPropertyChanged("InventoryScalar");
+                this.OnPropertyChanged(nameof(this.InventoryScalar));
             }
         }
 
-        public static double HabitatScale
-        {
-            get
-            {
-                return 0.5;
-            }
-        }
+        public static double HabitatScale => 0.5;
 
         private Color hazardColor;
         public Color HazardColor
@@ -153,7 +147,7 @@ namespace Wacton.Colonies.UI.Organisms
             set
             {
                 this.hazardColor = value;
-                this.OnPropertyChanged("HazardColor");
+                this.OnPropertyChanged(nameof(this.HazardColor));
             }
         }
         
@@ -175,7 +169,7 @@ namespace Wacton.Colonies.UI.Organisms
             this.IsAlive = this.DomainModel.IsAlive;
             this.HealthLevel = this.DomainModel.MeasurementData.GetLevel(OrganismMeasure.Health);
             this.Name = this.DomainModel.Name;
-            this.NameAndIntention = string.Format("{0} : {1} ({2} | {3})", this.DomainModel.Name, this.DomainModel.Age.ToString("0.00"), this.DomainModel.Description, this.DomainModel.CurrentIntention);
+            this.NameAndIntention = $"{this.DomainModel.Name} : {this.DomainModel.Age.ToString("0.00")} ({this.DomainModel.Description} | {this.DomainModel.CurrentIntention})";
             this.InventoryColor = InventoryColors[this.DomainModel.CurrentInventory];
             this.InventoryScalar = this.DomainModel.GetLevel(OrganismMeasure.Inventory) / 2.0;
             this.RefreshHazardColor();

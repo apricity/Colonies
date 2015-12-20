@@ -8,28 +8,15 @@
 
     public class MineLogic : IIntentionLogic
     {
-        public Inventory AssociatedIntenvory
-        {
-            get
-            {
-                return Inventory.Mineral;
-            }
-        }
-
-        public Dictionary<EnvironmentMeasure, double> EnvironmentBias
-        {
-            get
-            {
-                return new Dictionary<EnvironmentMeasure, double>
-                       {
-                           { EnvironmentMeasure.Mineral, 25 },
-                           { EnvironmentMeasure.Damp, -10 },
-                           { EnvironmentMeasure.Heat, -10 },
-                           { EnvironmentMeasure.Disease, -50 },
-                           { EnvironmentMeasure.Obstruction, -50 }
-                       };
-            }
-        }
+        public Inventory AssociatedIntenvory => Inventory.Mineral;
+        public Dictionary<EnvironmentMeasure, double> EnvironmentBias => new Dictionary<EnvironmentMeasure, double>
+                                                                         {
+                                                                             { EnvironmentMeasure.Mineral, 25 },
+                                                                             { EnvironmentMeasure.Damp, -10 },
+                                                                             { EnvironmentMeasure.Heat, -10 },
+                                                                             { EnvironmentMeasure.Disease, -50 },
+                                                                             { EnvironmentMeasure.Obstruction, -50 }
+                                                                         };
 
         public bool CanInteractEnvironment(IOrganismState organismState)
         {

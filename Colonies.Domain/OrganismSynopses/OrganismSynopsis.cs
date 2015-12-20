@@ -6,16 +6,13 @@
 
     public class OrganismSynopsis : IOrganismSynopsis
     {
-        public List<IOrganism> Organisms { get; private set; }
+        public List<IOrganism> Organisms { get; }
 
         public OrganismSynopsis(List<IOrganism> organisms)
         {
             this.Organisms = organisms;
         }
 
-        public override string ToString()
-        {
-            return string.Format("{0} organisms", this.Organisms.Count);
-        }
+        public override string ToString() => $"{this.Organisms.Count} organisms";
     }
 }

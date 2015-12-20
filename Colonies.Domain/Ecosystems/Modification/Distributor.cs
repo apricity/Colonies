@@ -11,22 +11,22 @@
 
     public class Distributor
     {
-        private EcosystemData EcosystemData { get; set; }
-        private Dictionary<EnvironmentMeasure, int> EnvironmentMeasureDiameters { get; set; }
-        private Dictionary<EnvironmentMeasure, List<Coordinate>> HazardSourceCoordinates { get; set; }
+        private readonly EcosystemData ecosystemData;
+        private readonly Dictionary<EnvironmentMeasure, int> environmentMeasureDiameters;
+        private readonly Dictionary<EnvironmentMeasure, List<Coordinate>> hazardSourceCoordinates;
 
         public Distributor(EcosystemData ecosystemData)
         {
-            this.EcosystemData = ecosystemData;
+            this.ecosystemData = ecosystemData;
 
-            this.HazardSourceCoordinates = new Dictionary<EnvironmentMeasure, List<Coordinate>>();
+            this.hazardSourceCoordinates = new Dictionary<EnvironmentMeasure, List<Coordinate>>();
             foreach (var environmentMeasure in EnvironmentMeasure.HazardousMeasures())
             {
-                this.HazardSourceCoordinates.Add(environmentMeasure, new List<Coordinate>());
+                this.hazardSourceCoordinates.Add(environmentMeasure, new List<Coordinate>());
             }
 
-            var hazardDiameter = this.EcosystemData.CalculateHazardDiameter();
-            this.EnvironmentMeasureDiameters = new Dictionary<EnvironmentMeasure, int>
+            var hazardDiameter = this.ecosystemData.CalculateHazardDiameter();
+            this.environmentMeasureDiameters = new Dictionary<EnvironmentMeasure, int>
                 {
                     { EnvironmentMeasure.Damp, hazardDiameter },
                     { EnvironmentMeasure.Heat, hazardDiameter },
@@ -37,9 +37,9 @@
 
         public void Insert(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
         {
-            var diameter = this.EnvironmentMeasureDiameters[environmentMeasure];
+            var diameter = this.environmentMeasureDiameters[environmentMeasure];
             var radius = (diameter - 1) / 2;
-            var neighbouringCoordinates = this.EcosystemData.GetNeighbours(coordinate, radius, true, true);
+            var neighbouringCoordinates = this.ecosystemData.GetNeighbours(coordinate, radius, true, true);
             var gaussianKernel = new GaussianBlur(0.25 * diameter, diameter).Kernel;
             var gaussianCentre = (double)gaussianKernel[radius, radius];
 
@@ -54,10 +54,10 @@
                     }
 
                     var requiredLevel = gaussianKernel[x, y] / gaussianCentre;
-                    var currentLevel = this.EcosystemData.GetLevel(neighbouringCoordinate, environmentMeasure);
+                    var currentLevel = this.ecosystemData.GetLevel(neighbouringCoordinate, environmentMeasure);
                     if (requiredLevel > currentLevel)
                     {
-                        this.EcosystemData.SetLevel(neighbouringCoordinate, environmentMeasure, requiredLevel);
+                        this.ecosystemData.SetLevel(neighbouringCoordinate, environmentMeasure, requiredLevel);
                     }
                 }
             }
@@ -80,9 +80,9 @@
         // TODO: review this closely - recently saw a damp of 0.4 with no source next to it...
         public void Remove(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
         {
-            var diameter = this.EnvironmentMeasureDiameters[environmentMeasure];
+            var diameter = this.environmentMeasureDiameters[environmentMeasure];
             var radius = (diameter - 1) / 2;
-            var neighbouringCoordinates = this.EcosystemData.GetNeighbours(coordinate, radius, true, true);
+            var neighbouringCoordinates = this.ecosystemData.GetNeighbours(coordinate, radius, true, true);
 
             for (var x = 0; x < diameter; x++)
             {
@@ -95,10 +95,10 @@
                     }
 
                     var requiredLevel = 0;
-                    var currentLevel = this.EcosystemData.GetLevel(neighbouringCoordinate, environmentMeasure);
+                    var currentLevel = this.ecosystemData.GetLevel(neighbouringCoordinate, environmentMeasure);
                     if (currentLevel > requiredLevel)
                     {
-                        this.EcosystemData.SetLevel(neighbouringCoordinate, environmentMeasure, requiredLevel);
+                        this.ecosystemData.SetLevel(neighbouringCoordinate, environmentMeasure, requiredLevel);
                     }
                 }
             }
@@ -122,13 +122,13 @@
         private void RepairBrokenHazards(EnvironmentMeasure environmentMeasure)
         {
             // go through all remaining hazard coordinates and restore any remove measures that belonged to other hazards
-            var remainingHazardCoordinates = this.HazardSourceCoordinates[environmentMeasure].ToList();
+            var remainingHazardCoordinates = this.hazardSourceCoordinates[environmentMeasure].ToList();
             foreach (var remainingHazardCoordinate in remainingHazardCoordinates)
             {
-                var radius = (this.EnvironmentMeasureDiameters[environmentMeasure] - 1) / 2;
-                var neighbouringCoordinates = this.EcosystemData.GetNeighbours(remainingHazardCoordinate, radius, true, true).ToList();
+                var radius = (this.environmentMeasureDiameters[environmentMeasure] - 1) / 2;
+                var neighbouringCoordinates = this.ecosystemData.GetNeighbours(remainingHazardCoordinate, radius, true, true).ToList();
                 var validNeighbouringCoordinates = neighbouringCoordinates.Where(coordinate => coordinate != null).ToList();
-                if (validNeighbouringCoordinates.All(coordinate => this.EcosystemData.HasLevel(coordinate, environmentMeasure)))
+                if (validNeighbouringCoordinates.All(coordinate => this.ecosystemData.HasLevel(coordinate, environmentMeasure)))
                 {
                     continue;
                 }
@@ -139,22 +139,22 @@
 
         public IEnumerable<Coordinate> HazardSources(EnvironmentMeasure environmentMeasure)
         {
-            return this.HazardSourceCoordinates[environmentMeasure];
+            return this.hazardSourceCoordinates[environmentMeasure];
         }
 
         private void RegisterHazardSource(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
         {
-            if (!this.HazardSourceCoordinates[environmentMeasure].Contains(coordinate))
+            if (!this.hazardSourceCoordinates[environmentMeasure].Contains(coordinate))
             {
-                this.HazardSourceCoordinates[environmentMeasure].Add(coordinate);
+                this.hazardSourceCoordinates[environmentMeasure].Add(coordinate);
             }
         }
 
         private void DeregisterHazardSource(EnvironmentMeasure environmentMeasure, Coordinate coordinate)
         {
-            if (this.HazardSourceCoordinates[environmentMeasure].Contains(coordinate))
+            if (this.hazardSourceCoordinates[environmentMeasure].Contains(coordinate))
             {
-                this.HazardSourceCoordinates[environmentMeasure].Remove(coordinate);
+                this.hazardSourceCoordinates[environmentMeasure].Remove(coordinate);
             }
         }
     }

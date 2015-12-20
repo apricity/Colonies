@@ -25,7 +25,7 @@
             viewModel.Refresh();
 
             var mainView = new MainView { DataContext = viewModel };
-            mainView.Title += string.Format(" ({0})", version);
+            mainView.Title += $" ({version})";
 
             // display the window to the user!
             mainView.Show();

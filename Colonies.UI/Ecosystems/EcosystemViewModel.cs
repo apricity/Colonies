@@ -24,7 +24,7 @@
             set
             {
                 this.habitatViewModels = value;
-                this.OnPropertyChanged("HabitatViewModels");
+                this.OnPropertyChanged(nameof(this.HabitatViewModels));
             }
         }
 
@@ -38,7 +38,7 @@
             set
             {
                 this.weatherColor = value;
-                this.OnPropertyChanged("WeatherColor");
+                this.OnPropertyChanged(nameof(this.WeatherColor));
             }
         }
 

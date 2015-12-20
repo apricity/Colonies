@@ -8,29 +8,16 @@
 
     public class EatLogic : IIntentionLogic
     {
-        public Inventory AssociatedIntenvory
-        {
-            get
-            {
-                return Inventory.Nutrient;
-            }
-        }
-
-        public Dictionary<EnvironmentMeasure, double> EnvironmentBias
-        {
-            get
-            {
-                return new Dictionary<EnvironmentMeasure, double>
-                       {
-                           { EnvironmentMeasure.Nutrient, 10 },
-                           { EnvironmentMeasure.Pheromone, 10 },
-                           { EnvironmentMeasure.Sound, 10 },
-                           { EnvironmentMeasure.Damp, -10 },
-                           { EnvironmentMeasure.Heat, -10 },
-                           { EnvironmentMeasure.Disease, -50 }
-                       };
-            }
-        }
+        public Inventory AssociatedIntenvory => Inventory.Nutrient;
+        public Dictionary<EnvironmentMeasure, double> EnvironmentBias => new Dictionary<EnvironmentMeasure, double>
+                                                                         {
+                                                                             { EnvironmentMeasure.Nutrient, 10 },
+                                                                             { EnvironmentMeasure.Pheromone, 10 },
+                                                                             { EnvironmentMeasure.Sound, 10 },
+                                                                             { EnvironmentMeasure.Damp, -10 },
+                                                                             { EnvironmentMeasure.Heat, -10 },
+                                                                             { EnvironmentMeasure.Disease, -50 }
+                                                                         };
 
         public bool CanInteractEnvironment(IOrganismState organismState)
         {

@@ -11,22 +11,10 @@
     public sealed class Habitat : IHabitat
     {
         private readonly Environment environment;
-        public IEnvironment Environment
-        {
-            get
-            {
-                return this.environment;
-            }
-        }
+        public IEnvironment Environment => this.environment;
 
         private Organism organism;
-        public IOrganism Organism
-        {
-            get
-            {
-                return this.organism;
-            }
-        }
+        public IOrganism Organism => this.organism;
 
         public Habitat(Environment environment, Organism organism)
         {
@@ -84,9 +72,6 @@
             return this.organism.AdjustLevel(measure, adjustment);
         }
 
-        public override string ToString()
-        {
-            return String.Format("{0}, {1}", this.environment, this.organism);
-        }
+        public override string ToString() => $"{this.environment}, {this.organism}";
     }
 }

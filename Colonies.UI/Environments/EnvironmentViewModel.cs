@@ -38,41 +38,14 @@
             set
             {
                 this.environmentColor = value;
-                this.OnPropertyChanged("EnvironmentColor");
+                this.OnPropertyChanged(nameof(this.EnvironmentColor));
             }
         }
 
-        public Color PheromoneColor
-        {
-            get
-            {
-                return MeasureColors[EnvironmentMeasure.Pheromone];
-            }
-        }
-
-        public Color NutrientColor
-        {
-            get
-            {
-                return MeasureColors[EnvironmentMeasure.Nutrient];
-            }
-        }
-
-        public Color ObstructionColor
-        {
-            get
-            {
-                return MeasureColors[EnvironmentMeasure.Obstruction];
-            }
-        }
-
-        public Color SoundColor
-        {
-            get
-            {
-                return MeasureColors[EnvironmentMeasure.Sound];
-            }
-        }
+        public Color PheromoneColor => MeasureColors[EnvironmentMeasure.Pheromone];
+        public Color NutrientColor => MeasureColors[EnvironmentMeasure.Nutrient];
+        public Color ObstructionColor => MeasureColors[EnvironmentMeasure.Obstruction];
+        public Color SoundColor => MeasureColors[EnvironmentMeasure.Sound];
 
         private double mineralLevel;
         public double MineralLevel
@@ -84,7 +57,7 @@
             set
             {
                 this.mineralLevel = value;
-                this.OnPropertyChanged("MineralLevel");
+                this.OnPropertyChanged(nameof(this.MineralLevel));
             }
         }
 
@@ -98,7 +71,7 @@
             set
             {
                 this.dampLevel = value;
-                this.OnPropertyChanged("DampLevel");
+                this.OnPropertyChanged(nameof(this.DampLevel));
             }
         }
 
@@ -112,7 +85,7 @@
             set
             {
                 this.heatLevel = value;
-                this.OnPropertyChanged("HeatLevel");
+                this.OnPropertyChanged(nameof(this.HeatLevel));
             }
         }
 
@@ -126,7 +99,7 @@
             set
             {
                 this.diseaseLevel = value;
-                this.OnPropertyChanged("DiseaseLevel");
+                this.OnPropertyChanged(nameof(this.DiseaseLevel));
             }
         }
 
@@ -140,7 +113,7 @@
             set
             {
                 this.pheromoneOpacity = value;
-                this.OnPropertyChanged("PheromoneOpacity");
+                this.OnPropertyChanged(nameof(this.PheromoneOpacity));
             }
         }
 
@@ -154,7 +127,7 @@
             set
             {
                 this.nutrientScalar = value;
-                this.OnPropertyChanged("NutrientScalar");
+                this.OnPropertyChanged(nameof(this.NutrientScalar));
             }
         }
 
@@ -168,10 +141,10 @@
             set
             {
                 this.obstructionLevel = value;
-                this.OnPropertyChanged("ObstructionLevel");
+                this.OnPropertyChanged(nameof(this.ObstructionLevel));
 
                 this.IsObstructed = Math.Abs(value - 0.0) > 0.0;
-                this.OnPropertyChanged("IsObstructed");
+                this.OnPropertyChanged(nameof(this.IsObstructed));
             }
         }
 
@@ -187,7 +160,7 @@
             set
             {
                 this.soundLevel = value;
-                this.OnPropertyChanged("SoundLevel");
+                this.OnPropertyChanged(nameof(this.SoundLevel));
             }
         }
 

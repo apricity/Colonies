@@ -5,8 +5,8 @@
 
     public class EcosystemAddition
     {
-        public IOrganism Organism { get; private set; }
-        public Coordinate Coordinate { get; private set; }
+        public IOrganism Organism { get; }
+        public Coordinate Coordinate { get; }
 
         public EcosystemAddition(IOrganism organism, Coordinate coordinate)
         {
@@ -14,9 +14,6 @@
             this.Coordinate = coordinate;
         }
 
-        public override string ToString()
-        {
-            return string.Format("{0} {1}", this.Organism.Name, this.Coordinate);
-        }
+        public override string ToString() => $"{this.Organism.Name} {this.Coordinate}";
     }
 }

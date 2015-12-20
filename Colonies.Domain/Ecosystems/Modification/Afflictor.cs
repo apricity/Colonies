@@ -8,14 +8,14 @@
 
     public class Afflictor
     {
-        private EcosystemData EcosystemData { get; set; }
-        private Distributor Distributor { get; set; }
+        private readonly EcosystemData ecosystemData;
+        private readonly Distributor distributor;
         private readonly Dictionary<EnvironmentMeasure, Action<Coordinate>> hazardActions;
 
         public Afflictor(EcosystemData ecosystemData, Distributor distributor)
         {
-            this.EcosystemData = ecosystemData;
-            this.Distributor = distributor;
+            this.ecosystemData = ecosystemData;
+            this.distributor = distributor;
 
             this.hazardActions
                 = new Dictionary<EnvironmentMeasure, Action<Coordinate>>
@@ -28,7 +28,7 @@
 
         public void AfflictIfHarmful(Coordinate organismCoordinate)
         {
-            var environment = this.EcosystemData.GetEnvironment(organismCoordinate);
+            var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
             if (!environment.IsHarmful)
             {
                 return;
@@ -42,26 +42,26 @@
 
         private void AfflictHeat(Coordinate organismCoordinate)
         {
-            var organism = this.EcosystemData.GetOrganism(organismCoordinate);
+            var organism = this.ecosystemData.GetOrganism(organismCoordinate);
             organism.OverloadPheromone();
         }
 
         private void AfflictDamp(Coordinate organismCoordinate)
         {
-            var organism = this.EcosystemData.GetOrganism(organismCoordinate);
+            var organism = this.ecosystemData.GetOrganism(organismCoordinate);
             organism.OverloadSound();
 
             // insert sound distribution immediately, regardless of the phase this is called in
-            this.Distributor.Insert(EnvironmentMeasure.Sound, organismCoordinate);
+            this.distributor.Insert(EnvironmentMeasure.Sound, organismCoordinate);
         }
 
         private void AfflictDisease(Coordinate organismCoordinate)
         {
-            var organism = this.EcosystemData.GetOrganism(organismCoordinate);
+            var organism = this.ecosystemData.GetOrganism(organismCoordinate);
             organism.ContractDisease();
 
             // not required - the only way to contract disease is by being on a coordinate that already has disease distribution
-            //this.Distributor.Insert(organismCoordinate, EnvironmentMeasure.Disease);
+            //this.distributor.Insert(organismCoordinate, EnvironmentMeasure.Disease);
         }
     }
 }

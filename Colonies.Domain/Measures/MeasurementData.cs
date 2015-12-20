@@ -7,13 +7,7 @@
     public class MeasurementData<T> : IMeasurementData<T> where T : IMeasure
     {
         private readonly List<Measurement<T>> measurements;
-        public IEnumerable<IMeasurement<T>> Measurements
-        {
-            get
-            {
-                return this.measurements;
-            }
-        }
+        public IEnumerable<IMeasurement<T>> Measurements => this.measurements;
 
         public MeasurementData(List<Measurement<T>> measurements)
         {

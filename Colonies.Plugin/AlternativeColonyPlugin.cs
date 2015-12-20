@@ -1,7 +1,5 @@
 ﻿namespace Wacton.Colonies.Plugin
 {
-    using System;
-    using System.Collections.Generic;
     using System.ComponentModel.Composition;
     using System.Windows.Media;
 
@@ -10,21 +8,8 @@
     [Export(typeof(IColonyPlugin))]
     public class AlternativeColonyPlugin : IColonyPlugin
     {
-        public string ColonyName
-        {
-            get
-            {
-                return "Alternative";
-            }
-        }
-
-        public Color ColonyColor
-        {
-            get
-            {
-                return Colors.Fuchsia;
-            }
-        }
+        public string ColonyName => "Alternative";
+        public Color ColonyColor => Colors.Fuchsia;
 
         public PluginLogicWeightings LogicWeightings
         {

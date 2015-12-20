@@ -53,13 +53,11 @@
         <!-- TODO: how to derive '7' (~ 1/4 of line length) using converters (multiconverter does not work for double collection...) -->
         <Line X1="0" Y1="0" X2="1" Y2="1" StrokeThickness="0.5" Stretch="Fill" Stroke="{Binding ObstructionColor, Converter={StaticResource ColorToBrushConverter}}"
               Visibility="{Binding IsObstructed, Converter={StaticResource BoolToNotHiddenConverter}}"
-              StrokeDashArray="{Binding ObstructionLevel, Converter={StaticResource DoubleToObstructionDashConverter}, ConverterParameter=7}">
-        </Line>
-        
+              StrokeDashArray="{Binding ObstructionLevel, Converter={StaticResource DoubleToObstructionDashConverter}, ConverterParameter=7}" />
+
         <Line X1="0" Y1="1" X2="1" Y2="0" StrokeThickness="0.5" Stretch="Fill" Stroke="{Binding ObstructionColor, Converter={StaticResource ColorToBrushConverter}}"
               Visibility="{Binding IsObstructed, Converter={StaticResource BoolToNotHiddenConverter}}"
-              StrokeDashArray="{Binding ObstructionLevel, Converter={StaticResource DoubleToObstructionDashConverter}, ConverterParameter=7}">
-        </Line>
+              StrokeDashArray="{Binding ObstructionLevel, Converter={StaticResource DoubleToObstructionDashConverter}, ConverterParameter=7}" />
     </Grid>
     
 </UserControl>

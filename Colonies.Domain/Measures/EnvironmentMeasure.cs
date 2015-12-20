@@ -22,14 +22,7 @@
             return new List<EnvironmentMeasure> { Heat, Damp, Disease };
         }
 
-        public bool IsHazardous
-        {
-            get
-            {
-                return HazardousMeasures().Contains(this);
-            }
-        }
-
+        public bool IsHazardous => HazardousMeasures().Contains(this);
         public WeatherType WeatherTrigger { get; private set; }
 
         private EnvironmentMeasure(int value, string friendlyString, WeatherType weatherTrigger)

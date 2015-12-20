@@ -15,39 +15,26 @@
 
     public class EcosystemData
     {
-        private Habitat[,] Habitats { get; set; }
-        private Dictionary<Organism, Habitat> OrganismHabitats { get; set; }
-        private Dictionary<Habitat, Coordinate> HabitatCoordinates { get; set; }
-        private IEcosystemHistoryPusher EcosystemHistoryPusher { get; set; }
+        private readonly Habitat[,] habitats;
+        private readonly Dictionary<Organism, Habitat> organismHabitats;
+        private readonly Dictionary<Habitat, Coordinate> habitatCoordinates;
+        private readonly IEcosystemHistoryPusher ecosystemHistoryPusher;
 
-        public int Width
-        {
-            get
-            {
-                return this.Habitats.Width();
-            }
-        }
-
-        public int Height
-        {
-            get
-            {
-                return this.Habitats.Height();
-            }
-        }
+        public int Width => this.habitats.Width();
+        public int Height => this.habitats.Height();
 
         public EcosystemData(Habitat[,] habitats, Dictionary<IOrganism, Coordinate> organismCoordinates, IEcosystemHistoryPusher ecosystemHistory)
         {
-            this.Habitats = habitats;
-            this.HabitatCoordinates = new Dictionary<Habitat, Coordinate>();
-            this.OrganismHabitats = new Dictionary<Organism, Habitat>();
-            this.EcosystemHistoryPusher = ecosystemHistory;
+            this.habitats = habitats;
+            this.habitatCoordinates = new Dictionary<Habitat, Coordinate>();
+            this.organismHabitats = new Dictionary<Organism, Habitat>();
+            this.ecosystemHistoryPusher = ecosystemHistory;
 
             for (var i = 0; i < this.Width; i++)
             {
                 for (var j = 0; j < this.Height; j++)
                 {
-                    this.HabitatCoordinates.Add(this.Habitats[i, j], new Coordinate(i, j));
+                    this.habitatCoordinates.Add(this.habitats[i, j], new Coordinate(i, j));
                 }
             }
 
@@ -67,47 +54,47 @@
 
         public IEnumerable<Coordinate> AllCoordinates()
         {
-            return this.HabitatCoordinates.Values.ToList();
+            return this.habitatCoordinates.Values.ToList();
         }
 
         public IEnumerable<Coordinate> OrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Select(this.CoordinateOf);
+            return this.organismHabitats.Keys.Select(this.CoordinateOf);
         }
 
         public IEnumerable<Coordinate> OrganismCoordinates(Intention intention)
         {
-            return this.OrganismHabitats.Keys.Where(organism => organism.CurrentIntention.Equals(intention)).Select(this.CoordinateOf);
+            return this.organismHabitats.Keys.Where(organism => organism.CurrentIntention.Equals(intention)).Select(this.CoordinateOf);
         }
 
         public IEnumerable<Coordinate> AliveOrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive).Select(this.CoordinateOf);
+            return this.organismHabitats.Keys.Where(organism => organism.IsAlive).Select(this.CoordinateOf);
         }
 
         public IEnumerable<Coordinate> DeadOrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => !organism.IsAlive).Select(this.CoordinateOf);
+            return this.organismHabitats.Keys.Where(organism => !organism.IsAlive).Select(this.CoordinateOf);
         }
 
         public IEnumerable<Coordinate> DepositingPheromoneOrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsDepositingPheromone).Select(this.CoordinateOf);
+            return this.organismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsDepositingPheromone).Select(this.CoordinateOf);
         }
 
         public IEnumerable<Coordinate> AudibleOrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsAudible).Select(this.CoordinateOf);
+            return this.organismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsAudible).Select(this.CoordinateOf);
         }
 
         public IEnumerable<Coordinate> DiseasedOrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsDiseased).Select(this.CoordinateOf);
+            return this.organismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsDiseased).Select(this.CoordinateOf);
         }
 
         public IEnumerable<Coordinate> InfectiousOrganismCoordinates()
         {
-            return this.OrganismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsInfectious).Select(this.CoordinateOf);
+            return this.organismHabitats.Keys.Where(organism => organism.IsAlive && organism.IsInfectious).Select(this.CoordinateOf);
         }
 
         public bool HasLevel(Coordinate coordinate, EnvironmentMeasure measure)
@@ -189,7 +176,7 @@
 
         private void RecordHistory(Coordinate coordinate, IMeasure measure, double previousLevel, double updatedLevel)
         {
-            this.EcosystemHistoryPusher.Push(new EcosystemModification(coordinate, measure, previousLevel, updatedLevel));
+            this.ecosystemHistoryPusher.Push(new EcosystemModification(coordinate, measure, previousLevel, updatedLevel));
         }
 
         public bool IsHarmful(Coordinate coordinate)
@@ -200,19 +187,19 @@
         public void AddOrganism(IOrganism organism, Coordinate coordinate)
         {
             this.AddOrganism((Organism)organism, this.HabitatAt(coordinate));
-            this.EcosystemHistoryPusher.Push(new EcosystemAddition(organism, coordinate));
+            this.ecosystemHistoryPusher.Push(new EcosystemAddition(organism, coordinate));
         }
 
         private void AddOrganism(Organism organism, Habitat habitat)
         {
             habitat.SetOrganism(organism);
-            this.OrganismHabitats.Add(organism, habitat);
+            this.organismHabitats.Add(organism, habitat);
         }
 
         private void RemoveOrganism(Organism organism)
         {
             this.HabitatOf(organism).ResetOrganism();
-            this.OrganismHabitats.Remove(organism);
+            this.organismHabitats.Remove(organism);
         }
 
         public void MoveOrganism(IOrganism organism, Coordinate desiredHabitatCoordinate)
@@ -227,31 +214,25 @@
             // the organism cannot move if it is dead
             if (!organism.IsAlive)
             {
-                throw new InvalidOperationException(
-                    string.Format("Cannot move organism {0} to {1} because it is dead",
-                                   organism, destinationHabitat));
+                throw new InvalidOperationException($"Cannot move organism {organism} to {destinationHabitat} because it is dead");
             }
 
             // the organism can only move to the destination if it is not obstructed
             if (destinationHabitat.IsObstructed())
             {
-                throw new InvalidOperationException(
-                    string.Format("Cannot move organism {0} to {1} because the destination is obstructed",
-                                  organism, destinationHabitat));
+                throw new InvalidOperationException($"Cannot move organism {organism} to {destinationHabitat} because the destination is obstructed");
             }
 
             // the organism can only move to the destination if it does not already contain an organism
             if (destinationHabitat.ContainsOrganism())
             {
-                throw new InvalidOperationException(
-                    string.Format("Cannot move organism {0} to {1} because the destination is occupied by {2}",
-                                  organism, destinationHabitat, destinationHabitat.Organism));
+                throw new InvalidOperationException($"Cannot move organism {organism} to {destinationHabitat} because the destination is occupied by {destinationHabitat.Organism}");
             }
 
             sourceHabitat.ResetOrganism();
             destinationHabitat.SetOrganism(organism);
-            this.OrganismHabitats[organism] = destinationHabitat;
-            this.EcosystemHistoryPusher.Push(new EcosystemRelocation(organism, this.CoordinateOf(sourceHabitat), this.CoordinateOf(destinationHabitat)));
+            this.organismHabitats[organism] = destinationHabitat;
+            this.ecosystemHistoryPusher.Push(new EcosystemRelocation(organism, this.CoordinateOf(sourceHabitat), this.CoordinateOf(destinationHabitat)));
         }
 
         public IEnumerable<Coordinate> GetValidNeighbours(Coordinate coordinate, int neighbourDepth, bool includeDiagonals, bool includeSelf)
@@ -272,22 +253,22 @@
 
         public IHabitat GetHabitat(Coordinate coordinate)
         {
-            return this.Habitats[coordinate.X, coordinate.Y];
+            return this.habitats[coordinate.X, coordinate.Y];
         }
 
         private Habitat HabitatAt(Coordinate coordinate)
         {
-            return this.Habitats[coordinate.X, coordinate.Y];
+            return this.habitats[coordinate.X, coordinate.Y];
         }
 
         private Habitat HabitatOf(Organism organism)
         {
-            return this.OrganismHabitats[organism];
+            return this.organismHabitats[organism];
         }
 
         private Coordinate CoordinateOf(Habitat habitat)
         {
-            return this.HabitatCoordinates[habitat];
+            return this.habitatCoordinates[habitat];
         }
 
         public Coordinate CoordinateOf(IOrganism organism)
@@ -297,7 +278,7 @@
 
         private Coordinate CoordinateOf(Organism organism)
         {
-            return this.CoordinateOf(this.OrganismHabitats[organism]);
+            return this.CoordinateOf(this.organismHabitats[organism]);
         }
 
         public void RefreshOrganismIntentions()

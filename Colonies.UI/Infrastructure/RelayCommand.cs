@@ -12,7 +12,7 @@
         {
             if (executionLogic == null)
             {
-                throw new ArgumentNullException("executionLogic");
+                throw new ArgumentNullException(nameof(executionLogic));
             }
 
             this.executionLogic = executionLogic;

@@ -22,7 +22,7 @@
             set
             {
                 this.environmentViewModel = value;
-                this.OnPropertyChanged("EnvironmentViewModel");
+                this.OnPropertyChanged(nameof(this.EnvironmentViewModel));
             }
         }
 
@@ -36,7 +36,7 @@
             set
             {
                 this.organismViewModel = value;
-                this.OnPropertyChanged("OrganismViewModel");
+                this.OnPropertyChanged(nameof(this.OrganismViewModel));
             }
         }
 
@@ -50,7 +50,7 @@
             set
             {
                 this.toolTip = value;
-                this.OnPropertyChanged("ToolTip");
+                this.OnPropertyChanged(nameof(this.ToolTip));
             }
         }
 
@@ -76,22 +76,22 @@
             var stringBuilder = new StringBuilder();
             foreach (var measurement in this.DomainModel.Environment.MeasurementData.Measurements)
             {
-                stringBuilder.AppendLine(string.Format("{0}: {1:0.000}", measurement.Measure, measurement.Level));
+                stringBuilder.AppendLine($"{measurement.Measure}: {measurement.Level:0.000}");
             }
 
             if (this.DomainModel.ContainsOrganism())
             {
                 stringBuilder.AppendLine("----------");
                 stringBuilder.AppendLine(this.DomainModel.Organism.Name);
-                stringBuilder.AppendLine(string.Format("Intention: {0} ({1})", this.DomainModel.Organism.CurrentIntention, this.DomainModel.Organism.CurrentInventory));
+                stringBuilder.AppendLine($"Intention: {this.DomainModel.Organism.CurrentIntention} ({this.DomainModel.Organism.CurrentInventory})");
 
                 foreach (var measurement in this.DomainModel.Organism.MeasurementData.Measurements)
                 {
-                    stringBuilder.AppendLine(string.Format("{0}: {1:0.000}", measurement.Measure, measurement.Level));
+                    stringBuilder.AppendLine($"{measurement.Measure}: {measurement.Level:0.000}");
                 }
 
-                stringBuilder.AppendLine(string.Format("Pheromone {0}", this.DomainModel.Organism.IsPheromoneOverloaded ? "overloaded" : "normal"));
-                stringBuilder.AppendLine(string.Format("Sound {0}", this.DomainModel.Organism.IsSoundOverloaded ? "overloaded" : "normal"));
+                stringBuilder.AppendLine($"Pheromone {(this.DomainModel.Organism.IsPheromoneOverloaded ? "overloaded" : "normal")}");
+                stringBuilder.AppendLine($"Sound {(this.DomainModel.Organism.IsSoundOverloaded ? "overloaded" : "normal")}");
                 stringBuilder.AppendLine(this.DomainModel.Organism.IsDiseased ? "Diseased" : "Not diseased");
                 stringBuilder.AppendLine(this.DomainModel.Organism.IsInfectious ? "Infectious" : "Not infectious");
             }

@@ -5,18 +5,12 @@
 
     public class EcosystemModification
     {
-        public Coordinate Coordinate { get; private set; }
-        public IMeasure Measure { get; private set; }
-        public double PreviousLevel { get; private set; }
-        public double UpdatedLevel { get; private set; }
+        public Coordinate Coordinate { get; }
+        public IMeasure Measure { get; }
+        public double PreviousLevel { get; }
+        public double UpdatedLevel { get; }
 
-        public double Delta
-        {
-            get
-            {
-                return this.UpdatedLevel - this.PreviousLevel;
-            }
-        }
+        public double Delta => this.UpdatedLevel - this.PreviousLevel;
 
         public EcosystemModification(Coordinate coordinate, IMeasure measure, double previousLevel, double updatedLevel)
         {
@@ -26,9 +20,6 @@
             this.UpdatedLevel = updatedLevel;
         }
 
-        public override string ToString()
-        {
-            return string.Format("{0}: {1} {2}->{3}", this.Coordinate, this.Measure, this.PreviousLevel, this.UpdatedLevel);
-        }
+        public override string ToString() => $"{this.Coordinate}: {this.Measure} {this.PreviousLevel}->{this.UpdatedLevel}";
     }
 }

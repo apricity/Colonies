@@ -7,22 +7,10 @@
     public class Main : IMain
     {
         private readonly Ecosystem ecosystem;
-        public IEcosystem Ecosystem
-        {
-            get
-            {
-                return this.ecosystem;
-            }
-        }
+        public IEcosystem Ecosystem => this.ecosystem;
 
         private readonly OrganismSynopsis organismSynopsis;
-        public OrganismSynopsis OrganismSynopsis
-        {
-            get
-            {
-                return this.organismSynopsis;
-            }
-        }
+        public OrganismSynopsis OrganismSynopsis => this.organismSynopsis;
 
         public Main(Ecosystem ecosystem, OrganismSynopsis organismSynopsis)
         {
@@ -30,14 +18,11 @@
             this.organismSynopsis = organismSynopsis;
         }
 
-        public override string ToString()
-        {
-            return this.ecosystem.ToString();
-        }
-
         public PhaseSummary PerformPhase()
         {
             return this.Ecosystem.ExecuteOnePhase();
         }
+
+        public override string ToString() => this.ecosystem.ToString();
     }
 }

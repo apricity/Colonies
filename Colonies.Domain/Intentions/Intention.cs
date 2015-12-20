@@ -19,17 +19,9 @@
         public static readonly Intention Birth = new Intention(8, "Birth", new BirthLogic());
         public static readonly Intention Dead = new Intention(9, "Dead", new NoLogic());
 
-        public IIntentionLogic IntentionLogic { get; private set; }
-
-        public Inventory AssociatedInventory
-        {
-            get
-            {
-                return this.IntentionLogic.AssociatedIntenvory;
-            }
-        }
-
-        public Dictionary<EnvironmentMeasure, double> EnvironmentBias { get; private set; }
+        public IIntentionLogic IntentionLogic { get; }
+        public Inventory AssociatedInventory => this.IntentionLogic.AssociatedIntenvory;
+        public Dictionary<EnvironmentMeasure, double> EnvironmentBias { get; }
 
         private Intention(int value, string friendlyString, IIntentionLogic intentionLogic)
             : base(value, friendlyString)

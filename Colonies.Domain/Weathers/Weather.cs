@@ -7,42 +7,42 @@
     public class Weather : IWeather
     {
         // TODO: better naming?
-        private Dictionary<WeatherType, double> WeatherChangeRates { get; set; }
-        private Dictionary<WeatherType, double> WeatherLevels { get; set; }
+        private readonly Dictionary<WeatherType, double> weatherChangeRates;
+        private readonly Dictionary<WeatherType, double> weatherLevels;
 
         public Weather()
         {
-            this.WeatherChangeRates = new Dictionary<WeatherType, double>
+            this.weatherChangeRates = new Dictionary<WeatherType, double>
                                           {
                                               { WeatherType.Damp, 1 / (double)200 },
                                               { WeatherType.Heat, 1 / (double)2000 }
                                           };
 
-            this.WeatherLevels = new Dictionary<WeatherType, double>();
-            foreach (var weatherType in this.WeatherChangeRates.Keys.ToList())
+            this.weatherLevels = new Dictionary<WeatherType, double>();
+            foreach (var weatherType in this.weatherChangeRates.Keys.ToList())
             {
-                this.WeatherLevels.Add(weatherType, 0);
+                this.weatherLevels.Add(weatherType, 0);
             }
         }
 
         public double GetLevel(WeatherType weatherType)
         {
-            return this.WeatherLevels[weatherType];
+            return this.weatherLevels[weatherType];
         }
 
         public void Advance()
         {
-            var ratesToInvert = this.WeatherChangeRates.ToDictionary(
+            var ratesToInvert = this.weatherChangeRates.ToDictionary(
                 weatherChangeRate => weatherChangeRate.Key, weatherChangeRate => false);
 
-            foreach (var weatherChangeRate in this.WeatherChangeRates)
+            foreach (var weatherChangeRate in this.weatherChangeRates)
             {
                 var weatherType = weatherChangeRate.Key;
                 var changeRate = weatherChangeRate.Value;
 
                 // rounding is used to counteract some of the floating point arithmetic loss of precision
-                this.WeatherLevels[weatherType] = Math.Round(this.WeatherLevels[weatherType] + changeRate, 4);
-                if (this.WeatherLevels[weatherType] >= 1.0 || this.WeatherLevels[weatherType] <= 0.0)
+                this.weatherLevels[weatherType] = Math.Round(this.weatherLevels[weatherType] + changeRate, 4);
+                if (this.weatherLevels[weatherType] >= 1.0 || this.weatherLevels[weatherType] <= 0.0)
                 {
                     ratesToInvert[weatherType] = true;
                 }
@@ -50,7 +50,7 @@
 
             foreach (var rateToInvert in ratesToInvert.Where(rateToInvert => rateToInvert.Value))
             {
-                this.WeatherChangeRates[rateToInvert.Key] = -this.WeatherChangeRates[rateToInvert.Key];
+                this.weatherChangeRates[rateToInvert.Key] = -this.weatherChangeRates[rateToInvert.Key];
             }
         }
     }

@@ -9,18 +9,12 @@
 
     public class Organism : IOrganism
     {
-        public Guid ColonyId { get; private set; }
-        public string Name { get; private set; }
-        public Color Color { get; private set; }
+        public Guid ColonyId { get; }
+        public string Name { get; }
+        public Color Color { get; }
 
-        private IOrganismLogic OrganismLogic { get; set; }
-        public string Description
-        {
-            get
-            {
-                return this.OrganismLogic.Description;
-            }
-        }
+        private readonly IOrganismLogic organismLogic;
+        public string Description => this.organismLogic.Description;
 
         public double Age { get; private set; }
 
@@ -38,101 +32,37 @@
         }
 
         private double CurrentIntentionStartAge { get; set; }
-
         public Inventory CurrentInventory { get; private set; }
 
         private readonly MeasurementData<OrganismMeasure> measurementData;
-        public IMeasurementData<OrganismMeasure> MeasurementData
-        {
-            get
-            {
-                return this.measurementData;
-            }
-        }
+        public IMeasurementData<OrganismMeasure> MeasurementData => this.measurementData;
 
-        public bool IsAlive
-        {
-            get
-            {
-                return this.GetLevel(OrganismMeasure.Health) > 0.0;
-            }
-        }
+        public bool IsAlive => this.GetLevel(OrganismMeasure.Health) > 0.0;
+        public bool CanMove => !this.CurrentIntention.Equals(Intention.Reproduce);
+        public bool IsAudible => this.IsSoundOverloaded || this.IsSounding(this);
 
-        public bool CanMove
-        {
-            get
-            {
-                return !this.CurrentIntention.Equals(Intention.Reproduce);
-            }
-        }
-
-        public bool IsAudible
-        {
-            get
-            {
-                return this.IsSoundOverloaded || this.IsSounding(this);
-            }
-        }
-
-        public bool IsDepositingPheromone
-        {
-            get
-            {
-                // TODO: intention duration limit should probably be relative to the size of the ecosystem
-                return this.IsPheromoneOverloaded || (this.CurrentIntention.Equals(Intention.Nourish) && this.IsWithinDuration(this.CurrentIntentionStartAge, 50));
-            }
-        }
-
-        public Dictionary<EnvironmentMeasure, double> MeasureBiases
-        {
-            get
-            {
-                return this.CurrentIntention.EnvironmentBias;
-            }
-        }
+        // TODO: intention duration limit should probably be relative to the size of the ecosystem
+        public bool IsDepositingPheromone => this.IsPheromoneOverloaded || (this.CurrentIntention.Equals(Intention.Nourish) && this.IsWithinDuration(this.CurrentIntentionStartAge, 50));
 
         // TODO: overload and disease durations should come from settings
         private double PheromoneOverloadStartAge { get; set; }
-        public bool IsPheromoneOverloaded
-        {
-            get
-            {
-                return this.IsWithinDuration(this.PheromoneOverloadStartAge, 20);
-            }
-        }
+        public bool IsPheromoneOverloaded => this.IsWithinDuration(this.PheromoneOverloadStartAge, 20);
 
         private double SoundOverloadedStartAge { get; set; }
-        public bool IsSoundOverloaded
-        {
-            get
-            {
-                return this.IsWithinDuration(this.SoundOverloadedStartAge, 20);
-            }
-        }
+        public bool IsSoundOverloaded => this.IsWithinDuration(this.SoundOverloadedStartAge, 20);
 
         private double DiseaseStartAge { get; set; }
-        public bool IsDiseased
-        {
-            get
-            {
-                return this.IsWithinDuration(this.DiseaseStartAge, 100);
-            }
-        }
+        public bool IsDiseased => this.IsWithinDuration(this.DiseaseStartAge, 100);
+        public bool IsInfectious => this.IsWithinDuration(this.DiseaseStartAge, 10);
 
-        public bool IsInfectious
-        {
-            get
-            {
-                return this.IsWithinDuration(this.DiseaseStartAge, 10);
-            }
-        }
+        public Dictionary<EnvironmentMeasure, double> MeasureBiases => this.CurrentIntention.EnvironmentBias;
 
         public Organism(Guid colonyId, string name, Color color, IOrganismLogic organismLogic)
         {
             this.ColonyId = colonyId;
             this.Name = name;
             this.Color = color;
-            this.OrganismLogic = organismLogic;
+            this.organismLogic = organismLogic;
 
             var health = new Measurement<OrganismMeasure>(OrganismMeasure.Health, 1.0);
             var inventory = new Measurement<OrganismMeasure>(OrganismMeasure.Inventory, 0.0);
@@ -152,12 +82,12 @@
 
         private bool IsSounding(IOrganismState organismState)
         {
-            return this.OrganismLogic.IsSounding(organismState);
+            return this.organismLogic.IsSounding(organismState);
         }
 
         public Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
-            return this.OrganismLogic.DecideIntention(measurableEnvironment, this);
+            return this.organismLogic.DecideIntention(measurableEnvironment, this);
         }
 
         public void UpdateIntention(Intention newIntention)
@@ -246,9 +176,6 @@
             return Math.Round(this.Age - startAge, 4);
         }
 
-        public override string ToString()
-        {
-            return string.Format("{0}: {1} | {2} | {3} | {4} | {5}", this.Name, this.GetLevel(OrganismMeasure.Health).ToString("0.000"), this.Age.ToString("0.00"), this.Description, this.CurrentIntention, this.Color);
-        }
+        public override string ToString() => $"{this.Name}: {this.GetLevel(OrganismMeasure.Health).ToString("0.000")} | {this.Age.ToString("0.00")} | {this.Description} | {this.CurrentIntention} | {this.Color}";
     }
 }

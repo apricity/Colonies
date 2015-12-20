@@ -8,9 +8,9 @@
 
     public class PhaseSummary
     {
-        public int PhaseNumber { get; private set; }
+        public int PhaseNumber { get; }
         public int PhasesPerRound { get; private set; }
-        public IEcosystemHistory EcosystemHistory { get; private set; }
+        public IEcosystemHistory EcosystemHistory { get; }
         public Dictionary<IOrganism, Coordinate> OrganismCoordinates { get; private set; } 
 
         public PhaseSummary(
@@ -25,14 +25,6 @@
             this.OrganismCoordinates = organismCoordinates;
         }
 
-        public override string ToString()
-        {
-            return string.Format(
-                "# update: {0} | # modifications: {1} | # relocations: {2} | # additions: {3}",
-                this.PhaseNumber,
-                this.EcosystemHistory.Modifications.Count,
-                this.EcosystemHistory.Relocations.Count,
-                this.EcosystemHistory.Additions.Count);
-        }
+        public override string ToString() => $"# update: {this.PhaseNumber} | # modifications: {this.EcosystemHistory.Modifications.Count} | # relocations: {this.EcosystemHistory.Relocations.Count} | # additions: {this.EcosystemHistory.Additions.Count}";
     }
 }

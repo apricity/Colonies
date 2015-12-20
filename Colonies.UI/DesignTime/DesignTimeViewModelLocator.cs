@@ -26,13 +26,13 @@
             ViewModelBootstrapper.Run(DomainBootstrapper.Domain);
         }
 
-        public static MainViewModel MainViewModel { get { return ViewModelBootstrapper.MainViewModel; } }
+        public static MainViewModel MainViewModel => ViewModelBootstrapper.MainViewModel;
 
-        public static EcosystemViewModel EcosystemViewModel { get { return MainViewModel.EcosystemViewModel; } }
-        public static HabitatViewModel HabitatViewModel { get { return EcosystemViewModel.HabitatViewModels[0][0]; } }
-        public static EnvironmentViewModel EnvironmentViewModel { get { return HabitatViewModel.EnvironmentViewModel; } }
-        public static OrganismViewModel OrganismViewModel { get { return HabitatViewModel.OrganismViewModel; } }
+        public static EcosystemViewModel EcosystemViewModel => MainViewModel.EcosystemViewModel;
+        public static HabitatViewModel HabitatViewModel => EcosystemViewModel.HabitatViewModels[0][0];
+        public static EnvironmentViewModel EnvironmentViewModel => HabitatViewModel.EnvironmentViewModel;
+        public static OrganismViewModel OrganismViewModel => HabitatViewModel.OrganismViewModel;
 
-        public static OrganismSynopsisViewModel OrganismSynopsisViewModel { get { return MainViewModel.OrganismSynopsisViewModel; } }
+        public static OrganismSynopsisViewModel OrganismSynopsisViewModel => MainViewModel.OrganismSynopsisViewModel;
     }
 }

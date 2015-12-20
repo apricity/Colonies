@@ -6,13 +6,7 @@
 
     public class QueenLogic : IOrganismLogic
     {
-        public string Description
-        {
-            get
-            {
-                return "Queen";
-            }
-        }
+        public string Description => "Queen";
 
         public bool IsSounding(IOrganismState organismState)
         {

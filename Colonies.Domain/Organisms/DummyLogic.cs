@@ -5,13 +5,7 @@
 
     public class DummyLogic : IOrganismLogic
     {
-        public string Description
-        {
-            get
-            {
-                return "Dummy";
-            }
-        }
+        public string Description => "Dummy";
 
         public bool IsSounding(IOrganismState organismState)
         {

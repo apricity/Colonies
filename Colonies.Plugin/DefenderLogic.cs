@@ -6,13 +6,7 @@
 
     public class DefenderLogic : IOrganismLogic
     {
-        public string Description
-        {
-            get
-            {
-                return "Defender";
-            }
-        }
+        public string Description => "Defender";
 
         public bool IsSounding(IOrganismState organismState)
         {

@@ -13,7 +13,7 @@
 
     public class OrganismFactory
     {
-        private readonly List<ColonyPluginData> colonyDatas = new List<ColonyPluginData>(); 
+        private readonly List<ColonyPluginData> colonyDatas; 
         private readonly WordProvider wordProvider = new WordProvider();
         private readonly List<string> usedNames = new List<string>();
 
@@ -78,7 +78,7 @@
         {
             var givenName = this.wordProvider.GetRandomWord(WordClass.Noun).ToTitleCase();
             var nickName = this.wordProvider.GetRandomWord(WordClass.Verb).ToTitleCase();
-            var name = string.Format("{0} \"{1}\" {2}", givenName, nickName, colonyName);
+            var name = $"{givenName} \"{nickName}\" {colonyName}";
 
             var nameCount = this.usedNames.Count(usedName => usedName.Equals(name));
             this.usedNames.Add(name);

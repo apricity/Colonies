@@ -5,9 +5,9 @@
 
     public class EcosystemHistory : IEcosystemHistory, IEcosystemHistoryPuller, IEcosystemHistoryPusher
     {
-        public List<EcosystemModification> Modifications { get; private set; }
-        public List<EcosystemRelocation> Relocations { get; private set; }
-        public List<EcosystemAddition> Additions { get; private set; } 
+        public List<EcosystemModification> Modifications { get; }
+        public List<EcosystemRelocation> Relocations { get; }
+        public List<EcosystemAddition> Additions { get; } 
 
         public EcosystemHistory()
         {
@@ -55,9 +55,6 @@
             return new EcosystemHistory(modifications.ToList(), relocations.ToList(), additions.ToList());
         }
 
-        public override string ToString()
-        {
-            return string.Format("Modifications: {0}", this.Modifications.Count);
-        }
+        public override string ToString() => $"Modifications: {this.Modifications.Count}";
     }
 }

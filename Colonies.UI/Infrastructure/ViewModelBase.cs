@@ -9,7 +9,7 @@
 
     public abstract class ViewModelBase<T> : INotifyPropertyChanged where T : class
     {
-        protected T DomainModel { get; private set; }
+        protected T DomainModel { get; }
         protected IEventAggregator EventAggregator { get; private set; }
 
         protected ViewModelBase(T domainModel, IEventAggregator eventAggregator)
@@ -20,21 +20,15 @@
 
         public abstract void Refresh();
 
-        public override string ToString()
-        {
-            return string.Format("VM: {0}", this.DomainModel);
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
         protected void OnPropertyChanged(string propertyName)
         {
             var handler = this.PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
+            handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public override string ToString() => $"VM: {this.DomainModel}";
     }
 }

@@ -25,7 +25,7 @@ namespace Wacton.Colonies.UI.OrganismSynopses
             set
             {
                 this.organismViewModels = value;
-                this.OnPropertyChanged("OrganismViewModels");
+                this.OnPropertyChanged(nameof(this.OrganismViewModels));
             }
         }
 

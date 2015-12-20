@@ -5,9 +5,9 @@
 
     public class EcosystemRelocation
     {
-        public IOrganism Organism { get; private set; }
-        public Coordinate PreviousCoordinate { get; private set; }
-        public Coordinate UpdatedCoordinate { get; private set; }
+        public IOrganism Organism { get; }
+        public Coordinate PreviousCoordinate { get; }
+        public Coordinate UpdatedCoordinate { get; }
 
         public EcosystemRelocation(IOrganism organism, Coordinate previousCoordinate, Coordinate updatedCoordinate)
         {
@@ -16,9 +16,6 @@
             this.UpdatedCoordinate = updatedCoordinate;
         }
 
-        public override string ToString()
-        {
-            return string.Format("{0} {1}->{2}", this.Organism.Name, this.PreviousCoordinate, this.UpdatedCoordinate);
-        }
+        public override string ToString() => $"{this.Organism.Name} {this.PreviousCoordinate}->{this.UpdatedCoordinate}";
     }
 }

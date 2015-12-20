@@ -7,26 +7,13 @@
 
     public class BirthLogic : IIntentionLogic
     {
-        public Inventory AssociatedIntenvory
-        {
-            get
-            {
-                return Inventory.Spawn;
-            }
-        }
-
-        public Dictionary<EnvironmentMeasure, double> EnvironmentBias
-        {
-            get
-            {
-                return new Dictionary<EnvironmentMeasure, double>
-                       {
-                           { EnvironmentMeasure.Damp, -10 },
-                           { EnvironmentMeasure.Heat, -10 },
-                           { EnvironmentMeasure.Disease, -50 }
-                       };
-            }
-        }
+        public Inventory AssociatedIntenvory => Inventory.Spawn;
+        public Dictionary<EnvironmentMeasure, double> EnvironmentBias => new Dictionary<EnvironmentMeasure, double>
+                                                                         {
+                                                                             { EnvironmentMeasure.Damp, -10 },
+                                                                             { EnvironmentMeasure.Heat, -10 },
+                                                                             { EnvironmentMeasure.Disease, -50 }
+                                                                         };
 
         public bool CanInteractEnvironment(IOrganismState organismState)
         {

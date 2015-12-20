@@ -14,7 +14,7 @@
     {
         private readonly EcosystemData ecosystemData;
         private readonly EcosystemRates ecosystemRates;
-        public Dictionary<OrganismMeasure, double> MeasureBiases { get; private set; }
+        public Dictionary<OrganismMeasure, double> MeasureBiases { get; }
 
         public Dictionary<IOrganism, Coordinate> OverrideDesiredOrganismCoordinates { get; set; }
         public Func<IEnumerable<IOrganism>, IOrganism> OverrideDecideOrganismFunction { get; set; } 

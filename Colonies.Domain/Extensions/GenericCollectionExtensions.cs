@@ -16,6 +16,8 @@
 
         public static List<T> ToList<T>(this T[,] twoDimensionalArray)
         {
+            // note one-liner?: return twoDimensionalArray.Cast<T>().ToList();
+
             var list = new List<T>();
             foreach (var element in twoDimensionalArray)
             {

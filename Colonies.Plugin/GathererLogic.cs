@@ -6,13 +6,7 @@
 
     public class GathererLogic : IOrganismLogic 
     {
-        public string Description
-        {
-            get
-            {
-                return "Gatherer";
-            }
-        }
+        public string Description => "Gatherer";
 
         public bool IsSounding(IOrganismState organismState)
         {

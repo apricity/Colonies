@@ -1,6 +1,9 @@
 ﻿namespace Wacton.Colonies.Domain.Plugins
 {
+    using System.Collections.Generic;
     using System.Windows.Media;
+
+    using Wacton.Colonies.Domain.Organisms;
 
     public interface IColonyPlugin
     {
@@ -9,6 +12,6 @@
         // TODO: consider moving to RGB values if wanting to avoid plugins using transparency
         Color ColonyColor { get; }
 
-        PluginLogicWeightings LogicWeightings { get; }
+        Dictionary<IOrganismLogic, int> ColonyLogics { get; }
     }
 }

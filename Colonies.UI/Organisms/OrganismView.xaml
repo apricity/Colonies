@@ -36,8 +36,7 @@
         <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="0.25">
             <Grid>
                 <Rectangle Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}" 
-                           Opacity="{Binding IsAlive, Converter={StaticResource BoolToAliveOpacityConverter}}">
-                </Rectangle>
+                           Opacity="{Binding IsAlive, Converter={StaticResource BoolToAliveOpacityConverter}}" />
 
                 <Rectangle Fill="{Binding InventoryColor, Converter={StaticResource ColorToBrushConverter}}" 
                            Stroke="Black" StrokeThickness="0.25" Opacity="0.5">

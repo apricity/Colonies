@@ -36,12 +36,12 @@
 
             foreach (var colonyData in this.colonyDatas)
             {
-                var colonyLogicTypes = colonyData.ColonyLogicTypes;
+                var weightedLogics = colonyData.ColonyLogics;
                 var organisms = new List<IOrganism>();
-                foreach (var logicType in colonyLogicTypes)
+                foreach (var weightedLogic in weightedLogics)
                 {
-                    var organismLogicType = logicType.Item;
-                    var organism = this.CreateOrganism(colonyData, organismLogicType);
+                    var organismLogic = weightedLogic.Item;
+                    var organism = this.CreateOrganism(colonyData, organismLogic);
                     organisms.Add(organism);
                 }
 
@@ -57,14 +57,13 @@
             return this.CreateOrganism(colonyData);
         }
 
-        private IOrganism CreateOrganism(ColonyPluginData colonyData, Type organismLogicType = null)
+        private IOrganism CreateOrganism(ColonyPluginData colonyData, IOrganismLogic organismLogic = null)
         {
             var colonyId = colonyData.ColonyId;
             var colonyName = colonyData.ColonyName;
             var colonyColor = colonyData.ColonyColor;
             var name = this.GenerateFullName(colonyName);
-            var logicType = organismLogicType ?? RandomSelection.SelectOne(colonyData.ColonyLogicTypes);
-            var logic = (IOrganismLogic)Activator.CreateInstance(logicType);
+            var logic = organismLogic ?? RandomSelection.SelectOne(colonyData.ColonyLogics);
             var organism = new Organism(colonyId, name, colonyColor, logic);
             return organism;
         }

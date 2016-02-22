@@ -1,12 +1,8 @@
 ﻿namespace Wacton.Colonies.Domain.Habitats
 {
-    using System;
-
     using Wacton.Colonies.Domain.Environments;
     using Wacton.Colonies.Domain.Measures;
     using Wacton.Colonies.Domain.Organisms;
-
-    using Environment = Wacton.Colonies.Domain.Environments.Environment;
 
     public sealed class Habitat : IHabitat
     {

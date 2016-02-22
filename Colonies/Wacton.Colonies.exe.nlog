@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      throwExceptions="true">
+
+  <!-- filename should be <application name>.exe.nlog -->
+  <!-- make sure to set 'Copy To Output Directory' option for this file -->
+  <!-- go to https://github.com/nlog/NLog/wiki/Configuration-file for more information -->
+
+  <variable name="LogDirectory" value="${specialfolder:folder=CommonApplicationData}/Wacton/" />
+
+  <variable name="StandardFilePath" value="${LogDirectory}/${processname}.log" />
+  <variable name="ErrorFilePath" value="${LogDirectory}/${processname}_ERRORS.log" />
+
+  <variable name="StandardLayout" value="[${longdate}|${level}] ${message} ${onexception:${newline}${exception:format=tostring:maxInnerException=5}${newline}}" />
+  <variable name="ErrorLayout" value="[${longdate}] ${message} ${onexception:${newline}${exception:format=tostring:maxInnerException=5}${newline}}" />
+
+  <targets>
+    <target name="FileStandardTarget" xsi:type="File" layout="${StandardLayout}" fileName="${StandardFilePath}" keepFileOpen="true" enableFileDelete="false" autoFlush="true"/>
+    <target name="FileErrorTarget" xsi:type="File" layout="${ErrorLayout}" fileName="${ErrorFilePath}" keepFileOpen="true" enableFileDelete="false" autoFlush="true" />
+    <target name="DebuggerTarget" xsi:type="Debugger" layout="${StandardLayout}" />
+    <target name="ConsoleTarget" xsi:type="Console" layout="${message}" />
+  </targets>
+
+  <rules>
+    <!-- loggers not called DefaultLogger can be accessed via Logget.Get() -->
+    <logger name="DefaultLogger" minlevel="Trace" writeTo="FileStandardTarget,DebuggerTarget,ConsoleTarget" />
+    <logger name="DefaultLogger" minlevel="Error" writeTo="FileErrorTarget" />
+  </rules>
+</nlog>

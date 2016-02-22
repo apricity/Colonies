@@ -155,7 +155,6 @@
     <Compile Include="Plugins\IColonyPlugin.cs" />
     <Compile Include="Plugins\ColonyPluginData.cs" />
     <Compile Include="Plugins\PluginLoader.cs" />
-    <Compile Include="Plugins\PluginLogicWeightings.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -6,7 +6,6 @@
     using System.Linq;
     using System.Reflection;
 
-    using Wacton.Colonies.Domain.Organisms;
     using Wacton.Colonies.Domain.Plugins;
 
     public class Program
@@ -34,20 +33,17 @@
                 Console.WriteLine("Name: {0}", pluginData.ColonyName);
                 Console.WriteLine("Color: {0}", pluginData.ColonyColor);
 
-                var weightedLogicTypes = pluginData.ColonyLogicTypes;
-                var totalWeight = weightedLogicTypes.Sum(weightedItem => weightedItem.Weight);
-
-                foreach (var weightedLogicType in weightedLogicTypes)
+                var weightedLogics = pluginData.ColonyLogics;
+                var totalWeight = weightedLogics.Sum(weightedItem => weightedItem.Weight);
+                foreach (var weightedLogic in weightedLogics)
                 {
-                    var logicType = weightedLogicType.Item;
-                    var weight = weightedLogicType.Weight;
-                    var logic = (IOrganismLogic)Activator.CreateInstance(logicType);
+                    var logic = weightedLogic.Item;
+                    var weight = weightedLogic.Weight;
 
                     var percentage = Math.Round((weight / totalWeight) * 100, 2);
                     Console.WriteLine("Logic: {0} | Chance: {1}/{2} ({3}%)", 
-                        logic.Description, weightedLogicType.Weight, totalWeight, percentage);
+                        logic.Description, weightedLogic.Weight, totalWeight, percentage);
                 }
-
             }
 
             Console.WriteLine("==============================");

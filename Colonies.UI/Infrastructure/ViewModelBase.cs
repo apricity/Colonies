@@ -1,6 +1,5 @@
 ﻿namespace Wacton.Colonies.UI.Infrastructure
 {
-    using System;
     using System.ComponentModel;
 
     using Microsoft.Practices.Prism.PubSubEvents;

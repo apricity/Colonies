@@ -2,42 +2,52 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Windows.Media;
 
     using Wacton.Colonies.Domain.Organisms;
+    using Wacton.Tovarisch.Collections;
     using Wacton.Tovarisch.Randomness;
-    using Wacton.Tovarisch.Types;
 
     public class ColonyPluginData
     {
         public Guid ColonyId { get; }
         public string ColonyName { get; }
         public Color ColonyColor { get; private set; }
-        public List<WeightedItem<Type>> ColonyLogicTypes { get; }
+        public List<WeightedItem<IOrganismLogic>> ColonyLogics { get; }
         public string PluginDescription { get; }
 
         public ColonyPluginData(IColonyPlugin colonyPlugin)
         {
+            CheckForDuplicates(colonyPlugin.ColonyLogics.Keys);
+
             this.ColonyId = Guid.NewGuid();
             this.ColonyName = colonyPlugin.ColonyName;
             this.ColonyColor = colonyPlugin.ColonyColor;
-            this.ColonyLogicTypes = new List<WeightedItem<Type>>();
-            foreach (var logicWeighting in colonyPlugin.LogicWeightings.Get())
+            this.ColonyLogics = new List<WeightedItem<IOrganismLogic>>();
+            foreach (var logicWeighting in colonyPlugin.ColonyLogics)
             {
-                var logicType = logicWeighting.Key;
+                var organismLogic = logicWeighting.Key;
                 var logicWeight = logicWeighting.Value;
 
-                if (!logicType.IsImplementationOf<IOrganismLogic>())
-                {
-                    continue;
-                }
-
-                this.ColonyLogicTypes.Add(new WeightedItem<Type>(logicType, logicWeight));
+                this.ColonyLogics.Add(new WeightedItem<IOrganismLogic>(organismLogic, logicWeight));
             }
 
             this.PluginDescription = colonyPlugin.ToString();
         }
 
-        public override string ToString() => $"Colony: {this.ColonyName} [{this.PluginDescription}] | Logics: {this.ColonyLogicTypes.Count} | ID: {this.ColonyId} ";
+        private static void CheckForDuplicates(IEnumerable<IOrganismLogic> colonyLogics)
+        {
+            var duplicates = colonyLogics.Select(item => item.GetType().Name).Duplicates();
+            if (!duplicates.Any())
+            {
+                return;
+            }
+
+            var duplicatesString = duplicates.ToDelimitedString(", ");
+            throw new InvalidOperationException($"Colony plugin has duplicated logics ({duplicatesString})");
+        }
+
+        public override string ToString() => $"Colony: {this.ColonyName} [{this.PluginDescription}] | Logics: {this.ColonyLogics.Count} | ID: {this.ColonyId} ";
     }
 }

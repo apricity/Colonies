@@ -5,39 +5,24 @@
     using Wacton.Colonies.Domain.Measures;
     using Wacton.Colonies.Domain.Organisms;
 
-    public class BirthLogic : IIntentionLogic
+    public class BirthLogic : InteractionIntentionLogic
     {
-        public Inventory AssociatedIntenvory => Inventory.Spawn;
-        public Dictionary<EnvironmentMeasure, double> EnvironmentBias => new Dictionary<EnvironmentMeasure, double>
-                                                                         {
-                                                                             { EnvironmentMeasure.Damp, -10 },
-                                                                             { EnvironmentMeasure.Heat, -10 },
-                                                                             { EnvironmentMeasure.Disease, -50 }
-                                                                         };
+        public override Inventory AssociatedIntenvory => Inventory.Spawn;
+        public override Dictionary<EnvironmentMeasure, double> EnvironmentBias => new Dictionary<EnvironmentMeasure, double>
+            {
+                { EnvironmentMeasure.Damp, -10 },
+                { EnvironmentMeasure.Heat, -10 },
+                { EnvironmentMeasure.Disease, -50 }
+            };
 
-        public bool CanInteractEnvironment(IOrganismState organismState)
+        public override bool CanPerformInteraction(IOrganismState organismState)
         {
-            return false;
+            return OrganismHasSpawn(organismState);
         }
 
-        public bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+        public override IntentionAdjustments EffectsOfInteraction(IOrganismState organismState, IOrganismState otherOrganismState)
         {
-            return this.CanInteractEnvironment(organismState);
-        }
-
-        public IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
-        {
-            return new IntentionAdjustments();
-        }
-
-        public bool CanInteractOrganism(IOrganismState organismState)
-        {
-            return this.OrganismHasSpawn(organismState);
-        }
-
-        public IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState)
-        {
-            if (!this.CanInteractOrganism(organismState))
+            if (!this.CanPerformInteraction(organismState))
             {
                 return new IntentionAdjustments();
             }
@@ -49,7 +34,7 @@
             return new IntentionAdjustments(organismAdjustments, environmentAdjustments);
         }
 
-        private bool OrganismHasSpawn(IOrganismState organismState)
+        private static bool OrganismHasSpawn(IOrganismState organismState)
         {
             return organismState.CurrentInventory.Equals(Inventory.Spawn) && organismState.GetLevel(OrganismMeasure.Inventory).Equals(1.0);
         }

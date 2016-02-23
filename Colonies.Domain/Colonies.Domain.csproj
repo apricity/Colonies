@@ -102,6 +102,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainBootstrapper.cs" />
+    <Compile Include="Intentions\InteractionIntentionLogic.cs" />
+    <Compile Include="Intentions\ActionIntentionLogic.cs" />
     <Compile Include="Intentions\BuildLogic.cs" />
     <Compile Include="Intentions\NestLogic.cs" />
     <Compile Include="Intentions\ReproduceLogic.cs" />

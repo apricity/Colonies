@@ -8,14 +8,16 @@
 
     public class EnvironmentMeasure : Enumeration, IMeasure
     {
-        public static readonly EnvironmentMeasure Pheromone = new EnvironmentMeasure(0, "Pheromone", WeatherType.None);
-        public static readonly EnvironmentMeasure Nutrient = new EnvironmentMeasure(1, "Nutrient", WeatherType.None);
-        public static readonly EnvironmentMeasure Mineral = new EnvironmentMeasure(2, "Mineral", WeatherType.None);
-        public static readonly EnvironmentMeasure Damp = new EnvironmentMeasure(3, "Damp", WeatherType.Damp);
-        public static readonly EnvironmentMeasure Heat = new EnvironmentMeasure(4, "Heat", WeatherType.Heat);
-        public static readonly EnvironmentMeasure Disease = new EnvironmentMeasure(5, "Disease", WeatherType.None);
-        public static readonly EnvironmentMeasure Obstruction = new EnvironmentMeasure(6, "Obstruction", WeatherType.None);
-        public static readonly EnvironmentMeasure Sound = new EnvironmentMeasure(7, "Sound", WeatherType.None);
+        public static readonly EnvironmentMeasure Pheromone = new EnvironmentMeasure("Pheromone", WeatherType.None);
+        public static readonly EnvironmentMeasure Nutrient = new EnvironmentMeasure("Nutrient", WeatherType.None);
+        public static readonly EnvironmentMeasure Mineral = new EnvironmentMeasure("Mineral", WeatherType.None);
+        public static readonly EnvironmentMeasure Damp = new EnvironmentMeasure("Damp", WeatherType.Damp);
+        public static readonly EnvironmentMeasure Heat = new EnvironmentMeasure("Heat", WeatherType.Heat);
+        public static readonly EnvironmentMeasure Disease = new EnvironmentMeasure("Disease", WeatherType.None);
+        public static readonly EnvironmentMeasure Obstruction = new EnvironmentMeasure("Obstruction", WeatherType.None);
+        public static readonly EnvironmentMeasure Sound = new EnvironmentMeasure("Sound", WeatherType.None);
+
+        private static int counter;
 
         public static IEnumerable<EnvironmentMeasure> HazardousMeasures()
         {
@@ -25,8 +27,8 @@
         public bool IsHazardous => HazardousMeasures().Contains(this);
         public WeatherType WeatherTrigger { get; private set; }
 
-        private EnvironmentMeasure(int value, string friendlyString, WeatherType weatherTrigger)
-            : base(value, friendlyString)
+        private EnvironmentMeasure(string friendlyString, WeatherType weatherTrigger)
+            : base(counter++, friendlyString)
         {
             this.WeatherTrigger = weatherTrigger;
         }

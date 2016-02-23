@@ -13,8 +13,8 @@
         public string Name { get; }
         public Color Color { get; }
 
-        private readonly IOrganismLogic organismLogic;
-        public string Description => this.organismLogic.Description;
+        private readonly IOrganismLogic logic;
+        public string Description => this.logic.Description;
 
         public double Age { get; private set; }
 
@@ -39,7 +39,7 @@
 
         public bool IsAlive => this.GetLevel(OrganismMeasure.Health) > 0.0;
         public bool CanMove => !this.CurrentIntention.Equals(Intention.Reproduce);
-        public bool IsAudible => this.IsSoundOverloaded || this.IsSounding(this);
+        public bool IsAudible => this.IsAlive && (this.IsSoundOverloaded || this.logic.IsSounding(this));
 
         // TODO: intention duration limit should probably be relative to the size of the ecosystem
         public bool IsDepositingPheromone => this.IsPheromoneOverloaded || (this.CurrentIntention.Equals(Intention.Nourish) && this.IsWithinDuration(this.CurrentIntentionStartAge, 50));
@@ -57,12 +57,12 @@
 
         public Dictionary<EnvironmentMeasure, double> MeasureBiases => this.CurrentIntention.EnvironmentBias;
 
-        public Organism(Guid colonyId, string name, Color color, IOrganismLogic organismLogic)
+        public Organism(Guid colonyId, string name, Color color, IOrganismLogic logic)
         {
             this.ColonyId = colonyId;
             this.Name = name;
             this.Color = color;
-            this.organismLogic = organismLogic;
+            this.logic = logic;
 
             var health = new Measurement<OrganismMeasure>(OrganismMeasure.Health, 1.0);
             var inventory = new Measurement<OrganismMeasure>(OrganismMeasure.Inventory, 0.0);
@@ -80,14 +80,9 @@
             this.Age += increment;
         }
 
-        private bool IsSounding(IOrganismState organismState)
-        {
-            return this.organismLogic.IsSounding(organismState);
-        }
-
         public Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
-            return this.organismLogic.DecideIntention(measurableEnvironment, this);
+            return this.logic.DecideIntention(this, measurableEnvironment);
         }
 
         public void UpdateIntention(Intention newIntention)
@@ -146,24 +141,24 @@
             }
         }
 
-        public bool CanAct(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+        public bool CanPerformAction(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
-            return this.CurrentIntention.CanInteractEnvironment(measurableEnvironment, this);
+            return this.CurrentIntention.CanPerformAction(this, measurableEnvironment);
         }
 
-        public IntentionAdjustments ActionEffects(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+        public IntentionAdjustments EffectsOfAction(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
-            return this.CurrentIntention.InteractEnvironmentAdjustments(measurableEnvironment, this);
+            return this.CurrentIntention.EffectsOfAction(this, measurableEnvironment);
         }
 
-        public bool CanInteract()
+        public bool CanPerformInteraction()
         {
-            return this.CurrentIntention.CanInteractOrganism(this);
+            return this.CurrentIntention.CanPerformInteraction(this);
         }
 
-        public IntentionAdjustments InteractionEffects(IOrganismState otherOrganismState)
+        public IntentionAdjustments EffectsOfInteraction(IOrganismState otherOrganismState)
         {
-            return this.CurrentIntention.InteractOrganismAdjustments(this, otherOrganismState);
+            return this.CurrentIntention.EffectsOfInteraction(this, otherOrganismState);
         }
 
         private bool IsWithinDuration(double startAge, double duration)

@@ -11,14 +11,12 @@
 
         Dictionary<EnvironmentMeasure, double> EnvironmentBias { get; }
 
-        bool CanInteractEnvironment(IOrganismState organismState);
+        bool CanPerformAction(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment);
 
-        bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState);
+        IntentionAdjustments EffectsOfAction(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment);
 
-        IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState);
+        bool CanPerformInteraction(IOrganismState organismState);
 
-        bool CanInteractOrganism(IOrganismState organismState);
-
-        IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState);
+        IntentionAdjustments EffectsOfInteraction(IOrganismState organismState, IOrganismState otherOrganismState);
     }
 }

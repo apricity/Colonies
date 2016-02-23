@@ -4,11 +4,13 @@
 
     public class OrganismMeasure : Enumeration, IMeasure
     {
-        public static readonly OrganismMeasure Health = new OrganismMeasure(0, "Health");
-        public static readonly OrganismMeasure Inventory = new OrganismMeasure(1, "Inventory");
+        public static readonly OrganismMeasure Health = new OrganismMeasure("Health");
+        public static readonly OrganismMeasure Inventory = new OrganismMeasure("Inventory");
 
-        private OrganismMeasure(int value, string friendlyString)
-            : base(value, friendlyString)
+        private static int counter;
+
+        private OrganismMeasure(string friendlyString)
+            : base(counter++, friendlyString)
         {
         }
     }

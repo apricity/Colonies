@@ -41,7 +41,7 @@
             foreach (var organismCoordinate in this.ecosystemData.AliveOrganismCoordinates().ToList())
             {
                 var organism = this.ecosystemData.GetOrganism(organismCoordinate);
-                if (organism.CanInteract())
+                if (organism.CanPerformInteraction())
                 {
                     var adjustments = this.interactionFunctions[organism.CurrentIntention].Invoke(organismCoordinate);
                     this.ecosystemData.AdjustLevels(organismCoordinate, adjustments);
@@ -69,7 +69,7 @@
 
             this.afflictor.AfflictIfHarmful(offspringOrganismCoordinate);
 
-            var adjustments = parentOrganism.InteractionEffects(offspringOrganism);
+            var adjustments = parentOrganism.EffectsOfInteraction(offspringOrganism);
             return adjustments;
         }
 
@@ -86,7 +86,7 @@
             var nourishedOrganism = neighboursRequestingNutrient.FirstOrDefault() ?? RandomSelection.SelectOne(neighboursRequestingNutrient);
             var nourishedOrganismCoordinate = this.ecosystemData.CoordinateOf(nourishedOrganism);
 
-            var adjustments = nourishingOrganism.InteractionEffects(nourishedOrganism);
+            var adjustments = nourishingOrganism.EffectsOfInteraction(nourishedOrganism);
             var givenNutrient = -adjustments.OrganismMeasureAdjustments[OrganismMeasure.Inventory];
             this.ecosystemData.AdjustLevel(nourishedOrganismCoordinate, OrganismMeasure.Health, givenNutrient);
 

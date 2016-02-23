@@ -12,7 +12,7 @@
             return false;
         }
 
-        public Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+        public Intention DecideIntention(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             return Intention.Eat;
         }

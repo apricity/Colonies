@@ -25,9 +25,9 @@
                 var organism = this.ecosystemData.GetOrganism(organismCoordinate);
                 var environment = this.ecosystemData.GetEnvironment(organismCoordinate);
 
-                if (organism.CanAct(environment))
+                if (organism.CanPerformAction(environment))
                 {
-                    var adjustments = organism.ActionEffects(environment);
+                    var adjustments = organism.EffectsOfAction(environment);
                     this.ecosystemData.AdjustLevels(organismCoordinate, adjustments);
                 }
             }

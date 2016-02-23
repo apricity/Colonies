@@ -9,6 +9,6 @@
 
         bool IsSounding(IOrganismState organismState);
 
-        Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState);
+        Intention DecideIntention(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment);
     }
 }

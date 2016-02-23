@@ -6,31 +6,27 @@
     using Wacton.Colonies.Domain.Measures;
     using Wacton.Colonies.Domain.Organisms;
 
-    public class MineLogic : IIntentionLogic
+    public class MineLogic : ActionIntentionLogic
     {
-        public Inventory AssociatedIntenvory => Inventory.Mineral;
-        public Dictionary<EnvironmentMeasure, double> EnvironmentBias => new Dictionary<EnvironmentMeasure, double>
-                                                                         {
-                                                                             { EnvironmentMeasure.Mineral, 25 },
-                                                                             { EnvironmentMeasure.Damp, -10 },
-                                                                             { EnvironmentMeasure.Heat, -10 },
-                                                                             { EnvironmentMeasure.Disease, -50 },
-                                                                             { EnvironmentMeasure.Obstruction, -50 }
-                                                                         };
+        public override Inventory AssociatedIntenvory => Inventory.Mineral;
+        public override Dictionary<EnvironmentMeasure, double> EnvironmentBias => new Dictionary<EnvironmentMeasure, double>
+            {
+                { EnvironmentMeasure.Mineral, 25 },
+                { EnvironmentMeasure.Damp, -10 },
+                { EnvironmentMeasure.Heat, -10 },
+                { EnvironmentMeasure.Disease, -50 },
+                { EnvironmentMeasure.Obstruction, -50 }
+            };
 
-        public bool CanInteractEnvironment(IOrganismState organismState)
+        public override bool CanPerformAction(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
-            return organismState.CurrentInventory.Equals(Inventory.Mineral) && organismState.GetLevel(OrganismMeasure.Inventory) < 1.0;
+            return OrganismNeedsMinerals(organismState) 
+                && EnvironmentHasMinerals(measurableEnvironment);
         }
 
-        public bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+        public override IntentionAdjustments EffectsOfAction(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
-            return this.CanInteractEnvironment(organismState) && this.EnvironmentHasMinerals(measurableEnvironment);
-        }
-
-        public IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
-        {
-            if (!this.CanInteractEnvironment(measurableEnvironment, organismState))
+            if (!this.CanPerformAction(organismState, measurableEnvironment))
             {
                 return new IntentionAdjustments();
             }
@@ -48,17 +44,12 @@
             return new IntentionAdjustments(organismAdjustments, environmentAdjustments);
         }
 
-        public bool CanInteractOrganism(IOrganismState organismState)
+        private static bool OrganismNeedsMinerals(IOrganismState organismState)
         {
-            return false;
+            return organismState.CurrentInventory.Equals(Inventory.Mineral) && organismState.GetLevel(OrganismMeasure.Inventory) < 1.0;
         }
 
-        public IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState)
-        {
-            return new IntentionAdjustments();
-        }
-
-        private bool EnvironmentHasMinerals(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+        private static bool EnvironmentHasMinerals(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             return measurableEnvironment.GetLevel(EnvironmentMeasure.Mineral) > 0.0;
         }

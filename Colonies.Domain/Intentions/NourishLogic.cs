@@ -6,41 +6,26 @@
     using Wacton.Colonies.Domain.Measures;
     using Wacton.Colonies.Domain.Organisms;
 
-    public class NourishLogic : IIntentionLogic
+    public class NourishLogic : InteractionIntentionLogic
     {
-        public Inventory AssociatedIntenvory => Inventory.Nutrient;
-        public Dictionary<EnvironmentMeasure, double> EnvironmentBias => new Dictionary<EnvironmentMeasure, double>
-                                                                         {
-                                                                             { EnvironmentMeasure.Sound, 25 },
-                                                                             { EnvironmentMeasure.Pheromone, -25 },
-                                                                             { EnvironmentMeasure.Damp, -10 },
-                                                                             { EnvironmentMeasure.Heat, -10 },
-                                                                             { EnvironmentMeasure.Disease, -50 }
-                                                                         };
+        public override Inventory AssociatedIntenvory => Inventory.Nutrient;
+        public override Dictionary<EnvironmentMeasure, double> EnvironmentBias => new Dictionary<EnvironmentMeasure, double>
+            {
+                { EnvironmentMeasure.Sound, 25 },
+                { EnvironmentMeasure.Pheromone, -25 },
+                { EnvironmentMeasure.Damp, -10 },
+                { EnvironmentMeasure.Heat, -10 },
+                { EnvironmentMeasure.Disease, -50 }
+            };
 
-        public bool CanInteractEnvironment(IOrganismState organismState)
+        public override bool CanPerformInteraction(IOrganismState organismState)
         {
-            return false;
+            return OrganismHasNutrients(organismState);
         }
 
-        public bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+        public override IntentionAdjustments EffectsOfInteraction(IOrganismState organismState, IOrganismState otherOrganismState)
         {
-            return this.CanInteractEnvironment(organismState);
-        }
-
-        public IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
-        {
-            return new IntentionAdjustments();
-        }
-
-        public bool CanInteractOrganism(IOrganismState organismState)
-        {
-            return this.OrganismHasNutrients(organismState);
-        }
-
-        public IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState)
-        {
-            if (!this.CanInteractOrganism(organismState))
+            if (!this.CanPerformInteraction(organismState))
             {
                 return new IntentionAdjustments();
             }
@@ -57,7 +42,7 @@
             return new IntentionAdjustments(organismAdjustments, environmentAdjustments);
         }
 
-        private bool OrganismHasNutrients(IOrganismState organismState)
+        private static bool OrganismHasNutrients(IOrganismState organismState)
         {
             return organismState.CurrentInventory.Equals(Inventory.Nutrient) && organismState.GetLevel(OrganismMeasure.Inventory) > 0.0;
         }

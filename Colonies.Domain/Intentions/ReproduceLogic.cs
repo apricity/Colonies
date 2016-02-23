@@ -5,33 +5,30 @@
     using Wacton.Colonies.Domain.Measures;
     using Wacton.Colonies.Domain.Organisms;
 
-    public class ReproduceLogic : IIntentionLogic
+    public class ReproduceLogic : ActionIntentionLogic
     {
-        public Inventory AssociatedIntenvory => Inventory.Spawn;
-        public Dictionary<EnvironmentMeasure, double> EnvironmentBias => new Dictionary<EnvironmentMeasure, double>
-                                                                         {
-                                                                             { EnvironmentMeasure.Nutrient, 0 },
-                                                                             { EnvironmentMeasure.Pheromone, 0 },
-                                                                             { EnvironmentMeasure.Sound, 0 },
-                                                                             { EnvironmentMeasure.Damp, 0 },
-                                                                             { EnvironmentMeasure.Heat, 0 },
-                                                                             { EnvironmentMeasure.Disease, 0 },
-                                                                             { EnvironmentMeasure.Obstruction, 0 },
-                                                                         };
+        public override Inventory AssociatedIntenvory => Inventory.Spawn;
+        public override Dictionary<EnvironmentMeasure, double> EnvironmentBias => new Dictionary<EnvironmentMeasure, double>
+            {
+                { EnvironmentMeasure.Nutrient, 0 },
+                { EnvironmentMeasure.Pheromone, 0 },
+                { EnvironmentMeasure.Sound, 0 },
+                { EnvironmentMeasure.Damp, 0 },
+                { EnvironmentMeasure.Heat, 0 },
+                { EnvironmentMeasure.Disease, 0 },
+                { EnvironmentMeasure.Obstruction, 0 },
+            };
 
-        public bool CanInteractEnvironment(IOrganismState organismState)
+        public override bool CanPerformAction(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
-            return organismState.CurrentInventory.Equals(Inventory.Spawn) && organismState.GetLevel(OrganismMeasure.Health) >= 0.995 && organismState.GetLevel(OrganismMeasure.Inventory).Equals(0.0);
+            return OrganismAwaitingSpawn(organismState) 
+                && OrganismIsHealthy(organismState)
+                && EnvironmentHasFullMinerals(measurableEnvironment);
         }
 
-        public bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+        public override IntentionAdjustments EffectsOfAction(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
-            return this.CanInteractEnvironment(organismState) && this.EnvironmentHasFullMinerals(measurableEnvironment);
-        }
-
-        public IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
-        {
-            if (!this.CanInteractEnvironment(measurableEnvironment, organismState))
+            if (!this.CanPerformAction(organismState, measurableEnvironment))
             {
                 return new IntentionAdjustments();
             }
@@ -46,17 +43,17 @@
             return new IntentionAdjustments(organismAdjustments, environmentAdjustments);
         }
 
-        public bool CanInteractOrganism(IOrganismState organismState)
+        private static bool OrganismAwaitingSpawn(IOrganismState organismState)
         {
-            return false;
+            return organismState.CurrentInventory.Equals(Inventory.Spawn) && organismState.GetLevel(OrganismMeasure.Inventory).Equals(0.0);
         }
 
-        public IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState)
+        private static bool OrganismIsHealthy(IOrganismState organismState)
         {
-            return new IntentionAdjustments();
+            return organismState.GetLevel(OrganismMeasure.Health) >= 0.995;
         }
 
-        private bool EnvironmentHasFullMinerals(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+        private static bool EnvironmentHasFullMinerals(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             return measurableEnvironment.GetLevel(EnvironmentMeasure.Mineral).Equals(1.0);
         }

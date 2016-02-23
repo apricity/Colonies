@@ -6,32 +6,28 @@
     using Wacton.Colonies.Domain.Measures;
     using Wacton.Colonies.Domain.Organisms;
 
-    public class BuildLogic : IIntentionLogic
+    public class BuildLogic : ActionIntentionLogic
     {
-        public Inventory AssociatedIntenvory => Inventory.Mineral;
-        public Dictionary<EnvironmentMeasure, double> EnvironmentBias => new Dictionary<EnvironmentMeasure, double>
-                                                                         {
-                                                                             { EnvironmentMeasure.Sound, 50 },
-                                                                             { EnvironmentMeasure.Damp, 10 },
-                                                                             { EnvironmentMeasure.Heat, 10 },
-                                                                             { EnvironmentMeasure.Disease, 25 },
-                                                                             { EnvironmentMeasure.Obstruction, -50 }
-                                                                         };
+        public override Inventory AssociatedIntenvory => Inventory.Mineral;
+        public override Dictionary<EnvironmentMeasure, double> EnvironmentBias => new Dictionary<EnvironmentMeasure, double>
+            {
+                { EnvironmentMeasure.Sound, 50 },
+                { EnvironmentMeasure.Damp, 10 },
+                { EnvironmentMeasure.Heat, 10 },
+                { EnvironmentMeasure.Disease, 25 },
+                { EnvironmentMeasure.Obstruction, -50 }
+            };
 
-        public bool CanInteractEnvironment(IOrganismState organismState)
+        public override bool CanPerformAction(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
-            return organismState.CurrentInventory.Equals(Inventory.Mineral) && organismState.GetLevel(OrganismMeasure.Inventory).Equals(1.0);
+            return OrganismHasMinerals(organismState) 
+                && EnvironmentHasHazard(measurableEnvironment) 
+                && !EnvironmentHasObstruction(measurableEnvironment);
         }
 
-        public bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+        public override IntentionAdjustments EffectsOfAction(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
-            return this.CanInteractEnvironment(organismState) 
-                && this.EnvironmentHasHazard(measurableEnvironment) && !this.EnvironmentHasObstruction(measurableEnvironment);
-        }
-
-        public IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
-        {
-            if (!this.CanInteractEnvironment(measurableEnvironment, organismState))
+            if (!this.CanPerformAction(organismState, measurableEnvironment))
             {
                 return new IntentionAdjustments();
             }
@@ -45,24 +41,18 @@
 
             return new IntentionAdjustments(organismAdjustments, environmentAdjustments);
         }
-
-        public bool CanInteractOrganism(IOrganismState organismState)
+        private static bool OrganismHasMinerals(IOrganismState organismState)
         {
-            return false;
+            return organismState.CurrentInventory.Equals(Inventory.Mineral) && organismState.GetLevel(OrganismMeasure.Inventory).Equals(1.0);
         }
 
-        public IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState)
-        {
-            return new IntentionAdjustments();
-        }
-
-        private bool EnvironmentHasHazard(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+        private static bool EnvironmentHasHazard(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             var hazardousMeasurements = measurableEnvironment.MeasurementData.Measurements.Where(measurement => measurement.Measure.IsHazardous).ToList();
             return hazardousMeasurements.Any(measurement => measurement.Level > 0.0);
         }
 
-        private bool EnvironmentHasObstruction(IMeasurable<EnvironmentMeasure> measurableEnvironment)
+        private static bool EnvironmentHasObstruction(IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             return measurableEnvironment.GetLevel(EnvironmentMeasure.Obstruction) > 0.0;
         }

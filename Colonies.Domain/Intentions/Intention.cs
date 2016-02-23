@@ -8,25 +8,27 @@
 
     public class Intention : Enumeration
     {
-        public static readonly Intention None = new Intention(0, "None", new NoLogic());
-        public static readonly Intention Eat = new Intention(1, "Eat", new EatLogic());
-        public static readonly Intention Harvest = new Intention(2, "Harvest", new HarvestLogic());
-        public static readonly Intention Nourish = new Intention(3, "Nourish", new NourishLogic());
-        public static readonly Intention Mine = new Intention(4, "Mine", new MineLogic());
-        public static readonly Intention Build = new Intention(5, "Build", new BuildLogic());
-        public static readonly Intention Nest = new Intention(6, "Nest", new NestLogic());
-        public static readonly Intention Reproduce = new Intention(7, "Reproduce", new ReproduceLogic());
-        public static readonly Intention Birth = new Intention(8, "Birth", new BirthLogic());
-        public static readonly Intention Dead = new Intention(9, "Dead", new NoLogic());
+        public static readonly Intention None = new Intention("None", new NoLogic());
+        public static readonly Intention Eat = new Intention("Eat", new EatLogic());
+        public static readonly Intention Harvest = new Intention("Harvest", new HarvestLogic());
+        public static readonly Intention Nourish = new Intention("Nourish", new NourishLogic());
+        public static readonly Intention Mine = new Intention("Mine", new MineLogic());
+        public static readonly Intention Build = new Intention("Build", new BuildLogic());
+        public static readonly Intention Nest = new Intention("Nest", new NestLogic());
+        public static readonly Intention Reproduce = new Intention("Reproduce", new ReproduceLogic());
+        public static readonly Intention Birth = new Intention("Birth", new BirthLogic());
+        public static readonly Intention Dead = new Intention("Dead", new NoLogic());
 
-        public IIntentionLogic IntentionLogic { get; }
-        public Inventory AssociatedInventory => this.IntentionLogic.AssociatedIntenvory;
+        private static int counter;
+
+        private readonly IIntentionLogic logic;
+        public Inventory AssociatedInventory => this.logic.AssociatedIntenvory;
         public Dictionary<EnvironmentMeasure, double> EnvironmentBias { get; }
 
-        private Intention(int value, string friendlyString, IIntentionLogic intentionLogic)
-            : base(value, friendlyString)
+        private Intention(string friendlyString, IIntentionLogic logic)
+            : base(counter++, friendlyString)
         {
-            this.IntentionLogic = intentionLogic;
+            this.logic = logic;
 
             this.EnvironmentBias = new Dictionary<EnvironmentMeasure, double>();
             foreach (var environmentMeasure in Enumeration.GetAll<EnvironmentMeasure>())
@@ -34,7 +36,7 @@
                 this.EnvironmentBias.Add(environmentMeasure, 0);
             }
 
-            foreach (var environmentBias in this.IntentionLogic.EnvironmentBias)
+            foreach (var environmentBias in this.logic.EnvironmentBias)
             {
                 this.EnvironmentBias[environmentBias.Key] = environmentBias.Value;
             }
@@ -51,24 +53,24 @@
             return !this.AssociatedInventory.Equals(otherIntention.AssociatedInventory);
         }
 
-        public bool CanInteractEnvironment(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+        public bool CanPerformAction(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
-            return this.IntentionLogic.CanInteractEnvironment(measurableEnvironment, organismState);
+            return this.logic.CanPerformAction(organismState, measurableEnvironment);
         }
 
-        public IntentionAdjustments InteractEnvironmentAdjustments(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+        public IntentionAdjustments EffectsOfAction(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
-            return this.IntentionLogic.InteractEnvironmentAdjustments(measurableEnvironment, organismState);
+            return this.logic.EffectsOfAction(organismState, measurableEnvironment);
         }
 
-        public bool CanInteractOrganism(IOrganismState organismState)
+        public bool CanPerformInteraction(IOrganismState organismState)
         {
-            return this.IntentionLogic.CanInteractOrganism(organismState);
+            return this.logic.CanPerformInteraction(organismState);
         }
 
-        public IntentionAdjustments InteractOrganismAdjustments(IOrganismState organismState, IOrganismState otherOrganismState)
+        public IntentionAdjustments EffectsOfInteraction(IOrganismState organismState, IOrganismState otherOrganismState)
         {
-            return this.IntentionLogic.InteractOrganismAdjustments(organismState, otherOrganismState);
+            return this.logic.EffectsOfInteraction(organismState, otherOrganismState);
         }
     }
 }

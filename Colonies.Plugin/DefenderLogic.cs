@@ -13,7 +13,7 @@
             return false;
         }
 
-        public Intention DecideIntention(IMeasurable<EnvironmentMeasure> measurableEnvironment, IOrganismState organismState)
+        public Intention DecideIntention(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             if (organismState.GetLevel(OrganismMeasure.Health) < 0.33)
             {

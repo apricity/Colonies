@@ -17,7 +17,6 @@
         public static readonly Intention Nest = new Intention("Nest", new NestLogic());
         public static readonly Intention Reproduce = new Intention("Reproduce", new ReproduceLogic());
         public static readonly Intention Birth = new Intention("Birth", new BirthLogic());
-        public static readonly Intention Dead = new Intention("Dead", new NoLogic());
 
         private static int counter;
 

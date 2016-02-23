@@ -23,7 +23,7 @@
         {
             get
             {
-                return this.IsAlive ? this.currentIntention : Intention.Dead;
+                return this.IsAlive ? this.currentIntention : Intention.None;
             }
             private set
             {

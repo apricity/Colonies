@@ -1,0 +1,55 @@
+Logic: the organism is asked for its Intention (defined as a plugin)
+
+Intentions:
+  - None
+    * Summary: completely indifferent to surroundings and perform no action or interaction
+    * Phase: none
+    * Positive bias: none
+    * Negative bias: none
+  - Eat
+    * Summary: take nutrient from inventory or environment to restore health
+    * Phase: action 
+    * Positive bias: nutrient, pheromone, sound
+    * Negative bias: damp, heat, disease
+  - Havest
+    * Summary: gather nutrient from environment to store in inventory
+    * Phase: action
+    * Positive bias: nutrient, pheromone
+    * Negative bias: damp, heat, disease
+  - Nourish
+    * Summary: use nutrient in inventory to provide nutrient to audible organisms
+    * Phase: interaction
+    * Positive bias: sound
+    * Negative bias: pheromone, damp, heat, disease
+  - Mine
+    * Summary: gather mineral from environment to store in inventory
+    * Phase: action
+    * Positive bias: mineral
+    * Negative bias: damp, heat, disease, obstruction
+  - Build
+    * Summary: use mineral in inventory to build obstructions to prevent the spread of hazards
+    * Phase: action
+    * Positive bias: sound, damp, heat, disease
+    * Negative bias: obstruction
+  - Nest
+    * Summary: locate environment with mineral level
+    * Phase: none
+    * Positive bias: mineral
+    * Negative bias: damp, heat, disease
+  - Reproduce
+    * Summary: generate spawn from a full mineral deposit while having very high health
+    * Phase: action
+    * Positive bias: none
+    * Negative bias: none
+  - Birth
+    * Summary: use spawn in inventory to create a new organism
+    * Phase: interaction
+    * Positive bias: none
+    * Negative bias: damp, heat, disease
+  
+Phases:
+  - Setup (afflict any organism in a hazardous environment, decide organism intention)
+  - Action (perform action associated with intention)
+  - Interaction (perform interaction associated with intention)
+  - Movement (perform movement based on environment bias from intention, movement order biased towards most healthy)
+  - Ambient (modify environment, e.g. pheromone fade, nutrient growth, weather levels, hazard spread)

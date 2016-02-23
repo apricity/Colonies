@@ -16,6 +16,7 @@
                 { EnvironmentMeasure.Disease, -50 }
             };
 
+        // TODO: currently useless, consider generating spawn as minerals are consumed
         public override bool CanPerformAction(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment)
         {
             return OrganismNeedsSpawn(organismState);

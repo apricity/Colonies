@@ -10,7 +10,7 @@
 
         public bool IsSounding(IOrganismState organismState)
         {
-            return true;
+            return false;
         }
 
         public Intention DecideIntention(IOrganismState organismState, IMeasurable<EnvironmentMeasure> measurableEnvironment)

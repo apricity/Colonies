@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Wacton.Colonies.Plugin.Inspect")]
+[assembly: AssemblyTitle("Wacton.Colonies.Plugin.Inspector")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Wacton")]
-[assembly: AssemblyProduct("Wacton.Colonies.Plugin.Inspect")]
-[assembly: AssemblyCopyright("Copyright © Wacton 2015")]
+[assembly: AssemblyProduct("Wacton.Colonies.Plugin.Inspector")]
+[assembly: AssemblyCopyright("Copyright © Wacton 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

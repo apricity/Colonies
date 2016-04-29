@@ -14,7 +14,7 @@
     public class OrganismFactory
     {
         private readonly List<ColonyPluginData> colonyDatas; 
-        private readonly WordProvider wordProvider = new WordProvider();
+        private readonly WordRepository wordRepository = new WordRepository();
         private readonly List<string> usedNames = new List<string>();
 
         public OrganismFactory(List<ColonyPluginData> colonyDatas)
@@ -75,8 +75,8 @@
 
         private string GenerateFullName(string colonyName)
         {
-            var givenName = this.wordProvider.GetRandomWord(WordClass.Noun).ToTitleCase();
-            var nickName = this.wordProvider.GetRandomWord(WordClass.Verb).ToTitleCase();
+            var givenName = this.wordRepository.GetRandomWord(WordClass.Noun).ToTitleCase();
+            var nickName = this.wordRepository.GetRandomWord(WordClass.Verb).ToTitleCase();
             var name = $"{givenName} \"{nickName}\" {colonyName}";
 
             var nameCount = this.usedNames.Count(usedName => usedName.Equals(name));

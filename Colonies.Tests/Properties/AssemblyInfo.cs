@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Wacton")]
 [assembly: AssemblyProduct("Wacton.Colonies.Tests")]
-[assembly: AssemblyCopyright("Copyright © Wacton 2013")]
+[assembly: AssemblyCopyright("Copyright © Wacton 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

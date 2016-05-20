@@ -116,7 +116,6 @@
     <Compile Include="Intentions\IntentionAdjustments.cs" />
     <Compile Include="Intentions\EatLogic.cs" />
     <Compile Include="Ecosystems\Data\EcosystemAddition.cs" />
-    <Compile Include="Ecosystems\Data\EcosystemRates.cs" />
     <Compile Include="Ecosystems\Data\EcosystemRelocation.cs" />
     <Compile Include="Ecosystems\Data\EcosystemModification.cs" />
     <Compile Include="Ecosystems\Phases\EcosystemPhases.cs" />
@@ -162,6 +161,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Settings\EcosystemSettings.cs" />
+    <Compile Include="Settings\IEcosystemSettings.cs" />
     <Compile Include="Weathers\IWeather.cs" />
     <Compile Include="Core\Logger.cs" />
     <Compile Include="Core\Decider.cs" />
@@ -205,6 +206,7 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

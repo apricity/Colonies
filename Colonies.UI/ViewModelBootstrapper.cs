@@ -13,6 +13,7 @@
     using Wacton.Colonies.UI.Mains;
     using Wacton.Colonies.UI.Organisms;
     using Wacton.Colonies.UI.OrganismSynopses;
+    using Wacton.Colonies.UI.Settings;
 
     public class ViewModelBootstrapper
     {
@@ -40,6 +41,8 @@
                 }
             }
 
+            var settingsViewModel = new SettingsViewModel(domainModel.Ecosystem.EcosystemSettings, eventaggregator);
+
             var ecosystemViewModel = new EcosystemViewModel(domainModel.Ecosystem, habitatViewModels, eventaggregator);
 
             // hook organism model into the organism synopsis
@@ -47,7 +50,7 @@
             var organismViewModels = organismSynopsis.Organisms.Select(organism => new OrganismViewModel(organism, eventaggregator)).ToList();
             var organismSynopsisViewModel = new OrganismSynopsisViewModel(organismSynopsis, organismViewModels, eventaggregator);
 
-            var mainViewModel = new MainViewModel(domainModel, ecosystemViewModel, organismSynopsisViewModel, eventaggregator);
+            var mainViewModel = new MainViewModel(domainModel, settingsViewModel, ecosystemViewModel, organismSynopsisViewModel, eventaggregator);
             return mainViewModel;
         }
     }

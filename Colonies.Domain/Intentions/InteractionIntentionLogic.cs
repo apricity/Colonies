@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Wacton.Colonies.Domain.Intentions
+﻿namespace Wacton.Colonies.Domain.Intentions
 {
+    using System.Collections.Generic;
+
     using Wacton.Colonies.Domain.Measures;
     using Wacton.Colonies.Domain.Organisms;
 

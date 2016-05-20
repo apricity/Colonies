@@ -1,16 +1,16 @@
-﻿namespace Wacton.Colonies.Domain.Ecosystems.Data
+﻿namespace Wacton.Colonies.Domain.Settings
 {
     using System.Collections.Generic;
 
     using Wacton.Colonies.Domain.Measures;
 
-    public class EcosystemRates
+    public class EcosystemSettings : IEcosystemSettings
     {
-        public Dictionary<IMeasure, double> IncreasingRates { get; private set; } 
-        public Dictionary<IMeasure, double> DecreasingRates { get; private set; } 
-        public Dictionary<EnvironmentMeasure, HazardRate> HazardRates { get; private set; }
+        public Dictionary<IMeasure, double> IncreasingRates { get; }
+        public Dictionary<IMeasure, double> DecreasingRates { get; }
+        public Dictionary<EnvironmentMeasure, HazardRate> HazardRates { get; }
 
-        public EcosystemRates()
+        public EcosystemSettings()
         {
             this.IncreasingRates = new Dictionary<IMeasure, double>
                 {

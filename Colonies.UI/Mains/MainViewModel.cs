@@ -6,22 +6,18 @@ namespace Wacton.Colonies.UI.Mains
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Input;
-    using System.Windows.Media;
 
     using Microsoft.Practices.Prism.PubSubEvents;
 
     using Wacton.Colonies.Domain.Ecosystems.Phases;
     using Wacton.Colonies.Domain.Mains;
-    using Wacton.Colonies.Domain.Measures;
     using Wacton.Colonies.Domain.Weathers;
     using Wacton.Colonies.UI.Ecosystems;
-    using Wacton.Colonies.UI.Environments;
     using Wacton.Colonies.UI.Habitats;
     using Wacton.Colonies.UI.Infrastructure;
     using Wacton.Colonies.UI.OrganismSynopses;
-    using Wacton.Colonies.UI.Properties;
+    using Wacton.Colonies.UI.Settings;
 
-    // TODO: stop breaking the law of demeter so badly :(
     public class MainViewModel : ViewModelBase<IMain>
     {
         // if the timer interval is too small, the model update won't have finished
@@ -33,6 +29,20 @@ namespace Wacton.Colonies.UI.Mains
         public ICommand ToggleEcosystemActiveCommand { get; set; }
         public ICommand IncreasePhaseTimerIntervalCommand { get; set; }
         public ICommand DecreasePhaseTimerIntervalCommand { get; set; }
+
+        private SettingsViewModel settingsViewModel;
+        public SettingsViewModel SettingsViewModel
+        {
+            get
+            {
+                return this.settingsViewModel;
+            }
+            set
+            {
+                this.settingsViewModel = value;
+                this.OnPropertyChanged(nameof(this.SettingsViewModel));
+            }
+        }
 
         private EcosystemViewModel ecosystemViewModel;
         public EcosystemViewModel EcosystemViewModel
@@ -59,171 +69,6 @@ namespace Wacton.Colonies.UI.Mains
             {
                 this.organismSynopsisViewModel = value;
                 this.OnPropertyChanged(nameof(this.OrganismSynopsisViewModel));
-            }
-        }
-
-        private bool isEcosystemActive;
-        public bool IsEcosystemActive
-        {
-            get
-            {
-                return this.isEcosystemActive;
-            }
-            set
-            {
-                this.isEcosystemActive = value;
-                this.OnPropertyChanged(nameof(this.IsEcosystemActive));
-
-                // if the ecosystem turns on/off the timer needs to start/stop 
-                this.ChangeEcosystemPhaseTimer();
-            }
-        }
-
-        // TODO: should the slider go from "slow (1) -> fast (100)", and that value be converted in this view model to a ms value?
-        // phase interval is in ms
-        private int phaseTimerInterval;
-        public int PhaseTimerInterval
-        {
-            get
-            {
-                return this.phaseTimerInterval;
-            }
-            set
-            {
-                this.phaseTimerInterval = value;
-                this.OnPropertyChanged(nameof(this.PhaseTimerInterval));
-            }
-        }
-
-        private int previousPhaseTimerInterval;
-
-        public double HealthDeteriorationDemoninator
-        {
-            get
-            {
-                return 1 / this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[OrganismMeasure.Health];
-            }
-            set
-            {
-                this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[OrganismMeasure.Health] = 1 / value;
-                this.OnPropertyChanged(nameof(this.HealthDeteriorationDemoninator));
-            }
-        }
-
-        public double PheromoneDepositDemoninator
-        {
-            get
-            {
-                return 1 / this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Pheromone];
-            }
-            set
-            {
-                this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Pheromone] = 1 / value;
-                this.OnPropertyChanged(nameof(this.PheromoneDepositDemoninator));
-            }
-        }
-
-        public double PheromoneFadeDemoninator
-        {
-            get
-            {
-                return 1 / this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[EnvironmentMeasure.Pheromone];
-            }
-            set
-            {
-                this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[EnvironmentMeasure.Pheromone] = 1 / value;
-                this.OnPropertyChanged(nameof(this.PheromoneFadeDemoninator));
-            }
-        }
-
-        public double NutrientGrowthDemoninator
-        {
-            get
-            {
-                return 1 / this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Nutrient];
-            }
-            set
-            {
-                this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Nutrient] = 1 / value;
-                this.OnPropertyChanged(nameof(this.NutrientGrowthDemoninator));
-            }
-        }
-
-        public double MineralFormDemoninator
-        {
-            get
-            {
-                return 1 / this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Nutrient];
-            }
-            set
-            {
-                this.DomainModel.Ecosystem.EcosystemRates.IncreasingRates[EnvironmentMeasure.Nutrient] = 1 / value;
-                this.OnPropertyChanged(nameof(this.MineralFormDemoninator));
-            }
-        }
-
-        public double ObstructionDemolishDenominator
-        {
-            get
-            {
-                return 1 / this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[EnvironmentMeasure.Obstruction];
-            }
-            set
-            {
-                this.DomainModel.Ecosystem.EcosystemRates.DecreasingRates[EnvironmentMeasure.Obstruction] = 1 / value;
-                this.OnPropertyChanged(nameof(this.ObstructionDemolishDenominator));
-            }
-        }
-
-        // TODO: needs add, spread, remove for damp, heat, disease...
-        public double DampSpreadDenominator
-        {
-            get
-            {
-                return 1 / this.DomainModel.Ecosystem.EcosystemRates.HazardRates[EnvironmentMeasure.Damp].SpreadRate;
-            }
-            set
-            {
-                var currentHazardRate = this.DomainModel.Ecosystem.EcosystemRates.HazardRates[EnvironmentMeasure.Damp];
-                var updatedHazardRate = new HazardRate(currentHazardRate.AddRate, 1 / value, currentHazardRate.RemoveRate);
-                this.DomainModel.Ecosystem.EcosystemRates.HazardRates[EnvironmentMeasure.Damp] = updatedHazardRate;
-                this.OnPropertyChanged(nameof(this.DampSpreadDenominator));
-            }
-        }
-
-        public static Color PheromoneColor => EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Pheromone];
-        public static Color NutrientColor => EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Nutrient];
-        public static Color MineralColor => EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Mineral];
-        public static Color ObstructionColor => EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Obstruction];
-        public static Color SoundColor => EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Sound];
-        public static Color DampColor => EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Damp];
-        public static Color HeatColor => EnvironmentViewModel.MeasureColors[EnvironmentMeasure.Heat];
-
-        private string weatherDampLevel;
-        public string WeatherDampLevel
-        {
-            get
-            {
-                return this.weatherDampLevel;
-            }
-            set
-            {
-                this.weatherDampLevel = value;
-                this.OnPropertyChanged(nameof(this.WeatherDampLevel));
-            }
-        }
-
-        private string weatherHeatLevel;
-        public string WeatherHeatLevel
-        {
-            get
-            {
-                return this.weatherHeatLevel;
-            }
-            set
-            {
-                this.weatherHeatLevel = value;
-                this.OnPropertyChanged(nameof(this.WeatherHeatLevel));
             }
         }
 
@@ -283,63 +128,57 @@ namespace Wacton.Colonies.UI.Mains
             }
         }
 
+        private string weatherDampLevel;
+        public string WeatherDampLevel
+        {
+            get
+            {
+                return this.weatherDampLevel;
+            }
+            set
+            {
+                this.weatherDampLevel = value;
+                this.OnPropertyChanged(nameof(this.WeatherDampLevel));
+            }
+        }
+
+        private string weatherHeatLevel;
+        public string WeatherHeatLevel
+        {
+            get
+            {
+                return this.weatherHeatLevel;
+            }
+            set
+            {
+                this.weatherHeatLevel = value;
+                this.OnPropertyChanged(nameof(this.WeatherHeatLevel));
+            }
+        }
+
         private DateTime previousPhaseStartTime = DateTime.MinValue;
         private DateTime previousRoundStartTime = DateTime.MinValue;
 
-        public MainViewModel(IMain domainModel, EcosystemViewModel ecosystemViewModel, OrganismSynopsisViewModel organismSynopsisViewModel, IEventAggregator eventAggregator)
+        private int previousPhaseTimerInterval;
+
+        public MainViewModel(IMain domainModel, SettingsViewModel settingsViewModel, EcosystemViewModel ecosystemViewModel, OrganismSynopsisViewModel organismSynopsisViewModel, IEventAggregator eventAggregator)
             : base(domainModel, eventAggregator)
         {
+            this.SettingsViewModel = settingsViewModel;
+            this.SettingsViewModel.OnToggleEcosystemActive(this.ChangeEcosystemPhaseTimer);
             this.EcosystemViewModel = ecosystemViewModel;
             this.OrganismSynopsisViewModel = organismSynopsisViewModel;
 
-            // initally set the ecosystem up to be not running
             this.RoundCount = 0;
             this.PhaseCount = 0;
             this.ecosystemPhaseTimer = new Timer(this.PerformEcosystemPhase);
-            this.IsEcosystemActive = false;
-            var initialPhaseTimerInterval = Settings.Default.PhaseTimerIntervalInMs;
-            this.PhaseTimerInterval = initialPhaseTimerInterval;
-            this.previousPhaseTimerInterval = initialPhaseTimerInterval;
             this.PhaseDuration = 0;
             this.RoundDuration = 0;
 
             // hook up a toggle ecosystem command so a keyboard shortcut can be used to toggle the ecosystem on/off
-            this.ToggleEcosystemActiveCommand = new RelayCommand(this.ToggleEcosystemActive);
-            this.IncreasePhaseTimerIntervalCommand = new RelayCommand(this.IncreasePhaseTimerInterval);
-            this.DecreasePhaseTimerIntervalCommand = new RelayCommand(this.DecreasePhaseTimerInterval);
-        }
-
-        private void ToggleEcosystemActive(object obj)
-        {
-            this.IsEcosystemActive = !this.IsEcosystemActive;
-        }
-
-        // TODO: bind slider max and min to these values
-        private void IncreasePhaseTimerInterval(object obj)
-        {
-            this.PhaseTimerInterval++;
-            if (this.PhaseTimerInterval > 2000)
-            {
-                this.PhaseTimerInterval = 2000;
-            }
-        }
-
-        private void DecreasePhaseTimerInterval(object obj)
-        {
-            this.PhaseTimerInterval--;
-            if (this.PhaseTimerInterval < 1)
-            {
-                this.PhaseTimerInterval = 1;
-            }
-        }
-
-        private void ChangeEcosystemPhaseTimer()
-        {
-            const int ImmediateStart = 0;
-            const int PreventStart = Timeout.Infinite;
-
-            this.ecosystemPhaseTimer.Change(this.IsEcosystemActive ? this.PhaseTimerInterval : PreventStart, this.PhaseTimerInterval);
-            this.previousPhaseTimerInterval = this.PhaseTimerInterval;
+            this.ToggleEcosystemActiveCommand = new RelayCommand(o => this.SettingsViewModel.ToggleEcosystemActive());
+            this.IncreasePhaseTimerIntervalCommand = new RelayCommand(o => this.SettingsViewModel.IncreasePhaseTimerInterval());
+            this.DecreasePhaseTimerIntervalCommand = new RelayCommand(o => this.SettingsViewModel.DecreasePhaseTimerInterval());
         }
 
         private void PerformEcosystemPhase(object state)
@@ -360,7 +199,7 @@ namespace Wacton.Colonies.UI.Mains
 
                     // if there's been a change in the phase interval while the previous phase was processed
                     // update the interval of the ecosystem timer
-                    if (this.PhaseTimerInterval != this.previousPhaseTimerInterval)
+                    if (this.SettingsViewModel.PhaseTimerInterval != this.previousPhaseTimerInterval)
                     {
                         this.ChangeEcosystemPhaseTimer();
                     }
@@ -372,6 +211,18 @@ namespace Wacton.Colonies.UI.Mains
                     Monitor.Exit(this.performPhaseLock);
                 }
             }
+        }
+
+        private void ChangeEcosystemPhaseTimer()
+        {
+            const int ImmediateStart = 0;
+            const int PreventStart = Timeout.Infinite;
+
+            this.ecosystemPhaseTimer.Change(
+                this.SettingsViewModel.IsEcosystemActive ? this.SettingsViewModel.PhaseTimerInterval : PreventStart,
+                this.SettingsViewModel.PhaseTimerInterval);
+
+            this.previousPhaseTimerInterval = this.SettingsViewModel.PhaseTimerInterval;
         }
 
         private void CalculateDuration(int previousRoundCount)

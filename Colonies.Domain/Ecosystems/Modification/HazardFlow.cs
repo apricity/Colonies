@@ -2,30 +2,30 @@
 {
     using System.Linq;
 
-    using Wacton.Colonies.Domain.Ecosystems.Data;
     using Wacton.Colonies.Domain.Extensions;
     using Wacton.Colonies.Domain.Measures;
+    using Wacton.Colonies.Domain.Settings;
     using Wacton.Colonies.Domain.Weathers;
     using Wacton.Tovarisch.Randomness;
 
     public class HazardFlow
     {
         private readonly EcosystemData ecosystemData;
-        private readonly EcosystemRates ecosystemRates;
+        private readonly EcosystemSettings ecosystemSettings;
         private readonly Distributor distributor;
         private readonly IWeather weather;
 
-        public HazardFlow(EcosystemData ecosystemData, EcosystemRates ecosystemRates, Distributor distributor, IWeather weather)
+        public HazardFlow(EcosystemData ecosystemData, EcosystemSettings ecosystemSettings, Distributor distributor, IWeather weather)
         {
             this.ecosystemData = ecosystemData;
-            this.ecosystemRates = ecosystemRates;
+            this.ecosystemSettings = ecosystemSettings;
             this.distributor = distributor;
             this.weather = weather;
         }
 
         public void Advance()
         {
-            foreach (var environmentMeasureHazardRate in this.ecosystemRates.HazardRates)
+            foreach (var environmentMeasureHazardRate in this.ecosystemSettings.HazardRates)
             {
                 var environmentMeasure = environmentMeasureHazardRate.Key;
                 var hazardRate = environmentMeasureHazardRate.Value;

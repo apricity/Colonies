@@ -6,6 +6,7 @@
     using Wacton.Colonies.UI.Mains;
     using Wacton.Colonies.UI.Organisms;
     using Wacton.Colonies.UI.OrganismSynopses;
+    using Wacton.Colonies.UI.Settings;
 
     public class DesignTimeViewModelLocator
     {
@@ -27,6 +28,8 @@
         }
 
         public static MainViewModel MainViewModel => ViewModelBootstrapper.MainViewModel;
+
+        public static SettingsViewModel SettingsViewModel => MainViewModel.SettingsViewModel;
 
         public static EcosystemViewModel EcosystemViewModel => MainViewModel.EcosystemViewModel;
         public static HabitatViewModel HabitatViewModel => EcosystemViewModel.HabitatViewModels[0][0];

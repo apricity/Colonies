@@ -128,6 +128,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Settings\SettingsViewModel.cs" />
+    <Compile Include="Settings\SettingsView.xaml.cs">
+      <DependentUpon>SettingsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModelBootstrapper.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +162,10 @@
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Settings\SettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\CommonResources.xaml">
       <SubType>Designer</SubType>

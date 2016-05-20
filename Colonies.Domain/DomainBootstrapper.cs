@@ -15,6 +15,7 @@
     using Wacton.Colonies.Domain.Organisms;
     using Wacton.Colonies.Domain.OrganismSynopses;
     using Wacton.Colonies.Domain.Plugins;
+    using Wacton.Colonies.Domain.Settings;
     using Wacton.Colonies.Domain.Weathers;
 
     public class DomainBootstrapper
@@ -40,18 +41,18 @@
             var initialOrganismCoordinates = this.InitialOrganismCoordinates(organismFactory);
             var ecosystemHistory = new EcosystemHistory();
             var ecosystemData = new EcosystemData(habitats, initialOrganismCoordinates, ecosystemHistory);
-            var ecosystemRates = new EcosystemRates();
+            var ecosystemSettings = new EcosystemSettings();
             var weather = new Weather();
             var distributor = new Distributor(ecosystemData);
             var afflictor = new Afflictor(ecosystemData, distributor);
-            var hazardFlow = new HazardFlow(ecosystemData, ecosystemRates, distributor, weather);
+            var hazardFlow = new HazardFlow(ecosystemData, ecosystemSettings, distributor, weather);
             var setupPhase = new SetupPhase(ecosystemData, afflictor);
             var actionPhase = new ActionPhase(ecosystemData);
-            var movementPhase = new MovementPhase(ecosystemData, ecosystemRates);
+            var movementPhase = new MovementPhase(ecosystemData, ecosystemSettings);
             var interactionPhase = new InteractionPhase(ecosystemData, organismFactory, afflictor);
-            var ambientPhase = new AmbientPhase(ecosystemData, ecosystemRates, distributor, weather, hazardFlow);
+            var ambientPhase = new AmbientPhase(ecosystemData, ecosystemSettings, distributor, weather, hazardFlow);
             var ecosystemPhases = new EcosystemPhases(new List<IEcosystemPhase> { setupPhase, actionPhase, interactionPhase, movementPhase, ambientPhase });
-            var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, distributor, ecosystemPhases);
+            var ecosystem = new Ecosystem(ecosystemData, ecosystemSettings, ecosystemHistory, weather, distributor, ecosystemPhases);
 
             this.InitialiseTerrain(ecosystem);
             foreach (var organismCoordinate in ecosystemData.AudibleOrganismCoordinates())

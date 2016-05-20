@@ -2,23 +2,23 @@
 {
     using System.Linq;
 
-    using Wacton.Colonies.Domain.Ecosystems.Data;
     using Wacton.Colonies.Domain.Ecosystems.Modification;
     using Wacton.Colonies.Domain.Measures;
+    using Wacton.Colonies.Domain.Settings;
     using Wacton.Colonies.Domain.Weathers;
 
     public class AmbientPhase : IEcosystemPhase
     {
         private readonly EcosystemData ecosystemData;
-        private readonly EcosystemRates ecosystemRates;
+        private readonly EcosystemSettings ecosystemSettings;
         private readonly Distributor distributor;
         private readonly IWeather weather;
         private readonly HazardFlow hazardFlow;
 
-        public AmbientPhase(EcosystemData ecosystemData, EcosystemRates ecosystemRates, Distributor distributor, IWeather weather, HazardFlow hazardFlow)
+        public AmbientPhase(EcosystemData ecosystemData, EcosystemSettings ecosystemSettings, Distributor distributor, IWeather weather, HazardFlow hazardFlow)
         {
             this.ecosystemData = ecosystemData;
-            this.ecosystemRates = ecosystemRates;
+            this.ecosystemSettings = ecosystemSettings;
             this.distributor = distributor;
             this.weather = weather;
             this.hazardFlow = hazardFlow;
@@ -45,7 +45,7 @@
         {
             var pheromoneCoordinates = this.ecosystemData.AllCoordinates()
                 .Where(coordinate => this.ecosystemData.HasLevel(coordinate, EnvironmentMeasure.Pheromone)).ToList();
-            this.ecosystemData.AdjustLevels(pheromoneCoordinates, EnvironmentMeasure.Pheromone, -this.ecosystemRates.DecreasingRates[EnvironmentMeasure.Pheromone]);
+            this.ecosystemData.AdjustLevels(pheromoneCoordinates, EnvironmentMeasure.Pheromone, -this.ecosystemSettings.DecreasingRates[EnvironmentMeasure.Pheromone]);
         }
 
         private void IncreaseNutrientLevels()
@@ -53,17 +53,17 @@
             var nutrientCoordinates = this.ecosystemData.AllCoordinates()
                 .Where(coordinate => this.ecosystemData.HasLevel(coordinate, EnvironmentMeasure.Nutrient)
                                      && !this.ecosystemData.IsHarmful(coordinate)).ToList();
-            this.ecosystemData.AdjustLevels(nutrientCoordinates, EnvironmentMeasure.Nutrient, this.ecosystemRates.IncreasingRates[EnvironmentMeasure.Nutrient]);
+            this.ecosystemData.AdjustLevels(nutrientCoordinates, EnvironmentMeasure.Nutrient, this.ecosystemSettings.IncreasingRates[EnvironmentMeasure.Nutrient]);
         }
 
         private void DecreaseOrganismHealth()
         {
             var aliveOrganismCoordinates = this.ecosystemData.AliveOrganismCoordinates().ToList();
-            this.ecosystemData.AdjustLevels(aliveOrganismCoordinates, OrganismMeasure.Health, -this.ecosystemRates.DecreasingRates[OrganismMeasure.Health]);
+            this.ecosystemData.AdjustLevels(aliveOrganismCoordinates, OrganismMeasure.Health, -this.ecosystemSettings.DecreasingRates[OrganismMeasure.Health]);
 
             // decrease organism health even more if diseased (currently triple health loss)
             var diseasedOrganismCoordinates = this.ecosystemData.DiseasedOrganismCoordinates().ToList();
-            this.ecosystemData.AdjustLevels(diseasedOrganismCoordinates, OrganismMeasure.Health, -this.ecosystemRates.DecreasingRates[OrganismMeasure.Health] * 2);
+            this.ecosystemData.AdjustLevels(diseasedOrganismCoordinates, OrganismMeasure.Health, -this.ecosystemSettings.DecreasingRates[OrganismMeasure.Health] * 2);
         }
 
         private void ProgressWeatherAndHazards()

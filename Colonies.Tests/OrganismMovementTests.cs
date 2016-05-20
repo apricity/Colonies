@@ -15,6 +15,7 @@
     using Wacton.Colonies.Domain.Habitats;
     using Wacton.Colonies.Domain.Organisms;
     using Wacton.Colonies.Domain.Plugins;
+    using Wacton.Colonies.Domain.Settings;
     using Wacton.Colonies.Domain.Weathers;
 
     using Environment = Wacton.Colonies.Domain.Environments.Environment;
@@ -336,18 +337,18 @@
             var organismFactory = new OrganismFactory(new List<ColonyPluginData>());
             var ecosystemHistory = new EcosystemHistory();
             var ecosystemData = new EcosystemData(this.habitats, organismCoordinates, ecosystemHistory);
-            var ecosystemRates = new EcosystemRates();
+            var ecosystemSettings = new EcosystemSettings();
             var weather = new Weather();
             var distributor = new Distributor(ecosystemData);
             var afflictor = new Afflictor(ecosystemData, distributor);
-            var hazardFlow = new HazardFlow(ecosystemData, ecosystemRates, distributor, weather);
+            var hazardFlow = new HazardFlow(ecosystemData, ecosystemSettings, distributor, weather);
             var setupPhase = new SetupPhase(ecosystemData, afflictor);
             var actionPhase = new ActionPhase(ecosystemData);
-            var movementPhase = new MovementPhase(ecosystemData, ecosystemRates);
+            var movementPhase = new MovementPhase(ecosystemData, ecosystemSettings);
             var interactionPhase = new InteractionPhase(ecosystemData, organismFactory, afflictor);
-            var ambientPhase = new AmbientPhase(ecosystemData, ecosystemRates, distributor, weather, hazardFlow);
+            var ambientPhase = new AmbientPhase(ecosystemData, ecosystemSettings, distributor, weather, hazardFlow);
             var ecosystemStages = new EcosystemPhases(new List<IEcosystemPhase> { setupPhase, actionPhase, interactionPhase, movementPhase, ambientPhase });
-            var ecosystem = new Ecosystem(ecosystemData, ecosystemRates, ecosystemHistory, weather, distributor, ecosystemStages);
+            var ecosystem = new Ecosystem(ecosystemData, ecosystemSettings, ecosystemHistory, weather, distributor, ecosystemStages);
 
             movementPhase.OverrideDesiredOrganismCoordinates = desiredBiasedOrganismCoordinates;
             movementPhase.OverrideDecideOrganismFunction = organisms => organisms.First();

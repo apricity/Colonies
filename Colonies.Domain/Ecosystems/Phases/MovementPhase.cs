@@ -5,24 +5,24 @@
     using System.Linq;
 
     using Wacton.Colonies.Domain.Core;
-    using Wacton.Colonies.Domain.Ecosystems.Data;
     using Wacton.Colonies.Domain.Ecosystems.Modification;
     using Wacton.Colonies.Domain.Measures;
     using Wacton.Colonies.Domain.Organisms;
+    using Wacton.Colonies.Domain.Settings;
 
     public class MovementPhase : IEcosystemPhase, IBiased<OrganismMeasure>
     {
         private readonly EcosystemData ecosystemData;
-        private readonly EcosystemRates ecosystemRates;
+        private readonly EcosystemSettings ecosystemSettings;
         public Dictionary<OrganismMeasure, double> MeasureBiases { get; }
 
         public Dictionary<IOrganism, Coordinate> OverrideDesiredOrganismCoordinates { get; set; }
         public Func<IEnumerable<IOrganism>, IOrganism> OverrideDecideOrganismFunction { get; set; } 
 
-        public MovementPhase(EcosystemData ecosystemData, EcosystemRates ecosystemRates)
+        public MovementPhase(EcosystemData ecosystemData, EcosystemSettings ecosystemSettings)
         {
             this.ecosystemData = ecosystemData;
-            this.ecosystemRates = ecosystemRates;
+            this.ecosystemSettings = ecosystemSettings;
 
             this.MeasureBiases = new Dictionary<OrganismMeasure, double>
                                      {
@@ -56,7 +56,7 @@
 
             // for any organisms that attempted to move to an obstructed habitat, decrease obstruction level
             var obstructedCoordinates = desiredOrganismCoordinates.Values.Where(coordinate => this.ecosystemData.HasLevel(coordinate, EnvironmentMeasure.Obstruction));
-            this.ecosystemData.AdjustLevels(obstructedCoordinates, EnvironmentMeasure.Obstruction, -this.ecosystemRates.DecreasingRates[EnvironmentMeasure.Obstruction]);
+            this.ecosystemData.AdjustLevels(obstructedCoordinates, EnvironmentMeasure.Obstruction, -this.ecosystemSettings.DecreasingRates[EnvironmentMeasure.Obstruction]);
         }
 
         public Dictionary<IOrganism, Coordinate> GetDesiredCoordinates()
@@ -179,7 +179,7 @@
         private void IncreasePheromoneLevels()
         {
             var organismCoordinates = this.ecosystemData.DepositingPheromoneOrganismCoordinates().ToList();
-            this.ecosystemData.AdjustLevels(organismCoordinates, EnvironmentMeasure.Pheromone, this.ecosystemRates.IncreasingRates[EnvironmentMeasure.Pheromone]);
+            this.ecosystemData.AdjustLevels(organismCoordinates, EnvironmentMeasure.Pheromone, this.ecosystemSettings.IncreasingRates[EnvironmentMeasure.Pheromone]);
         }
 
         private void IncreaseMineralLevel(Coordinate coordinate)
@@ -191,7 +191,7 @@
                 return;
             }
 
-            this.ecosystemData.AdjustLevel(coordinate, EnvironmentMeasure.Mineral, this.ecosystemRates.IncreasingRates[EnvironmentMeasure.Mineral]);
+            this.ecosystemData.AdjustLevel(coordinate, EnvironmentMeasure.Mineral, this.ecosystemSettings.IncreasingRates[EnvironmentMeasure.Mineral]);
         }
     }
 }

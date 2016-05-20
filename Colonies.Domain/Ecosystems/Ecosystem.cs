@@ -9,6 +9,7 @@
     using Wacton.Colonies.Domain.Ecosystems.Phases;
     using Wacton.Colonies.Domain.Habitats;
     using Wacton.Colonies.Domain.Measures;
+    using Wacton.Colonies.Domain.Settings;
     using Wacton.Colonies.Domain.Weathers;
 
     public class Ecosystem : IEcosystem
@@ -17,10 +18,9 @@
         private readonly IEcosystemHistoryPuller ecosystemHistoryPuller;
         private readonly EcosystemPhases ecosystemPhases;
 
-        public EcosystemRates EcosystemRates { get; }
+        public IEcosystemSettings EcosystemSettings { get; }
         public IWeather Weather { get; }
         public Distributor Distributor { get; }
-
 
         private IEnumerable<Coordinate> previousAudibleOrganismCoordinates;
 
@@ -28,10 +28,10 @@
         public int Height => this.ecosystemData.Height;
 
         // TODO: param list still a bit too long?
-        public Ecosystem(EcosystemData ecosystemData, EcosystemRates ecosystemRates, IEcosystemHistoryPuller ecosystemHistoryPuller, IWeather weather, Distributor distributor, EcosystemPhases ecosystemPhases)
+        public Ecosystem(EcosystemData ecosystemData, EcosystemSettings ecosystemSettings, IEcosystemHistoryPuller ecosystemHistoryPuller, IWeather weather, Distributor distributor, EcosystemPhases ecosystemPhases)
         {
             this.ecosystemData = ecosystemData;
-            this.EcosystemRates = ecosystemRates;
+            this.EcosystemSettings = ecosystemSettings;
             this.ecosystemHistoryPuller = ecosystemHistoryPuller;
             this.Weather = weather;
             this.Distributor = distributor;

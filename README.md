@@ -1,7 +1,10 @@
-Colonies
-========
-A bit of fun while I tackle the WPF learning curve.
+# Moved to [GitLab](https://gitlab.com/Wacton/Colonies)
 
-The goal is to produce an automated simulation of a very simple and naive ecosystem.
-The real goal is to get to grips with WPF and MVVM (and other tools and techniques of the trade)
-The *real* real goal is to have some fun playing with code.
+## Colonies
+A virtual ecosystem with plug-in logic.
+
+### Playground for:
+- WPF
+- UI styling ([MahApps.Metro](http://mahapps.com/))
+- MVVM (without framework, for learning purposes)
+- Runtime extensibility ([MEF](https://msdn.microsoft.com/en-us/library/dd460648%28v=vs.110%29.aspx))

@@ -1,9 +1,8 @@
 # Moved to [GitLab](https://gitlab.com/Wacton/Colonies)
 
-## Colonies
 A virtual ecosystem with plug-in logic.
 
-### Playground for:
+Playground for:
 - WPF
 - UI styling ([MahApps.Metro](http://mahapps.com/))
 - MVVM (without framework, for learning purposes)

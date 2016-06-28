@@ -1,6 +1,6 @@
 # Moved to [GitLab](https://gitlab.com/Wacton/Colonies)
 
-A virtual ecosystem with plug-in logic.
+Virtual ecosystem with plug-in logic.
 
 Playground for:
 - WPF
